@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Module name="bootloader" id="7658f334-753c-4a32-97a5-fb3d4886321e" version="1.0.0">
-<!--
     <ConfigRoot path="config/module.py"/>
--->
 </Module>
