@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------------
  * MPLAB XC32 Compiler -  Bootloader linker script
  * 
- * Copyright (c) 2018, Microchip Technology Inc. and its subsidiaries ("Microchip")
+ * Copyright (c) 2019, Microchip Technology Inc. and its subsidiaries ("Microchip")
  * All rights reserved.
  * 
  * This software is developed by Microchip Technology Inc. and its
@@ -72,10 +72,10 @@ bootloader_size        = ${BTL_SIZE};
 /* Bootloader Request pattern to be stored in starting 16 Bytes of Ram by the
  * application if it wants to run bootloader at startup without any external
  * trigger.
- * ram[0] = 0x78656c41;
- * ram[1] = 0x78656c41;
- * ram[2] = 0x78656c41;
- * ram[3] = 0x78656c41;
+ * ram[0] = 0x5048434D;
+ * ram[1] = 0x5048434D;
+ * ram[2] = 0x5048434D;
+ * ram[3] = 0x5048434D;
  */
 bootloader_request_len = ${BTL_REQUEST_LEN};
 
@@ -163,6 +163,7 @@ SECTIONS
         . = ALIGN(4);
         __data_start__ = .;
         _sdata = .;
+        *(.dinit)
         *(.text)
         *(.text.*)
         *(.rodata)
