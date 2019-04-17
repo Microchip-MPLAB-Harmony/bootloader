@@ -69,9 +69,9 @@ ENTRY(__XC32_RESET_HANDLER_NAME)
  */
 bootloader_size        = ${BTL_SIZE};
 
-/* Bootloader Request pattern to be stored in starting 16 Bytes of Ram by the
- * application if it wants to run bootloader at startup without any external
- * trigger.
+/* Bootloader Request pattern needs to be stored in starting 16 Bytes of Ram
+ * by the application if it wants to run bootloader at startup without any
+ * external trigger.
  * ram[0] = 0x5048434D;
  * ram[1] = 0x5048434D;
  * ram[2] = 0x5048434D;
@@ -79,24 +79,20 @@ bootloader_size        = ${BTL_SIZE};
  */
 bootloader_request_len = ${BTL_REQUEST_LEN};
 
-#ifndef ROM_ORIGIN
-    #  define ROM_ORIGIN ${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}
+#define ROM_START ${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}
+
+#define ROM_SIZE  bootloader_size
+
+#if (ROM_SIZE > ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE})
+    #  error ROM_SIZE is greater than the max size of ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}
 #endif
 
-#ifndef ROM_LENGTH
-    #  define ROM_LENGTH bootloader_size
-#elif (ROM_LENGTH > ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE})
-    #  error ROM_LENGTH is greater than the max size of ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}
-#endif
+#define RAM_START (${BTL_RAM_START} + bootloader_request_len)
 
-#ifndef RAM_ORIGIN
-    #  define RAM_ORIGIN (${BTL_RAM_START} + bootloader_request_len)
-#endif
+#define RAM_SIZE  (${BTL_RAM_SIZE} - bootloader_request_len)
 
-#ifndef RAM_LENGTH
-    #  define RAM_LENGTH (${BTL_RAM_SIZE} - bootloader_request_len)
-#elif (RAM_LENGTH > ${BTL_RAM_SIZE})
-    #  error RAM_LENGTH is greater than the max size of ${BTL_RAM_SIZE}
+#if (RAM_SIZE > ${BTL_RAM_SIZE})
+    #  error RAM_SIZE is greater than the max size of ${BTL_RAM_SIZE}
 #endif
  
 
@@ -107,8 +103,8 @@ bootloader_request_len = ${BTL_REQUEST_LEN};
  *************************************************************************/
 MEMORY
 {
-  rom (rx) : ORIGIN = ROM_ORIGIN, LENGTH = ROM_LENGTH
-  ram (rwx) : ORIGIN = RAM_ORIGIN, LENGTH = RAM_LENGTH
+  rom (rx) : ORIGIN = ROM_START, LENGTH = ROM_SIZE
+  ram (rwx) : ORIGIN = RAM_START, LENGTH = RAM_SIZE
 }
 
 /*************************************************************************

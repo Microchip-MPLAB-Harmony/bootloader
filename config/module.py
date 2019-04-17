@@ -27,7 +27,3 @@ def loadModule():
     bootloaderComponent = Module.CreateComponent("bootloader", "Bootloader", "/Bootloader/", "config/bootloader.py")
     bootloaderComponent.addDependency("btl_UART_dependency", "UART")
     bootloaderComponent.addDependency("btl_MEMORY_dependency", "MEMORY")
-
-    print("Load Module: Bootloadable")
-
-    bootloadableComponent = Module.CreateComponent("bootloadable", "Bootloadable", "/Bootloader/", "config/bootloadable.py")

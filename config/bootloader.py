@@ -21,10 +21,93 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
-min_flash_erase_size = 0
+global btlTypeUsed
+global flashNames
 
-periphNode  = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
-peripherals = periphNode.getChildren()
+global ram_start
+global ram_size
+
+global flash_start
+global flash_size
+global flash_erase_size
+
+flash_start         = 0
+flash_size          = 0
+flash_erase_size    = 0
+
+flashNames          = ["EFC", "NVMCTRL"]
+
+bootloaderTypes     =  ["", "UART"]
+btlTypeUsed         = None
+
+addr_space          = ATDF.getNode("/avr-tools-device-file/devices/device/address-spaces/address-space")
+addr_space_children = addr_space.getChildren()
+
+for mem_idx in range(0, len(addr_space_children)):
+    mem_seg     = addr_space_children[mem_idx].getAttribute("name")
+    mem_type    = addr_space_children[mem_idx].getAttribute("type")
+
+    if ("FLASH" in mem_seg and mem_type == "flash"):
+        flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
+        flash_size  = int(addr_space_children[mem_idx].getAttribute("size"), 16)
+
+    if ("RAM" in mem_seg and mem_type == "ram"):
+        ram_start   = addr_space_children[mem_idx].getAttribute("start")
+        ram_size    = addr_space_children[mem_idx].getAttribute("size")
+
+periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
+peripherals         = periphNode.getChildren()
+
+def calcBootloaderSize(btl_type):
+    global flash_erase_size
+
+    # Calculated values with highest Optimization level -Os
+    max_uart_btl_size   = 1536
+    max_i2c_btl_size    = 2048
+    btl_size            = 0
+
+    if ((flash_erase_size != 0) and (btl_type != "")):
+        if (btl_type == "UART"):
+            if (flash_erase_size >= max_uart_btl_size):
+                btl_size = flash_erase_size
+            else:
+                btl_size = max_uart_btl_size
+        elif (btl_type == "I2C"):
+            if (flash_erase_size >= max_i2c_btl_size):
+                btl_size = flash_erase_size
+            else:
+                btl_size = max_i2c_btl_size
+
+    return btl_size
+
+def setAppStartAndCommentVisible(symbol, event):
+    global btlTypeUsed
+    global flash_start
+    global flash_size
+
+    if (event["id"] == "BTL_TYPE" or event["id"] == "MEM_USED"):
+        btlType = btlTypeUsed.getValue()
+
+        if (btlType != None):
+            btl_size = calcBootloaderSize(btlType)
+
+            custom_app_start_addr = str(hex(flash_start + btl_size))
+
+            Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
+    else:
+        comment_enable      = False
+
+        custom_app_start_addr = int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16)
+        btl_size = calcBootloaderSize(btlTypeUsed.getValue())
+
+        if (custom_app_start_addr < (flash_start + btl_size)):
+            symbol.setLabel("***  WARNING!!! Application Start Address Should be equal to or Greater than Bootloader Size ***")
+            comment_enable = True
+        elif (custom_app_start_addr >= (flash_start + flash_size)):
+            symbol.setLabel("*** WARNING!!! Application Start Address is exceeding the Flash Memory Space ***")
+            comment_enable = True
+
+        symbol.setVisible(comment_enable)
 
 def sort_alphanumeric(list):
     import re
@@ -45,7 +128,7 @@ def getAvaliablePins(bootloaderComponent):
     btlReqPinComment = bootloaderComponent.createCommentSymbol("BTL_REQ_PIN_COMMENT", None)
     btlReqPinComment.setLabel("!!! Configure selected pin to GPIO Input in pin settings for external trigger !!!")
 
-def setDependency(symbol, event):
+def setPeriphUsed(symbol, event):
     component = symbol.getComponent()
 
     if (event["value"] == "UART"):
@@ -59,16 +142,15 @@ def setDependency(symbol, event):
         component.setDependencyEnabled("btl_UART_dependency", True)
         
 def setBootloaderSize(symbol, event):
-    global calcBootloaderSize
-    global min_flash_erase_size
+    global flash_erase_size
 
     component = symbol.getComponent()
 
     btl_type = component.getSymbolByID("BTL_TYPE").getValue()
 
-    btl_size = str(calcBootloaderSize(btl_type, min_flash_erase_size))
+    btl_size = str(calcBootloaderSize(btl_type))
 
-    symbol.setValue(btl_size, 1)
+    symbol.setValue(btl_size)
 
 def hasHwCRCGenerator():
     for module in range (0, len(peripherals)):
@@ -78,13 +160,6 @@ def hasHwCRCGenerator():
             return True
 
     return False
-
-def deactivateBootloadable():
-    activeComponents = Database.getActiveComponentIDs()
-
-    for i in range(0, len(activeComponents)):
-        if (activeComponents[i] == "bootloadable"):
-            res = Database.deactivateComponents(["bootloadable"])
 
 def setupCoreComponentSymbols():
 
@@ -120,46 +195,61 @@ def setupCoreComponentSymbols():
                 coreComponent.getSymbolByID("PAC_INTERRRUPT_MODE").setValue(False)
 
 def instantiateComponent(bootloaderComponent):
-    global getBootloaderType
-    global calcBootloaderSize
-    global createCommonSymbols
-    global min_flash_erase_size
+    global btlTypeUsed
+    global ram_start
+    global ram_size
 
-    deactivateBootloadable()
+    global flash_start
+    global flash_size
+    global flash_erase_size
 
     configName = Variables.get("__CONFIGURATION_NAME")
 
-    execfile(Variables.get("__MODULE_ROOT") + "/config/bootloader_common.py")
-
     setupCoreComponentSymbols()
 
-    createCommonSymbols(bootloaderComponent)
+    btlTypeUsed = bootloaderComponent.createComboSymbol("BTL_TYPE", None, bootloaderTypes)
+    btlTypeUsed.setLabel("Bootloader Type")
+    btlTypeUsed.setDefaultValue("")
 
     getAvaliablePins(bootloaderComponent)
-
-    btlRequestLen = bootloaderComponent.createStringSymbol("BTL_REQUEST_LEN", None)
-    btlRequestLen.setReadOnly(True)
-    btlRequestLen.setVisible(False)
-    btlRequestLen.setDefaultValue("16")
 
     periphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
     periphUsed.setLabel("Bootloader Peripheral Used")
     periphUsed.setReadOnly(True)
     periphUsed.setDefaultValue("")
-    periphUsed.setDependencies(setDependency, ["BTL_TYPE"])
+    periphUsed.setDependencies(setPeriphUsed, ["BTL_TYPE"])
 
     memUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
     memUsed.setLabel("Bootloader Memory Used")
     memUsed.setReadOnly(True)
     memUsed.setDefaultValue("")
 
-    btl_size = str(calcBootloaderSize(getBootloaderType(), min_flash_erase_size))
+    btl_size = calcBootloaderSize(btlTypeUsed.getValue())
 
     btlSize = bootloaderComponent.createStringSymbol("BTL_SIZE", None)
-    btlSize.setLabel("Bootloader Size")
+    btlSize.setLabel("Bootloader Size (Bytes)")
     btlSize.setReadOnly(True)
-    btlSize.setDefaultValue(btl_size)
+    btlSize.setDefaultValue(str(btl_size))
     btlSize.setDependencies(setBootloaderSize, ["BTL_TYPE", "MEM_USED"])
+
+    btlRamStart = bootloaderComponent.createStringSymbol("BTL_RAM_START", None)
+    btlRamStart.setDefaultValue(ram_start)
+    btlRamStart.setReadOnly(True)
+    btlRamStart.setVisible(False)
+
+    btlRamSize = bootloaderComponent.createStringSymbol("BTL_RAM_SIZE", None)
+    btlRamSize.setDefaultValue(ram_size)
+    btlRamSize.setReadOnly(True)
+    btlRamSize.setVisible(False)
+
+    btlAppAddrComment = bootloaderComponent.createCommentSymbol("BTL_APP_START_ADDR_COMMENT", None)
+    btlAppAddrComment.setVisible(False)
+    btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_TYPE", "MEM_USED"])
+
+    btlRequestLen = bootloaderComponent.createStringSymbol("BTL_REQUEST_LEN", None)
+    btlRequestLen.setReadOnly(True)
+    btlRequestLen.setVisible(False)
+    btlRequestLen.setDefaultValue("16")
 
     btlHwCrc = bootloaderComponent.createBooleanSymbol("BTL_HW_CRC_GEN", None)
     btlHwCrc.setLabel("Bootloader Hardware CRC Generator")
@@ -250,7 +340,7 @@ def instantiateComponent(bootloaderComponent):
     xc32ClearDataSection.setValue("-Os")
 
 def onAttachmentConnected(source, target):
-    global min_flash_erase_size
+    global flash_erase_size
 
     localComponent = source["component"]
     remoteComponent = target["component"]
@@ -289,13 +379,13 @@ def onAttachmentConnected(source, target):
         localComponent.setDependencyEnabled("btl_UART_dependency", False)
 
     if (connectID == "btl_MEMORY_dependency"):
-        min_flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
+        flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
         localComponent.getSymbolByID("MEM_USED").setValue(remoteID.upper())
 
         Database.setSymbolValue(remoteID, "INTERRUPT_ENABLE", False)
 
 def onAttachmentDisconnected(source, target):
-    global min_flash_erase_size
+    global flash_erase_size
 
     localComponent = source["component"]
     remoteComponent = target["component"]
@@ -311,5 +401,5 @@ def onAttachmentDisconnected(source, target):
         localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(False)
 
     if (connectID == "btl_MEMORY_dependency"):
-        min_flash_erase_size = 0
+        flash_erase_size = 0
         localComponent.getSymbolByID("MEM_USED").clearValue()

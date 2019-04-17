@@ -62,7 +62,7 @@
 #define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
 #define BOOTLOADER_SIZE         ERASE_BLOCK_SIZE
-#define APP_START_ADDRESS       (0x${BTL_CUSTOM_APP_START_ADDR}UL)
+#define APP_START_ADDRESS       (0x${core.APP_START_ADDRESS}UL)
 
 #define GUARD_SIZE              4
 #define OFFSET_SIZE             4
