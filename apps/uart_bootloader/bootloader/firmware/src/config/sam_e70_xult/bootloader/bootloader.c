@@ -53,16 +53,16 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define BL_REQ_PIN              PIN_${BTL_REQ_PIN}
+#define BL_REQ_PIN              PIN_PA11
 
-#define FLASH_START             (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH            (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE               (${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
+#define FLASH_START             (0x00400000UL)
+#define FLASH_LENGTH            (0x00200000UL)
+#define PAGE_SIZE               (512UL)
+#define ERASE_BLOCK_SIZE        (8192UL)
 #define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
 #define BOOTLOADER_SIZE         ERASE_BLOCK_SIZE
-#define APP_START_ADDRESS       (0x${core.APP_START_ADDRESS}UL)
+#define APP_START_ADDRESS       (0x402000UL)
 
 #define GUARD_OFFSET            0
 #define CMD_OFFSET              2
@@ -114,7 +114,7 @@ static uint32_t input_buffer[WORDS(OFFSET_SIZE + DATA_SIZE)];
 static uint32_t flash_data[WORDS(DATA_SIZE)];
 static uint32_t flash_addr          = 0;
 
-static uint32_t *sram               = (uint32_t *)${BTL_RAM_START};
+static uint32_t *sram               = (uint32_t *)0x20400000;
 
 static uint32_t unlock_begin        = 0;
 static uint32_t unlock_end          = 0;
@@ -130,57 +130,40 @@ static bool     flash_data_ready    = false;
 // *****************************************************************************
 // *****************************************************************************
 
-<#if BTL_HW_CRC_GEN == true>
-    <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t addr = unlock_begin;
-    <#lt>    uint32_t size = unlock_end - unlock_begin;
-    <#lt>    uint32_t crc  = 0;
+/* Function to Generate CRC by reading the firmware programmed into internal flash */
+static uint32_t crc_generate(void)
+{
+    uint32_t   i, j, value;
+    uint32_t   crc_tab[256];
+    uint32_t   size    = unlock_end - unlock_begin;
+    uint32_t   crc     = 0xffffffff;
+    uint8_t    data;
 
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
+    for (i = 0; i < 256; i++)
+    {
+        value = i;
 
-    <#lt>    DSU_CRCCalculate (addr, size, 0xffffffff, &crc);
+        for (j = 0; j < 8; j++)
+        {
+            if (value & 1)
+            {
+                value = (value >> 1) ^ 0xEDB88320;
+            }
+            else
+            {
+                value >>= 1;
+            }
+        }
+        crc_tab[i] = value;
+    }
 
-    <#lt>    return crc;
-    <#lt>}
-<#else>
-    <#lt>/* Function to Generate CRC by reading the firmware programmed into internal flash */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t   i, j, value;
-    <#lt>    uint32_t   crc_tab[256];
-    <#lt>    uint32_t   size    = unlock_end - unlock_begin;
-    <#lt>    uint32_t   crc     = 0xffffffff;
-    <#lt>    uint8_t    data;
-
-    <#lt>    for (i = 0; i < 256; i++)
-    <#lt>    {
-    <#lt>        value = i;
-
-    <#lt>        for (j = 0; j < 8; j++)
-    <#lt>        {
-    <#lt>            if (value & 1)
-    <#lt>            {
-    <#lt>                value = (value >> 1) ^ 0xEDB88320;
-    <#lt>            }
-    <#lt>            else
-    <#lt>            {
-    <#lt>                value >>= 1;
-    <#lt>            }
-    <#lt>        }
-    <#lt>        crc_tab[i] = value;
-    <#lt>    }
-
-    <#lt>    for (i = 0; i < size; i++)
-    <#lt>    {
-    <#lt>        data = *(uint8_t *)(FLASH_START + unlock_begin + i);
-    <#lt>
-    <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    <#lt>    }
-    <#lt>    return crc;
-    <#lt>}
-</#if>
+    for (i = 0; i < size; i++)
+    {
+        data = *(uint8_t *)(FLASH_START + unlock_begin + i);
+        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
+    }
+    return crc;
+}
 
 /* Function to receive application firmware via UART/USART */
 static void input_task(void)
@@ -196,12 +179,12 @@ static void input_task(void)
         return;
     }
 
-    if (${PERIPH_USED}_ReceiverIsReady() == false)
+    if (USART1_ReceiverIsReady() == false)
     {
         return;
     }
 
-    input_data = ${PERIPH_USED}_ReadByte();
+    input_data = USART1_ReadByte();
 
     /* Check if 100 ms have elapsed */
     if (SYSTICK_TimerPeriodHasExpired())
@@ -217,7 +200,7 @@ static void input_task(void)
         {
             if (input_buffer[GUARD_OFFSET] != BTL_GUARD)
             {
-                ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
+                USART1_WriteByte(BL_RESP_ERROR);
             }
             else
             {
@@ -262,13 +245,13 @@ static void command_task(void)
         {
             unlock_begin = begin;
             unlock_end = end;
-            ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+            USART1_WriteByte(BL_RESP_OK);
         }
         else
         {
             unlock_begin = 0;
             unlock_end = 0;
-            ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
+            USART1_WriteByte(BL_RESP_ERROR);
         }
     }
     else if (BL_CMD_DATA == input_command)
@@ -282,11 +265,11 @@ static void command_task(void)
 
             flash_data_ready = true;
 
-            ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+            USART1_WriteByte(BL_RESP_OK);
         }
         else
         {
-            ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
+            USART1_WriteByte(BL_RESP_ERROR);
         }
     }
     else if (BL_CMD_VERIFY == input_command)
@@ -297,9 +280,9 @@ static void command_task(void)
         crc_gen = crc_generate();
 
         if (crc == crc_gen)
-            ${PERIPH_USED}_WriteByte(BL_RESP_CRC_OK);
+            USART1_WriteByte(BL_RESP_CRC_OK);
         else
-            ${PERIPH_USED}_WriteByte(BL_RESP_CRC_FAIL);
+            USART1_WriteByte(BL_RESP_CRC_FAIL);
     }
     else if (BL_CMD_RESET == input_command)
     {
@@ -309,15 +292,15 @@ static void command_task(void)
         sram[2] = input_buffer[2];
         sram[3] = input_buffer[3];
 
-        ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+        USART1_WriteByte(BL_RESP_OK);
 
-        while(${PERIPH_USED}_TransmitComplete() == false);
+        while(USART1_TransmitComplete() == false);
 
         NVIC_SystemReset();
     }
     else
     {
-        ${PERIPH_USED}_WriteByte(BL_RESP_INVALID);
+        USART1_WriteByte(BL_RESP_INVALID);
     }
 
     packet_received = false;
@@ -331,23 +314,23 @@ static void flash_task(void)
     uint32_t write_idx  = 0;
 
     // Lock region size is always bigger than the row size
-    ${MEM_USED}_RegionUnlock(addr);
+    EFC_RegionUnlock(addr);
 
-    while(${MEM_USED}_IsBusy() == true)
+    while(EFC_IsBusy() == true)
         input_task();
 
     /* Erase the Current sector */
-    ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(addr);
+    EFC_SectorErase(addr);
 
     /* Receive Next Bytes while waiting for erase to complete */
-    while(${MEM_USED}_IsBusy() == true)
+    while(EFC_IsBusy() == true)
         input_task();
 
     for (page = 0; page < PAGES_IN_ERASE_BLOCK; page++)
     {
-        ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}(&flash_data[write_idx], addr);
+        EFC_PageWrite(&flash_data[write_idx], addr);
 
-        while(${MEM_USED}_IsBusy() == true)
+        while(EFC_IsBusy() == true)
             input_task();
 
         addr += PAGE_SIZE;
@@ -391,7 +374,7 @@ bool bootloader_Trigger(void)
         asm("nop");
     }
 
-    if (${core.PORT_API_PREFIX}_PinRead(BL_REQ_PIN) == false)
+    if (PIO_PinRead(BL_REQ_PIN) == false)
     {
         return true;
     }
