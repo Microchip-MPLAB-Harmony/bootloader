@@ -66,13 +66,19 @@ ${core.LIST_SYSTEM_INIT_C_CONFIG_BITS_INITIALIZATION}
 
 void SYS_Initialize ( void* data )
 {
-    <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_START}  <#-- global disable of interrupts before initializing anything -->
-    <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_CORE}
+    <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_START}
+
+    ${core.PORT_API_PREFIX}_Initialize();
 
     if (bootloader_Trigger() == false)
     {
         run_Application();
     }
+<#if __PROCESSOR?matches(".*SAME70.*") == true>
+    CLK_Initialize();
+<#else>
+    CLOCK_Initialize();
+</#if>
 
     <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_PERIPHERALS}
 }
