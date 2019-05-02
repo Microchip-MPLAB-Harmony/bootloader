@@ -62,6 +62,9 @@
 #define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
 #define BOOTLOADER_SIZE         ERASE_BLOCK_SIZE
+<#if BTL_DUAL_BANK == true>
+    <#lt>#define DUAL_BANK_START_ADDRESS (FLASH_LENGTH / 2)
+</#if>
 #define APP_START_ADDRESS       (0x${core.APP_START_ADDRESS}UL)
 
 #define GUARD_OFFSET            0
@@ -88,19 +91,22 @@
 
 enum
 {
-  BL_CMD_UNLOCK    = 0xa0,
-  BL_CMD_DATA      = 0xa1,
-  BL_CMD_VERIFY    = 0xa2,
-  BL_CMD_RESET     = 0xa3,
+    BL_CMD_UNLOCK       = 0xa0,
+    BL_CMD_DATA         = 0xa1,
+    BL_CMD_VERIFY       = 0xa2,
+    BL_CMD_RESET        = 0xa3,
+<#if BTL_DUAL_BANK == true>
+    BL_CMD_BKSWAP_RESET = 0xa4,
+</#if>
 };
 
 enum
 {
-  BL_RESP_OK       = 0x50,
-  BL_RESP_ERROR    = 0x51,
-  BL_RESP_INVALID  = 0x52,
-  BL_RESP_CRC_OK   = 0x53,
-  BL_RESP_CRC_FAIL = 0x54,
+    BL_RESP_OK          = 0x50,
+    BL_RESP_ERROR       = 0x51,
+    BL_RESP_INVALID     = 0x52,
+    BL_RESP_CRC_OK      = 0x53,
+    BL_RESP_CRC_FAIL    = 0x54,
 };
 
 // *****************************************************************************
@@ -255,7 +261,11 @@ static void command_task(void)
 
     if (BL_CMD_UNLOCK == input_command)
     {
+<#if BTL_DUAL_BANK == true>
+        uint32_t begin  = (DUAL_BANK_START_ADDRESS + (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK));
+<#else>
         uint32_t begin  = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
+</#if>
         uint32_t end    = begin + (input_buffer[SIZE_OFFSET] & SIZE_ALIGN_MASK);
 
         if (end > begin && end <= FLASH_LENGTH)
@@ -273,7 +283,11 @@ static void command_task(void)
     }
     else if (BL_CMD_DATA == input_command)
     {
+<#if BTL_DUAL_BANK == true>
+        flash_addr = (DUAL_BANK_START_ADDRESS + (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK));
+<#else>
         flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
+</#if>
 
         if (unlock_begin <= flash_addr && flash_addr < unlock_end)
         {
@@ -301,6 +315,22 @@ static void command_task(void)
         else
             ${PERIPH_USED}_WriteByte(BL_RESP_CRC_FAIL);
     }
+<#if BTL_DUAL_BANK == true>
+    else if (BL_CMD_BKSWAP_RESET == input_command)
+    {
+        // Unrolling the loop here saves significant amount of Flash
+        sram[0] = input_buffer[0];
+        sram[1] = input_buffer[1];
+        sram[2] = input_buffer[2];
+        sram[3] = input_buffer[3];
+
+        ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+
+        while(${PERIPH_USED}_TransmitComplete() == false);
+
+        ${MEM_USED}_BankSwap();
+    }
+<#else>
     else if (BL_CMD_RESET == input_command)
     {
         // Unrolling the loop here saves significant amount of Flash
@@ -315,6 +345,7 @@ static void command_task(void)
 
         NVIC_SystemReset();
     }
+</#if>
     else
     {
         ${PERIPH_USED}_WriteByte(BL_RESP_INVALID);

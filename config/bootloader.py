@@ -59,6 +59,9 @@ for mem_idx in range(0, len(addr_space_children)):
 periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
 peripherals         = periphNode.getChildren()
 
+def setBtlDualBankCommentVisible(symbol, event):
+    symbol.setVisible(event["value"])
+
 def calcBootloaderSize(btl_type):
     global flash_erase_size
 
@@ -213,6 +216,18 @@ def instantiateComponent(bootloaderComponent):
     btlTypeUsed.setDefaultValue("")
 
     getAvaliablePins(bootloaderComponent)
+
+    btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
+    btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")
+    if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
+        btlDualBank.setVisible(True)
+    else:
+        btlDualBank.setVisible(False)
+
+    btlDualBankComment = bootloaderComponent.createCommentSymbol("BTL_DUAL_BANK_COMMENT", None)
+    btlDualBankComment.setLabel("!!! WARNING Only Half of th Flash memory will be available for Application !!!")
+    btlDualBankComment.setVisible(False)
+    btlDualBankComment.setDependencies(setBtlDualBankCommentVisible, ["BTL_DUAL_BANK"])
 
     btlPeriphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
     btlPeriphUsed.setLabel("Bootloader Peripheral Used")

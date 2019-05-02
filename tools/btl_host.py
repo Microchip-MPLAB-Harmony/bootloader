@@ -34,6 +34,7 @@ BL_CMD_UNLOCK       = 0xa0
 BL_CMD_DATA         = 0xa1
 BL_CMD_VERIFY       = 0xa2
 BL_CMD_RESET        = 0xa3
+BL_CMD_BKSWAP_RESET = 0xa4
 
 BL_RESP_OK          = 0x50
 BL_RESP_ERROR       = 0x51
@@ -136,6 +137,7 @@ def main():
     parser.add_option('-f', '--file', dest='file', help='binary file to program', metavar='FILE')
     parser.add_option('-o', '--offset', dest='offset', help='destination offset (default 0x600)', default='0x600', metavar='OFFS')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
+    parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
     parser.add_option('-d', '--device', dest='device', help='target device (same7x/same5x/samd5x/samc2x/samd2x)', default="samc2x", metavar='DEV')
 
     (options, args) = parser.parse_args()
@@ -157,13 +159,23 @@ def main():
     else:
         error('invalid device')
 
+    if (options.swap == True):
+        if ((device != "SAME5X") and (device != "SAMD5X")):
+            error('Bank Swapping not supported on this device')
+
     try:
         offset = int(options.offset, 0)
     except ValueError, inst:
         error('invalid offset value: %s' % options.offset)
 
-    if offset < BOOTLOADER_SIZE and options.boot == False:
-        error('offset is within the bootlaoder area, use --boot options to unlock writes')
+    # If Bank swapping is enabled offset needs to be 0x0 as the binary provided
+    # should have both bootloader and application in it.
+    # Bootloader always starts from 0x0 offset
+    if (options.swap == True):
+        offset = 0x0
+    else:
+        if offset < BOOTLOADER_SIZE and options.boot == False:
+            error('offset is within the bootlaoder area, use --boot options to unlock writes')
 
     try:
         port = serial.Serial(options.port, 115200, timeout=1)
@@ -222,7 +234,10 @@ def main():
     # Send Reboot Command
     verbose(options.verbose, 'Rebooting')
 
-    resp = send_request(port, BL_CMD_RESET, uint32(16), uint32(0) * 4)
+    if (options.swap == True):
+        resp = send_request(port, BL_CMD_BKSWAP_RESET, uint32(16), uint32(0) * 4)
+    else:
+        resp = send_request(port, BL_CMD_RESET, uint32(16), uint32(0) * 4)
 
     if resp == BL_RESP_OK:
         verbose(options.verbose, 'Reboot Done|')
