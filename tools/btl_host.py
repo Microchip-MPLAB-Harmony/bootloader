@@ -48,10 +48,11 @@ BOOTLOADER_SIZE     = 1536
 
 # Supported Devices [PROGRAM_SIZE, BOOTLOADER_SIZE]
 devices = {
-            "SAME70"    : [8192, 8192],
-            "SAMC21"    : [256, 1536],
-            "SAMD20"    : [256, 1536],
-            "SAMD21"    : [256, 1536],
+            "SAME7X"    : [8192, 8192],
+            "SAME5X"    : [8192, 8192],
+            "SAMD5X"    : [8192, 8192],
+            "SAMC2X"    : [256, 1536],
+            "SAMD2X"    : [256, 1536],
 }
 
 #------------------------------------------------------------------------------
@@ -132,10 +133,10 @@ def main():
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')
     parser.add_option('-t', '--tune', dest='tune', help='auto-tune UART baudrate', default=False, action='store_true')
     parser.add_option('-i', '--interface', dest='port', help='communication interface', metavar='PATH')
-    parser.add_option('-f', '--file', dest='file', help='binar file to program', metavar='FILE')
+    parser.add_option('-f', '--file', dest='file', help='binary file to program', metavar='FILE')
     parser.add_option('-o', '--offset', dest='offset', help='destination offset (default 0x600)', default='0x600', metavar='OFFS')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (same70/samc21/samd20/samd21)', default="samc21", metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (same7x/same5x/samd5x/samc2x/samd2x)', default="samc2x", metavar='DEV')
 
     (options, args) = parser.parse_args()
 
@@ -220,6 +221,7 @@ def main():
 
     # Send Reboot Command
     verbose(options.verbose, 'Rebooting')
+
     resp = send_request(port, BL_CMD_RESET, uint32(16), uint32(0) * 4)
 
     if resp == BL_RESP_OK:

@@ -35,7 +35,8 @@ flash_start         = 0
 flash_size          = 0
 flash_erase_size    = 0
 
-flashNames          = ["EFC", "NVMCTRL"]
+FlashNames          = ["FLASH", "IFLASH"]
+RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM"]
 
 bootloaderTypes     =  ["", "UART"]
 btlTypeUsed         = None
@@ -47,11 +48,11 @@ for mem_idx in range(0, len(addr_space_children)):
     mem_seg     = addr_space_children[mem_idx].getAttribute("name")
     mem_type    = addr_space_children[mem_idx].getAttribute("type")
 
-    if ("FLASH" in mem_seg and mem_type == "flash"):
+    if ((any(x == mem_seg for x in FlashNames) == True) and (mem_type == "flash")):
         flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
         flash_size  = int(addr_space_children[mem_idx].getAttribute("size"), 16)
 
-    if ("RAM" in mem_seg and mem_type == "ram"):
+    if ((any(x == mem_seg for x in RamNames) == True) and (mem_type == "ram")):
         ram_start   = addr_space_children[mem_idx].getAttribute("start")
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
@@ -213,16 +214,16 @@ def instantiateComponent(bootloaderComponent):
 
     getAvaliablePins(bootloaderComponent)
 
-    periphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
-    periphUsed.setLabel("Bootloader Peripheral Used")
-    periphUsed.setReadOnly(True)
-    periphUsed.setDefaultValue("")
-    periphUsed.setDependencies(setPeriphUsed, ["BTL_TYPE"])
+    btlPeriphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
+    btlPeriphUsed.setLabel("Bootloader Peripheral Used")
+    btlPeriphUsed.setReadOnly(True)
+    btlPeriphUsed.setDefaultValue("")
+    btlPeriphUsed.setDependencies(setPeriphUsed, ["BTL_TYPE"])
 
-    memUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
-    memUsed.setLabel("Bootloader Memory Used")
-    memUsed.setReadOnly(True)
-    memUsed.setDefaultValue("")
+    btlMemUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
+    btlMemUsed.setLabel("Bootloader Memory Used")
+    btlMemUsed.setReadOnly(True)
+    btlMemUsed.setDefaultValue("")
 
     btl_size = calcBootloaderSize(btlTypeUsed.getValue())
 
@@ -296,7 +297,7 @@ def instantiateComponent(bootloaderComponent):
     btlStartSourceFile.setProjectPath("config/" + configName + "/")
     btlStartSourceFile.setType("SOURCE")
 
-    #Bootloader Trigger
+    # Generate Initialization File
     btlInitFile = bootloaderComponent.createFileSymbol("INITIALIZATION_BOOTLOADER_C", None)
     btlInitFile.setSourcePath("../bootloader/templates/system/initialization.c.ftl")
     btlInitFile.setOutputName("initialization.c")
