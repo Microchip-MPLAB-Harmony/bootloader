@@ -50,43 +50,53 @@
     This function can be used to check for a External HW trigger or Internal firmware
     trigger to execute bootloader at startup.
 
-    External Trigger:
+    This check should happen before any system resources are initialized apart for PORT
+    as the same system resource can be Re-initialized by the application if bootloader jumps
+    to it and may cause issues.
+
+    - <b>External Trigger: </b>
         Is achieved by triggering the selected GPIO_PIN in bootloader configuration
         in MHC.
-
-    Firmware Trigger
+    - <b>Firmware Trigger: </b>
         Application firmware which wants to execute bootloader at startup needs to
         fill first 16 bytes of ram location with bootloader request pattern.
 
-        ram[0] = 0x5048434D;
-        ram[1] = 0x5048434D;
-        ram[2] = 0x5048434D;
-        ram[3] = 0x5048434D;
+        <code>
+            uint32_t *sram = (uint32_t *)RAM_START_ADDRESS;
+
+            sram[0] = 0x5048434D;
+            sram[1] = 0x5048434D;
+            sram[2] = 0x5048434D;
+            sram[3] = 0x5048434D;
+        </code>
 
  Precondition:
-    CLK_Initialize and PIO_Initialize must have been called.
+    PORT/PIO Initialize must have been called.
 
  Parameters:
     None.
 
  Returns:
-    True    - If any of trigger is detected.
-    False   - If no trigger is detected..
+    - True  : If any of trigger is detected.
+    - False : If no trigger is detected..
 
  Example:
     <code>
 
-        CLK_Initialize();
-        PIO_Initialize();
+        NVMCTRL_Initialize();
+
+        PORT_Initialize();
 
         if (bootloader_Trigger() == false)
         {
             run_Application();
         }
 
+        CLOCK_Initialize();
+
     </code>
 */
-bool bootloader_Trigger(void);
+bool bootloader_Trigger( void );
 
 // *****************************************************************************
 /* Function:
@@ -99,14 +109,14 @@ bool bootloader_Trigger(void);
     This function can be used to run programmed application though bootloader at startup.
 
     If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to
-    the APP_START_ADDRESS to run the application programmed through bootloader and
+    the application start address to run the application programmed through bootloader and
     never returns.
 
     If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function
     and executes bootloader for accepting a new application firmware.
 
  Precondition:
-    bootloader_Trigger must be called to check for bootloader triggers at startup.
+    bootloader_Trigger() must be called to check for bootloader triggers at startup.
 
  Parameters:
     None.
@@ -117,17 +127,20 @@ bool bootloader_Trigger(void);
  Example:
     <code>
 
-        CLK_Initialize();
-        PIO_Initialize();
+        NVMCTRL_Initialize();
+
+        PORT_Initialize();
 
         if (bootloader_Trigger() == false)
         {
             run_Application();
         }
 
+        CLOCK_Initialize();
+
     </code>
 */
-void run_Application(void);
+void run_Application( void );
 
 // *****************************************************************************
 /* Function:
@@ -139,7 +152,7 @@ void run_Application(void);
  Description:
     This function can be used to start bootloader execution.
 
-    The function continously waits for application firmware from the HOST-PC via
+    The function continuously waits for application firmware from the HOST-PC via
     selected communication protocol to program into internal flash memory.
 
     Once the complete application is received, programmed and verified successfully,
@@ -152,7 +165,7 @@ void run_Application(void);
     Note: This function never returns.
 
  Precondition:
-    bootloader_Trigger must be called to check for bootloader triggers at startup.
+    bootloader_Trigger() must be called to check for bootloader triggers at startup.
 
  Parameters:
     None.
@@ -163,25 +176,12 @@ void run_Application(void);
  Example:
     <code>
 
-        CLK_Initialize();
-        PIO_Initialize();
-
-        if (bootloader_Trigger() == false)
-        {
-            run_Application();
-        }
-
-        SYSTICK_TimerInitialize();
-
-        RSWDT_REGS->RSWDT_MR = RSWDT_MR_WDDIS_Msk;  // Disable RSWDT 
-
-        WDT_REGS->WDT_MR = WDT_MR_WDDIS_Msk;        // Disable WDT 
-
-        USART1_Initialize();
+        SYS_Initialize( NULL );
 
         bootloader_Start();
+
     </code>
 */
-void bootloader_Start(void);
+void bootloader_Start( void );
 
 #endif
