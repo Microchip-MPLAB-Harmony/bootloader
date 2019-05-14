@@ -66,7 +66,7 @@ ${core.LIST_SYSTEM_INIT_C_CONFIG_BITS_INITIALIZATION}
 
 void SYS_Initialize ( void* data )
 {
-    <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_START}
+    ${MEM_USED}_Initialize();
 
     ${core.PORT_API_PREFIX}_Initialize();
 
@@ -74,7 +74,16 @@ void SYS_Initialize ( void* data )
     {
         run_Application();
     }
-<#if __PROCESSOR?matches(".*SAME70.*") == true>
+
+    <#-- /* Call PM initialize if device is SAML21/SAML22 for Perfermoance level
+          * configuration */
+    -->
+<#if __PROCESSOR?matches(".*SAML2.*") == true >
+    PM_Initialize();
+</#if>
+
+    <#-- /* Check if device is SAME70/SAMV70/SAMV71/SAMS70 */ -->
+<#if __PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == true>
     CLK_Initialize();
 <#else>
     CLOCK_Initialize();
