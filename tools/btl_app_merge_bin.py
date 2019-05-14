@@ -55,11 +55,6 @@ def verbose(verb, text):
         print text
 
 #------------------------------------------------------------------------------
-def uint32(v):
-    return [(v >> 0) & 0xff, (v >> 8) & 0xff, (v >> 16) & 0xff, (v >> 24) & 0xff]
-
-
-#------------------------------------------------------------------------------
 def main():
     parser = optparse.OptionParser(usage = 'usage: %prog [options]')
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')

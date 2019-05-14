@@ -54,15 +54,7 @@ SEARCH_DIR(.)
  */
 ENTRY(__XC32_RESET_HANDLER_NAME)
 
-/*************************************************************************
- * Memory-Region Macro Definitions
- * The XC32 linker preprocesses linker scripts. You may define these
- * macros in the MPLAB X project properties or on the command line when
- * calling the linker via the xc32-gcc shell.
- *************************************************************************/
-
-/* Bootloader Size is calculated with below criteria with Highest
- * optimization level -Os.
+/* Bootloader Size is calculated with below criteria with optimization level -O1
  * bootloader size = Minimum Flash Erase Size Or actual bootloader ELF size
                      (Rounded of to nearest erase boundary) whichever is
                      greater.
@@ -193,4 +185,3 @@ SECTIONS
     _end = . ;
     _ram_end_ = ORIGIN(ram) + LENGTH(ram) -1 ;
 }
-

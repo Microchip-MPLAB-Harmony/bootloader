@@ -45,16 +45,16 @@ BL_RESP_CRC_FAIL    = 0x54
 BL_GUARD            = 0x5048434D
 
 PROGRAM_SIZE        = 256
-BOOTLOADER_SIZE     = 1536
+BOOTLOADER_SIZE     = 1792
 
 # Supported Devices [PROGRAM_SIZE, BOOTLOADER_SIZE]
 devices = {
             "SAME7X"    : [8192, 8192],
             "SAME5X"    : [8192, 8192],
             "SAMD5X"    : [8192, 8192],
-            "SAMC2X"    : [256, 1536],
-            "SAMD2X"    : [256, 1536],
-            "SAML2X"    : [256, 1536],
+            "SAMC2X"    : [256, 1792],
+            "SAMD2X"    : [256, 1792],
+            "SAML2X"    : [256, 1792],
 }
 
 #------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ def main():
     parser.add_option('-o', '--offset', dest='offset', help='destination offset (default 0x600)', default='0x600', metavar='OFFS')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (same7x/same5x/samd5x/samc2x/samd2x)', default="samc2x", metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (same7x/same5x/samd5x/samc2x/samd2x/saml2x)', default="samc2x", metavar='DEV')
 
     (options, args) = parser.parse_args()
 
@@ -233,11 +233,11 @@ def main():
         error('... fail (status = 0x%02x)' % resp)
 
     # Send Reboot Command
-    verbose(options.verbose, 'Rebooting')
-
     if (options.swap == True):
+        verbose(options.verbose, 'Swapping Bank And Rebooting')
         resp = send_request(port, BL_CMD_BKSWAP_RESET, uint32(16), uint32(0) * 4)
     else:
+        verbose(options.verbose, 'Rebooting')
         resp = send_request(port, BL_CMD_RESET, uint32(16), uint32(0) * 4)
 
     if resp == BL_RESP_OK:

@@ -65,8 +65,8 @@ def setBtlDualBankCommentVisible(symbol, event):
 def calcBootloaderSize(btl_type):
     global flash_erase_size
 
-    # Calculated values with highest Optimization level -Os
-    max_uart_btl_size   = 1536
+    # Calculated values with highest Optimization level -O1
+    max_uart_btl_size   = 1792
     max_i2c_btl_size    = 2048
     btl_size            = 0
 
@@ -89,15 +89,10 @@ def setAppStartAndCommentVisible(symbol, event):
     global flash_start
     global flash_size
 
-    if (event["id"] == "BTL_TYPE" or event["id"] == "MEM_USED"):
-        btlType = btlTypeUsed.getValue()
+    if (event["id"] == "BTL_SIZE"):
+        custom_app_start_addr = str(hex(int(event["value"],10)))
 
-        if (btlType != None):
-            btl_size = calcBootloaderSize(btlType)
-
-            custom_app_start_addr = str(hex(flash_start + btl_size))
-
-            Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
+        Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
     else:
         comment_enable      = False
 
@@ -155,6 +150,7 @@ def setBootloaderSize(symbol, event):
     btl_size = str(calcBootloaderSize(btl_type))
 
     symbol.setValue(btl_size)
+    symbol.setVisible(True)
 
 def hasHwCRCGenerator():
     for module in range (0, len(peripherals)):
@@ -244,9 +240,13 @@ def instantiateComponent(bootloaderComponent):
 
     btlSize = bootloaderComponent.createStringSymbol("BTL_SIZE", None)
     btlSize.setLabel("Bootloader Size (Bytes)")
-    btlSize.setReadOnly(True)
+    btlSize.setVisible(False)
     btlSize.setDefaultValue(str(btl_size))
     btlSize.setDependencies(setBootloaderSize, ["BTL_TYPE", "MEM_USED"])
+
+    btlSizeComment = bootloaderComponent.createCommentSymbol("BTL_SIZE_COMMENT", None)
+    btlSizeComment.setLabel("!!! Bootloader size should be aligned to Erase Unit Size of the device !!!")
+    btlSizeComment.setVisible(True)
 
     btlRamStart = bootloaderComponent.createStringSymbol("BTL_RAM_START", None)
     btlRamStart.setDefaultValue(ram_start)
@@ -260,7 +260,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlAppAddrComment = bootloaderComponent.createCommentSymbol("BTL_APP_START_ADDR_COMMENT", None)
     btlAppAddrComment.setVisible(False)
-    btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_TYPE", "MEM_USED"])
+    btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_SIZE"])
 
     btlRequestLen = bootloaderComponent.createStringSymbol("BTL_REQUEST_LEN", None)
     btlRequestLen.setReadOnly(True)
@@ -348,12 +348,6 @@ def instantiateComponent(bootloaderComponent):
     xc32ClearDataSection.setCategory("C32")
     xc32ClearDataSection.setKey("place-data-into-section")
     xc32ClearDataSection.setValue("false")
-
-    # Set Optimization to -Os
-    xc32ClearDataSection = bootloaderComponent.createSettingSymbol("XC32_OPTIMIZATION", None)
-    xc32ClearDataSection.setCategory("C32")
-    xc32ClearDataSection.setKey("optimization-level")
-    xc32ClearDataSection.setValue("-Os")
 
 def onAttachmentConnected(source, target):
     global flash_erase_size
