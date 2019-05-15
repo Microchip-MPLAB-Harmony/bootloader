@@ -82,9 +82,7 @@
 
 void SYS_Initialize ( void* data )
 {
-    NVMCTRL_Initialize( );
-
-
+    NVMCTRL_Initialize();
 
     PORT_Initialize();
 
@@ -92,6 +90,8 @@ void SYS_Initialize ( void* data )
     {
         run_Application();
     }
+
+
     CLOCK_Initialize();
 
     SERCOM2_USART_Initialize();
