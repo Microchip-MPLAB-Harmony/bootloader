@@ -22,10 +22,13 @@
             <logicalFolder name="f1" displayName="nvmctrl" projectFiles="true">
               <itemPath>../src/config/sam_l22_xpro/peripheral/nvmctrl/plib_nvmctrl.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="f7" displayName="pm" projectFiles="true">
+              <itemPath>../src/config/sam_l22_xpro/peripheral/pm/plib_pm.h</itemPath>
+            </logicalFolder>
             <logicalFolder name="f3" displayName="port" projectFiles="true">
               <itemPath>../src/config/sam_l22_xpro/peripheral/port/plib_port.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="sercom" projectFiles="true">
+            <logicalFolder name="f8" displayName="sercom" projectFiles="true">
               <logicalFolder name="f1" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/sam_l22_xpro/peripheral/sercom/usart/plib_sercom4_usart.h</itemPath>
                 <itemPath>../src/config/sam_l22_xpro/peripheral/sercom/usart/plib_sercom_usart_common.h</itemPath>
@@ -131,10 +134,13 @@
             <logicalFolder name="f1" displayName="nvmctrl" projectFiles="true">
               <itemPath>../src/config/sam_l22_xpro/peripheral/nvmctrl/plib_nvmctrl.c</itemPath>
             </logicalFolder>
+            <logicalFolder name="f7" displayName="pm" projectFiles="true">
+              <itemPath>../src/config/sam_l22_xpro/peripheral/pm/plib_pm.c</itemPath>
+            </logicalFolder>
             <logicalFolder name="f3" displayName="port" projectFiles="true">
               <itemPath>../src/config/sam_l22_xpro/peripheral/port/plib_port.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f7" displayName="sercom" projectFiles="true">
+            <logicalFolder name="f8" displayName="sercom" projectFiles="true">
               <logicalFolder name="f1" displayName="usart" projectFiles="true">
                 <itemPath>../src/config/sam_l22_xpro/peripheral/sercom/usart/plib_sercom4_usart.c</itemPath>
               </logicalFolder>
@@ -311,7 +317,7 @@
         <property key="no-startup-files" value="false"/>
         <property key="oXC32ld-extra-opts" value=""/>
         <property key="optimization-level" value=""/>
-        <property key="preprocessor-macros" value="ROM_ORIGIN=0x600;ROM_LENGTH=0x3fa00"/>
+        <property key="preprocessor-macros" value="ROM_ORIGIN=0x700;ROM_LENGTH=0x3f900"/>
         <property key="remove-unused-sections" value="true"/>
         <property key="report-memory-usage" value="false"/>
         <property key="serial-length" value=""/>
