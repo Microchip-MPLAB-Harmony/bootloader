@@ -291,8 +291,8 @@
           <Name dnOrder="1">definitions.h</Name>
           <LogicalPath dnOrder="2">config/sam_l21_xpro/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">F60BBE5AFD716C928122683515B4C9B2</GeneratedChecksum>
-          <UserChecksum dnOrder="5">F60BBE5AFD716C928122683515B4C9B2</UserChecksum>
+          <GeneratedChecksum dnOrder="4">2FC6119AB0EA032ED443ABB9BBCD39DF</GeneratedChecksum>
+          <UserChecksum dnOrder="5">2FC6119AB0EA032ED443ABB9BBCD39DF</UserChecksum>
         </File>
         <File dnOrder="36">
           <Type dnOrder="0">HEADER</Type>
@@ -628,7 +628,7 @@
       <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
       <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
       <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_ALL"/>
-      <Setting dnOrder="5" key="PackageFilter" value="bootloader;bsp;core;csp;"/>
+      <Setting dnOrder="5" key="PackageFilter" value="bsp;core;csp;"/>
     </Settings>
   </Configurator>
 </Configuration>
