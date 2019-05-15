@@ -619,7 +619,7 @@
         <Setting append="true" category="C32" delimiter=";" dnOrder="0" key="extra-include-directories" value="../src;../src/config/sam_c21n_xpro;../src/packs/ATSAMC21N18A_DFP;../src/packs/CMSIS/CMSIS/Core/Include;../src/packs/CMSIS/;../src/arm"/>
         <Setting category="C32-LD" dnOrder="1" key="heap-size" value="0"/>
         <Setting category="C32-LD" dnOrder="2" key="no-device-startup-code" value="true"/>
-        <Setting category="C32-LD" dnOrder="3" key="preprocessor-macros" value="ROM_ORIGIN=0x600;ROM_LENGTH=0x3fa00"/>
+        <Setting category="C32-LD" dnOrder="3" key="preprocessor-macros" value="ROM_ORIGIN=0x700;ROM_LENGTH=0x3f900"/>
       </Settings>
     </Manifest>
     <Settings dnOrder="4">
