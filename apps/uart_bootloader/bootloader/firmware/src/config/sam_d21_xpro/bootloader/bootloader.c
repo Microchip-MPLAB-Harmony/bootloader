@@ -62,7 +62,7 @@
 #define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
 #define BOOTLOADER_SIZE         ERASE_BLOCK_SIZE
-#define APP_START_ADDRESS       (0x600UL)
+#define APP_START_ADDRESS       (0x700UL)
 
 #define GUARD_OFFSET            0
 #define CMD_OFFSET              2
@@ -88,19 +88,19 @@
 
 enum
 {
-  BL_CMD_UNLOCK    = 0xa0,
-  BL_CMD_DATA      = 0xa1,
-  BL_CMD_VERIFY    = 0xa2,
-  BL_CMD_RESET     = 0xa3,
+    BL_CMD_UNLOCK       = 0xa0,
+    BL_CMD_DATA         = 0xa1,
+    BL_CMD_VERIFY       = 0xa2,
+    BL_CMD_RESET        = 0xa3,
 };
 
 enum
 {
-  BL_RESP_OK       = 0x50,
-  BL_RESP_ERROR    = 0x51,
-  BL_RESP_INVALID  = 0x52,
-  BL_RESP_CRC_OK   = 0x53,
-  BL_RESP_CRC_FAIL = 0x54,
+    BL_RESP_OK          = 0x50,
+    BL_RESP_ERROR       = 0x51,
+    BL_RESP_INVALID     = 0x52,
+    BL_RESP_CRC_OK      = 0x53,
+    BL_RESP_CRC_FAIL    = 0x54,
 };
 
 // *****************************************************************************

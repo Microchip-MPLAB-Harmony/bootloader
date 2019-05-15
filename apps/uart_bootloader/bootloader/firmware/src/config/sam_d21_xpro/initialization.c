@@ -84,19 +84,17 @@
 
 void SYS_Initialize ( void* data )
 {
-    NVMCTRL_Initialize( );
+    NVMCTRL_Initialize();
 
-  
     PORT_Initialize();
-
-    CLOCK_Initialize();
-
-
 
     if (bootloader_Trigger() == false)
     {
         run_Application();
     }
+
+
+    CLOCK_Initialize();
 
     SERCOM3_USART_Initialize();
 

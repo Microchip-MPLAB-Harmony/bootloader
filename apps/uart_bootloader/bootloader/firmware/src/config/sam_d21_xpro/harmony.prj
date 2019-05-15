@@ -11,16 +11,16 @@
           <Name dnOrder="1">bootloader.c</Name>
           <LogicalPath dnOrder="2">config/sam_d21_xpro/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="3">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">FC951C281658891D1C203DDD7D02277B</GeneratedChecksum>
-          <UserChecksum dnOrder="5">FC951C281658891D1C203DDD7D02277B</UserChecksum>
+          <GeneratedChecksum dnOrder="4">EFC45878DF8CDA3471F32F94D0E67F82</GeneratedChecksum>
+          <UserChecksum dnOrder="5">EFC45878DF8CDA3471F32F94D0E67F82</UserChecksum>
         </File>
         <File dnOrder="1">
           <Type dnOrder="0">SOURCE</Type>
           <Name dnOrder="1">initialization.c</Name>
           <LogicalPath dnOrder="2">config/sam_d21_xpro/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">D2597440FF442C1D7D97B692CF0E70A1</GeneratedChecksum>
-          <UserChecksum dnOrder="5">D2597440FF442C1D7D97B692CF0E70A1</UserChecksum>
+          <GeneratedChecksum dnOrder="4">5F8385C67F5CB90208646A709F96CC67</GeneratedChecksum>
+          <UserChecksum dnOrder="5">5F8385C67F5CB90208646A709F96CC67</UserChecksum>
         </File>
         <File dnOrder="2">
           <Type dnOrder="0">SOURCE</Type>
@@ -163,8 +163,8 @@
           <Name dnOrder="1">bootloader.h</Name>
           <LogicalPath dnOrder="2">config/sam_d21_xpro/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="3">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">41220018F73AE82E65B05EDB12376A47</GeneratedChecksum>
-          <UserChecksum dnOrder="5">41220018F73AE82E65B05EDB12376A47</UserChecksum>
+          <GeneratedChecksum dnOrder="4">E89E8B71A1A01F37A3A65C116DC19700</GeneratedChecksum>
+          <UserChecksum dnOrder="5">E89E8B71A1A01F37A3A65C116DC19700</UserChecksum>
         </File>
         <File dnOrder="20">
           <Type dnOrder="0">HEADER</Type>
@@ -515,18 +515,17 @@
           <Name dnOrder="1">btl.ld</Name>
           <LogicalPath dnOrder="2"/>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">3168D0D1CDD0B4D73066606A9786DCD5</GeneratedChecksum>
-          <UserChecksum dnOrder="5">3168D0D1CDD0B4D73066606A9786DCD5</UserChecksum>
+          <GeneratedChecksum dnOrder="4">D02D68E0A20C8E6EA52115F94784C582</GeneratedChecksum>
+          <UserChecksum dnOrder="5">D02D68E0A20C8E6EA52115F94784C582</UserChecksum>
         </File>
       </Files>
       <Settings dnOrder="1">
         <Setting append="true" category="C32" delimiter=";" dnOrder="0" key="extra-include-directories" value="../src;../src/config/sam_d21_xpro;../src/packs/ATSAMD21J18A_DFP;../src/packs/CMSIS/CMSIS/Core/Include;../src/packs/CMSIS/;../src/arm"/>
-        <Setting category="C32" dnOrder="1" key="optimization-level" value="-Os"/>
-        <Setting category="C32" dnOrder="2" key="place-data-into-section" value="false"/>
-        <Setting category="C32-LD" dnOrder="3" key="heap-size" value="0"/>
-        <Setting category="C32-LD" dnOrder="4" key="no-device-startup-code" value="true"/>
-        <Setting category="C32-LD" dnOrder="5" key="no-startup-files" value="true"/>
-        <Setting category="C32-LD" dnOrder="6" key="preprocessor-macros" value="ROM_ORIGIN=0x600;ROM_LENGTH=0x3fa00"/>
+        <Setting category="C32" dnOrder="1" key="place-data-into-section" value="false"/>
+        <Setting category="C32-LD" dnOrder="2" key="heap-size" value="0"/>
+        <Setting category="C32-LD" dnOrder="3" key="no-device-startup-code" value="true"/>
+        <Setting category="C32-LD" dnOrder="4" key="no-startup-files" value="true"/>
+        <Setting category="C32-LD" dnOrder="5" key="preprocessor-macros" value="ROM_ORIGIN=0x700;ROM_LENGTH=0x3f900"/>
       </Settings>
     </Manifest>
     <Settings dnOrder="4">
