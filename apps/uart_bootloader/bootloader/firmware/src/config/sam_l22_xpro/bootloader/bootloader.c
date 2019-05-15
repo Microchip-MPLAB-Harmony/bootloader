@@ -62,7 +62,7 @@
 #define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
 #define BOOTLOADER_SIZE         ERASE_BLOCK_SIZE
-#define APP_START_ADDRESS       (0x600UL)
+#define APP_START_ADDRESS       (0x700UL)
 
 #define GUARD_OFFSET            0
 #define CMD_OFFSET              2

@@ -55,6 +55,7 @@
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/systick/plib_systick.h"
 #include "peripheral/pac/plib_pac.h"
+#include "peripheral/pm/plib_pm.h"
 #include "peripheral/sercom/usart/plib_sercom4_usart.h"
 #include "bootloader/bootloader.h"
 #include "peripheral/dsu/plib_dsu.h"
