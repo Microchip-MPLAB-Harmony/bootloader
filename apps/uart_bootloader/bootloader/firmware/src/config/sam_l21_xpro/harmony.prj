@@ -243,8 +243,8 @@
           <Name dnOrder="1">definitions.h</Name>
           <LogicalPath dnOrder="2">config/sam_l21_xpro/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">F0084453AC0D72043D6FF8256AFD44C5</GeneratedChecksum>
-          <UserChecksum dnOrder="5">F0084453AC0D72043D6FF8256AFD44C5</UserChecksum>
+          <GeneratedChecksum dnOrder="4">2266A8ECBBB1278504EE8A9D7B3814B1</GeneratedChecksum>
+          <UserChecksum dnOrder="5">2266A8ECBBB1278504EE8A9D7B3814B1</UserChecksum>
         </File>
         <File dnOrder="30">
           <Type dnOrder="0">HEADER</Type>
