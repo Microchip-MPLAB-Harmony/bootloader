@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<title>Bootloader Configurations</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="Doc-O-Matic" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <link rel="STYLESHEET" href="default.css" type="text/css" />
+
+<script type="text/javascript" src="scripts.js"></script>
+</head>
+<body class="Element700" onload="onBodyLoadEx('frames.html', 'topic', '00006.html');" onmousedown="onBodyMouseDown();">
+
+<!-- Begin Popups -->
+
+<!-- End Popups -->
+
+<!-- Begin Page Header -->
+<div class="Element710" id="areafixed">
+<div class="Element94">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00007.html" target="topic">Configuring the Library</a> &gt; <a href="00006.html" target="topic">Bootloader Configurations</a></div>
+<div class="Element92">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element1">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element2">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element90">
+<a href="00007.html" target="topic">Previous</a> | <a href="00007.html" target="topic">Up</a> | <a href="00000.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element96">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Bootloader Configuration Topic Title: Bootloader Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table><div class="Element5">
+Bootloader Configurations</div>
+</div>
+</div>
+
+<!-- End Page Header -->
+
+<!-- Begin Client Area -->
+<div class="Element720" id="areascroll">
+<div class="Element721">
+
+<!-- Begin Page Content -->
+<a name="PageContent"></a><div class="Element58">
+<a name="4465736372697074696F6E"></a><div class="Element11">
+<div class="Element10">
+<div class="Element15">
+Bootloader Specific User Configurations</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_mhc_config.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<span style="color: #000000"><strong>Bootloader Component Configuration</strong></span></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><span style="color: #000000"><strong>Bootloader Type:</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Specifies the type of bootloader to be used</span></li>
+</ul></li>
+<li class="Element600"><span style="color: #000000"><strong>Bootloader Request Pin:</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Specifies the gpio pin to be used to check for external trigger to enter into bootloader upon reset</span></li>
+</ul></li>
+<li class="Element600"><span style="color: #000000"><strong>Use Dual Bank For Safe Flash Update:</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Used to configure bootloader to use Dual banks of device to upload the application</span></li>
+<li class="Element601"><span style="color: #000000">This option is visible only for devices supporting Dual flash banks</span></li>
+</ul></li>
+<li class="Element600"><span style="color: #000000"><strong>Bootloader Peripheral Used:</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Specifies the communication peripheral used by bootloader to receive the application</span></li>
+<li class="Element601"><span style="color: #000000">The name of the peripheral will vary from device to device</span></li>
+</ul></li>
+<li class="Element600"><span style="color: #000000"><strong>Bootloader Memory Used:</strong></span>
+<ul class="Element631">
+<li class="Element601">Specifies the memory peripheral used by bootloader to perform flash operations</li>
+<li class="Element601"><span style="color: #000000">The name of the peripheral will vary from device to device</span></li>
+</ul></li>
+<li class="Element600"><strong>Bootloader Size (Bytes):</strong>
+<ul class="Element631">
+<li class="Element601">Specifies the maximum size of flash required by the bootloader</li>
+<li class="Element601">This size is calculated based on Bootloader type and Memory used</li>
+<li class="Element601">This size will vary from device to device and will always be aligned to device erase unit size</li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Bootloader System Configuration</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_system_mhc_config.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<span style="color: #000000"><strong>System Configuration for Bootloader</strong></span></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><span style="color: #000000"><strong>Application Start Address (Hex):</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Start address of the application which will programmed by bootloader</span></li>
+<li class="Element601"><span style="color: #000000">This value is filled by bootloader when its loaded which is equal to the bootloader size. It can be modified as per user need</span></li>
+<li class="Element601"><span style="color: #000000">This value will be used by bootloader to Jump to application at device reset</span></li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Bootloader Linker Script</div>
+
+<ul class="Element630">
+<li class="Element600"><span style="color: #000000">Bootloader library uses a custom linker script generated through MHC</span></li>
+<li class="Element600"><span style="color: #000000">The values populated in the linker script are based on the above MHC configurations</span></li>
+<li class="Element600"><span style="color: #000000">Bootloader is configured to run from RAM in this linker script to achieve </span>simultaneous Flash memory write and reception of the next block of data.</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_linker_script.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<span style="color: #000000"><strong>Bootloader Linker Script</strong></span></p></div>
+</div>
+</div>
+<!-- End Page Content -->
+
+<!-- Begin Page Footer -->
+<div class="Element95">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00007.html" target="topic">Configuring the Library</a> &gt; <a href="00006.html" target="topic">Bootloader Configurations</a></div>
+<div class="Element93">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element3">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element4">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element91">
+<a href="00007.html" target="topic">Previous</a> | <a href="00007.html" target="topic">Up</a> | <a href="00000.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element97">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Bootloader Configuration Topic Title: Bootloader Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table></div>
+
+<!-- End Page Footer -->
+</div>
+</div>
+
+<!-- End Client Area -->
+</body></html>

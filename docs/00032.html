@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<title>Running The Application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="Doc-O-Matic" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <link rel="STYLESHEET" href="default.css" type="text/css" />
+
+<script type="text/javascript" src="scripts.js"></script>
+</head>
+<body class="Element700" onload="onBodyLoadEx('frames.html', 'topic', '00032.html');" onmousedown="onBodyMouseDown();">
+
+<!-- Begin Popups -->
+
+<!-- End Popups -->
+
+<!-- Begin Page Header -->
+<div class="Element710" id="areafixed">
+<div class="Element94">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00001.html" target="topic">Bootloader Applications Help</a> &gt; uart_fail_safe_bootloader &gt; <a href="00004.html" target="topic">bootloader</a> &gt; <a href="00032.html" target="topic">Running The Application</a></div>
+<div class="Element92">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element1">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element2">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element90">
+<a href="00030.html" target="topic">Previous</a> | <a href="00004.html" target="topic">Up</a> | <a href="00005.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element96">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER uart_fail_safe_bootloader bootloader Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table><div class="Element5">
+Running The Application</div>
+</div>
+</div>
+
+<!-- End Page Header -->
+
+<!-- Begin Client Area -->
+<div class="Element720" id="areascroll">
+<div class="Element721">
+
+<!-- Begin Page Content -->
+<a name="PageContent"></a><div class="Element58">
+<a name="4465736372697074696F6E"></a><div class="Element11">
+<div class="Element10">
+
+<ol class="Element630">
+<li value="1" class="Element600">Connect a micro USB cable to the DEBUG port.</li>
+<li value="2" class="Element600">Build and program the application using the MPLAB X IDE.</li>
+<li value="3" class="Element600">Launch MHC for the bootloader application
+<ul class="Element631">
+<li class="Element601"><strong>Disable Fuse Settings</strong></li>
+<li class="Element601">Enable <strong>Execute this line After Build</strong> option in MPLAB X Project properties-&gt;Building option</li>
+</ul></li>
+</ol><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_fail_safe_update_app_config.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_fail_safe_update_app_buld.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="4" class="Element600">Build the bootloader application again using MPLAB X IDE
+<ul class="Element631">
+<li class="Element601">This is required to generate the binary file for bootloader application</li>
+</ul></li>
+<li value="5" class="Element600">Build the Application <a href="00005.html" target="topic">test_app</a> using MPLAB X IDE</li>
+<li value="6" class="Element600">Run the <strong>btl_app_merge.py</strong> from command prompt to merge the generated Bootloader binary and application binary. Refer to <a href="00017.html" target="topic">Bootloader Tools Help</a> for setting up the host script</li>
+</ol><p class="Element10">
+&nbsp;</p>
+<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_app_merge.py -o &lt;Offset&gt; -b &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\bootloader\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin -a &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\test_app\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin</pre></div></div>
+<p class="Element10">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="7" class="Element600">Run the <strong>btl_host.py</strong> from command prompt to program the merged binary to opposite panel. Refer to <a href="00017.html" target="topic">Bootloader Tools Help</a> for setting up the host script</li>
+</ol><p class="Element10">
+&nbsp;</p>
+<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -s -i &lt;COM PORT&gt; -d &lt;Device Name&gt; -f &lt;harmony3_path&gt;\bootloader\tools\btl_app_merged.bin</pre></div></div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The following table provides the Details required to run the above command: </p><div class="Element63">
+<div class="TableDiv">
+<table cellspacing="0" class="Table1">
+<tr>
+<td class="Element65" valign="top" width="36%">
+<div class="Element66">
+Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="10%">
+<div class="Element66">
+Offset&nbsp;</div></td><td class="Element65" valign="top" width="14%">
+<div class="Element66">
+Device Name&nbsp;</div></td><td class="Element65" valign="top" width="21%">
+<div class="Element66">
+Project Name&nbsp;</div></td><td class="Element65" valign="top" width="19%">
+<div class="Element66">
+Config Name&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="36%">
+<div class="Element68">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+0x2000&nbsp;</div></td><td class="Element67" valign="top" width="14%">
+<div class="Element68">
+same5x&nbsp;</div></td><td class="Element67" valign="top" width="21%">
+<div class="Element68">
+sam_e54_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="19%">
+<div class="Element68">
+sam_e54_xpro&nbsp;</div></td></tr></table></div></div>
+<p class="Element10">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="8" class="Element600">Following snapshot shows example output of successfully programming the merged binary.
+<ul class="Element631">
+<li class="Element601"><strong>Swapping Bank And Rebooting</strong> and <strong>Reboot Done</strong> messages in below output signifies that bootloading is successful</li>
+</ul></li>
+</ol><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_fail_safe_update.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="9" class="Element600">Refer to <a href="00036.html" target="topic">Running The Application</a> section of <a href="00005.html" target="topic">test_app</a> to observe further output and next steps</li>
+<li value="10" class="Element600">Repeat Steps 7-9 once
+<ul class="Element631">
+<li class="Element601">This step is is to verify that bootloader is running after triggering bootloader from test_app</li>
+<li class="Element601">Also to program the new firmware in opposite bank</li>
+<li class="Element601">You should see other Bank in test_app console displayed compared to first run</li>
+</ul></li>
+</ol></div>
+</div>
+</div>
+<!-- End Page Content -->
+
+<!-- Begin Page Footer -->
+<div class="Element95">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00001.html" target="topic">Bootloader Applications Help</a> &gt; uart_fail_safe_bootloader &gt; <a href="00004.html" target="topic">bootloader</a> &gt; <a href="00032.html" target="topic">Running The Application</a></div>
+<div class="Element93">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element3">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element4">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element91">
+<a href="00030.html" target="topic">Previous</a> | <a href="00004.html" target="topic">Up</a> | <a href="00005.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element97">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER uart_fail_safe_bootloader bootloader Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table></div>
+
+<!-- End Page Footer -->
+</div>
+</div>
+
+<!-- End Client Area -->
+</body></html>

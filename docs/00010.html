@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<title>How The Library Works</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="Doc-O-Matic" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <link rel="STYLESHEET" href="default.css" type="text/css" />
+
+<script type="text/javascript" src="scripts.js"></script>
+</head>
+<body class="Element700" onload="onBodyLoadEx('frames.html', 'topic', '00010.html');" onmousedown="onBodyMouseDown();">
+
+<!-- Begin Popups -->
+
+<!-- End Popups -->
+
+<!-- Begin Page Header -->
+<div class="Element710" id="areafixed">
+<div class="Element94">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00010.html" target="topic">How The Library Works</a></div>
+<div class="Element92">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element1">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element2">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element90">
+<a href="00009.html" target="topic">Previous</a> | <a href="00012.html" target="topic">Up</a> | <a href="00015.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element96">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER How The Library Works Topic Title: How The Library Works)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table><div class="Element5">
+How The Library Works</div>
+</div>
+</div>
+
+<!-- End Page Header -->
+
+<!-- Begin Client Area -->
+<div class="Element720" id="areascroll">
+<div class="Element721">
+
+<!-- Begin Page Content -->
+<a name="PageContent"></a><div class="Element58">
+<a name="4465736372697074696F6E"></a><div class="Element11">
+<div class="Element10">
+<p class="Element10">
+The Bootloader Library is implemented using a framework. The Bootloader firmware communicates with the personal computer host application by using a predefined communication protocol. The Bootloader Framework works in two different modes&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><div class="Element15">
+Basic Mode</div>
+
+<ul class="Element630">
+<li class="Element600">This mode is supported for all the devices</li>
+<li class="Element600">Resides from the starting location of the flash memory region</li>
+<li class="Element600">The Bootloader performs flash erase/program/verify operations with the binary sent from host while in the firmware upgrade mode
+<ul class="Element631">
+<li class="Element601">The binary sent is only of the application to be programmed</li>
+<li class="Element601">Bootloader always performs flash operation from the offset address for application sent from host</li>
+<li class="Element601">The application can use the entire flash memory region starting from the end of bootloader space</li>
+</ul></li>
+<li class="Element600">Jumps to the application once verification is completed</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Fail Safe Update Mode</div>
+
+<ul class="Element630">
+<li class="Element600">This mode is supported for the devices which have a Dual Bank flash memory</li>
+<li class="Element600">Resides from the starting location of the flash memory region of both the banks</li>
+<li class="Element600">The Bootloader performs flash erase/program/verify operations with the binary sent from host while in the firmware upgrade mode
+<ul class="Element631">
+<li class="Element601">The binary sent should contain bootloader and application to be programmed, As both the banks need to have bootloader code at starting location to run the application residing in them at reset</li>
+<li class="Element601">Bootloader always performs flash operation from the start of opposite flash memory bank</li>
+<li class="Element601">The application can use only the flash memory region of one bank starting from the end of bootloader space</li>
+</ul></li>
+<li class="Element600">Performs a bank swap and reset to run the application programmed in opposite bank once verification is completed</li>
+</ul></div>
+</div>
+<a name="546F70696373"></a><div class="Element14">
+Topics</div>
+<div class="Element11">
+<div class="Element10">
+<div class="Element212">
+<div class="TableDiv">
+<table cellspacing="0" class="Table0">
+<tr>
+<td class="Element200" valign="top" width="35%">
+<div class="Element201">
+Name&nbsp;</div></td><td class="Element204" valign="top" width="65%">
+<div class="Element205">
+Description&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="35%">
+<div class="Element203">
+<a href="00015.html" target="topic">Bootloader Protocol</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+This section describes the Bootloader protocol used and supported commands&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="35%">
+<div class="Element203">
+<a href="00018.html" target="topic">Bootloader Trigger Methods</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+This Section describes different methods used to enter bootloader&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="35%">
+<div class="Element203">
+<a href="00008.html" target="topic">Bootloader Execution Flow</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+This section describes the bootloader execution flow.&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="35%">
+<div class="Element203">
+<a href="00014.html" target="topic">Bootloader Memory Layout</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+This Section describes the memory layout for bootloader&nbsp;</div></td></tr></table></div></div>
+</div>
+</div>
+</div>
+<!-- End Page Content -->
+
+<!-- Begin Page Footer -->
+<div class="Element95">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00010.html" target="topic">How The Library Works</a></div>
+<div class="Element93">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element3">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element4">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element91">
+<a href="00009.html" target="topic">Previous</a> | <a href="00012.html" target="topic">Up</a> | <a href="00015.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element97">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER How The Library Works Topic Title: How The Library Works)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table></div>
+
+<!-- End Page Footer -->
+</div>
+</div>
+
+<!-- End Client Area -->
+</body></html>

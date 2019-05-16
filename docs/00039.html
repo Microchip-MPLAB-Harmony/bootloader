@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<title>Bootloader Sizing and Considerations</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="Doc-O-Matic" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <link rel="STYLESHEET" href="default.css" type="text/css" />
+
+<script type="text/javascript" src="scripts.js"></script>
+</head>
+<body class="Element700" onload="onBodyLoadEx('frames.html', 'topic', '00039.html');" onmousedown="onBodyMouseDown();">
+
+<!-- Begin Popups -->
+
+<!-- End Popups -->
+
+<!-- Begin Page Header -->
+<div class="Element710" id="areafixed">
+<div class="Element94">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00007.html" target="topic">Configuring the Library</a> &gt; <a href="00039.html" target="topic">Bootloader Sizing and Considerations</a></div>
+<div class="Element92">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element1">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element2">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element90">
+<a href="00000.html" target="topic">Previous</a> | <a href="00007.html" target="topic">Up</a> | <a href="00013.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element96">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOOADER Sizing and Considerations Topic Title: Bootloader Sizing and Considerations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table><div class="Element5">
+Bootloader Sizing and Considerations</div>
+</div>
+</div>
+
+<!-- End Page Header -->
+
+<!-- Begin Client Area -->
+<div class="Element720" id="areascroll">
+<div class="Element721">
+
+<!-- Begin Page Content -->
+<a name="PageContent"></a><div class="Element58">
+<a name="4465736372697074696F6E"></a><div class="Element11">
+<div class="Element10">
+<div class="Element15">
+Bootloader Sizes</div>
+<p class="Element10">
+The example Bootloaders provided in the <strong>apps/uart_bootloader/bootloader/ </strong>folder have optimization settings for use by most MPLAB XC32 C/C++ Compiler users, which is –O1.&nbsp;</p>
+<p class="Element10">
+However, in terms of size, this option does not produce the most optimal code. Turning on the –Os will reduce the size of the Bootloader.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+Following table provides the maximum Bootloader size based on Optimization in Bytes. The actual size of the bootloader will be less than the values mentioned as it is rounded off to nearest Erase Unit Size.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><div class="Element63">
+<div class="TableDiv">
+<table cellspacing="0" class="Table1">
+<tr>
+<td class="Element65" valign="top" width="80%">
+<div class="Element66">
+Device&nbsp;</div></td><td class="Element65" valign="top" width="10%">
+<div class="Element66">
+-O1&nbsp;</div></td><td class="Element65" valign="top" width="10%">
+<div class="Element66">
+-Os&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+1792&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+1536&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+1792&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+1536&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+1792&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+1536&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+8192&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+8192&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM E70 Xplained Ultra Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+8192&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+8192&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+1792&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+1536&nbsp;</div></td></tr></table></div></div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<div class="Element15">
+Size change considerations</div>
+<p class="Element10">
+It must be ensured that the user application’s memory region does not overlap with the memory region reserved for the Bootloader.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The Bootloader generated by MHC should be considered a starting point for your product’s Bootloader. As such, adding new features may cause the Bootloader to exceed the default size calculated.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+If the size of the Bootloader changes, the following steps should be performed to adjust both the Bootloader and the application in order to make sure that both fit and make best use of the device memory:</p>
+<ul class="Element630">
+<li class="Element600">Increase the <strong>Bootloader Size</strong> in Bootloader MHC config menu to some approximate value and regenerate the code</li>
+<li class="Element600">Determine the new ending address of the Bootloader. This can be done by using either the .map file generated by MPLAB X IDE with the respective Compiler, or by using the ELFViewer plug-in for MPLAB X IDE</li>
+<li class="Element600">Round the size from the map file to the nearest ERASE unit size</li>
+<li class="Element600">Enter the new value again in <strong>Bootloader Size</strong> in Bootloader MHC config menu</li>
+<li class="Element600">Change the Application start Address from system settings in both Bootloader and application projects accordingly if it is falling inside bootloader region</li>
+<li class="Element600">Recompile both the Bootloader and the application, as well as test operations.</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+If only the Application start address needs to be modified for application then perform following steps:</p>
+<ul class="Element630">
+<li class="Element600">Change the Application start Address from system settings in both Bootloader and application projects accordingly</li>
+<li class="Element600">Recompile both the Bootloader and the application, as well as test operations</li>
+</ul></div>
+</div>
+</div>
+<!-- End Page Content -->
+
+<!-- Begin Page Footer -->
+<div class="Element95">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00007.html" target="topic">Configuring the Library</a> &gt; <a href="00039.html" target="topic">Bootloader Sizing and Considerations</a></div>
+<div class="Element93">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element3">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element4">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element91">
+<a href="00000.html" target="topic">Previous</a> | <a href="00007.html" target="topic">Up</a> | <a href="00013.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element97">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOOADER Sizing and Considerations Topic Title: Bootloader Sizing and Considerations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table></div>
+
+<!-- End Page Footer -->
+</div>
+</div>
+
+<!-- End Client Area -->
+</body></html>

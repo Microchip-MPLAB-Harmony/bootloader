@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<title>Bootloader Execution Flow</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="Doc-O-Matic" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <link rel="STYLESHEET" href="default.css" type="text/css" />
+
+<script type="text/javascript" src="scripts.js"></script>
+</head>
+<body class="Element700" onload="onBodyLoadEx('frames.html', 'topic', '00008.html');" onmousedown="onBodyMouseDown();">
+
+<!-- Begin Popups -->
+
+<!-- End Popups -->
+
+<!-- Begin Page Header -->
+<div class="Element710" id="areafixed">
+<div class="Element94">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00010.html" target="topic">How The Library Works</a> &gt; <a href="00008.html" target="topic">Bootloader Execution Flow</a></div>
+<div class="Element92">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element1">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element2">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element90">
+<a href="00018.html" target="topic">Previous</a> | <a href="00010.html" target="topic">Up</a> | <a href="00014.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element96">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Execution Flow Topic Title: Bootloader Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table><div class="Element5">
+Bootloader Execution Flow</div>
+</div>
+</div>
+
+<!-- End Page Header -->
+
+<!-- Begin Client Area -->
+<div class="Element720" id="areascroll">
+<div class="Element721">
+
+<!-- Begin Page Content -->
+<a name="PageContent"></a><div class="Element58">
+<a name="4465736372697074696F6E"></a><div class="Element11">
+<div class="Element10">
+<div class="Element15">
+System Level Execution Flow</div>
+
+<ul class="Element630">
+<li class="Element600">The Bootloader code starts executing on a device Reset</li>
+<li class="Element600">If there are no conditions to enter the firmware upgrade mode, the Bootloader starts executing the user application</li>
+<li class="Element600">The Bootloader performs Flash erase/program operations while in the firmware upgrade mode</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_execution_flow.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<div class="Element15">
+Firmware Upgrade Mode Execution Flow</div>
+<p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Bootloader Task Flow</div>
+
+<ul class="Element630">
+<li class="Element600">Bootloader task is the main task which calls the 3 sub-tasks in a forever loop.</li>
+<li class="Element600">It always calls the communication task to poll for command packets from host</li>
+<li class="Element600">Once complete packet is received it calls Command task to process the received command</li>
+<li class="Element600">If the command received was a data command it calls programming task to flash the application</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_task_execution_flow.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Communication Task Flow</div>
+
+<ul class="Element630">
+<li class="Element600">This task is used to receive the data bytes from host PC</li>
+<li class="Element600">If there are valid GUARD bytes received at start of packet it proceeds further to receive the whole packet or else reports error and waits for next command</li>
+<li class="Element600">All bytes of the command frame must be sent within 100 ms of each other. After 100 ms of idle time, incomplete command is discarded and bootloader goes back to waiting for a new Command.</li>
+<li class="Element600">This behavior allows host to re-synchronize in the case of synchronization loss.</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="communication_task_execution_flow.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Command Task Flow</div>
+
+<ul class="Element630">
+<li class="Element600">This task processes the packet received for supported commands</li>
+<li class="Element600">If the received command is a DATA command, it sets <strong>ready_to_flash</strong> flag so that the bootloader task can call programming task</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="command_task_execution_flow.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Programming Task Flow</div>
+
+<ul class="Element630">
+<li class="Element600">This task performs flash operations on the received data</li>
+<li class="Element600">As the bootloader is running from RAM, While waiting for flash operations to complete it calls <strong>communication task </strong>to receive the next command in parallel</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="programming_task_execution_flow.png" border="0" alt="" title=""></p></div>
+</div>
+</div>
+<!-- End Page Content -->
+
+<!-- Begin Page Footer -->
+<div class="Element95">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00010.html" target="topic">How The Library Works</a> &gt; <a href="00008.html" target="topic">Bootloader Execution Flow</a></div>
+<div class="Element93">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element3">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element4">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element91">
+<a href="00018.html" target="topic">Previous</a> | <a href="00010.html" target="topic">Up</a> | <a href="00014.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element97">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Execution Flow Topic Title: Bootloader Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table></div>
+
+<!-- End Page Footer -->
+</div>
+</div>
+
+<!-- End Client Area -->
+</body></html>

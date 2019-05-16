@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<title>Application Configurations</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="Doc-O-Matic" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <link rel="STYLESHEET" href="default.css" type="text/css" />
+
+<script type="text/javascript" src="scripts.js"></script>
+</head>
+<body class="Element700" onload="onBodyLoadEx('frames.html', 'topic', '00000.html');" onmousedown="onBodyMouseDown();">
+
+<!-- Begin Popups -->
+
+<!-- End Popups -->
+
+<!-- Begin Page Header -->
+<div class="Element710" id="areafixed">
+<div class="Element94">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00007.html" target="topic">Configuring the Library</a> &gt; <a href="00000.html" target="topic">Application Configurations</a></div>
+<div class="Element92">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element1">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element2">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element90">
+<a href="00006.html" target="topic">Previous</a> | <a href="00007.html" target="topic">Up</a> | <a href="00039.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element96">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Application Configurations Topic Title: Application Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table><div class="Element5">
+Application Configurations</div>
+</div>
+</div>
+
+<!-- End Page Header -->
+
+<!-- Begin Client Area -->
+<div class="Element720" id="areascroll">
+<div class="Element721">
+
+<!-- Begin Page Content -->
+<a name="PageContent"></a><div class="Element58">
+<a name="4465736372697074696F6E"></a><div class="Element11">
+<div class="Element10">
+<div class="Element15">
+Application System Configuration</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_application_system_config.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<span style="color: #000000"><strong>System Configuration for Application</strong></span></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Generate Fuse Settings:</strong>
+<ul class="Element631">
+<li class="Element601">Fuse settings needs to be disabled for the application which will be boot-loaded as the fuse settings are supposed to be programmed through programming tool from bootloader code.</li>
+<li class="Element601">Also the fuse settings are not programmable through firmware</li>
+<li class="Element601">Enabling the fuse settings also increases the size of the binary when generated through the hex file</li>
+</ul></li>
+<li class="Element600"><span style="color: #000000"><strong>Application Start Address (Hex):</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Start address of the application from where the it will be run</span></li>
+<li class="Element601"><span style="color: #000000">This value should be equal to or greater than the bootloader size</span></li>
+<li class="Element601"><span style="color: #000000">As this value will be used by bootloader to Jump to application at device reset it should match the value provided to bootloader code during generation</span></li>
+<li class="Element601"><span style="color: #000000">This value will also be used to generate XC32 compiler settings to place the code at intended address as shown in below snapshots</span></li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Application Settings in MPLAB-X IDE</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_application_mplab_settings.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Linker Settings in MPLAB-X</strong>&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_application_mplab_build_settings.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Build Settings for generating Binary</strong></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Preprocessor macro definitions:</strong>
+<ul class="Element631">
+<li class="Element601">ROM-ORIGIN and ROM_LENGTH are the XC32 linker variables which will be overridden with values provided here</li>
+<li class="Element601">This values are auto populated with value of Application start address provided in MHC after regeneration</li>
+</ul></li>
+<li class="Element600"><strong>Additional Options:</strong>
+<ul class="Element631">
+<li class="Element601">RAM_ORIGIN and RAM_LENGTH values should be provided for reserving 16 bytes of start of RAM to trigger bootloader from firmware</li>
+<li class="Element601">This is optional and can be ignored if not required</li>
+</ul></li>
+<li class="Element600"><strong>Execute the line after Build:</strong>
+<ul class="Element631">
+<li class="Element601">This option can be used to automatically generate the binary file from hex file once the build is complete</li>
+</ul></li>
+</ul><div class="Element13"><div class="Element12"><pre class="Element12">${MP_CC_DIR}\xc32-objcopy -I ihex -O binary &quot;${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.hex&quot; &quot;${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.bin&quot;</pre></div></div>
+</div>
+</div>
+</div>
+<!-- End Page Content -->
+
+<!-- Begin Page Footer -->
+<div class="Element95">
+<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00007.html" target="topic">Configuring the Library</a> &gt; <a href="00000.html" target="topic">Application Configurations</a></div>
+<div class="Element93">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element3">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element4">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element91">
+<a href="00006.html" target="topic">Previous</a> | <a href="00007.html" target="topic">Up</a> | <a href="00039.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element97">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Application Configurations Topic Title: Application Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table></div>
+
+<!-- End Page Footer -->
+</div>
+</div>
+
+<!-- End Client Area -->
+</body></html>
