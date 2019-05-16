@@ -88,19 +88,19 @@
 
 enum
 {
-  BL_CMD_UNLOCK    = 0xa0,
-  BL_CMD_DATA      = 0xa1,
-  BL_CMD_VERIFY    = 0xa2,
-  BL_CMD_RESET     = 0xa3,
+    BL_CMD_UNLOCK       = 0xa0,
+    BL_CMD_DATA         = 0xa1,
+    BL_CMD_VERIFY       = 0xa2,
+    BL_CMD_RESET        = 0xa3,
 };
 
 enum
 {
-  BL_RESP_OK       = 0x50,
-  BL_RESP_ERROR    = 0x51,
-  BL_RESP_INVALID  = 0x52,
-  BL_RESP_CRC_OK   = 0x53,
-  BL_RESP_CRC_FAIL = 0x54,
+    BL_RESP_OK          = 0x50,
+    BL_RESP_ERROR       = 0x51,
+    BL_RESP_INVALID     = 0x52,
+    BL_RESP_CRC_OK      = 0x53,
+    BL_RESP_CRC_FAIL    = 0x54,
 };
 
 // *****************************************************************************

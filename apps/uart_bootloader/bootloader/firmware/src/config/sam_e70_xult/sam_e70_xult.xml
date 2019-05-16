@@ -914,16 +914,16 @@
     </UniqueComponent>
   </Components>
   <UserData>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
-    <ComponentGraph dnOrder="1" id="__ROOTVIEW">
+    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="bootloader" x="263" y="127"/>
         <ElementPosition dnOrder="1" id="cmsis" x="340" y="20"/>
         <ElementPosition dnOrder="2" id="core" x="240" y="20"/>
         <ElementPosition dnOrder="3" id="dfp" x="20" y="20"/>
         <ElementPosition dnOrder="4" id="efc" x="53" y="91"/>
-        <ElementPosition dnOrder="5" id="usart1" x="49" y="199"/>
+        <ElementPosition dnOrder="5" id="usart1" x="54" y="197"/>
       </ElementPositions>
     </ComponentGraph>
+    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
   </UserData>
 </Configuration>

@@ -59,8 +59,8 @@
           <Name dnOrder="1">plib_pio.c</Name>
           <LogicalPath dnOrder="2">config/sam_e70_xult/peripheral/pio/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/pio/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">DE6709CFEB6624E7F2A24CACA88D5BCE</GeneratedChecksum>
-          <UserChecksum dnOrder="5">DE6709CFEB6624E7F2A24CACA88D5BCE</UserChecksum>
+          <GeneratedChecksum dnOrder="4">96834D287C0A2753DEFBF0CA1E9842ED</GeneratedChecksum>
+          <UserChecksum dnOrder="5">96834D287C0A2753DEFBF0CA1E9842ED</UserChecksum>
         </File>
         <File dnOrder="7">
           <Type dnOrder="0">SOURCE</Type>
@@ -147,8 +147,8 @@
           <Name dnOrder="1">bootloader.h</Name>
           <LogicalPath dnOrder="2">config/sam_e70_xult/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="3">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">41220018F73AE82E65B05EDB12376A47</GeneratedChecksum>
-          <UserChecksum dnOrder="5">41220018F73AE82E65B05EDB12376A47</UserChecksum>
+          <GeneratedChecksum dnOrder="4">E89E8B71A1A01F37A3A65C116DC19700</GeneratedChecksum>
+          <UserChecksum dnOrder="5">E89E8B71A1A01F37A3A65C116DC19700</UserChecksum>
         </File>
         <File dnOrder="18">
           <Type dnOrder="0">HEADER</Type>
@@ -571,21 +571,20 @@
           <Name dnOrder="1">btl.ld</Name>
           <LogicalPath dnOrder="2"/>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">CB8624462134D065CD742396A8742CC6</GeneratedChecksum>
-          <UserChecksum dnOrder="5">CB8624462134D065CD742396A8742CC6</UserChecksum>
+          <GeneratedChecksum dnOrder="4">C540EB44E2437DB46AA68F86546E4908</GeneratedChecksum>
+          <UserChecksum dnOrder="5">C540EB44E2437DB46AA68F86546E4908</UserChecksum>
         </File>
       </Files>
       <Settings dnOrder="1">
         <Setting append="true" category="C32" delimiter=";" dnOrder="0" key="extra-include-directories" value="../src;../src/config/sam_e70_xult;../src/packs/ATSAME70Q21B_DFP;../src/packs/CMSIS/CMSIS/Core/Include;../src/packs/CMSIS/;../src/arm"/>
-        <Setting category="C32" dnOrder="1" key="optimization-level" value="-Os"/>
-        <Setting category="C32" dnOrder="2" key="place-data-into-section" value="false"/>
-        <Setting category="C32-LD" dnOrder="3" key="heap-size" value="0"/>
-        <Setting category="C32-LD" dnOrder="4" key="no-device-startup-code" value="true"/>
-        <Setting category="C32-LD" dnOrder="5" key="no-startup-files" value="true"/>
-        <Setting category="C32-LD" dnOrder="6" key="preprocessor-macros" value="ROM_ORIGIN=0x402000;ROM_LENGTH=0x1fe000"/>
-        <Setting category="C32Global" dnOrder="7" key="mdtcm" value=""/>
-        <Setting category="C32Global" dnOrder="8" key="mitcm" value=""/>
-        <Setting category="C32Global" dnOrder="9" key="mstacktcm" value="false"/>
+        <Setting category="C32" dnOrder="1" key="place-data-into-section" value="false"/>
+        <Setting category="C32-LD" dnOrder="2" key="heap-size" value="0"/>
+        <Setting category="C32-LD" dnOrder="3" key="no-device-startup-code" value="true"/>
+        <Setting category="C32-LD" dnOrder="4" key="no-startup-files" value="true"/>
+        <Setting category="C32-LD" dnOrder="5" key="preprocessor-macros" value="ROM_ORIGIN=0x402000;ROM_LENGTH=0x1fe000"/>
+        <Setting category="C32Global" dnOrder="6" key="mdtcm" value=""/>
+        <Setting category="C32Global" dnOrder="7" key="mitcm" value=""/>
+        <Setting category="C32Global" dnOrder="8" key="mstacktcm" value="false"/>
       </Settings>
     </Manifest>
     <Settings dnOrder="4">
