@@ -90,7 +90,7 @@ def setAppStartAndCommentVisible(symbol, event):
     global flash_size
 
     if (event["id"] == "BTL_SIZE"):
-        custom_app_start_addr = str(hex(int(event["value"],10)))
+        custom_app_start_addr = str(hex(flash_start + int(event["value"],10)))
 
         Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
     else:
