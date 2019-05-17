@@ -74,10 +74,10 @@ Running The Application</div>
 <li class="Element601">This is required to generate the binary file for bootloader application</li>
 </ul></li>
 <li value="5" class="Element600">Build the Application <a href="00005.html" target="topic">test_app</a> using MPLAB X IDE</li>
-<li value="6" class="Element600">Run the <strong>btl_app_merge.py</strong> from command prompt to merge the generated Bootloader binary and application binary. Refer to <a href="00017.html" target="topic">Bootloader Tools Help</a> for setting up the host script</li>
+<li value="6" class="Element600">Run the <strong>btl_app_merge_bin.py</strong> from command prompt to merge the generated Bootloader binary and application binary. Refer to <a href="00017.html" target="topic">Bootloader Tools Help</a> for setting up the host script</li>
 </ol><p class="Element10">
 &nbsp;</p>
-<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_app_merge.py -o &lt;Offset&gt; -b &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\bootloader\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin -a &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\test_app\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin</pre></div></div>
+<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_app_merge_bin.py -o &lt;Offset&gt; -b &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\bootloader\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin -a &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\test_app\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin</pre></div></div>
 <p class="Element10">
 &nbsp;</p>
 
@@ -85,7 +85,7 @@ Running The Application</div>
 <li value="7" class="Element600">Run the <strong>btl_host.py</strong> from command prompt to program the merged binary to opposite panel. Refer to <a href="00017.html" target="topic">Bootloader Tools Help</a> for setting up the host script</li>
 </ol><p class="Element10">
 &nbsp;</p>
-<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -s -i &lt;COM PORT&gt; -d &lt;Device Name&gt; -f &lt;harmony3_path&gt;\bootloader\tools\btl_app_merged.bin</pre></div></div>
+<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -s -i &lt;COM PORT&gt; -d &lt;Device Name&gt; -f btl_app_merged.bin</pre></div></div>
 <p class="Element10">
 &nbsp;</p>
 <p class="Element10">
