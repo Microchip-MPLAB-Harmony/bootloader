@@ -65,8 +65,8 @@ def setBtlDualBankCommentVisible(symbol, event):
 def calcBootloaderSize(btl_type):
     global flash_erase_size
 
-    # Calculated values with highest Optimization level -O1
-    max_uart_btl_size   = 1792
+    # Calculated values with Optimization level -O1 and nearest BOOTPROT value
+    max_uart_btl_size   = 2048
     max_i2c_btl_size    = 2048
     btl_size            = 0
 

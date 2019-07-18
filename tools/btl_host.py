@@ -45,16 +45,16 @@ BL_RESP_CRC_FAIL    = 0x54
 BL_GUARD            = 0x5048434D
 
 PROGRAM_SIZE        = 256
-BOOTLOADER_SIZE     = 1792
+BOOTLOADER_SIZE     = 2048
 
 # Supported Devices [PROGRAM_SIZE, BOOTLOADER_SIZE]
 devices = {
             "SAME7X"    : [8192, 8192],
             "SAME5X"    : [8192, 8192],
             "SAMD5X"    : [8192, 8192],
-            "SAMC2X"    : [256, 1792],
-            "SAMD2X"    : [256, 1792],
-            "SAML2X"    : [256, 1792],
+            "SAMC2X"    : [256, 2048],
+            "SAMD2X"    : [256, 2048],
+            "SAML2X"    : [256, 2048],
 }
 
 #------------------------------------------------------------------------------
@@ -169,14 +169,8 @@ def main():
     except ValueError, inst:
         error('invalid offset value: %s' % options.offset)
 
-    # If Bank swapping is enabled offset needs to be 0x0 as the binary provided
-    # should have both bootloader and application in it.
-    # Bootloader always starts from 0x0 offset
-    if (options.swap == True):
-        offset = 0x0
-    else:
-        if offset < BOOTLOADER_SIZE and options.boot == False:
-            error('offset is within the bootlaoder area, use --boot options to unlock writes')
+    if offset < BOOTLOADER_SIZE and options.boot == False:
+        error('offset is within the bootlaoder area, use --boot options to unlock writes')
 
     try:
         port = serial.Serial(options.port, 115200, timeout=1)

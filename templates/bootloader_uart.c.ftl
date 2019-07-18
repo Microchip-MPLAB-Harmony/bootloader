@@ -61,10 +61,8 @@
 #define ERASE_BLOCK_SIZE        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
 #define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
-#define BOOTLOADER_SIZE         ERASE_BLOCK_SIZE
-<#if BTL_DUAL_BANK == true>
-    <#lt>#define DUAL_BANK_START_ADDRESS (FLASH_LENGTH / 2)
-</#if>
+#define BOOTLOADER_SIZE         ${BTL_SIZE}
+
 #define APP_START_ADDRESS       (0x${core.APP_START_ADDRESS}UL)
 
 #define GUARD_OFFSET            0
@@ -261,11 +259,8 @@ static void command_task(void)
 
     if (BL_CMD_UNLOCK == input_command)
     {
-<#if BTL_DUAL_BANK == true>
-        uint32_t begin  = (DUAL_BANK_START_ADDRESS + (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK));
-<#else>
         uint32_t begin  = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
-</#if>
+
         uint32_t end    = begin + (input_buffer[SIZE_OFFSET] & SIZE_ALIGN_MASK);
 
         if (end > begin && end <= FLASH_LENGTH)
@@ -283,11 +278,7 @@ static void command_task(void)
     }
     else if (BL_CMD_DATA == input_command)
     {
-<#if BTL_DUAL_BANK == true>
-        flash_addr = (DUAL_BANK_START_ADDRESS + (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK));
-<#else>
         flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
-</#if>
 
         if (unlock_begin <= flash_addr && flash_addr < unlock_end)
         {
@@ -330,7 +321,7 @@ static void command_task(void)
 
         ${MEM_USED}_BankSwap();
     }
-<#else>
+</#if>
     else if (BL_CMD_RESET == input_command)
     {
         // Unrolling the loop here saves significant amount of Flash
@@ -345,7 +336,6 @@ static void command_task(void)
 
         NVIC_SystemReset();
     }
-</#if>
     else
     {
         ${PERIPH_USED}_WriteByte(BL_RESP_INVALID);
@@ -405,9 +395,6 @@ void run_Application(void)
     }
 
     __set_MSP(msp);
-
-    /* Rebase the vector table base address */
-    SCB->VTOR = ((uint32_t) APP_START_ADDRESS & SCB_VTOR_TBLOFF_Msk);
 
     asm("bx %0"::"r" (reset_vector));
 }
