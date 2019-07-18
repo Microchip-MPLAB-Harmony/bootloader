@@ -52,6 +52,7 @@ devices = {
             "SAME7X"    : [8192, 8192],
             "SAME5X"    : [8192, 8192],
             "SAMD5X"    : [8192, 8192],
+            "SAMG5X"    : [8192, 8192],
             "SAMC2X"    : [256, 2048],
             "SAMD2X"    : [256, 2048],
             "SAML2X"    : [256, 2048],
@@ -139,7 +140,7 @@ def main():
     parser.add_option('-o', '--offset', dest='offset', help='destination offset (default 0x600)', default='0x600', metavar='OFFS')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (same7x/same5x/samd5x/samc2x/samd2x/saml2x)', default="samc2x", metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (same7x/same5x/samd5x/samg5x/samc2x/samd2x/saml2x)', default="samc2x", metavar='DEV')
 
     (options, args) = parser.parse_args()
 

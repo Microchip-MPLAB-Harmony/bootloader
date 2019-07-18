@@ -68,11 +68,13 @@ void SYS_Initialize ( void* data )
 {
     ${MEM_USED}_Initialize();
 
-    <#-- /* For SAME70/SAMV70/SAMV71/SAMS70 devices clock needs to be initialized
+    <#-- /* For SAME70/SAMV70/SAMV71/SAMS70 and SAMG5x devices clock needs to be initialized
           * before accessing any PIN's */
     -->
 <#if __PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == true>
     CLK_Initialize();
+<#elseif __PROCESSOR?matches(".*SAMG5.[0-9]*.*") == true>
+    CLOCK_Initialize();
 </#if>
 
     ${core.PORT_API_PREFIX}_Initialize();
@@ -90,7 +92,8 @@ void SYS_Initialize ( void* data )
 </#if>
 
     <#-- /* Check if device is other than SAME70/SAMV70/SAMV71/SAMS70 */ -->
-<#if __PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == false>
+<#if (__PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == false) &&
+     (__PROCESSOR?matches(".*SAMG5.[0-9]*.*") == false) >
     CLOCK_Initialize();
 </#if>
 
