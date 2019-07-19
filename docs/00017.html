@@ -132,7 +132,7 @@ Fail Safe Update Mode Usage Example</div>
 &nbsp;</p>
 <div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_app_merge_bin.py -o 0x2000 -b &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\bootloader\firmware\sam_e54_xpro.X\dist\sam_e54_xpro\production\sam_e54_xpro.X.production.bin -a &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\test_app\firmware\sam_e54_xpro.X\dist\sam_e54_xpro\production\sam_e54_xpro.X.production.bin
 
-python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -s -i COM18 -d same5x -f btl_app_merged.bin</pre></div></div>
+python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -s -i COM18 -d same5x -o 0x80000-f btl_app_merged.bin</pre></div></div>
 <p class="Element10">
 &nbsp;</p>
 <p class="Element10" style="text-align: center;">

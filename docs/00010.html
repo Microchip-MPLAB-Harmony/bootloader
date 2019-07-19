@@ -60,7 +60,7 @@ Basic Mode</div>
 <li class="Element600">The Bootloader performs flash erase/program/verify operations with the binary sent from host while in the firmware upgrade mode
 <ul class="Element631">
 <li class="Element601">The binary sent is only of the application to be programmed</li>
-<li class="Element601">Bootloader always performs flash operation from the offset address for application sent from host</li>
+<li class="Element601">Bootloader always performs flash operation from the offset address for (bootloader or application) binary sent from host</li>
 <li class="Element601">The application can use the entire flash memory region starting from the end of bootloader space</li>
 </ul></li>
 <li class="Element600">Jumps to the application once verification is completed</li>
@@ -74,11 +74,12 @@ Fail Safe Update Mode</div>
 <li class="Element600">Resides from the starting location of the flash memory region of both the banks</li>
 <li class="Element600">The Bootloader performs flash erase/program/verify operations with the binary sent from host while in the firmware upgrade mode
 <ul class="Element631">
-<li class="Element601">The binary sent should contain bootloader and application to be programmed, As both the banks need to have bootloader code at starting location to run the application residing in them at reset</li>
-<li class="Element601">Bootloader always performs flash operation from the start of opposite flash memory bank</li>
+<li class="Element601">The binary sent can contain bootloader and application combined to be programmed in opposite bank</li>
+<li class="Element601">Both the banks need to have bootloader code at starting location to run the application residing in them at reset</li>
+<li class="Element601">Bootloader always performs flash operation from the offset address for (bootloader or application or combined) binary sent from host</li>
 <li class="Element601">The application can use only the flash memory region of one bank starting from the end of bootloader space</li>
 </ul></li>
-<li class="Element600">Performs a bank swap and reset to run the application programmed in opposite bank once verification is completed</li>
+<li class="Element600">Performs a bank swap and reset to run the application programmed in opposite bank once verification is completed or a normal reset to run the application in current bank based on command sent from host</li>
 </ul></div>
 </div>
 <a name="546F70696373"></a><div class="Element14">

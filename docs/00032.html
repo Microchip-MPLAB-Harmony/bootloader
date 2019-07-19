@@ -80,14 +80,6 @@ Running The Application</div>
 <div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_app_merge_bin.py -o &lt;Offset&gt; -b &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\bootloader\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin -a &lt;harmony3_path&gt;\bootloader\apps\uart_fail_safe_bootloader\test_app\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin</pre></div></div>
 <p class="Element10">
 &nbsp;</p>
-
-<ol class="Element630">
-<li value="7" class="Element600">Run the <strong>btl_host.py</strong> from command prompt to program the merged binary to opposite panel. Refer to <a href="00017.html" target="topic">Bootloader Tools Help</a> for setting up the host script</li>
-</ol><p class="Element10">
-&nbsp;</p>
-<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -s -i &lt;COM PORT&gt; -d &lt;Device Name&gt; -f btl_app_merged.bin</pre></div></div>
-<p class="Element10">
-&nbsp;</p>
 <p class="Element10">
 The following table provides the Details required to run the above command: </p><div class="Element63">
 <div class="TableDiv">
@@ -109,6 +101,43 @@ Config Name&nbsp;</div></td></tr><tr>
 SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
 <div class="Element68">
 0x2000&nbsp;</div></td><td class="Element67" valign="top" width="14%">
+<div class="Element68">
+same5x&nbsp;</div></td><td class="Element67" valign="top" width="21%">
+<div class="Element68">
+sam_e54_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="19%">
+<div class="Element68">
+sam_e54_xpro&nbsp;</div></td></tr></table></div></div>
+<p class="Element10">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="7" class="Element600">Run the <strong>btl_host.py</strong> from command prompt to program the merged binary to opposite panel. Refer to <a href="00017.html" target="topic">Bootloader Tools Help</a> for setting up the host script</li>
+</ol><p class="Element10">
+&nbsp;</p>
+<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -s -i &lt;COM PORT&gt; -d &lt;Device Name&gt; -o &lt;Offset&gt; -f btl_app_merged.bin</pre></div></div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The following table provides the Details required to run the above command: </p><div class="Element63">
+<div class="TableDiv">
+<table cellspacing="0" class="Table1">
+<tr>
+<td class="Element65" valign="top" width="36%">
+<div class="Element66">
+Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="11%">
+<div class="Element66">
+Offset&nbsp;</div></td><td class="Element65" valign="top" width="14%">
+<div class="Element66">
+Device Name&nbsp;</div></td><td class="Element65" valign="top" width="21%">
+<div class="Element66">
+Project Name&nbsp;</div></td><td class="Element65" valign="top" width="19%">
+<div class="Element66">
+Config Name&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="36%">
+<div class="Element68">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+<div class="Element68">
+0x80000&nbsp;</div></td><td class="Element67" valign="top" width="14%">
 <div class="Element68">
 same5x&nbsp;</div></td><td class="Element67" valign="top" width="21%">
 <div class="Element68">
