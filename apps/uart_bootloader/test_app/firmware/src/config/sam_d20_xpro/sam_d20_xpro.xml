@@ -7,7 +7,7 @@
       <Symbols dnOrder="0">
         <String dnOrder="0" id="APP_START_ADDRESS">
           <Values dnOrder="0">
-            <User dnOrder="0" value="700"/>
+            <User dnOrder="0" value="800"/>
           </Values>
         </String>
         <KeyValueSet dnOrder="1" id="COMPILER_CHOICE">
@@ -478,7 +478,7 @@
         <Setting dnOrder="91" id="XC32_LINKER_PREPROC_MARCOS">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="value">
-              <Value dnOrder="0">ROM_ORIGIN=0x700;ROM_LENGTH=0x3f900</Value>
+              <Value dnOrder="0">ROM_ORIGIN=0x800;ROM_LENGTH=0x3f800</Value>
             </String>
           </Attributes>
         </Setting>
@@ -615,7 +615,12 @@
           </Values>
         </String>
         <KeyValueSet dnOrder="2" id="SERCOM_MODE">
-          <Values dnOrder="0">
+          <Attributes dnOrder="0">
+            <Boolean dnOrder="0" id="readOnly">
+              <Value dnOrder="0">true</Value>
+            </Boolean>
+          </Attributes>
+          <Values dnOrder="1">
             <Dynamic dnOrder="0" id="sercom3" value="0"/>
           </Values>
         </KeyValueSet>
