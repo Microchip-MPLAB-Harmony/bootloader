@@ -7,7 +7,7 @@
       <Symbols dnOrder="0">
         <String dnOrder="0" id="APP_START_ADDRESS">
           <Values dnOrder="0">
-            <User dnOrder="0" value="700"/>
+            <User dnOrder="0" value="800"/>
           </Values>
         </String>
         <KeyValueSet dnOrder="1" id="COMPILER_CHOICE">
@@ -518,7 +518,7 @@
         <Setting dnOrder="100" id="XC32_LINKER_PREPROC_MARCOS">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="value">
-              <Value dnOrder="0">ROM_ORIGIN=0x700;ROM_LENGTH=0x3f900</Value>
+              <Value dnOrder="0">ROM_ORIGIN=0x800;ROM_LENGTH=0x3f800</Value>
             </String>
           </Attributes>
         </Setting>
@@ -675,7 +675,12 @@
           </Values>
         </String>
         <KeyValueSet dnOrder="2" id="SERCOM_MODE">
-          <Values dnOrder="0">
+          <Attributes dnOrder="0">
+            <Boolean dnOrder="0" id="readOnly">
+              <Value dnOrder="0">true</Value>
+            </Boolean>
+          </Attributes>
+          <Values dnOrder="1">
             <Dynamic dnOrder="0" id="sercom4" value="0"/>
           </Values>
         </KeyValueSet>
@@ -791,13 +796,12 @@
     </UniqueComponent>
   </Components>
   <UserData>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
-    <ComponentGraph dnOrder="1" id="__ROOTVIEW">
+    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="BSP_SAM_C21N_Xplained_Pro" x="16" y="83"/>
         <ElementPosition dnOrder="1" id="HarmonyCore" x="432" y="56"/>
         <ElementPosition dnOrder="2" id="cmsis" x="500" y="20"/>
-        <ElementPosition dnOrder="3" id="core" x="400" y="20"/>
+        <ElementPosition dnOrder="3" id="core" x="399" y="20"/>
         <ElementPosition dnOrder="4" id="dfp" x="180" y="20"/>
         <ElementPosition dnOrder="5" id="evsys" x="20" y="20"/>
         <ElementPosition dnOrder="6" id="nvmctrl" x="253" y="63"/>
@@ -805,5 +809,6 @@
         <ElementPosition dnOrder="8" id="stdio" x="199" y="173"/>
       </ElementPositions>
     </ComponentGraph>
+    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
   </UserData>
 </Configuration>
