@@ -61,8 +61,8 @@
 #define ERASE_BLOCK_SIZE        (8192UL)
 #define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
-#define BOOTLOADER_SIZE         ERASE_BLOCK_SIZE
-#define DUAL_BANK_START_ADDRESS (FLASH_LENGTH / 2)
+#define BOOTLOADER_SIZE         8192
+
 #define APP_START_ADDRESS       (0x2000UL)
 
 #define GUARD_OFFSET            0
@@ -219,7 +219,8 @@ static void command_task(void)
 
     if (BL_CMD_UNLOCK == input_command)
     {
-        uint32_t begin  = (DUAL_BANK_START_ADDRESS + (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK));
+        uint32_t begin  = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
+
         uint32_t end    = begin + (input_buffer[SIZE_OFFSET] & SIZE_ALIGN_MASK);
 
         if (end > begin && end <= FLASH_LENGTH)
@@ -237,7 +238,7 @@ static void command_task(void)
     }
     else if (BL_CMD_DATA == input_command)
     {
-        flash_addr = (DUAL_BANK_START_ADDRESS + (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK));
+        flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
 
         if (unlock_begin <= flash_addr && flash_addr < unlock_end)
         {
@@ -278,6 +279,20 @@ static void command_task(void)
         while(SERCOM2_USART_TransmitComplete() == false);
 
         NVMCTRL_BankSwap();
+    }
+    else if (BL_CMD_RESET == input_command)
+    {
+        // Unrolling the loop here saves significant amount of Flash
+        sram[0] = input_buffer[0];
+        sram[1] = input_buffer[1];
+        sram[2] = input_buffer[2];
+        sram[3] = input_buffer[3];
+
+        SERCOM2_USART_WriteByte(BL_RESP_OK);
+
+        while(SERCOM2_USART_TransmitComplete() == false);
+
+        NVIC_SystemReset();
     }
     else
     {
@@ -338,9 +353,6 @@ void run_Application(void)
     }
 
     __set_MSP(msp);
-
-    /* Rebase the vector table base address */
-    SCB->VTOR = ((uint32_t) APP_START_ADDRESS & SCB_VTOR_TBLOFF_Msk);
 
     asm("bx %0"::"r" (reset_vector));
 }
