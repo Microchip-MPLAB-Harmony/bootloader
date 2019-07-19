@@ -59,7 +59,7 @@ ENTRY(__XC32_RESET_HANDLER_NAME)
                      (Rounded of to nearest erase boundary) whichever is
                      greater.
  */
-bootloader_size        = 1792;
+bootloader_size        = 2048;
 
 /* Bootloader Request pattern needs to be stored in starting 16 Bytes of Ram
  * by the application if it wants to run bootloader at startup without any
