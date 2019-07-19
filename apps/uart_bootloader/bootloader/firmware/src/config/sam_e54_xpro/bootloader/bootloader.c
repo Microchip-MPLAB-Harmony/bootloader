@@ -61,7 +61,8 @@
 #define ERASE_BLOCK_SIZE        (8192UL)
 #define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
-#define BOOTLOADER_SIZE         ERASE_BLOCK_SIZE
+#define BOOTLOADER_SIZE         8192
+
 #define APP_START_ADDRESS       (0x2000UL)
 
 #define GUARD_OFFSET            0
@@ -218,6 +219,7 @@ static void command_task(void)
     if (BL_CMD_UNLOCK == input_command)
     {
         uint32_t begin  = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
+
         uint32_t end    = begin + (input_buffer[SIZE_OFFSET] & SIZE_ALIGN_MASK);
 
         if (end > begin && end <= FLASH_LENGTH)
@@ -336,9 +338,6 @@ void run_Application(void)
     }
 
     __set_MSP(msp);
-
-    /* Rebase the vector table base address */
-    SCB->VTOR = ((uint32_t) APP_START_ADDRESS & SCB_VTOR_TBLOFF_Msk);
 
     asm("bx %0"::"r" (reset_vector));
 }
