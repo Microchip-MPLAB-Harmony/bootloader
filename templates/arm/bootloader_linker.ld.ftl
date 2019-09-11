@@ -69,7 +69,7 @@ bootloader_size        = ${BTL_SIZE};
  * ram[2] = 0x5048434D;
  * ram[3] = 0x5048434D;
  */
-bootloader_request_len = ${BTL_REQUEST_LEN};
+bootloader_request_len = ${BTL_TRIGGER_LEN};
 
 #define ROM_START ${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}
 

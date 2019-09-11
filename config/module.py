@@ -24,6 +24,11 @@
 def loadModule():
     print("Load Module: Bootloader")
 
-    bootloaderComponent = Module.CreateComponent("bootloader", "Bootloader", "/Bootloader/", "config/bootloader.py")
+    if ("PIC32M" in Variables.get("__PROCESSOR")):
+        bootloaderComponent = Module.CreateComponent("bootloader", "Bootloader", "/Bootloader/", "config/bootloader_mips.py")
+        bootloaderComponent.addDependency("btl_TIMER_dependency", "TMR")
+    else:
+        bootloaderComponent = Module.CreateComponent("bootloader", "Bootloader", "/Bootloader/", "config/bootloader_arm.py")
+
     bootloaderComponent.addDependency("btl_UART_dependency", "UART")
     bootloaderComponent.addDependency("btl_MEMORY_dependency", "MEMORY")

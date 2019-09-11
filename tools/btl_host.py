@@ -59,6 +59,7 @@ devices = {
             "SAMDA1"    : [256, 2048],
             "SAML1X"    : [256, 2048],
             "SAML2X"    : [256, 2048],
+            "PIC32MZ"   : [16384, 16384],
 }
 
 #------------------------------------------------------------------------------
@@ -137,13 +138,14 @@ def send_request(port, cmd, size, data):
 def main():
     parser = optparse.OptionParser(usage = 'usage: %prog [options]')
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')
+    parser.add_option('-r', '--baud', dest='baud', help='UART baudrate', default=115200, action='store_true')
     parser.add_option('-t', '--tune', dest='tune', help='auto-tune UART baudrate', default=False, action='store_true')
     parser.add_option('-i', '--interface', dest='port', help='communication interface', metavar='PATH')
     parser.add_option('-f', '--file', dest='file', help='binary file to program', metavar='FILE')
     parser.add_option('-o', '--offset', dest='offset', help='destination offset (default 0x600)', default='0x600', metavar='OFFS')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (same7x/same5x/samd5x/samg5x/samc2x/samd2x/saml2x)', default="samc2x", metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/pic32mz)', default=None, metavar='DEV')
 
     (options, args) = parser.parse_args()
 
@@ -173,11 +175,15 @@ def main():
     except ValueError, inst:
         error('invalid offset value: %s' % options.offset)
 
-    if offset < BOOTLOADER_SIZE and options.boot == False:
-        error('offset is within the bootlaoder area, use --boot options to unlock writes')
+    if (("SAM" in device)):
+        if offset < BOOTLOADER_SIZE and options.boot == False:
+            error('offset is within the bootlaoder area, use --boot options to unlock writes')
+    else:
+        if options.boot == True:
+            error('--boot option is not supported on this device')
 
     try:
-        port = serial.Serial(options.port, 115200, timeout=1)
+        port = serial.Serial(options.port, options.baud, timeout=1)
     except serial.serialutil.SerialException, inst:
         error(inst)
 
@@ -223,6 +229,7 @@ def main():
 
     # Send Verification command
     verbose(options.verbose, 'Verification')
+
     resp = send_request(port, BL_CMD_VERIFY, uint32(4), uint32(crc))
 
     if resp == BL_RESP_CRC_OK:
