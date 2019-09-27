@@ -59,6 +59,7 @@ devices = {
             "SAMDA1"    : [256, 2048],
             "SAML1X"    : [256, 2048],
             "SAML2X"    : [256, 2048],
+            "PIC32MK"   : [4096, 8192],
             "PIC32MZ"   : [16384, 16384],
 }
 
@@ -145,7 +146,7 @@ def main():
     parser.add_option('-o', '--offset', dest='offset', help='destination offset (default 0x600)', default='0x600', metavar='OFFS')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/pic32mz)', default=None, metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/pic32mk/pic32mz)', default=None, metavar='DEV')
 
     (options, args) = parser.parse_args()
 

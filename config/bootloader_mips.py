@@ -253,6 +253,18 @@ def instantiateComponent(bootloaderComponent):
         btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_ef.ld.ftl")
     elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
         btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_da.ld.ftl")
+    elif (re.match("PIC32MK.[0-9]*GPD", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MK.[0-9]*GPE", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MK.[0-9]*MCF", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_gpd_gpe_mcf.ld.ftl")
+    elif (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_gpg_gph_mcj.ld.ftl")
+    elif (re.match("PIC32MK.[0-9]*GPK", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MK.[0-9]*GPL", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MK.[0-9]*MCM", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_gpk_gpl_mcm.ld.ftl")
 
     btlLinkerFile.setOutputName("btl.ld")
     btlLinkerFile.setMarkup(True)
