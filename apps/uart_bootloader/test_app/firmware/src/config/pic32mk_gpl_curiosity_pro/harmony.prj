@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Configuration>
+  <Configurator>
+    <Name dnOrder="0" value="pic32mk_gpl_curiosity_pro"/>
+    <Processor dnOrder="1" value="PIC32MK1024GPL100"/>
+    <Harmony dnOrder="2" path="../../../.."/>
+    <Manifest dnOrder="3">
+      <Files dnOrder="0">
+        <File dnOrder="0">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">app.c</Name>
+          <LogicalPath dnOrder="2"/>
+          <PhysicalPath dnOrder="3">/../../</PhysicalPath>
+          <GeneratedChecksum dnOrder="4"/>
+          <UserChecksum dnOrder="5"/>
+        </File>
+        <File dnOrder="1">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">bsp.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/bsp/</LogicalPath>
+          <PhysicalPath dnOrder="3">/bsp/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">D26088F21E3A03BD0AF1C72C387BDD81</GeneratedChecksum>
+          <UserChecksum dnOrder="5">D26088F21E3A03BD0AF1C72C387BDD81</UserChecksum>
+        </File>
+        <File dnOrder="2">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">exceptions.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/</LogicalPath>
+          <PhysicalPath dnOrder="3">/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">322976BB28859B437B0D6D3B8E2AFE42</GeneratedChecksum>
+          <UserChecksum dnOrder="5">322976BB28859B437B0D6D3B8E2AFE42</UserChecksum>
+        </File>
+        <File dnOrder="3">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">initialization.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/</LogicalPath>
+          <PhysicalPath dnOrder="3">/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">A8462D812BD1BD85160D2F0F1F5B4E4B</GeneratedChecksum>
+          <UserChecksum dnOrder="5">A8462D812BD1BD85160D2F0F1F5B4E4B</UserChecksum>
+        </File>
+        <File dnOrder="4">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">interrupts.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/</LogicalPath>
+          <PhysicalPath dnOrder="3">/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">21AC72888CC2AFF8195C6ACBD940F642</GeneratedChecksum>
+          <UserChecksum dnOrder="5">21AC72888CC2AFF8195C6ACBD940F642</UserChecksum>
+        </File>
+        <File dnOrder="5">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">main.c</Name>
+          <LogicalPath dnOrder="2"/>
+          <PhysicalPath dnOrder="3">/../../</PhysicalPath>
+          <GeneratedChecksum dnOrder="4"/>
+          <UserChecksum dnOrder="5"/>
+        </File>
+        <File dnOrder="6">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">plib_clk.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/clk/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/clk/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">7655B9928A5005A13883E55A08DF2B7B</GeneratedChecksum>
+          <UserChecksum dnOrder="5">7655B9928A5005A13883E55A08DF2B7B</UserChecksum>
+        </File>
+        <File dnOrder="7">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">plib_coretimer.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/coretimer/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/coretimer/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">F8BB2BAA74068083A80E6E229BBCF3E3</GeneratedChecksum>
+          <UserChecksum dnOrder="5">F8BB2BAA74068083A80E6E229BBCF3E3</UserChecksum>
+        </File>
+        <File dnOrder="8">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">plib_evic.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/evic/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/evic/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">87D7D0431653F742C8D307020789979B</GeneratedChecksum>
+          <UserChecksum dnOrder="5">87D7D0431653F742C8D307020789979B</UserChecksum>
+        </File>
+        <File dnOrder="9">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">plib_gpio.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/gpio/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/gpio/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">4454FA1B456DB150A31D76D462BDF57D</GeneratedChecksum>
+          <UserChecksum dnOrder="5">4454FA1B456DB150A31D76D462BDF57D</UserChecksum>
+        </File>
+        <File dnOrder="10">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">plib_uart6.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/uart/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/uart/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">F8177756BADEBA54CA7C008D1A9F5B39</GeneratedChecksum>
+          <UserChecksum dnOrder="5">F8177756BADEBA54CA7C008D1A9F5B39</UserChecksum>
+        </File>
+        <File dnOrder="11">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">tasks.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/</LogicalPath>
+          <PhysicalPath dnOrder="3">/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">DE51BB8F6FDBC39FB049CB2A14E56B25</GeneratedChecksum>
+          <UserChecksum dnOrder="5">DE51BB8F6FDBC39FB049CB2A14E56B25</UserChecksum>
+        </File>
+        <File dnOrder="12">
+          <Type dnOrder="0">SOURCE</Type>
+          <Name dnOrder="1">xc32_monitor.c</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/stdio/</LogicalPath>
+          <PhysicalPath dnOrder="3">/stdio/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">4BBDD52CA72372F7CFF475B7E8B07C73</GeneratedChecksum>
+          <UserChecksum dnOrder="5">4BBDD52CA72372F7CFF475B7E8B07C73</UserChecksum>
+        </File>
+        <File dnOrder="13">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">app.h</Name>
+          <LogicalPath dnOrder="2"/>
+          <PhysicalPath dnOrder="3">/../../</PhysicalPath>
+          <GeneratedChecksum dnOrder="4"/>
+          <UserChecksum dnOrder="5"/>
+        </File>
+        <File dnOrder="14">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">bsp.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/bsp/</LogicalPath>
+          <PhysicalPath dnOrder="3">/bsp/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">60CCF2FCB84A0FA9AA8C1607725D47A4</GeneratedChecksum>
+          <UserChecksum dnOrder="5">60CCF2FCB84A0FA9AA8C1607725D47A4</UserChecksum>
+        </File>
+        <File dnOrder="15">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">configuration.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/</LogicalPath>
+          <PhysicalPath dnOrder="3">/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">76016C9804D6DE17B74C92D82294562E</GeneratedChecksum>
+          <UserChecksum dnOrder="5">76016C9804D6DE17B74C92D82294562E</UserChecksum>
+        </File>
+        <File dnOrder="16">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">definitions.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/</LogicalPath>
+          <PhysicalPath dnOrder="3">/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">0E7FC5C1A31EA2C741109E740F122BB1</GeneratedChecksum>
+          <UserChecksum dnOrder="5">0E7FC5C1A31EA2C741109E740F122BB1</UserChecksum>
+        </File>
+        <File dnOrder="17">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">device.h</Name>
+          <LogicalPath dnOrder="2">packs/PIC32MK1024GPL100_DFP/</LogicalPath>
+          <PhysicalPath dnOrder="3">/../../packs/PIC32MK1024GPL100_DFP/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">5D5C52527AB1435153DB9B50ADE6B79D</GeneratedChecksum>
+          <UserChecksum dnOrder="5">5D5C52527AB1435153DB9B50ADE6B79D</UserChecksum>
+        </File>
+        <File dnOrder="18">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">plib_clk.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/clk/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/clk/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">7066CC390335CF75126E2A50C46E3BDD</GeneratedChecksum>
+          <UserChecksum dnOrder="5">7066CC390335CF75126E2A50C46E3BDD</UserChecksum>
+        </File>
+        <File dnOrder="19">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">plib_coretimer.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/coretimer/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/coretimer/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">19E42936F4942B5621DF128ACC05E8E6</GeneratedChecksum>
+          <UserChecksum dnOrder="5">19E42936F4942B5621DF128ACC05E8E6</UserChecksum>
+        </File>
+        <File dnOrder="20">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">plib_evic.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/evic/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/evic/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">B4113475882919FF86E43710835A3D46</GeneratedChecksum>
+          <UserChecksum dnOrder="5">B4113475882919FF86E43710835A3D46</UserChecksum>
+        </File>
+        <File dnOrder="21">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">plib_gpio.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/gpio/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/gpio/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">9E868904EF3A6C6D7888450EE241FFD5</GeneratedChecksum>
+          <UserChecksum dnOrder="5">9E868904EF3A6C6D7888450EE241FFD5</UserChecksum>
+        </File>
+        <File dnOrder="22">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">plib_uart6.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/uart/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/uart/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">DCA8F9A0C45D3723D6AFFB43C62E547E</GeneratedChecksum>
+          <UserChecksum dnOrder="5">DCA8F9A0C45D3723D6AFFB43C62E547E</UserChecksum>
+        </File>
+        <File dnOrder="23">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">plib_uart_common.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/peripheral/uart/</LogicalPath>
+          <PhysicalPath dnOrder="3">/peripheral/uart/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">ACBD2B4A88E233BD4B260CD136DA33A8</GeneratedChecksum>
+          <UserChecksum dnOrder="5">ACBD2B4A88E233BD4B260CD136DA33A8</UserChecksum>
+        </File>
+        <File dnOrder="24">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">toolchain_specifics.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/</LogicalPath>
+          <PhysicalPath dnOrder="3">/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4">5F0B87C955FBF569CBD67F4861B6B7AD</GeneratedChecksum>
+          <UserChecksum dnOrder="5">5F0B87C955FBF569CBD67F4861B6B7AD</UserChecksum>
+        </File>
+        <File dnOrder="25">
+          <Type dnOrder="0">HEADER</Type>
+          <Name dnOrder="1">user.h</Name>
+          <LogicalPath dnOrder="2">config/pic32mk_gpl_curiosity_pro/</LogicalPath>
+          <PhysicalPath dnOrder="3">/</PhysicalPath>
+          <GeneratedChecksum dnOrder="4"/>
+          <UserChecksum dnOrder="5"/>
+        </File>
+      </Files>
+      <Settings dnOrder="1">
+        <Setting append="true" category="C32" delimiter=";" dnOrder="0" key="extra-include-directories" value="../src;../src/config/pic32mk_gpl_curiosity_pro;../src/packs/PIC32MK1024GPL100_DFP;;../src/mips"/>
+        <Setting category="C32-LD" dnOrder="1" key="heap-size" value="512"/>
+        <Setting category="C32-LD" dnOrder="2" key="no-device-startup-code" value="true"/>
+        <Setting category="C32-LD" dnOrder="3" key="preprocessor-macros" value=""/>
+      </Settings>
+    </Manifest>
+    <Settings dnOrder="4">
+      <Setting dnOrder="0" key="CMSISPath" value=".\dev_packs\arm\CMSIS\5.5.1"/>
+      <Setting dnOrder="1" key="DFPPath" value=".\dev_packs\Microchip\PIC32MK-GP_DFP\1.1.66\atdf\PIC32MK1024GPL100.atdf"/>
+      <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
+      <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
+      <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_ALL"/>
+      <Setting dnOrder="5" key="PackageFilter" value="bsp;core;csp;"/>
+    </Settings>
+  </Configurator>
+</Configuration>
