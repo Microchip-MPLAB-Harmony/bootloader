@@ -44,7 +44,9 @@ BL_RESP_CRC_FAIL    = 0x54
 
 BL_GUARD            = 0x5048434D
 
+# Should be equal to Device Erase size
 PROGRAM_SIZE        = 256
+
 BOOTLOADER_SIZE     = 2048
 
 # Supported Devices [PROGRAM_SIZE, BOOTLOADER_SIZE]
@@ -61,6 +63,7 @@ devices = {
             "SAML2X"    : [256, 2048],
             "PIC32MK"   : [4096, 8192],
             "PIC32MZ"   : [16384, 16384],
+            "PIC32MX"   : [1024, 4096],
 }
 
 #------------------------------------------------------------------------------
@@ -143,10 +146,11 @@ def main():
     parser.add_option('-t', '--tune', dest='tune', help='auto-tune UART baudrate', default=False, action='store_true')
     parser.add_option('-i', '--interface', dest='port', help='communication interface', metavar='PATH')
     parser.add_option('-f', '--file', dest='file', help='binary file to program', metavar='FILE')
-    parser.add_option('-o', '--offset', dest='offset', help='destination offset (default 0x600)', default='0x600', metavar='OFFS')
+    parser.add_option('-o', '--offset', dest='offset', help='destination offset', metavar='OFFS')
+    parser.add_option('-p', '--sectorSize', dest='sectSize', help='Device Sector Size in Bytes', metavar='SectSize')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/pic32mk/pic32mz)', default=None, metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/pic32mk/pic32mx/pic32mz)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 
@@ -154,15 +158,25 @@ def main():
         error('communication port is required (try -h option)')
 
     if options.file is None:
-        error('file name is required')
+        error('file name is required (use -f option)')
 
     if options.device is None:
-        error('target device is required')
+        error('target device is required (use -d option)')
+
+    if options.offset is None:
+        error('destination offset is required (use -o option)')
 
     device = options.device.upper()
 
     if (device in devices):
-        PROGRAM_SIZE        = devices[device][0]
+        if (device == "PIC32MX"):
+            if options.progSize is None:
+                error('device sector size is required (use -p option)')
+
+            PROGRAM_SIZE    = int(options.progSize)
+        else:
+            PROGRAM_SIZE    = devices[device][0]
+
         BOOTLOADER_SIZE     = devices[device][1]
     else:
         error('invalid device')

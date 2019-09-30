@@ -65,12 +65,25 @@ for mem_idx in range(0, len(addr_space_children)):
             ram_start   = "0xA0000000"
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
+    if ("PIC32MX" in Variables.get("__PROCESSOR")):
+        if ((any(x == mem_seg for x in BootFlashNames) == True)):
+            if (addr_space_children[mem_idx].getAttribute("size") == "0xbf0"):
+                # Bootloader start address is in Program Flash memory as Boot Flash Memory is only 3KB
+                btl_start = "0x9D000000"
+            else:
+                btl_start = "0x9FC00500"
+
 def calcBootloaderSize(btl_type):
     global flash_erase_size
 
     # Calculated values with Optimization level -O1
-    max_uart_btl_size   = 8192
-    max_i2c_btl_size    = 8192
+    if ("PIC32MX" in Variables.get("__PROCESSOR")):
+        max_uart_btl_size   = 4096
+        max_i2c_btl_size    = 4096
+    else:
+        max_uart_btl_size   = 8192
+        max_i2c_btl_size    = 8192
+
     btl_size            = 0
 
     if ((flash_erase_size != 0) and (btl_type != "")):
@@ -114,6 +127,31 @@ def setBootloaderSize(symbol, event):
 
 def setTriggerLenVisible(symbol, event):
     symbol.setVisible(event["value"])
+
+def setAppStartAndCommentVisible(symbol, event):
+    global btlTypeUsed
+    global flash_start
+    global flash_size
+
+    if (btl_start == "0x9D000000"):
+        if (event["id"] == "BTL_SIZE"):
+            custom_app_start_addr = str(hex(flash_start + int(event["value"],10)))
+
+            Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
+        else:
+            comment_enable      = False
+
+            custom_app_start_addr = int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16)
+            btl_size = calcBootloaderSize(btlTypeUsed.getValue())
+
+            if (custom_app_start_addr < (flash_start + btl_size)):
+                symbol.setLabel("***  WARNING!!! Application Start Address Should be equal to or Greater than Bootloader Size ***")
+                comment_enable = True
+            elif (custom_app_start_addr >= (flash_start + flash_size)):
+                symbol.setLabel("*** WARNING!!! Application Start Address is exceeding the Flash Memory Space ***")
+                comment_enable = True
+
+            symbol.setVisible(comment_enable)
 
 def setupCoreComponentSymbols():
 
@@ -204,6 +242,11 @@ def instantiateComponent(bootloaderComponent):
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
 
+    if ("PIC32MX" in Variables.get("__PROCESSOR")):
+        btlAppAddrComment = bootloaderComponent.createCommentSymbol("BTL_APP_START_ADDR_COMMENT", None)
+        btlAppAddrComment.setVisible(False)
+        btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_SIZE"])
+
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
@@ -265,6 +308,23 @@ def instantiateComponent(bootloaderComponent):
           re.match("PIC32MK.[0-9]*GPL", Variables.get("__PROCESSOR")) or
           re.match("PIC32MK.[0-9]*MCM", Variables.get("__PROCESSOR"))):
         btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_gpk_gpl_mcm.ld.ftl")
+    elif (re.match("PIC32MX1.[1235]*0F.[0-9]*.[BCD]", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MX2.[1235]*0F.[0-9]*.[BCD]", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_1xx_2xx.ld.ftl")
+    elif (re.match("PIC32MX1.[57]*4F.[0-9]*.[BD]", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MX2.[57]*4F.[0-9]*.[BD]", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_1xx_2xx_xlp.ld.ftl")
+    elif (re.match("PIC32MX1.[2357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MX2.[357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MX5.[357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_1xx_2xx_5xx.ld.ftl")
+    elif (re.match("PIC32MX3.[357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MX4.[357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_3xx_4xx.ld.ftl")
+    elif (re.match("PIC32MX5.[367]*.[45]*F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MX6.[679]*.[45]*F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
+          re.match("PIC32MX7.[679]*.[45]*F.[0-9]*.[HL]", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_5xx_6xx_7xx.ld.ftl")
 
     btlLinkerFile.setOutputName("btl.ld")
     btlLinkerFile.setMarkup(True)
