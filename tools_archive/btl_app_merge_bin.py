@@ -52,7 +52,7 @@ def warning(text):
 #------------------------------------------------------------------------------
 def verbose(verb, text):
     if verb:
-        print ("\n" + text)
+        print text
 
 #------------------------------------------------------------------------------
 def main():
@@ -84,7 +84,7 @@ def main():
 
     try:
         offset = int(options.offset, 0)
-    except (ValueError, inst):
+    except ValueError, inst:
         error('invalid offset value: %s' % options.offset)
 
     if offset < BOOTLOADER_SIZE:
@@ -120,8 +120,6 @@ def main():
             btlMergedFile.write(binascii.a2b_hex(byte))
         else:
             break
-
-    print("\r\n##### Merged Bootloader and Application binaries to ", destinationFile, "#####")
 
     btlMergedFile.close()
 
