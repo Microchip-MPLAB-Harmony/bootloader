@@ -66,7 +66,15 @@ extern "C" {
 #define SWITCH_GET()    SWITCH_Get()
 #define SWITCH_PRESSED  SWITCH_STATE_PRESSED
     
-#define APP_SRAM_START  0x20000000U
+#define APP_TIMER_START     SYSTICK_TimerStart
+#define APP_TIMER_DelayMs   SYSTICK_DelayMs
+
+#define BTL_TRIGGER_RAM_START  0x20000000U
+
+static inline void APP_SystemReset( void )
+{
+    NVIC_SystemReset();
+}
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
