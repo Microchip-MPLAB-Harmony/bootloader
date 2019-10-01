@@ -66,14 +66,14 @@
 // *****************************************************************************
 
 
-/*** Macros for GPIO_PC01 pin ***/
-#define GPIO_PC01_Set()               (PORT_REGS->GROUP[2].PORT_OUTSET = 1 << 1)
-#define GPIO_PC01_Clear()             (PORT_REGS->GROUP[2].PORT_OUTCLR = 1 << 1)
-#define GPIO_PC01_Toggle()            (PORT_REGS->GROUP[2].PORT_OUTTGL = 1 << 1)
-#define GPIO_PC01_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 1)) & 0x01)
-#define GPIO_PC01_OutputEnable()      (PORT_REGS->GROUP[2].PORT_DIRSET = 1 << 1)
-#define GPIO_PC01_InputEnable()       (PORT_REGS->GROUP[2].PORT_DIRCLR = 1 << 1)
-#define GPIO_PC01_PIN                  PORT_PIN_PC01
+/*** Macros for SWITCH pin ***/
+#define SWITCH_Set()               (PORT_REGS->GROUP[2].PORT_OUTSET = 1 << 1)
+#define SWITCH_Clear()             (PORT_REGS->GROUP[2].PORT_OUTCLR = 1 << 1)
+#define SWITCH_Toggle()            (PORT_REGS->GROUP[2].PORT_OUTTGL = 1 << 1)
+#define SWITCH_Get()               (((PORT_REGS->GROUP[2].PORT_IN >> 1)) & 0x01)
+#define SWITCH_OutputEnable()      (PORT_REGS->GROUP[2].PORT_DIRSET = 1 << 1)
+#define SWITCH_InputEnable()       (PORT_REGS->GROUP[2].PORT_DIRCLR = 1 << 1)
+#define SWITCH_PIN                  PORT_PIN_PC01
 
 
 
