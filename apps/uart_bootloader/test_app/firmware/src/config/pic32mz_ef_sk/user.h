@@ -72,6 +72,8 @@ extern "C" {
 
 #define BTL_TRIGGER_RAM_START   KVA0_TO_KVA1(0x80000000)
 
+#define DCACHE_CLEAN_BY_ADDR(start, sz)
+
 static inline void APP_SystemReset( void )
 {
     /* Perform system unlock sequence */ 
