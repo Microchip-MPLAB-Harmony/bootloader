@@ -170,10 +170,10 @@ def main():
 
     if (device in devices):
         if (device == "PIC32MX"):
-            if options.progSize is None:
+            if options.sectSize is None:
                 error('device sector size is required (use -p option)')
 
-            PROGRAM_SIZE    = int(options.progSize)
+            PROGRAM_SIZE    = int(options.sectSize)
         else:
             PROGRAM_SIZE    = devices[device][0]
 
@@ -261,7 +261,7 @@ def main():
         resp = send_request(port, BL_CMD_RESET, uint32(16), uint32(0) * 4)
 
     if resp == BL_RESP_OK:
-        verbose(options.verbose, 'Reboot Done|')
+        verbose(options.verbose, 'Reboot Done')
     else:
         error('... Reset fail (status = 0x%02x)' % resp)
 

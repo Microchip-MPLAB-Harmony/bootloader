@@ -192,10 +192,10 @@ def main():
 
     if (device in devices):
         if (device == "PIC32MX"):
-            if options.progSize is None:
+            if options.sectSize is None:
                 error('device sector size is required (use -p option)')
 
-            PROGRAM_SIZE    = int(options.progSize)
+            PROGRAM_SIZE    = int(options.sectSize)
         else:
             PROGRAM_SIZE    = devices[device][0]
 
@@ -251,7 +251,7 @@ def main():
     # Create data blocks of PROGRAM_SIZE each
     blocks = [data[i:i + PROGRAM_SIZE] for i in range(0, len(data), PROGRAM_SIZE)]
 
-    verbose(options.verbose, 'Uploading %d blocks at offset %d (0x%x)' % (len(blocks), offset, offset))
+    verbose(options.verbose, 'Uploading %d blocks at offset %d (0x%x)\n' % (len(blocks), offset, offset))
 
     addr = offset
 

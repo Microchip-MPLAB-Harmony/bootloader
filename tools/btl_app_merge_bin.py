@@ -110,7 +110,7 @@ def main():
 
     # Append 'ff' from bootloader end to start of the application offset to destination file
     while cntr < offset:
-        btlMergedFile.write('%c' % 255)
+        btlMergedFile.write(bytes((255,)))
         cntr = cntr + 1
 
     # Append application binary to destination file

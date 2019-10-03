@@ -121,6 +121,8 @@ def main():
         else:
             break
 
+    print("\r\n##### Merged Bootloader and Application binaries to ", destinationFile, "#####")
+
     btlMergedFile.close()
 
 #------------------------------------------------------------------------------
