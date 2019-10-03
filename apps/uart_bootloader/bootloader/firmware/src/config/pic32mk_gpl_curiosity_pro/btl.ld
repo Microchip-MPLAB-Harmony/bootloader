@@ -116,7 +116,6 @@ MEMORY
   kseg0_program_mem     (rx)  : ORIGIN = 0x9FC01000, LENGTH = 8192
   kseg0_boot_mem              : ORIGIN = 0x9FC004B0, LENGTH = 0x0
   debug_exec_mem              : ORIGIN = 0x9FC20490, LENGTH = 0x3AA0
-  kseg0_boot_mem              : ORIGIN = 0x9FC20490, LENGTH = 0x0
   kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x480
   kseg1_boot_mem_4B0          : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0
   config_BFC03F40             : ORIGIN = 0xBFC03F40, LENGTH = 0x4
