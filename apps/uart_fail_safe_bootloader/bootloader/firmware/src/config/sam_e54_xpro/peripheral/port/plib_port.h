@@ -66,14 +66,14 @@
 // *****************************************************************************
 
 
-/*** Macros for GPIO_PB31 pin ***/
-#define GPIO_PB31_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = 1 << 31)
-#define GPIO_PB31_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = 1 << 31)
-#define GPIO_PB31_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = 1 << 31)
-#define GPIO_PB31_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 31)) & 0x01)
-#define GPIO_PB31_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = 1 << 31)
-#define GPIO_PB31_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = 1 << 31)
-#define GPIO_PB31_PIN                  PORT_PIN_PB31
+/*** Macros for SWITCH pin ***/
+#define SWITCH_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = 1 << 31)
+#define SWITCH_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = 1 << 31)
+#define SWITCH_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = 1 << 31)
+#define SWITCH_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 31)) & 0x01)
+#define SWITCH_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = 1 << 31)
+#define SWITCH_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = 1 << 31)
+#define SWITCH_PIN                  PORT_PIN_PB31
 
 
 
