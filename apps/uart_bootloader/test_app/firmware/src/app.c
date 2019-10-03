@@ -172,6 +172,8 @@ void APP_Tasks ( void )
             ramStart[2] = BTL_TRIGGER_PATTERN;
             ramStart[3] = BTL_TRIGGER_PATTERN;
 
+            DCACHE_CLEAN_BY_ADDR(ramStart, 16);
+
             APP_SystemReset();
         }
 
