@@ -66,14 +66,14 @@
 // *****************************************************************************
 
 
-/*** Macros for GPIO_PA27 pin ***/
-#define GPIO_PA27_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 27)
-#define GPIO_PA27_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 27)
-#define GPIO_PA27_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 27)
-#define GPIO_PA27_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 27)) & 0x01)
-#define GPIO_PA27_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 27)
-#define GPIO_PA27_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 27)
-#define GPIO_PA27_PIN                  PORT_PIN_PA27
+/*** Macros for SWITCH pin ***/
+#define SWITCH_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = 1 << 27)
+#define SWITCH_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = 1 << 27)
+#define SWITCH_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = 1 << 27)
+#define SWITCH_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 27)) & 0x01)
+#define SWITCH_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = 1 << 27)
+#define SWITCH_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = 1 << 27)
+#define SWITCH_PIN                  PORT_PIN_PA27
 
 
 
