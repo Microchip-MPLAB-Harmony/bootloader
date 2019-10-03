@@ -39,6 +39,10 @@
 #ifndef BOOTLOADER_H
 #define BOOTLOADER_H
 
+#define BTL_TRIGGER_RAM_START   0x20400000
+
+#define BTL_TRIGGER_LEN         16
+
 // *****************************************************************************
 /* Function:
     bool bootloader_Trigger(void);
