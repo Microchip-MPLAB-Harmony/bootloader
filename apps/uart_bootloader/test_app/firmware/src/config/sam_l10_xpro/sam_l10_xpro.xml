@@ -574,6 +574,9 @@
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
+            <String dnOrder="1" id="name">
+              <Value dnOrder="0">app_l10.c</Value>
+            </String>
           </Attributes>
         </File>
         <File dnOrder="1" id="APP0_H">
@@ -581,6 +584,9 @@
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
+            <String dnOrder="1" id="name">
+              <Value dnOrder="0">app_l10.h</Value>
+            </String>
           </Attributes>
         </File>
         <File dnOrder="2" id="CONFIGURATION_H">
@@ -603,14 +609,19 @@
             </Boolean>
           </Attributes>
         </Menu>
-        <File dnOrder="5" id="TASKS_C">
+        <String dnOrder="5" id="GEN_APP_TASK_NAME_0">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="app_l10"/>
+          </Values>
+        </String>
+        <File dnOrder="6" id="TASKS_C">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="6" id="USER_H">
+        <File dnOrder="7" id="USER_H">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
@@ -650,12 +661,7 @@
           </Values>
         </String>
         <KeyValueSet dnOrder="2" id="SERCOM_MODE">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="readOnly">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-          </Attributes>
-          <Values dnOrder="1">
+          <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom0" value="0"/>
           </Values>
         </KeyValueSet>

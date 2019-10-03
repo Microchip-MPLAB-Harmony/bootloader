@@ -54,6 +54,7 @@
 #include "definitions.h"
 
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: System "Tasks" Routine
@@ -67,7 +68,6 @@
   Remarks:
     See prototype in system/common/sys_module.h.
 */
-
 void SYS_Tasks ( void )
 {
     /* Maintain system services */
@@ -80,13 +80,12 @@ void SYS_Tasks ( void )
     
 
     /* Maintain the application's state machine. */
-        /* Call Application task APP. */
-    APP_Tasks();
+        /* Call Application task APP_L10. */
+    APP_L10_Tasks();
 
 
 
 }
-
 
 /*******************************************************************************
  End of File

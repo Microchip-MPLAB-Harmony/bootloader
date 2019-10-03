@@ -1,21 +1,29 @@
 /*******************************************************************************
-  System Initialization File
+  MPLAB Harmony Application Source File
+
+  Company:
+    Microchip Technology Inc.
 
   File Name:
-    initialization.c
+    app_l10.c
 
   Summary:
-    This file contains source code necessary to initialize the system.
+    This file contains the source code for the MPLAB Harmony application.
 
   Description:
-    This file contains source code necessary to initialize the system.  It
-    implements the "SYS_Initialize" function, defines the configuration bits,
-    and allocates any necessary global system resources,
+    This file contains the source code for the MPLAB Harmony application.  It
+    implements the logic of the application's state machine and it may call
+    API routines of other MPLAB Harmony modules in the system, such as drivers,
+    system services, and middleware.  However, it does not call any of the
+    system interfaces (such as the "Initialize" and "Tasks" functions) of any of
+    the modules in the system or make any assumptions about when those functions
+    are called.  That is the responsibility of the configuration-specific system
+    files.
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2019 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -43,92 +51,116 @@
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
-#include "configuration.h"
+
+#include "app_l10.h"
 #include "definitions.h"
-#include "device.h"
-
-
-
-// ****************************************************************************
-// ****************************************************************************
-// Section: Configuration Bits
-// ****************************************************************************
-// ****************************************************************************
-
-
-
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Driver Initialization Data
+// Section: Global Data Definitions
+// *****************************************************************************
+// *****************************************************************************
+
+// *****************************************************************************
+/* Application Data
+
+  Summary:
+    Holds application data
+
+  Description:
+    This structure holds the application's data.
+
+  Remarks:
+    This structure should be initialized by the APP_Initialize function.
+
+    Application strings and buffers are be defined outside this structure.
+*/
+
+APP_L10_DATA appData;
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Application Callback Functions
+// *****************************************************************************
+// *****************************************************************************
+
+/* TODO:  Add any necessary callback functions.
+*/
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Application Local Functions
 // *****************************************************************************
 // *****************************************************************************
 
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: System Data
-// *****************************************************************************
-// *****************************************************************************
-/* Structure to hold the object handles for the modules in the system. */
-SYSTEM_OBJECTS sysObj;
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Library/Stack Initialization Data
-// *****************************************************************************
-// *****************************************************************************
+/* TODO:  Add any necessary local functions.
+*/
 
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: System Initialization
+// Section: Application Initialization and State Machine Functions
 // *****************************************************************************
 // *****************************************************************************
-
-
 
 /*******************************************************************************
   Function:
-    void SYS_Initialize ( void *data )
-
-  Summary:
-    Initializes the board, services, drivers, application and other modules.
+    void APP_Initialize ( void )
 
   Remarks:
+    See prototype in app.h.
  */
 
-void SYS_Initialize ( void* data )
+void APP_L10_Initialize ( void )
 {
-    NVMCTRL_REGS->NVMCTRL_CTRLB = NVMCTRL_CTRLB_RWS(2);
+    appData.state = APP_L10_INIT;
 
-    PM_Initialize();
-
-  
-    PORT_Initialize();
-
-    CLOCK_Initialize();
-
-    NVMCTRL_Initialize();
-
-    EVSYS_Initialize();
-
-    SERCOM0_USART_Initialize();
-
-	BSP_Initialize();
-	SYSTICK_TimerInitialize();
+    APP_TIMER_START();
+}
 
 
+/******************************************************************************
+  Function:
+    void APP_Tasks ( void )
 
+  Remarks:
+    See prototype in app.h.
+ */
 
-    APP_L10_Initialize();
+void APP_L10_Tasks ( void )
+{
 
+    /* Check the application's current state. */
+    switch ( appData.state )
+    {
+        /* Application's initial state. */
+        case APP_L10_INIT:
+        {
+            printf("\n\r####### Application loaded from Bootloader #######\n\r");
 
-    NVIC_Initialize();
+            appData.state = APP_L10_BLINK_LED;
+            break;
+        }
 
+        case APP_L10_BLINK_LED:
+        {
+            APP_TIMER_DelayMs(1000);
+
+            LED_TOGGLE();
+
+            break;
+        }
+
+        default:
+        {
+            /* TODO: Handle error in application's state machine. */
+            break;
+        }
+    }
 }
 
 
 /*******************************************************************************
  End of File
-*/
+ */
