@@ -61,8 +61,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define BL_REQUEST              (0x5048434DU)
-#define BL_REQUEST_LEN          (16)
+#define BTL_TRIGGER_PATTERN (0x5048434DUL)
 
 // *****************************************************************************
 /* Application Data
@@ -81,7 +80,7 @@
 
 APP_DATA appData;
 
-static uint32_t *sram = (uint32_t *)APP_SRAM_START;
+static uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START;
 
 static volatile uint16_t nvmctrlStatus = 0;
 
@@ -123,7 +122,7 @@ void APP_Initialize ( void )
 {
     appData.state = APP_INIT;
 
-    SYSTICK_TimerStart();
+    APP_TIMER_START();
 }
 
 
@@ -169,7 +168,7 @@ void APP_Tasks ( void )
                 appData.state = APP_TRIGGER_BOOTLOADER;
             }
 
-            SYSTICK_DelayMs(1000);
+            APP_TIMER_DelayMs(1000);
 
             LED_TOGGLE();
 
@@ -182,12 +181,12 @@ void APP_Tasks ( void )
 
             printf("\n\r####### Disconnect console to program new firmware in other Bank from Bootloader #######\n\r");
 
-            sram[0] = BL_REQUEST;
-            sram[1] = BL_REQUEST;
-            sram[2] = BL_REQUEST;
-            sram[3] = BL_REQUEST;
+            ramStart[0] = BTL_TRIGGER_PATTERN;
+            ramStart[1] = BTL_TRIGGER_PATTERN;
+            ramStart[2] = BTL_TRIGGER_PATTERN;
+            ramStart[3] = BTL_TRIGGER_PATTERN;
 
-            NVIC_SystemReset();
+            APP_SystemReset();
         }
 
         default:
