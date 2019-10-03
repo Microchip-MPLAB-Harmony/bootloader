@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
- * MPLAB XC Compiler -  PIC32MX Bootloader linker script
+ * MPLAB XC Compiler -  PIC32MX 1XX/2XX/5XX Bootloader linker script
  * Build date : Jul 16 2019
  * 
  * Copyright (c) 2019, Microchip Technology Inc. and its subsidiaries ("Microchip")
@@ -106,9 +106,9 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 MEMORY
 {
   kseg0_program_mem     (rx)  : ORIGIN = 0x9D000000, LENGTH = 4096 /* All C files will be located here */
-  debug_exec_mem              : ORIGIN = 0x9FC00490, LENGTH = 0x760
-  kseg0_boot_mem              : ORIGIN = 0x9FC00490, LENGTH = 0x0
   kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x490
+  kseg0_boot_mem              : ORIGIN = 0x9FC00490, LENGTH = 0x0
+  debug_exec_mem              : ORIGIN = 0x9FC00490, LENGTH = 0x760
   config3                     : ORIGIN = 0xBFC00BF0, LENGTH = 0x4
   config2                     : ORIGIN = 0xBFC00BF4, LENGTH = 0x4
   config1                     : ORIGIN = 0xBFC00BF8, LENGTH = 0x4
