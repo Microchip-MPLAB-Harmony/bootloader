@@ -66,14 +66,14 @@
 // *****************************************************************************
 
 
-/*** Macros for GPIO_PB19 pin ***/
-#define GPIO_PB19_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = 1 << 19)
-#define GPIO_PB19_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = 1 << 19)
-#define GPIO_PB19_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = 1 << 19)
-#define GPIO_PB19_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 19)) & 0x01)
-#define GPIO_PB19_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = 1 << 19)
-#define GPIO_PB19_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = 1 << 19)
-#define GPIO_PB19_PIN                  PORT_PIN_PB19
+/*** Macros for SWITCH pin ***/
+#define SWITCH_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = 1 << 19)
+#define SWITCH_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = 1 << 19)
+#define SWITCH_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = 1 << 19)
+#define SWITCH_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 19)) & 0x01)
+#define SWITCH_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = 1 << 19)
+#define SWITCH_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = 1 << 19)
+#define SWITCH_PIN                  PORT_PIN_PB19
 
 
 
