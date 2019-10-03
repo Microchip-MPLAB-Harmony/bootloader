@@ -53,8 +53,6 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define BL_REQ_PIN              PIN_PA14
-
 #define FLASH_START             (0x00000000UL)
 #define FLASH_LENGTH            (0x4000UL)
 #define PAGE_SIZE               (64UL)
@@ -114,8 +112,6 @@ static uint32_t input_buffer[WORDS(OFFSET_SIZE + DATA_SIZE)];
 
 static uint32_t flash_data[WORDS(DATA_SIZE)];
 static uint32_t flash_addr          = 0;
-
-static uint32_t *sram               = (uint32_t *)0x20000000;
 
 static uint32_t unlock_begin        = 0;
 static uint32_t unlock_end          = 0;
@@ -267,12 +263,6 @@ static void command_task(void)
     }
     else if (BL_CMD_RESET == input_command)
     {
-        // Unrolling the loop here saves significant amount of Flash
-        sram[0] = input_buffer[0];
-        sram[1] = input_buffer[1];
-        sram[2] = input_buffer[2];
-        sram[3] = input_buffer[3];
-
         SERCOM2_USART_WriteByte(BL_RESP_OK);
 
         while(SERCOM2_USART_TransmitComplete() == false);
@@ -342,28 +332,9 @@ void run_Application(void)
     asm("bx %0"::"r" (reset_vector));
 }
 
-bool bootloader_Trigger(void)
+bool __WEAK bootloader_Trigger(void)
 {
-    uint32_t i;
-
-    // Cheap delay. This should give at leat 1 ms delay.
-    for (i = 0; i < 2000; i++)
-    {
-        asm("nop");
-    }
-
-    if (PORT_PinRead(BL_REQ_PIN) == false)
-    {
-        return true;
-    }
-
-    if (BTL_GUARD == sram[0] && BTL_GUARD == sram[1] &&
-        BTL_GUARD == sram[2] && BTL_GUARD == sram[3])
-    {
-        sram[0] = 0;
-        return true;
-    }
-
+    /* Function can be overriden with custom implementation */
     return false;
 }
 
