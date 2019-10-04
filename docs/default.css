@@ -20,6 +20,11 @@ table.Table1 {
     font-size: 9pt;
 }
 
+table.Table2 {
+    width: 85%;
+    font-size: 9pt;
+}
+
 .Element901 {
     color: #000000;
     margin-left : 0px;

@@ -52,22 +52,31 @@ MPLAB Harmony Configurations</div>
 Components Used</div>
 
 <ul class="Element630">
-<li class="Element600">Systick peripheral library</li>
 <li class="Element600">STDIO Library</li>
 </ul><p class="Element10">
 &nbsp;</p>
 <p class="Element10">
 The following components used may vary based on the project configuration selected:</p>
 <ul class="Element630">
-<li class="Element600">USART or SERCOM peripheral library</li>
+<li class="Element600">Systick or CORETIMER peripheral library</li>
+<li class="Element600">USART or SERCOM oe FLEXCOM peripheral library</li>
+<li class="Element600">BSP</li>
 </ul><p class="Element10">
 &nbsp;</p>
 <div class="Element15">
 Other MHC Settings:</div>
 
 <ul class="Element630">
-<li class="Element600"><span style="color: #000000">Provide Application Start Address in XC32-LD settings matching the bootloader application value</span></li>
-<li class="Element600"><span style="color: #000000">Disable Fuse settings to generate binary out of the hex file</span></li>
+<li class="Element600"><strong>For SAM Devices:</strong>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Provide Application Start Address in XC32-LD settings matching the bootloader application value</span></li>
+<li class="Element601"><span style="color: #000000">Disable Fuse settings to generate binary out of the hex file</span></li>
+</ul></li>
+<li class="Element600"><span style="color: #000000"><strong>For PIC32M Devices</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Provide custom application linker script for application start address matching the Application start address in bootloader project</span></li>
+<li class="Element601"><span style="color: #000000">Remove the Device Fuse configurations from the custom linker script as they will be updated by the bootloader project</span></li>
+</ul></li>
 </ul></div>
 </div>
 </div>

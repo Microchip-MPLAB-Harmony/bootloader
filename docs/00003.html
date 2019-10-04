@@ -50,11 +50,18 @@ test_app</div>
 <div class="Element10">
 
 <ul class="Element630">
-<li class="Element600"><span style="color: #000000">This application is a test application which resides from the end of bootloader size in device flash memory</span></li>
+<li class="Element600"><span style="color: #000000">This application is a test application which resides from</span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">The end of bootloader size in device flash memory for SAM devices</span></li>
+<li class="Element601"><span style="color: #000000">The end of bootloader size in Program Flash memory for PIC32MX devices with 3KB bootflash memory.</span></li>
+<li class="Element601"><span style="color: #000000">The start of Program Flash memory for PIC32MZ, PIC32MK and PIC32MX devices</span></li>
+</ul></li>
 <li class="Element600"><span style="color: #000000">This application will be loaded into flash memory by bootloader application</span></li>
 <li class="Element600"><span style="color: #000000">The application Blinks an LED and provides console output</span></li>
-<li class="Element600"><span style="color: #000000">This application uses the On board Switch to trigger the bootloader from firmware</span></li>
-<li class="Element600"><span style="color: #000000">Once the switch is pressed it loads first 16 bytes of RAM with bootloader request pattern and resets the device</span></li>
+<li class="Element600"><span style="color: #000000">This application uses the On board Switch to trigger the bootloader from firmware.<strong> May not be supported on all devices.</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Once the switch is pressed it loads first 16 bytes of RAM with bootloader request pattern and resets the device</span></li>
+</ul></li>
 </ul></div>
 </div>
 <a name="546F70696373"></a><div class="Element14">
