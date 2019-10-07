@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>Hardware Setup</title>
+<title>Bootloader Trigger Methods</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00001.html" target="topic">Bootloader Applications Help</a> &gt; uart_bootloader &gt; <a href="00002.html" target="topic">bootloader</a> &gt; <a href="00022.html" target="topic">Hardware Setup</a></div>
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00012.html" target="topic">How The Library Works</a> &gt; <a href="00022.html" target="topic">Bootloader Trigger Methods</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -26,15 +26,15 @@
 MPLAB Harmony Bootloader Help</div>
 </td><td width="25%">
 <div class="Element2">
-<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00023.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00024.html" target="topic">Next</a></div>
+<a href="00019.html" target="topic">Previous</a> | <a href="00012.html" target="topic">Up</a> | <a href="00010.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER uart_bootloader bootloader Hardware Setup Topic Title: Hardware Setup)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Trigger Method Topic Title: Bootloader Trigger Methods)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-Hardware Setup</div>
+Bootloader Trigger Methods</div>
 </div>
 </div>
 
@@ -48,285 +48,86 @@ Hardware Setup</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-
+<p class="Element10">
+Bootloader can be invoked in number of ways:</p>
 <ol class="Element630">
-<li value="1" class="Element600"><strong>Project pic32mk_gpl_curiosity_pro.X</strong>
+<li value="1" class="Element600">Bootloader will run automatically if there is no valid application firmware.
 <ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602">PIC32MK GPL Curiosity Pro Development Board</li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect a micro USB cable to the USB to UART port J400. This will enumerate as a COM port on the PC.</li>
-<li class="Element602">Connect a micro USB cable to the USB DEBUG port J500</li>
-</ul></li>
+<li class="Element601">Firmware is considered valid if the first word at application start address is not <strong>0xFFFFFFFF</strong></li>
+<li class="Element601">Normally this word contains initial stack pointer value, so it will never be <strong>0xFFFFFFFF</strong> unless device is erased.</li>
 </ul></li>
 </ol><p class="Element10">
 &nbsp;</p>
 
 <ol class="Element630">
-<li value="2" class="Element600"><strong>Project pic32mk_mcj_curiosity_pro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602">PIC32MK MCJ Curiosity Pro Development Board</li>
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Install an <a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a> board on to the <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATMBUSADAPTER-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">mikroBUS Xplained Pro</a> board</li>
-<li class="Element602">Connect the <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATMBUSADAPTER-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">mikroBUS Xplained Pro</a> board to the J501 header of the PIC32MK MCJ Curiosity Pro Development Board</li>
-<li class="Element602">Connect micro USB cable to the 'Debug USB' connector(J1) on the board to the computer.</li>
-<li class="Element602">Connect a mini USB cable from the USB UART click board to the computer.</li>
-</ul></li>
-</ul></li>
+<li value="2" class="Element600">Bootloader application can implement the <strong><a href="00042.html" target="topic">bootloader_Trigger</a>()</strong> function which will be called during system initialization
+<ol class="Element631">
+<li value="1" class="Element601">A GPIO pin can be used as an external trigger to invoke bootloader at startup.</li>
+</ol></li>
 </ol><p class="Element10">
 &nbsp;</p>
 
 <ol class="Element630">
-<li value="3" class="Element600"><strong>Project pic32mx_125_sk.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/Developmenttools/ProductDetails/dm320100');"><img src="indicator_external_link.gif" border="0" alt="" title="">PIC32MX 1/2/5 Starter Kit</a></li>
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320002');"><img src="indicator_external_link.gif" border="0" alt="" title="">Starter Kit I/O Expansion Board</a></li>
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Mount starter kit on the J1 connector of I/O Expansion Board</li>
-<li class="Element602">Connect <strong>TX pin</strong> of <a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a> to <strong>U2RX pin of J11</strong> header on <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320002');"><img src="indicator_external_link.gif" border="0" alt="" title="">Starter Kit I/O Expansion Board</a></li>
-<li class="Element602">Connect<strong> RX pin</strong> of <a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a> to <strong>U2TX pin of J11</strong> header on <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320002');"><img src="indicator_external_link.gif" border="0" alt="" title="">Starter Kit I/O Expansion Board</a></li>
-<li class="Element602">Connect <strong>GND pin</strong> of <a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a> to <strong>GND pin of J11</strong> header on <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320002');"><img src="indicator_external_link.gif" border="0" alt="" title="">Starter Kit I/O Expansion Board</a></li>
-<li class="Element602">Connect mini USB cable to the 'Debug USB' connector(J3) on the board to the computer.</li>
-<li class="Element602">Connect a mini USB cable from the <a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a> board to the computer.</li>
-</ul></li>
-</ul></li>
+<li value="2" class="Element600">Bootloader can run on application (internal) request if the configured number of bytes from start of SRAM are equal to some trigger pattern.</li>
 </ol><p class="Element10">
 &nbsp;</p>
+<p class="Element10">
+Example Implementation of <strong><a href="00042.html" target="topic">bootloader_Trigger</a>()</strong>&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><div class="Element13"><div class="Element12"><pre class="Element12"><strong><span style="color: #000080">#define</span></strong> BTL_TRIGGER_PATTERN  0x5048434D
 
-<ol class="Element630">
-<li value="4" class="Element600"><strong>Project pic32mx470_curiosity.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/Developmenttools/ProductDetails/dm320103');"><img src="indicator_external_link.gif" border="0" alt="" title="">PIC32MX Curiosity Development Board</a></li>
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect mini USB cable to the 'Debug USB' connector(J3) on the board to the computer.</li>
-<li class="Element602">Install an <a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a> board on to the mikroBUS socket J5</li>
-<li class="Element602">Connect mini USB cable to the <a href="#" onclick="openExternalLink('https://www.mikroe.com/usb-uart-click');"><img src="indicator_external_link.gif" border="0" alt="" title="">USB UART click</a> board. This will enumerate the USB to UART port.</li>
-<li class="Element602"><strong>Note</strong>: Ensure that the series resistors on the mikroBUS headers are of value <strong>0 Ohms</strong>.</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
+<strong><span style="color: #000080">static</span></strong> uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START;
+
+<strong><span style="color: #000080">bool</span></strong> bootloader_Trigger(<strong><span style="color: #000080">void</span></strong>)
+{
+    <i><span style="color: #008000">/* Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter
+     * Bootloader.
+     */</span></i>
+    <strong><span style="color: #000080">if</span></strong> (BTL_TRIGGER_PATTERN == ramStart[0] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[1] &amp;&amp;
+        BTL_TRIGGER_PATTERN == ramStart[2] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[3])
+    {
+        ramStart[0] = 0;
+        <strong><span style="color: #000080">return</span></strong> <strong><span style="color: #000080">true</span></strong>;
+    }
+
+    <i><span style="color: #008000">/* Check for Switch press to enter Bootloader */</span></i>
+    <strong><span style="color: #000080">if</span></strong> (SWITCH_Get() == 0)
+    {
+        <strong><span style="color: #000080">return</span></strong> <strong><span style="color: #000080">true</span></strong>;
+    }
+
+    <strong><span style="color: #000080">return</span></strong> <strong><span style="color: #000080">false</span></strong>;
+}
+</pre></div></div>
+<p class="Element10">
 &nbsp;</p>
+<p class="Element10">
+The following code can be used by the application to request the bootloader execution:&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><div class="Element13"><div class="Element12"><pre class="Element12"><strong><span style="color: #000080">void</span></strong> invoke_bootloader(<strong><span style="color: #000080">void</span></strong>)
+{
+    uint32_t *sram = (uint32_t *)BTL_TRIGGER_RAM_START;
 
-<ol class="Element630">
-<li value="5" class="Element600"><strong>Project pic32mz_das_sk.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used:</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('http://www.microchip.com/DevelopmentTools/ProductDetails/DM320010-C');"><img src="indicator_external_link.gif" border="0" alt="" title="">PIC32MZ Embedded Graphics with Stacked DRAM (DA) Starter Kit (Crypto)</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup:</strong>
-<ul class="Element632">
-<li class="Element602">Connect a micro USB cable to the UART-USB port J5</li>
-<li class="Element602">For programming, connect a micro USB cable to the USB Debug port J19</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
+    sram[0] = 0x5048434D;
+    sram[1] = 0x5048434D;
+    sram[2] = 0x5048434D;
+    sram[3] = 0x5048434D;
+
+    NVIC_SystemReset();
+}</pre></div></div>
+<p class="Element10">
 &nbsp;</p>
-
-<ol class="Element630">
-<li value="6" class="Element600"><strong>Project pic32mz_ef_sk.X.</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used:</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/Developmenttools/ProductDetails/Dm320007');"><img src="indicator_external_link.gif" border="0" alt="" title="">PIC32MZ Embedded Connectivity with FPU (EF) Starter Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup:</strong>
-<ul class="Element632">
-<li class="Element602">Connect a mini USB cable to the UART-USB port J11</li>
-<li class="Element602">For programming, connect a mini USB cable to the USB Debug port J3</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="7" class="Element600"><strong>Project sam_c21n_xpro.X.</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamc21n-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM C21N Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="8" class="Element600"><strong>Project sam_da1_xpro.X.</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used:</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM DA1 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup:</strong>
-<ul class="Element632">
-<li class="Element602">Connect a micro USB cable to the DEBUG port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="9" class="Element600"><strong>Project sam_d11_xpro.X.</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used:</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMD11-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D11 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup:</strong>
-<ul class="Element632">
-<li class="Element602">Connect a micro USB cable to the DEBUG port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="10" class="Element600"><strong>Project sam_d20_xpro.X.</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAMD20-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D20 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="11" class="Element600"><strong>Project sam_d21_xpro.X.</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D21 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="12" class="Element600"><strong>Project sam_e54_xpro.X.</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used:</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsame54-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM E54 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="13" class="Element600"><strong>Project sam_e70_xult.X.</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/DM320113');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM E70 Xplained Ultra Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="14" class="Element600"><strong>Project sam_g55_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('http://www.microchip.com/DevelopmentTools/ProductDetails/atsamg55-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM G55 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="15" class="Element600"><strong>Project sam_l10_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320204');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L10 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="16" class="Element600"><strong>Project sam_l21_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML21-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L21 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="17" class="Element600"><strong>Project sam_l22_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML22-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L22 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">No Special hardware Setup Required</li>
-</ul></li>
-</ul></li>
-</ol></div>
+<div class="Element15">
+NOTE</div>
+<p class="Element10">
+External reset takes priority over any other method of entry.</p></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00001.html" target="topic">Bootloader Applications Help</a> &gt; uart_bootloader &gt; <a href="00002.html" target="topic">bootloader</a> &gt; <a href="00022.html" target="topic">Hardware Setup</a></div>
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00012.html" target="topic">How The Library Works</a> &gt; <a href="00022.html" target="topic">Bootloader Trigger Methods</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -334,13 +135,13 @@ Hardware Setup</div>
 MPLAB Harmony Bootloader Help</div>
 </td><td width="25%">
 <div class="Element4">
-<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00023.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00024.html" target="topic">Next</a></div>
+<a href="00019.html" target="topic">Previous</a> | <a href="00012.html" target="topic">Up</a> | <a href="00010.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER uart_bootloader bootloader Hardware Setup Topic Title: Hardware Setup)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Trigger Method Topic Title: Bootloader Trigger Methods)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

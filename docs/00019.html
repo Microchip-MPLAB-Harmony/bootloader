@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<title>Bootloader Protocol</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="Doc-O-Matic" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <link rel="STYLESHEET" href="default.css" type="text/css" />
+
+<script type="text/javascript" src="scripts.js"></script>
+</head>
+<body class="Element700" onload="onBodyLoadEx('frames.html', 'topic', '00019.html');" onmousedown="onBodyMouseDown();">
+
+<!-- Begin Popups -->
+
+<!-- End Popups -->
+
+<!-- Begin Page Header -->
+<div class="Element710" id="areafixed">
+<div class="Element94">
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00012.html" target="topic">How The Library Works</a> &gt; <a href="00019.html" target="topic">Bootloader Protocol</a></div>
+<div class="Element92">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element1">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element2">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element90">
+<a href="00012.html" target="topic">Previous</a> | <a href="00012.html" target="topic">Up</a> | <a href="00022.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element96">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Protocol Topic Title: Bootloader Protocol)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table><div class="Element5">
+Bootloader Protocol</div>
+</div>
+</div>
+
+<!-- End Page Header -->
+
+<!-- Begin Client Area -->
+<div class="Element720" id="areascroll">
+<div class="Element721">
+
+<!-- Begin Page Content -->
+<a name="PageContent"></a><div class="Element58">
+<a name="4465736372697074696F6E"></a><div class="Element11">
+<div class="Element10">
+<div class="Element15">
+UART Bootloader Protocol</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The uart bootloader protocol as shown in below figure is common for all the supported commands.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><p class="Element10" style="text-align: center;">
+<img src="uart_bootloader_protocol.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<ul class="Element630">
+<li class="Element600"><strong>GUARD</strong>
+<ul class="Element631">
+<li class="Element601">The Guard value must be a constant value of <strong>0x5048434D</strong></li>
+<li class="Element601">This value provides protection against spurious commands</li>
+<li class="Element601">Bootloader always checks for the Guard value at start of packet reception and proceeds further accordingly</li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Data Size</strong>
+<ul class="Element631">
+<li class="Element601">This field indicates the number of data bytes to be received</li>
+<li class="Element601">This value varies for different commands</li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Command</strong>
+<ul class="Element631">
+<li class="Element601">Indicates the command to be processed. Each command is of 1 Byte width</li>
+<li class="Element601">Below are the supported commands
+<ul class="Element632">
+<li class="Element602">Unlock (0xA0)</li>
+<li class="Element602">Data (0xA1)</li>
+<li class="Element602">Verify (0xA2)</li>
+<li class="Element602">Reset (A3)</li>
+</ul></li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Data</strong>
+<ul class="Element631">
+<li class="Element601">Contains the actual Data to be processed based on the command.</li>
+<li class="Element601">Length of the data to be received is indicated by <strong>Data Size </strong>field</li>
+<li class="Element601">Bootloader receives data in size of words</li>
+<li class="Element601">All data words must be sent in a little-endian (LSB first) format</li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Response Codes</div>
+<p class="Element10">
+Bootloader will send a single character response code in response to each command. Sequential commands can only be send after the response code is received for a previous command, or after 100 ms timeout without a response.&nbsp;</p>
+<p class="Element10">
+Possible response codes are:</p>
+<ul class="Element630">
+<li class="Element600">OK (0x50) – command was received and processed successfully</li>
+<li class="Element600">Error (0x51) – there were errors during the processing of the command</li>
+<li class="Element600">Invalid (0x52) – invalid command is received</li>
+<li class="Element600">CRC OK (0x53) – CRC verification was successful</li>
+<li class="Element600">CRC Fail (0x54) – CRC verification failed</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Command Description</div>
+<p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Unlock Command</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The Unlock Command sequence is as shown in below figure with corresponding responses.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><p class="Element10" style="text-align: center;">
+<img src="uart_bootloader_unlock_command.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<ul class="Element630">
+<li class="Element600">Unlock command must be issued before the first Data command
+<ul class="Element631">
+<li class="Element601">It is used to calculate application start address and end address</li>
+<li class="Element601">This information will be used to validate if the addresses sent are within the range of flash memory</li>
+<li class="Element601">It will also be used to validate the address coming with data packet to be programmed are within the region for which the unlock command is invoked</li>
+</ul></li>
+<li class="Element600">Number of bytes of data to be received is 8 Bytes (start Offset + Image Size)</li>
+<li class="Element600">Start Offset
+<ul class="Element631">
+<li class="Element601">Its the application offset from the beginning of the flash memory</li>
+<li class="Element601">It is device dependent and should be always greater than or equal to the bootloader end offset</li>
+<li class="Element601">It must be aligned at an Erase Unit Size boundary, which is also device dependent</li>
+<li class="Element601">To upgrade the bootloader itself this value must be set to 0</li>
+</ul></li>
+<li class="Element600">Image size must be in increments of Erase Unit bytes which is also device dependent</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Data Command</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The Data Command sequence is as shown in below figure with corresponding responses.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><p class="Element10" style="text-align: center;">
+<img src="uart_bootloader_Data_command.png" border="0" alt="" title="">&nbsp;</p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600">Data command is used to send the image data</li>
+<li class="Element600">Data size is equal to sum of block start offset (4 Bytes) and Erase Unit Size which is device dependent</li>
+<li class="Element600">Block start offset must be located inside the region previously unlocked via the Unlock command</li>
+<li class="Element600">Attempts to request the write outside of the unlocked region will result in error and supplied data will be discarded</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Verify Command</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The Verify Command sequence is as shown in below figure with corresponding responses.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><p class="Element10" style="text-align: center;">
+<img src="uart_bootloader_Verify_command.png" border="0" alt="" title="">&nbsp;</p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600">Verify command is used to verify the image data sent and programmed</li>
+<li class="Element600">Image CRC is a standard IEEE CRC32 with a polynomial of 0xEDB88320</li>
+<li class="Element600">Internal CRC is calculated based on the values actually read from the Flash memory after programming, so it verifies the whole chain.</li>
+<li class="Element600">Image CRC is calculated over the previously unlocked region.</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Reset Command</div>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The Reset Command sequence is as shown in below figure with corresponding responses.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><p class="Element10" style="text-align: center;">
+<img src="uart_bootloader_Reset_command.png" border="0" alt="" title="">&nbsp;</p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600">Reset command is used to exit the bootloader and run the application</li>
+<li class="Element600">It is necessary if the host has no control over the reset pin. It can also be useful even if host has control over the Reset</li>
+<li class="Element600">This command allows host to communicate up to 4 words of arbitrary information to the application</li>
+<li class="Element600">Supplied arbitrary values are passed to the application in the first 4 locations in the SRAM</li>
+<li class="Element600">Supplied values must not be all equal to GUARD Bytes, as this will request the bootloader execution upon reset instead of running the application</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Note</div>
+<p class="Element10">
+As this bootloader supports simultaneous Flash memory write and reception of the next block of data, The next block of data may be transmitted as soon as the status code is returned for the first one.&nbsp;</p>
+<p class="Element10">
+Because of this behavior, the status code for the last block will be sent before this block is written into the Flash memory. To ensure that this block is written, host must send another command and wait for the response. So either Verify or Reset command must be sent after the last block of data.</p></div>
+</div>
+</div>
+<!-- End Page Content -->
+
+<!-- Begin Page Footer -->
+<div class="Element95">
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00012.html" target="topic">How The Library Works</a> &gt; <a href="00019.html" target="topic">Bootloader Protocol</a></div>
+<div class="Element93">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element3">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element4">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element91">
+<a href="00012.html" target="topic">Previous</a> | <a href="00012.html" target="topic">Up</a> | <a href="00022.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element97">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Protocol Topic Title: Bootloader Protocol)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table></div>
+
+<!-- End Page Footer -->
+</div>
+</div>
+
+<!-- End Client Area -->
+</body></html>

@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<title>Bootloader Sizing and Considerations</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="Doc-O-Matic" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <link rel="STYLESHEET" href="default.css" type="text/css" />
+
+<script type="text/javascript" src="scripts.js"></script>
+</head>
+<body class="Element700" onload="onBodyLoadEx('frames.html', 'topic', '00043.html');" onmousedown="onBodyMouseDown();">
+
+<!-- Begin Popups -->
+
+<!-- End Popups -->
+
+<!-- Begin Page Header -->
+<div class="Element710" id="areafixed">
+<div class="Element94">
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00009.html" target="topic">Configuring the Library</a> &gt; <a href="00043.html" target="topic">Bootloader Sizing and Considerations</a></div>
+<div class="Element92">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element1">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element2">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element90">
+<a href="00001.html" target="topic">Previous</a> | <a href="00009.html" target="topic">Up</a> | <a href="00015.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element96">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOOADER Sizing and Considerations Topic Title: Bootloader Sizing and Considerations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table><div class="Element5">
+Bootloader Sizing and Considerations</div>
+</div>
+</div>
+
+<!-- End Page Header -->
+
+<!-- Begin Client Area -->
+<div class="Element720" id="areascroll">
+<div class="Element721">
+
+<!-- Begin Page Content -->
+<a name="PageContent"></a><div class="Element58">
+<a name="4465736372697074696F6E"></a><div class="Element11">
+<div class="Element10">
+<div class="Element15">
+Bootloader Sizes</div>
+
+<ul class="Element630">
+<li class="Element600">The example Bootloaders provided in the <strong>apps/uart_bootloader/bootloader/ </strong>folder have optimization settings for use by most MPLAB XC32 C/C++ Compiler users, which is –O1.</li>
+<li class="Element600">However, in terms of size, this option does not produce the most optimal code. Turning on the –Os will reduce the size of the Bootloader.</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+Following table provides the maximum Bootloader size based on Optimization and Erase unit Size in Bytes.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p><div class="Element63">
+<div class="TableDiv">
+<table cellspacing="0" class="Table1">
+<tr>
+<td class="Element65" valign="top" width="75%">
+<div class="Element66">
+Device&nbsp;</div></td><td class="Element65" valign="top" width="8%">
+<div class="Element66">
+-O1&nbsp;</div></td><td class="Element65" valign="top" width="8%">
+<div class="Element66">
+-Os&nbsp;</div></td><td class="Element65" valign="top" width="9%">
+<div class="Element66">
+Erase Unit Size&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+PIC32MK GPL Curiosity Pro Development Board&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+4616&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+4320&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+4096&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+PIC32MK MCJ Curiosity Pro Development Board&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+4480&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+4180&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+4096&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+PIC32MX 1/2/5 Starter Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+3320&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+3040&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+1024&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+PIC32MX Curiosity Development Board&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+3520&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+3104&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+4096&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+PIC32MZ Embedded Graphics with Stacked DRAM (DA) Starter Kit (Crypto)&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+5464&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+5156&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+16384&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+PIC32MZ Embedded Connectivity with FPU (EF) Starter Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+5412&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+5116&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+16384&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1524&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1336&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1572&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1372&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1572&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1372&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1584&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1384&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1572&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1372&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1672&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1416&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+8192&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM E70 Xplained Ultra Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1792&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1572&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+8192&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM G55 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1704&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1484&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+8192&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1592&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1376&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1624&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1412&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="75%">
+<div class="Element68">
+SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1672&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+1452&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+256&nbsp;</div></td></tr></table></div></div>
+<p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Note</div>
+
+<ul class="Element630">
+<li class="Element600">The bootloader size for all the configurations will be rounded off to the nearest erase unit size</li>
+<li class="Element600">The minimum size of the bootloader may also vary based on the <strong>Device BOOTPROT</strong> configuration bit value for SAM devices. For all of above M0+ based SAM devices bootloader length is <strong>2048 Bytes</strong></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Size change considerations (For SAM and PIC32MX devices)</div>
+<p class="Element10">
+It must be ensured that the user application’s memory region does not overlap with the memory region reserved for the Bootloader.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The Bootloader generated by MHC should be considered a starting point for your product’s Bootloader. As such, adding new features may cause the Bootloader to exceed the default size calculated.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+If the size of the Bootloader changes, the following steps should be performed to adjust both the Bootloader and the application in order to make sure that both fit and make best use of the device memory:</p>
+<ul class="Element630">
+<li class="Element600">Increase the <strong>Bootloader Size</strong> in Bootloader MHC config menu to some approximate value and regenerate the code</li>
+<li class="Element600">Determine the new ending address of the Bootloader. This can be done by using either the .map file generated by MPLAB X IDE with the respective Compiler, or by using the ELFViewer plug-in for MPLAB X IDE</li>
+<li class="Element600">Round the size from the map file to the nearest <strong>ERASE unit size</strong> or the nearest <strong>BOOTPROT</strong> configuration value</li>
+<li class="Element600">Enter the new value again in <strong>Bootloader Size</strong> in Bootloader MHC config menu</li>
+<li class="Element600">Change the Application start Address from system settings in both Bootloader and application projects accordingly if it is falling inside bootloader region</li>
+<li class="Element600">Recompile both the Bootloader and the application, as well as test operations.</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+If only the Application start address needs to be modified for application then perform following steps:</p>
+<ul class="Element630">
+<li class="Element600">Change the Application start Address from system settings in both Bootloader and application projects accordingly</li>
+<li class="Element600">Recompile both the Bootloader and the application, as well as test operations</li>
+</ul></div>
+</div>
+</div>
+<!-- End Page Content -->
+
+<!-- Begin Page Footer -->
+<div class="Element95">
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00009.html" target="topic">Configuring the Library</a> &gt; <a href="00043.html" target="topic">Bootloader Sizing and Considerations</a></div>
+<div class="Element93">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="25%">
+<div class="Element3">
+MPLAB Harmony Bootloader Help</div>
+</td><td width="25%">
+<div class="Element4">
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
+</td><td width="25%">
+<div class="Element91">
+<a href="00001.html" target="topic">Previous</a> | <a href="00009.html" target="topic">Up</a> | <a href="00015.html" target="topic">Next</a></div>
+</td><td width="25%">
+<div class="Element97">
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOOADER Sizing and Considerations Topic Title: Bootloader Sizing and Considerations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+</td></tr></table></div>
+
+<!-- End Page Footer -->
+</div>
+</div>
+
+<!-- End Client Area -->
+</body></html>

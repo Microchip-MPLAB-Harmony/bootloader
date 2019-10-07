@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>bootloader</title>
+<title>test_app</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00001.html" target="topic">Bootloader Applications Help</a> &gt; uart_fail_safe_bootloader &gt; <a href="00004.html" target="topic">bootloader</a></div>
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00002.html" target="topic">Bootloader Applications Help</a> &gt; uart_bootloader &gt; <a href="00004.html" target="topic">test_app</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -26,15 +26,15 @@
 MPLAB Harmony Bootloader Help</div>
 </td><td width="25%">
 <div class="Element2">
-<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00028.html" target="topic">Previous</a> | <a href="00001.html" target="topic">Up</a> | <a href="00029.html" target="topic">Next</a></div>
+<a href="00028.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00029.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Applications uart_fail_safe_bootloader bootloader Topic Title: bootloader)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Applications uart_bootloader test_app Topic Title: test_app)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-bootloader</div>
+test_app</div>
 </div>
 </div>
 
@@ -50,10 +50,18 @@ bootloader</div>
 <div class="Element10">
 
 <ul class="Element630">
-<li class="Element600"><span style="color: #000000">This application is a fail safe bootloader application which resides in the starting location of the both the banks of device flash memory</span></li>
-<li class="Element600"><span style="color: #000000">The application calls the bootloader_Task() which receives application to be programmed into opposite bank of flash memory over UART channel</span></li>
-<li class="Element600"><span style="color: #000000">The application uses the Virtual Com port of the device (EDBG port) to receive application binary from host PC</span></li>
-<li class="Element600"><span style="color: #000000">This application uses the On board Switch as bootloader trigger pin to force enter the bootloader at reset of device.</span></li>
+<li class="Element600"><span style="color: #000000">This application is a test application which resides from</span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">The end of bootloader size in device flash memory for SAM devices</span></li>
+<li class="Element601"><span style="color: #000000">The end of bootloader size in Program Flash memory for PIC32MX devices with 3KB bootflash memory.</span></li>
+<li class="Element601"><span style="color: #000000">The start of Program Flash memory for PIC32MZ, PIC32MK and PIC32MX devices</span></li>
+</ul></li>
+<li class="Element600"><span style="color: #000000">This application will be loaded into flash memory by bootloader application</span></li>
+<li class="Element600"><span style="color: #000000">The application Blinks an LED and provides console output</span></li>
+<li class="Element600"><span style="color: #000000">This application uses the On board Switch to trigger the bootloader from firmware.<strong> May not be supported on all devices.</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Once the switch is pressed it loads first 16 bytes of RAM with bootloader request pattern and resets the device</span></li>
+</ul></li>
 </ul></div>
 </div>
 <a name="546F70696373"></a><div class="Element14">
@@ -96,7 +104,7 @@ This section provides information on how to run an application using the MPLAB X
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00001.html" target="topic">Bootloader Applications Help</a> &gt; uart_fail_safe_bootloader &gt; <a href="00004.html" target="topic">bootloader</a></div>
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00002.html" target="topic">Bootloader Applications Help</a> &gt; uart_bootloader &gt; <a href="00004.html" target="topic">test_app</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -104,13 +112,13 @@ This section provides information on how to run an application using the MPLAB X
 MPLAB Harmony Bootloader Help</div>
 </td><td width="25%">
 <div class="Element4">
-<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00028.html" target="topic">Previous</a> | <a href="00001.html" target="topic">Up</a> | <a href="00029.html" target="topic">Next</a></div>
+<a href="00028.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00029.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Applications uart_fail_safe_bootloader bootloader Topic Title: bootloader)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER Applications uart_bootloader test_app Topic Title: test_app)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

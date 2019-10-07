@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00001.html" target="topic">Bootloader Applications Help</a> &gt; uart_bootloader &gt; <a href="00003.html" target="topic">test_app</a> &gt; <a href="00028.html" target="topic">Running The Application</a></div>
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00002.html" target="topic">Bootloader Applications Help</a> &gt; uart_bootloader &gt; <a href="00003.html" target="topic">bootloader</a> &gt; <a href="00028.html" target="topic">Running The Application</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -26,13 +26,13 @@
 MPLAB Harmony Bootloader Help</div>
 </td><td width="25%">
 <div class="Element2">
-<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
 <a href="00026.html" target="topic">Previous</a> | <a href="00003.html" target="topic">Up</a> | <a href="00004.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER uart_bootloader test_app Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER uart_bootloader bootloader Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
 Running The Application</div>
 </div>
@@ -50,176 +50,389 @@ Running The Application</div>
 <div class="Element10">
 
 <ol class="Element630">
-<li value="1" class="Element600">Perform <a href="00024.html" target="topic">Running The Application</a> steps for bootloader application if not done already.</li>
-<li value="2" class="Element600">If above step is successful then <strong>LED should start blinking</strong></li>
-<li value="3" class="Element600">Open the Terminal application (Ex.:Tera Term) on the computer.</li>
-<li value="4" class="Element600">Configure the serial port settings as follows:
-<ul class="Element631">
-<li class="Element601">Baud : 115200</li>
-<li class="Element601">Data : 8 Bits</li>
-<li class="Element601">Parity : None</li>
-<li class="Element601">Stop : 1 Bit</li>
-<li class="Element601">Flow Control : None</li>
-</ul></li>
-<li value="5" class="Element600">Reset the device</li>
-<li value="6" class="Element600"><strong>LED should start blinking</strong> and you should see below output on the console</li>
+<li value="1" class="Element600">Connect a micro USB cable to the DEBUG port.</li>
+<li value="2" class="Element600">Build and program the application using the MPLAB X IDE.</li>
+<li value="3" class="Element600">Build the Application <a href="00004.html" target="topic">test_app</a> using MPLAB X IDE</li>
+<li value="4" class="Element600">Run the <strong>btl_host.py</strong> from command prompt to program the application binary. Refer to <a href="00021.html" target="topic">Bootloader Tools Help</a> for setting up the host script</li>
 </ol><p class="Element10">
 &nbsp;</p>
 <p class="Element10">
-<strong>For SAM L10 Device:</strong> </p><p class="Element10" style="text-align: center;">
-<img src="bootloader_uart_test_app_console_l10.png" border="0" alt="" title=""></p><p class="Element10">
+<strong>For SAM, PIC32 MZ and PIC32 MK Devices</strong> </p><div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -i &lt;COM PORT&gt; -d &lt;Device Name&gt; -o &lt;offset&gt; -f &lt;harmony3_path&gt;\bootloader\apps\uart_bootloader\test_app\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin</pre></div></div>
+<p class="Element10">
 &nbsp;</p>
 <p class="Element10">
-<strong>For Other Devices:</strong> </p><p class="Element10" style="text-align: center;">
-<img src="bootloader_uart_test_app_console1.png" border="0" alt="" title=""></p><p class="Element10">
+<strong>For PIC32 MX Devices</strong> </p><div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_host.py -v -i &lt;COM PORT&gt; -d &lt;Device Name&gt; -o &lt;offset&gt; -p &lt;Sector Size&gt; -f &lt;harmony3_path&gt;\bootloader\apps\uart_bootloader\test_app\firmware\&lt;Project Name&gt;\dist\&lt;Config Name&gt;\production\&lt;Project Name&gt;.production.bin</pre></div></div>
+<p class="Element10">
 &nbsp;</p>
 <p class="Element10">
-The following table provides the LED and Switch names: </p><div class="Element63">
+The following table provides the Details required to run the above command: </p><div class="Element63">
 <div class="TableDiv">
 <table cellspacing="0" class="Table1">
 <tr>
-<td class="Element65" valign="top" width="81%">
+<td class="Element65" valign="top" width="43%">
 <div class="Element66">
-Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="8%">
+Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="5%">
 <div class="Element66">
-Switch Name&nbsp;</div></td><td class="Element65" valign="top" width="11%">
+Offset&nbsp;</div></td><td class="Element65" valign="top" width="9%">
 <div class="Element66">
-LED Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+Sector Size&nbsp;</div></td><td class="Element65" valign="top" width="8%">
+<div class="Element66">
+Device Name&nbsp;</div></td><td class="Element65" valign="top" width="18%">
+<div class="Element66">
+Project Name&nbsp;</div></td><td class="Element65" valign="top" width="16%">
+<div class="Element66">
+Config Name&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-PIC32MK GPL Curiosity Pro Development Board&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+PIC32MK GPL Curiosity Pro Development Board&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW1&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x0&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 3&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
 <div class="Element68">
-PIC32MK MCJ Curiosity Pro Development Board&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+pic32mk&nbsp;</div></td><td class="Element67" valign="top" width="18%">
 <div class="Element68">
-SW200&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+pic32mk_gpl_curiosity_pro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
 <div class="Element68">
-LED 2&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+pic32mk_gpl_curiosity_pro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-PIC32MX 1/2/5 Starter Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+PIC32MK MCJ Curiosity Pro Development Board&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW1&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x0&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 3&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
 <div class="Element68">
-PIC32MX Curiosity Development Board&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+pic32mk&nbsp;</div></td><td class="Element67" valign="top" width="18%">
 <div class="Element68">
-S1&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+pic32mk_mcj_curiosity_pro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
 <div class="Element68">
-LED 3&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+pic32mk_mcj_curiosity_pro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-PIC32MZ Embedded Graphics with Stacked DRAM (DA) Starter Kit (Crypto)&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+PIC32MX 1/2/5 Starter Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW1&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x1000&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 3&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+1024&nbsp;</div></td><td class="Element67" valign="top" width="8%">
 <div class="Element68">
-PIC32MZ Embedded Connectivity with FPU (EF) Starter Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+pic32mx&nbsp;</div></td><td class="Element67" valign="top" width="18%">
 <div class="Element68">
-SW1&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+pic32mx_125_sk.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
 <div class="Element68">
-LED 3&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+pic32mx_125_sk&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+PIC32MX Curiosity Development Board&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x0&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+4096&nbsp;</div></td><td class="Element67" valign="top" width="8%">
 <div class="Element68">
-SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+pic32mx&nbsp;</div></td><td class="Element67" valign="top" width="18%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+pic32mx470_curiosity.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+pic32mx470_curiosity&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+PIC32MZ Embedded Graphics with Stacked DRAM (DA) Starter Kit (Crypto)&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x0&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
 <div class="Element68">
-SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+pic32mz&nbsp;</div></td><td class="Element67" valign="top" width="18%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+pic32mz_das_sk.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+pic32mz_das_sk&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+PIC32MZ Embedded Connectivity with FPU (EF) Starter Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x0&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
 <div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+pic32mz&nbsp;</div></td><td class="Element67" valign="top" width="18%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+pic32mz_ef_sk.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+pic32mz_ef_sk&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-SAM E70 Xplained Ultra Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
 <div class="Element68">
-SAM G55 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+samc2x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+sam_c21n_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+sam_c21n_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
 <div class="Element68">
-SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+samda1&nbsp;</div></td><td class="Element67" valign="top" width="18%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+sam_da1_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="81%">
+sam_da1_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
 <div class="Element68">
-SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
 <div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED 0&nbsp;</div></td></tr></table></div></div>
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+samd1x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_d11_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_d11_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
+<div class="Element68">
+SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
+<div class="Element68">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+samd2x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_d20_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_d20_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
+<div class="Element68">
+SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
+<div class="Element68">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+samd2x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_d21_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_d21_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
+<div class="Element68">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
+<div class="Element68">
+0x2000&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+same5x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_e54_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_e54_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
+<div class="Element68">
+SAM E70 Xplained Ultra Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
+<div class="Element68">
+0x2000&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+same7x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_e70_xult.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_e70_xult&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
+<div class="Element68">
+SAM G55 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
+<div class="Element68">
+0x2000&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+samg5x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_g55_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_g55_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
+<div class="Element68">
+SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
+<div class="Element68">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+saml1x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_l10_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_l10_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
+<div class="Element68">
+SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
+<div class="Element68">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+saml2x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_l21_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_l21_xpro&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="43%">
+<div class="Element68">
+SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="5%">
+<div class="Element68">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+Optional&nbsp;</div></td><td class="Element67" valign="top" width="8%">
+<div class="Element68">
+saml2x&nbsp;</div></td><td class="Element67" valign="top" width="18%">
+<div class="Element68">
+sam_l22_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="16%">
+<div class="Element68">
+sam_l22_xpro&nbsp;</div></td></tr></table></div></div>
 <p class="Element10">
 &nbsp;</p>
 
 <ol class="Element630">
-<li value="7" class="Element600">Press and hold the Switch to trigger Bootloader and you should see below output. <strong>Skip this step for SAM L10 Device</strong></li>
-</ol><p class="Element10" style="text-align: center;">
+<li value="5" class="Element600">Following snapshot shows example output of successfully programming the test application. It may vary from device to device.
+<ul class="Element631">
+<li class="Element601"><strong>Rebooting</strong> and <strong>Reboot Done</strong> messages in below output signifies that bootloading is successful</li>
+</ul></li>
+</ol><p class="Element10">
 &nbsp;</p>
 <p class="Element10" style="text-align: center;">
-<img src="bootloader_uart_test_app_console2.png" border="0" alt="" title=""></p></div>
+<img src="bootloader_app_update.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="6" class="Element600">Refer to <a href="00032.html" target="topic">Running The Application</a> section of <a href="00004.html" target="topic">test_app</a> to observe further output and next steps</li>
+<li value="7" class="Element600">Repeat Steps 4-6 once and jump to Step-8. <strong>(Skip this step and jump to Step-8 for SAM L10)</strong>
+<ul class="Element631">
+<li class="Element601">This step is to verify that bootloader is running after triggering bootloader from test_app</li>
+</ul></li>
+<li value="8" class="Element600"><strong>Press and hold</strong> the User Switch as mentioned in below table and then press Reset button or Power cycle the device to force trigger bootloader at startup.</li>
+<li value="9" class="Element600">Repeat Steps 4-6 once.
+<ul class="Element631">
+<li class="Element601">This step is to verify whether bootloader is triggered by switch press at reset</li>
+</ul></li>
+</ol><p class="Element10">
+&nbsp;</p>
+<div class="Element63">
+<div class="TableDiv">
+<table cellspacing="0" class="Table1">
+<tr>
+<td class="Element65" valign="top" width="91%">
+<div class="Element66">
+Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="9%">
+<div class="Element66">
+Switch Name&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+PIC32MK GPL Curiosity Pro Development Board&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW1&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+PIC32MK MCJ Curiosity Pro Development Board&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW200&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+PIC32MX 1/2/5 Starter Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW1&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+PIC32MX Curiosity Development Board&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+S1&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+PIC32MZ Embedded Graphics with Stacked DRAM (DA) Starter Kit (Crypto)&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW1&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+PIC32MZ Embedded Connectivity with FPU (EF) Starter Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW1&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM E70 Xplained Ultra Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM G55 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="91%">
+<div class="Element68">
+SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr></table></div></div>
+</div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00012.html" target="topic">Bootloader Library Help</a> &gt; <a href="00001.html" target="topic">Bootloader Applications Help</a> &gt; uart_bootloader &gt; <a href="00003.html" target="topic">test_app</a> &gt; <a href="00028.html" target="topic">Running The Application</a></div>
+<a href="00014.html" target="topic">Bootloader Library Help</a> &gt; <a href="00002.html" target="topic">Bootloader Applications Help</a> &gt; uart_bootloader &gt; <a href="00003.html" target="topic">bootloader</a> &gt; <a href="00028.html" target="topic">Running The Application</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -227,13 +440,13 @@ LED 0&nbsp;</div></td></tr></table></div></div>
 MPLAB Harmony Bootloader Help</div>
 </td><td width="25%">
 <div class="Element4">
-<a href="contents.html" target="tocidx">Contents</a> | <a href="00012.html" target="topic">Home</a></div>
+<a href="contents.html" target="tocidx">Contents</a> | <a href="00014.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
 <a href="00026.html" target="topic">Previous</a> | <a href="00003.html" target="topic">Up</a> | <a href="00004.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER uart_bootloader test_app Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: BOOTLOADER uart_bootloader bootloader Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->
