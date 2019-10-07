@@ -142,7 +142,7 @@ def send_request(port, cmd, size, data):
 def main():
     parser = optparse.OptionParser(usage = 'usage: %prog [options]')
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')
-    parser.add_option('-r', '--baud', dest='baud', help='UART baudrate', default=115200, action='store_true')
+    parser.add_option('-r', '--baud', dest='baud', help='UART baudrate', default=115200, metavar='BAUD')
     parser.add_option('-t', '--tune', dest='tune', help='auto-tune UART baudrate', default=False, action='store_true')
     parser.add_option('-i', '--interface', dest='port', help='communication interface', metavar='PATH')
     parser.add_option('-f', '--file', dest='file', help='binary file to program', metavar='FILE')
