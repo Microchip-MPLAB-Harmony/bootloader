@@ -71,6 +71,12 @@ void SYS_Initialize ( void* data )
 
     <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_CORE}
 
+    <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_CORE1}
+
+<#if BTL_DUAL_BANK == true>
+    bootloader_ProgramFlashBankSelect();
+</#if>
+
     if (bootloader_Trigger() == false)
     {
         run_Application();

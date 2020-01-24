@@ -98,6 +98,9 @@ def setBootloaderSize(symbol, event):
 def setTriggerLenVisible(symbol, event):
     symbol.setVisible(event["value"])
 
+def setBtlDualBankCommentVisible(symbol, event):
+    symbol.setVisible(event["value"])
+
 def setAppStartAndCommentVisible(symbol, event):
     global flash_start
     global flash_size
@@ -153,6 +156,16 @@ def instantiateComponent(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
 
     setupCoreComponentSymbols()
+
+    btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
+    btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")
+    if ("PIC32MX" in Variables.get("__PROCESSOR")):
+        btlDualBank.setVisible(False)
+
+    btlDualBankComment = bootloaderComponent.createCommentSymbol("BTL_DUAL_BANK_COMMENT", None)
+    btlDualBankComment.setLabel("!!! WARNING Only Half of the Program Flash memory will be available for Application !!!")
+    btlDualBankComment.setVisible(False)
+    btlDualBankComment.setDependencies(setBtlDualBankCommentVisible, ["BTL_DUAL_BANK"])
 
     btlPeriphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
     btlPeriphUsed.setLabel("Bootloader Peripheral Used")
@@ -266,6 +279,7 @@ def instantiateComponent(bootloaderComponent):
     elif (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
           re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
           re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR"))):
+        btlDualBank.setVisible(False)
         btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_gpg_gph_mcj.ld.ftl")
     elif (re.match("PIC32MK.[0-9]*GPK", Variables.get("__PROCESSOR")) or
           re.match("PIC32MK.[0-9]*GPL", Variables.get("__PROCESSOR")) or

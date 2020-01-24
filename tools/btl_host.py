@@ -45,11 +45,11 @@ BL_RESP_CRC_FAIL    = 0x54
 BL_GUARD            = 0x5048434D
 
 # Should be equal to Device Erase size
-PROGRAM_SIZE        = 256
+ERASE_SIZE        = 256
 
 BOOTLOADER_SIZE     = 2048
 
-# Supported Devices [PROGRAM_SIZE, BOOTLOADER_SIZE]
+# Supported Devices [ERASE_SIZE, BOOTLOADER_SIZE]
 devices = {
             "SAME7X"    : [8192, 8192],
             "SAME5X"    : [8192, 8192],
@@ -168,7 +168,7 @@ def main():
     parser.add_option('-t', '--tune', dest='tune', help='auto-tune UART baudrate', default=False, action='store_true')
     parser.add_option('-i', '--interface', dest='port', help='communication interface', metavar='PATH')
     parser.add_option('-f', '--file', dest='file', help='binary file to program', metavar='FILE')
-    parser.add_option('-o', '--offset', dest='offset', help='destination offset', metavar='OFFS')
+    parser.add_option('-a', '--address', dest='address', help='destination address', metavar='ADDR')
     parser.add_option('-p', '--sectorSize', dest='sectSize', help='Device Sector Size in Bytes', metavar='SectSize')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
@@ -185,8 +185,8 @@ def main():
     if options.device is None:
         error('target device is required (use -d option)')
 
-    if options.offset is None:
-        error('destination offset is required (use -o option)')
+    if options.address is None:
+        error('destination address is required (use -a option)')
 
     device = options.device.upper()
 
@@ -195,26 +195,26 @@ def main():
             if options.sectSize is None:
                 error('device sector size is required (use -p option)')
 
-            PROGRAM_SIZE    = int(options.sectSize)
+            ERASE_SIZE    = int(options.sectSize)
         else:
-            PROGRAM_SIZE    = devices[device][0]
+            ERASE_SIZE    = devices[device][0]
 
         BOOTLOADER_SIZE     = devices[device][1]
     else:
         error('invalid device')
 
     if (options.swap == True):
-        if ((device != "SAME5X") and (device != "SAMD5X")):
+        if ((device != "SAME5X") and (device != "SAMD5X") and (device != "PIC32MZ") and (device != "PIC32MK")):
             error('Bank Swapping not supported on this device')
 
     try:
-        offset = int(options.offset, 0)
+        address = int(options.address, 0)
     except (ValueError, inst):
-        error('invalid offset value: %s' % options.offset)
+        error('invalid address value: %s' % options.address)
 
     if (("SAM" in device)):
-        if offset < BOOTLOADER_SIZE and options.boot == False:
-            error('offset is within the bootlaoder area, use --boot options to unlock writes')
+        if address < BOOTLOADER_SIZE and options.boot == False:
+            error('address is within the bootlaoder area, use --boot options to unlock writes')
     else:
         if options.boot == True:
             error('--boot option is not supported on this device')
@@ -234,7 +234,7 @@ def main():
     except (Exception, inst):
         error(inst)
 
-    while len(data) % PROGRAM_SIZE > 0:
+    while len(data) % ERASE_SIZE > 0:
         data += [0xff]
 
     crc32_tab = crc32_tab_gen()
@@ -243,24 +243,24 @@ def main():
     size = len(data)
 
     verbose(options.verbose, 'Unlocking')
-    resp = send_request(port, BL_CMD_UNLOCK, uint32(8), uint32(offset) + uint32(size))
+    resp = send_request(port, BL_CMD_UNLOCK, uint32(8), uint32(address) + uint32(size))
 
     if resp != BL_RESP_OK:
-        error('invalid response code (0x%02x). Check that your file size and offset are correct.' % resp)
+        error('invalid response code (0x%02x). Check that your file size and address are correct.' % resp)
 
-    # Create data blocks of PROGRAM_SIZE each
-    blocks = [data[i:i + PROGRAM_SIZE] for i in range(0, len(data), PROGRAM_SIZE)]
+    # Create data blocks of ERASE_SIZE each
+    blocks = [data[i:i + ERASE_SIZE] for i in range(0, len(data), ERASE_SIZE)]
 
-    verbose(options.verbose, 'Uploading %d blocks at offset %d (0x%x)\n' % (len(blocks), offset, offset))
+    verbose(options.verbose, 'Uploading %d blocks at address %d (0x%x)\n' % (len(blocks), address, address))
 
-    addr = offset
+    addr = address
 
     for idx, blk in enumerate(blocks):
         printProgressBar(idx+1, len(blocks), prefix = 'Programming:', suffix = 'Complete', length = 50)
 
 
-        resp = send_request(port, BL_CMD_DATA, uint32(PROGRAM_SIZE + 4), uint32(addr) + blk)
-        addr += PROGRAM_SIZE
+        resp = send_request(port, BL_CMD_DATA, uint32(ERASE_SIZE + 4), uint32(addr) + blk)
+        addr += ERASE_SIZE
 
         if resp != BL_RESP_OK:
             error('invalid response code (0x%02x)' % resp)

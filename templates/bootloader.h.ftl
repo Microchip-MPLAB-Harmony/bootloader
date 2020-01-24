@@ -49,9 +49,51 @@
 
 #define BTL_TRIGGER_LEN         ${BTL_TRIGGER_LEN}
 
+<#if core.CoreArchitecture == "MIPS" && BTL_DUAL_BANK == true >
+    <#lt>// *****************************************************************************
+    <#lt>/* Function:
+    <#lt>    bool bootloader_ProgramFlashBankSelect( void );
+    <#lt>
+    <#lt> Summary:
+    <#lt>    Selects Appropriate Program Flash Bank after reset.
+    <#lt>
+    <#lt> Description:
+    <#lt>    This function can be used to select the approproate Program flash bank based on the
+    <#lt>    serial number stored in each of bank after reset.
+
+    <#lt>    Bootloader should know the address at compile time where the serial number is stored
+    <#lt>    in each bank. It reads the serial number from both banks, Compares the values and maps the
+    <#lt>    bank with highest serial number to lower region.
+
+    <#lt> Precondition:
+    <#lt>    - PORT/PIO Initialize must have been called.
+
+    <#lt>    - This Function should be called before calling bootloader_Trigger() function
+
+    <#lt> Parameters:
+    <#lt>    None.
+    <#lt>
+    <#lt> Returns:
+    <#lt>    None.
+
+    <#lt> Example:
+    <#lt>    <code>
+
+    <#lt>        bootloader_ProgramFlashBankSelect( void );
+
+    <#lt>        if (bootloader_Trigger() == false)
+    <#lt>        {
+    <#lt>            run_Application();
+    <#lt>        }
+
+    <#lt>    </code>
+    <#lt>*/
+    <#lt>void bootloader_ProgramFlashBankSelect( void );
+</#if>
+
 // *****************************************************************************
 /* Function:
-    bool bootloader_Trigger(void);
+    bool bootloader_Trigger( void );
 
  Summary:
     Checks if Bootloader has to be executed at startup.
@@ -110,7 +152,7 @@ bool bootloader_Trigger( void );
 
 // *****************************************************************************
 /* Function:
-    void run_Application(void);
+    void run_Application( void );
 
  Summary:
     Runs the programmed application at startup.
@@ -154,7 +196,7 @@ void run_Application( void );
 
 // *****************************************************************************
 /* Function:
-    void bootloader_Start(void);
+    void bootloader_Start( void );
 
  Summary:
     Starts bootloader execution.

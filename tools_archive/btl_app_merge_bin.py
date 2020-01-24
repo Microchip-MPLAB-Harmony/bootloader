@@ -29,12 +29,12 @@ import optparse
 import binascii
 
 #------------------------------------------------------------------------------
-PROGRAM_SIZE        = 0
+ERASE_SIZE        = 0
 BOOTLOADER_SIZE     = 0
 
 destinationFile     = "btl_app_merged.bin"
 
-# Supported Devices [PROGRAM_SIZE, BOOTLOADER_SIZE]
+# Supported Devices [ERASE_SIZE, BOOTLOADER_SIZE]
 devices = {
             "SAME5X"    : [8192, 8192],
             "SAMD5X"    : [8192, 8192],
@@ -77,7 +77,7 @@ def main():
     device = options.device.upper()
 
     if (device in devices):
-        PROGRAM_SIZE        = devices[device][0]
+        ERASE_SIZE        = devices[device][0]
         BOOTLOADER_SIZE     = devices[device][1]
     else:
         error('invalid device')

@@ -38,20 +38,8 @@
  *******************************************************************************/
 // DOM-IGNORE-END
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Include Files
-// *****************************************************************************
-// *****************************************************************************
-
 #include "definitions.h"
 #include <device.h>
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Type Definitions
-// *****************************************************************************
-// *****************************************************************************
 
 #define FLASH_START             (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
 #define FLASH_LENGTH            (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
@@ -94,6 +82,9 @@ enum
     BL_CMD_DATA         = 0xa1,
     BL_CMD_VERIFY       = 0xa2,
     BL_CMD_RESET        = 0xa3,
+<#if BTL_DUAL_BANK == true>
+    BL_CMD_BKSWAP_RESET = 0xa4,
+</#if>
 };
 
 enum
@@ -104,12 +95,6 @@ enum
     BL_RESP_CRC_OK      = 0x53,
     BL_RESP_CRC_FAIL    = 0x54,
 };
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Global objects
-// *****************************************************************************
-// *****************************************************************************
 
 static uint32_t CACHE_ALIGN input_buffer[WORDS(OFFSET_SIZE + DATA_SIZE)];
 
@@ -125,11 +110,182 @@ static uint8_t  input_command       = 0;
 static bool     packet_received     = false;
 static bool     flash_data_ready    = false;
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Bootloader Local Functions
-// *****************************************************************************
-// *****************************************************************************
+<#if BTL_DUAL_BANK == true>
+    <#lt>#define LOWER_FLASH_START               (FLASH_START)
+    <#lt>#define LOWER_FLASH_SERIAL_START        (LOWER_FLASH_START + (FLASH_LENGTH / 2) - PAGE_SIZE)
+    <#lt>#define LOWER_FLASH_SERIAL_SECTOR       (LOWER_FLASH_START + (FLASH_LENGTH / 2) - ERASE_BLOCK_SIZE)
+
+    <#lt>#define UPPER_FLASH_START               (FLASH_START + (FLASH_LENGTH / 2))
+    <#lt>#define UPPER_FLASH_SERIAL_START        (UPPER_FLASH_START + (FLASH_LENGTH / 2) - PAGE_SIZE)
+    <#lt>#define UPPER_FLASH_SERIAL_SECTOR       (UPPER_FLASH_START + (FLASH_LENGTH / 2) - ERASE_BLOCK_SIZE)
+
+    <#lt>#define FLASH_SERIAL_CHECKSUM_START     0xDEADBEEF
+    <#lt>#define FLASH_SERIAL_CHECKSUM_END       0xBEEFDEAD
+    <#lt>#define FLASH_SERIAL_CHECKSUM_CLR       0xFFFFFFFF
+
+    <#lt>#define LOWER_FLASH_SERIAL_READ         ((T_FLASH_SERIAL *)KVA0_TO_KVA1(LOWER_FLASH_SERIAL_START))
+    <#lt>#define UPPER_FLASH_SERIAL_READ         ((T_FLASH_SERIAL *)KVA0_TO_KVA1(UPPER_FLASH_SERIAL_START))
+
+    <#lt>typedef enum
+    <#lt>{
+    <#lt>    PROGRAM_FLASH_BANK_1,
+    <#lt>    PROGRAM_FLASH_BANK_2,
+    <#lt>} T_FLASH_BANK;
+
+    <#lt>/* Structure to validate the Flash serial and its checksum
+    <#lt> * Note: The order of the members should not be changed
+    <#lt> */
+    <#lt>typedef struct
+    <#lt>{
+    <#lt>    uint32_t checksum_start;
+    <#lt>    uint32_t serial;
+    <#lt>    uint32_t checksum_end;
+    <#lt>    uint32_t dummy;
+    <#lt>} T_FLASH_SERIAL;
+
+    <#lt>T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
+
+    <#lt>volatile uint32_t   dummy_read;
+
+    <#lt>static bool         upper_flash_serial_erased   = false;
+
+    <#lt>/* Function to read the Serial number from Flash bank mapped to lower region */
+    <#lt>static uint32_t get_LowerFlashSerial(void)
+    <#lt>{
+    <#lt>    T_FLASH_SERIAL *lower_flash_serial = LOWER_FLASH_SERIAL_READ;
+
+    <#lt>    return (lower_flash_serial->serial);
+    <#lt>}
+
+    <#lt>/* Function to update the serial number based on address */
+    <#lt>static void update_FlashSerial(uint32_t serial, uint32_t addr)
+    <#lt>{
+    <#lt>    update_flash_serial.serial          = serial;
+    <#lt>    update_flash_serial.checksum_start  = FLASH_SERIAL_CHECKSUM_START;
+    <#lt>    update_flash_serial.checksum_end    = FLASH_SERIAL_CHECKSUM_END;
+
+    <#lt>    NVM_QuadWordWrite((uint32_t *)&update_flash_serial, addr);
+
+    <#lt>    while(NVM_IsBusy() == true);
+    <#lt>}
+
+    <#lt>/* Function to update the serial number in upper flash panel (Inactive Panel) */
+    <#lt>static void update_UpperFlashSerial(void)
+    <#lt>{
+    <#lt>    uint32_t upper_flash_serial;
+
+    <#lt>    /* Increment Upper Mapped Flash panel serial by 1 to be ahead of the
+    <#lt>     * current running Lower Mapped Flash panel serial
+    <#lt>     */
+    <#lt>    upper_flash_serial = get_LowerFlashSerial() + 1;
+
+    <#lt>    /* Check if the Serial sector was erased during programming */
+    <#lt>    if (upper_flash_serial_erased == false)
+    <#lt>    {
+    <#lt>        /* Erase the Sector in which Flash Serial Resides */
+    <#lt>        NVM_PageErase(UPPER_FLASH_SERIAL_SECTOR);
+
+    <#lt>        /* Wait for erase to complete */
+    <#lt>        while(NVM_IsBusy() == true);
+    <#lt>    }
+    <#lt>    else
+    <#lt>    {
+    <#lt>        upper_flash_serial_erased = false;
+    <#lt>    }
+
+    <#lt>    update_FlashSerial(upper_flash_serial, UPPER_FLASH_SERIAL_START);
+    <#lt>}
+
+    <#lt>/* Function to swap the banks.
+    <#lt> * This function has to be removed once NVM PLIB has the support 
+    <#lt> */
+    <#lt>static void bootloader_ProgramFlashSwapBank( T_FLASH_BANK flash_bank )
+    <#lt>{
+    <#lt>    /* NVMOP can be written only when WREN is zero. So, clear WREN */
+    <#lt>    NVMCONCLR = _NVMCON_WREN_MASK;
+
+    <#lt>    /* Write the unlock key sequence */
+    <#lt>    NVMKEY = 0x0;
+    <#lt>    NVMKEY = 0xAA996655;
+    <#lt>    NVMKEY = 0x556699AA;
+
+    <#lt>    if (flash_bank == PROGRAM_FLASH_BANK_1)
+    <#lt>    {
+    <#lt>        /* Map Program Flash Memory Bank 1 to lower region */
+    <#lt>        NVMCONCLR = _NVMCON_PFSWAP_MASK;
+    <#lt>    }
+    <#lt>    else if (flash_bank == PROGRAM_FLASH_BANK_2)
+    <#lt>    {
+    <#lt>        /* Map Program Flash Memory Bank 2 to lower region */
+    <#lt>        NVMCONSET = _NVMCON_PFSWAP_MASK;
+    <#lt>    }
+    <#lt>}
+
+    <#lt>/* Function to Select Appropriate program flash bank based on the serial number */
+    <#lt>void bootloader_ProgramFlashBankSelect( void )
+    <#lt>{
+    <#lt>    /* Map Program Flash Bank 1 to lower region after a reset */
+    <#lt>    bootloader_ProgramFlashSwapBank(PROGRAM_FLASH_BANK_1);
+
+    <#lt>    T_FLASH_SERIAL *lower_flash_serial = LOWER_FLASH_SERIAL_READ;
+    <#lt>    T_FLASH_SERIAL *upper_flash_serial = UPPER_FLASH_SERIAL_READ;
+
+    <#lt>    /* If Both Flash Panels do not have any Serial number */
+    <#lt>    if( lower_flash_serial->checksum_start == FLASH_SERIAL_CHECKSUM_CLR &&
+    <#lt>        upper_flash_serial->checksum_start == FLASH_SERIAL_CHECKSUM_CLR)
+    <#lt>    {
+    <#lt>        /* Program Checksum and initial ID's for both panels*/
+    <#lt>        update_FlashSerial(0, LOWER_FLASH_SERIAL_START);
+    <#lt>        update_FlashSerial(0, UPPER_FLASH_SERIAL_START);
+    <#lt>    }
+    <#lt>    /* If both the panels have proper checksum and serial number*/
+    <#lt>    else if((lower_flash_serial->checksum_start == FLASH_SERIAL_CHECKSUM_START) &&
+    <#lt>        (lower_flash_serial->checksum_end == FLASH_SERIAL_CHECKSUM_END) &&
+    <#lt>        (upper_flash_serial->checksum_start == FLASH_SERIAL_CHECKSUM_START) &&
+    <#lt>        (upper_flash_serial->checksum_end == FLASH_SERIAL_CHECKSUM_END))
+    <#lt>    {
+    <#lt>        /* If Upper flash panel has latest firmware */
+    <#lt>        if(upper_flash_serial->serial > lower_flash_serial->serial)
+    <#lt>        {
+    <#lt>            /* Map Program Flash Bank 2 to lower region */
+    <#lt>            bootloader_ProgramFlashSwapBank(PROGRAM_FLASH_BANK_2);
+
+    <#lt>            /* Perform Dummy Read of Inactive panel(Upper Flash) after BankSwap
+    <#lt>             * for Swap to take effect
+    <#lt>             */
+    <#lt>            dummy_read = *(uint32_t *)(UPPER_FLASH_START);
+    <#lt>        }
+    <#lt>    }
+    <#lt>    /* Fallback Case when Panel 1 checksum and serial number is corrupted */
+    <#lt>    else if((upper_flash_serial->checksum_start == FLASH_SERIAL_CHECKSUM_START) &&
+    <#lt>            (upper_flash_serial->checksum_end == FLASH_SERIAL_CHECKSUM_END))
+    <#lt>    {
+    <#lt>        /* Map Program Flash Bank 2 to lower region */
+    <#lt>        bootloader_ProgramFlashSwapBank(PROGRAM_FLASH_BANK_2);
+
+    <#lt>        /* Perform Dummy Read of Inactive panel(Upper Flash) after BankSwap
+    <#lt>         * for Swap to take effect
+    <#lt>         */
+    <#lt>        dummy_read = *(uint32_t *)(UPPER_FLASH_START);
+    <#lt>    }
+    <#lt>}
+</#if>
+
+/* Function to Send the final response for reset command and trigger a reset */
+static void trigger_Reset(void)
+{
+    ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+
+    while(${PERIPH_USED}_TransmitComplete() == false);
+
+    /* Perform system unlock sequence */ 
+    SYSKEY = 0x00000000;
+    SYSKEY = 0xAA996655;
+    SYSKEY = 0x556699AA;
+
+    RSWRSTSET = _RSWRST_SWRST_MASK;
+    (void)RSWRST;
+}
 
 /* Function to Generate CRC by reading the firmware programmed into internal flash */
 static uint32_t crc_generate(void)
@@ -160,7 +316,7 @@ static uint32_t crc_generate(void)
 
     for (i = 0; i < size; i++)
     {
-        data = *(uint8_t *)KVA0_TO_KVA1((FLASH_START + unlock_begin + i));
+        data = *(uint8_t *)KVA0_TO_KVA1((unlock_begin + i));
 
         crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
     }
@@ -244,7 +400,7 @@ static void command_task(void)
 
         uint32_t end    = begin + (input_buffer[SIZE_OFFSET] & SIZE_ALIGN_MASK);
 
-        if (end > begin && end <= FLASH_LENGTH)
+        if (end > begin && end <= (FLASH_START + FLASH_LENGTH))
         {
             unlock_begin = begin;
             unlock_end = end;
@@ -287,18 +443,16 @@ static void command_task(void)
     }
     else if (BL_CMD_RESET == input_command)
     {
-        ${PERIPH_USED}_WriteByte(BL_RESP_OK);
-
-        while(${PERIPH_USED}_TransmitComplete() == false);
-
-        /* Perform system unlock sequence */ 
-        SYSKEY = 0x00000000;
-        SYSKEY = 0xAA996655;
-        SYSKEY = 0x556699AA;
-
-        RSWRSTSET = _RSWRST_SWRST_MASK;
-        (void)RSWRST;
+        trigger_Reset();
     }
+<#if BTL_DUAL_BANK == true>
+    else if (BL_CMD_BKSWAP_RESET == input_command)
+    {
+        update_UpperFlashSerial();
+
+        trigger_Reset();
+    }
+</#if>
     else
     {
         ${PERIPH_USED}_WriteByte(BL_RESP_INVALID);
@@ -310,9 +464,27 @@ static void command_task(void)
 /* Function to program received application firmware data into internal flash */
 static void flash_task(void)
 {
-    uint32_t addr       = (flash_addr + FLASH_START);
+    uint32_t addr       = flash_addr;
     uint32_t page       = 0;
     uint32_t write_idx  = 0;
+
+<#if BTL_DUAL_BANK == true>
+    if (addr == LOWER_FLASH_SERIAL_SECTOR)
+    {
+        /* Send error response if active Flash Panels (Lower Flash)
+         * Serial Sector is being erased.
+         */
+        flash_data_ready = false;
+
+        ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
+        
+        return;
+    }
+    else if (addr == UPPER_FLASH_SERIAL_SECTOR)
+    {
+        upper_flash_serial_erased = true;
+    }
+</#if>
 
     /* Erase the Current sector */
     ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(addr);
@@ -334,13 +506,6 @@ static void flash_task(void)
 
     ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 }
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Bootloader Global Functions
-// *****************************************************************************
-// *****************************************************************************
-
 
 void run_Application(void)
 {
