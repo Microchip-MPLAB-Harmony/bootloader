@@ -20,10 +20,7 @@
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
-
-import re
-
-global btlTypeUsed
+global flashNames
 
 global ram_start
 global ram_size
@@ -32,20 +29,12 @@ global flash_start
 global flash_size
 global flash_erase_size
 
-global btl_start
-
 flash_start         = 0
 flash_size          = 0
 flash_erase_size    = 0
 
-btl_start           = "0x9FC01000"
-
-BootFlashNames      = ["bootconfig"]
-ProgramFlashNames   = ["code"]
-RamNames            = ["kseg0_data_mem", "kseg1_data_mem"]
-
-bootloaderTypes     =  ["", "UART"]
-btlTypeUsed         = None
+FlashNames          = ["FLASH", "IFLASH"]
+RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM"]
 
 addr_space          = ATDF.getNode("/avr-tools-device-file/devices/device/address-spaces/address-space")
 addr_space_children = addr_space.getChildren()
@@ -54,73 +43,61 @@ for mem_idx in range(0, len(addr_space_children)):
     mem_seg     = addr_space_children[mem_idx].getAttribute("name")
     mem_type    = addr_space_children[mem_idx].getAttribute("type")
 
-    if ((any(x == mem_seg for x in ProgramFlashNames) == True)):
+    if ((any(x == mem_seg for x in FlashNames) == True) and (mem_type == "flash")):
         flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
         flash_size  = int(addr_space_children[mem_idx].getAttribute("size"), 16)
 
-    if ((any(x == mem_seg for x in RamNames) == True)):
-        if (mem_seg == "kseg0_data_mem"):
-            ram_start   = "0x80000000"
-        else:
-            ram_start   = "0xA0000000"
+    if ((any(x == mem_seg for x in RamNames) == True) and (mem_type == "ram")):
+        ram_start   = addr_space_children[mem_idx].getAttribute("start")
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
-    if ("PIC32MX" in Variables.get("__PROCESSOR")):
-        if ((any(x == mem_seg for x in BootFlashNames) == True)):
-            if (addr_space_children[mem_idx].getAttribute("size") == "0xbf0"):
-                # Bootloader start address is in Program Flash memory as Boot Flash Memory is only 3KB
-                btl_start = "0x9D000000"
-            else:
-                btl_start = "0x9FC00500"
+periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
+peripherals         = periphNode.getChildren()
 
-def calcBootloaderSize(btl_type):
+def setBtlDualBankCommentVisible(symbol, event):
+    symbol.setVisible(event["value"])
+
+def calcBootloaderSize():
     global flash_erase_size
 
-    # Calculated values with Optimization level -O1
-    if ("PIC32MX" in Variables.get("__PROCESSOR")):
-        max_uart_btl_size   = 4096
-        max_i2c_btl_size    = 4096
-    else:
-        max_uart_btl_size   = 8192
-        max_i2c_btl_size    = 8192
-
+    # Calculated values with Optimization level -O1 and nearest BOOTPROT value
+    max_uart_btl_size   = 2048
     btl_size            = 0
 
-    if ((flash_erase_size != 0) and (btl_type != "")):
-        if (btl_type == "UART"):
-            if (flash_erase_size >= max_uart_btl_size):
-                btl_size = flash_erase_size
-            else:
-                btl_size = max_uart_btl_size
-        elif (btl_type == "I2C"):
-            if (flash_erase_size >= max_i2c_btl_size):
-                btl_size = flash_erase_size
-            else:
-                btl_size = max_i2c_btl_size
+    if (flash_erase_size != 0):
+        if (flash_erase_size >= max_uart_btl_size):
+            btl_size = flash_erase_size
+        else:
+            btl_size = max_uart_btl_size
 
     return btl_size
 
-def setPeriphUsed(symbol, event):
-    component = symbol.getComponent()
+def setAppStartAndCommentVisible(symbol, event):
+    global flash_start
+    global flash_size
 
-    if (event["value"] == "UART"):
-        component.setDependencyEnabled("btl_UART_dependency", True)
-        component.setDependencyEnabled("btl_I2C_dependency", False)
-    elif (event["value"] == "I2C"):
-        component.setDependencyEnabled("btl_I2C_dependency", True)
-        component.setDependencyEnabled("btl_UART_dependency", False)
-    elif (event["value"] == ""):
-        component.setDependencyEnabled("btl_I2C_dependency", True)
-        component.setDependencyEnabled("btl_UART_dependency", True)
-        
+    if (event["id"] == "BTL_SIZE"):
+        custom_app_start_addr = str(hex(flash_start + int(event["value"],10)))
+
+        Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
+    else:
+        comment_enable      = False
+
+        custom_app_start_addr = int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16)
+        btl_size = calcBootloaderSize()
+
+        if (custom_app_start_addr < (flash_start + btl_size)):
+            symbol.setLabel("***  WARNING!!! Application Start Address Should be equal to or Greater than Bootloader Size ***")
+            comment_enable = True
+        elif (custom_app_start_addr >= (flash_start + flash_size)):
+            symbol.setLabel("*** WARNING!!! Application Start Address is exceeding the Flash Memory Space ***")
+            comment_enable = True
+
+        symbol.setVisible(comment_enable)
+
 def setBootloaderSize(symbol, event):
-    global flash_erase_size
 
-    component = symbol.getComponent()
-
-    btl_type = component.getSymbolByID("BTL_TYPE").getValue()
-
-    btl_size = str(calcBootloaderSize(btl_type))
+    btl_size = str(calcBootloaderSize())
 
     symbol.setValue(btl_size)
     symbol.setVisible(True)
@@ -128,30 +105,14 @@ def setBootloaderSize(symbol, event):
 def setTriggerLenVisible(symbol, event):
     symbol.setVisible(event["value"])
 
-def setAppStartAndCommentVisible(symbol, event):
-    global btlTypeUsed
-    global flash_start
-    global flash_size
+def hasHwCRCGenerator():
+    for module in range (0, len(peripherals)):
+        periphName = str(peripherals[module].getAttribute("name"))
+        if (periphName == "DSU"):
+            res = Database.activateComponents(["dsu"])
+            return True
 
-    if (btl_start == "0x9D000000"):
-        if (event["id"] == "BTL_SIZE"):
-            custom_app_start_addr = str(hex(flash_start + int(event["value"],10)))
-
-            Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
-        else:
-            comment_enable      = False
-
-            custom_app_start_addr = int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16)
-            btl_size = calcBootloaderSize(btlTypeUsed.getValue())
-
-            if (custom_app_start_addr < (flash_start + btl_size)):
-                symbol.setLabel("***  WARNING!!! Application Start Address Should be equal to or Greater than Bootloader Size ***")
-                comment_enable = True
-            elif (custom_app_start_addr >= (flash_start + flash_size)):
-                symbol.setLabel("*** WARNING!!! Application Start Address is exceeding the Flash Memory Space ***")
-                comment_enable = True
-
-            symbol.setVisible(comment_enable)
+    return False
 
 def setupCoreComponentSymbols():
 
@@ -170,11 +131,17 @@ def setupCoreComponentSymbols():
 
     coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
-    coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
+    coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)    
+
+    # Enable PAC component if present
+    for module in range (0, len(peripherals)):
+        periphName = str(peripherals[module].getAttribute("name"))
+        if (periphName == "PAC"):
+            coreComponent.getSymbolByID("PAC_USE").setValue(True)
+            if (Database.getSymbolValue("core", "PAC_INTERRRUPT_MODE") != None):
+                coreComponent.getSymbolByID("PAC_INTERRRUPT_MODE").setValue(False)
 
 def instantiateComponent(bootloaderComponent):
-    global btlTypeUsed
-    global btlStart
     global ram_start
     global ram_size
 
@@ -186,33 +153,35 @@ def instantiateComponent(bootloaderComponent):
 
     setupCoreComponentSymbols()
 
-    btlTypeUsed = bootloaderComponent.createComboSymbol("BTL_TYPE", None, bootloaderTypes)
-    btlTypeUsed.setLabel("Bootloader Type")
-    btlTypeUsed.setDefaultValue("")
+    btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
+    btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")
+    if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
+        btlDualBank.setVisible(True)
+    else:
+        btlDualBank.setVisible(False)
+
+    btlDualBankComment = bootloaderComponent.createCommentSymbol("BTL_DUAL_BANK_COMMENT", None)
+    btlDualBankComment.setLabel("!!! WARNING Only Half of th Flash memory will be available for Application !!!")
+    btlDualBankComment.setVisible(False)
+    btlDualBankComment.setDependencies(setBtlDualBankCommentVisible, ["BTL_DUAL_BANK"])
 
     btlPeriphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
     btlPeriphUsed.setLabel("Bootloader Peripheral Used")
     btlPeriphUsed.setReadOnly(True)
     btlPeriphUsed.setDefaultValue("")
-    btlPeriphUsed.setDependencies(setPeriphUsed, ["BTL_TYPE"])
 
     btlMemUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
     btlMemUsed.setLabel("Bootloader Memory Used")
     btlMemUsed.setReadOnly(True)
     btlMemUsed.setDefaultValue("")
 
-    btlStart = bootloaderComponent.createStringSymbol("BTL_START", None)
-    btlStart.setLabel("Bootloader Start Address")
-    btlStart.setVisible(False)
-    btlStart.setDefaultValue(btl_start)
-
-    btl_size = calcBootloaderSize(btlTypeUsed.getValue())
+    btl_size = calcBootloaderSize()
 
     btlSize = bootloaderComponent.createStringSymbol("BTL_SIZE", None)
     btlSize.setLabel("Bootloader Size (Bytes)")
     btlSize.setVisible(False)
     btlSize.setDefaultValue(str(btl_size))
-    btlSize.setDependencies(setBootloaderSize, ["BTL_TYPE", "MEM_USED"])
+    btlSize.setDependencies(setBootloaderSize, ["MEM_USED"])
 
     btlSizeComment = bootloaderComponent.createCommentSymbol("BTL_SIZE_COMMENT", None)
     btlSizeComment.setLabel("!!! Bootloader size should be aligned to Erase Unit Size of the device !!!")
@@ -242,10 +211,15 @@ def instantiateComponent(bootloaderComponent):
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
 
-    if ("PIC32MX" in Variables.get("__PROCESSOR")):
-        btlAppAddrComment = bootloaderComponent.createCommentSymbol("BTL_APP_START_ADDR_COMMENT", None)
-        btlAppAddrComment.setVisible(False)
-        btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_SIZE"])
+    btlAppAddrComment = bootloaderComponent.createCommentSymbol("BTL_APP_START_ADDR_COMMENT", None)
+    btlAppAddrComment.setVisible(False)
+    btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_SIZE"])
+
+    btlHwCrc = bootloaderComponent.createBooleanSymbol("BTL_HW_CRC_GEN", None)
+    btlHwCrc.setLabel("Bootloader Hardware CRC Generator")
+    btlHwCrc.setReadOnly(True)
+    btlHwCrc.setVisible(False)
+    btlHwCrc.setDefaultValue(hasHwCRCGenerator())
 
     #################### Code Generation ####################
 
@@ -277,9 +251,19 @@ def instantiateComponent(bootloaderComponent):
     btlmainSourceFile.setProjectPath("")
     btlmainSourceFile.setType("SOURCE")
 
+    # generate startup_xc32.c file
+    btlStartSourceFile = bootloaderComponent.createFileSymbol("STARTUP_BOOTLOADER_C", None)
+    btlStartSourceFile.setSourcePath("../bootloader/templates/arm/startup_xc32.c.ftl")
+    btlStartSourceFile.setOutputName("startup_xc32.c")
+    btlStartSourceFile.setMarkup(True)
+    btlStartSourceFile.setOverwrite(True)
+    btlStartSourceFile.setDestPath("")
+    btlStartSourceFile.setProjectPath("config/" + configName + "/")
+    btlStartSourceFile.setType("SOURCE")
+
     # Generate Initialization File
     btlInitFile = bootloaderComponent.createFileSymbol("INITIALIZATION_BOOTLOADER_C", None)
-    btlInitFile.setSourcePath("../bootloader/templates/mips/initialization.c.ftl")
+    btlInitFile.setSourcePath("../bootloader/templates/arm/initialization.c.ftl")
     btlInitFile.setOutputName("initialization.c")
     btlInitFile.setMarkup(True)
     btlInitFile.setOverwrite(True)
@@ -288,44 +272,8 @@ def instantiateComponent(bootloaderComponent):
     btlInitFile.setType("SOURCE")
 
     # Generate Bootloader Linker Script
-    btlLinkerPath = "../bootloader/templates/mips/linkers/"
-
     btlLinkerFile = bootloaderComponent.createFileSymbol("BOOTLOADER_LINKER_FILE", None)
-
-    if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_ef.ld.ftl")
-    elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_da.ld.ftl")
-    elif (re.match("PIC32MK.[0-9]*GPD", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MK.[0-9]*GPE", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MK.[0-9]*MCF", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_gpd_gpe_mcf.ld.ftl")
-    elif (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_gpg_gph_mcj.ld.ftl")
-    elif (re.match("PIC32MK.[0-9]*GPK", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MK.[0-9]*GPL", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MK.[0-9]*MCM", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_gpk_gpl_mcm.ld.ftl")
-    elif (re.match("PIC32MX1.[1235]*0F.[0-9]*.[BCD]", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MX2.[1235]*0F.[0-9]*.[BCD]", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_1xx_2xx.ld.ftl")
-    elif (re.match("PIC32MX1.[57]*4F.[0-9]*.[BD]", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MX2.[57]*4F.[0-9]*.[BD]", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_1xx_2xx_xlp.ld.ftl")
-    elif (re.match("PIC32MX1.[2357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MX2.[357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MX5.[357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_1xx_2xx_5xx.ld.ftl")
-    elif (re.match("PIC32MX3.[357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MX4.[357]*0F.[0-9]*.[HL]", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_3xx_4xx.ld.ftl")
-    elif (re.match("PIC32MX5.[367]*.[45]*F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MX6.[679]*.[45]*F.[0-9]*.[HL]", Variables.get("__PROCESSOR")) or
-          re.match("PIC32MX7.[679]*.[45]*F.[0-9]*.[HL]", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_5xx_6xx_7xx.ld.ftl")
-
+    btlLinkerFile.setSourcePath("../bootloader/templates/arm/bootloader_linker.ld.ftl")
     btlLinkerFile.setOutputName("btl.ld")
     btlLinkerFile.setMarkup(True)
     btlLinkerFile.setOverwrite(True)
@@ -337,6 +285,18 @@ def instantiateComponent(bootloaderComponent):
     btlSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_INCLUDES")
     btlSystemDefFile.setSourcePath("../bootloader/templates/system/definitions.h.ftl")
     btlSystemDefFile.setMarkup(True)
+
+    # set XC32 option to not use the CRT0 startup code
+    xc32NoCRT0StartupCodeSym = bootloaderComponent.createSettingSymbol("XC32_NO_CRT0_STARTUP_CODE", None)
+    xc32NoCRT0StartupCodeSym.setCategory("C32-LD")
+    xc32NoCRT0StartupCodeSym.setKey("no-startup-files")
+    xc32NoCRT0StartupCodeSym.setValue("true")
+
+    # Clear Placing data into its own section
+    xc32ClearDataSection = bootloaderComponent.createSettingSymbol("XC32_CLEAR_DATA_SECTION", None)
+    xc32ClearDataSection.setCategory("C32")
+    xc32ClearDataSection.setKey("place-data-into-section")
+    xc32ClearDataSection.setValue("false")
 
 def onAttachmentConnected(source, target):
     global flash_erase_size
@@ -350,32 +310,22 @@ def onAttachmentConnected(source, target):
     if (srcID == "btl_UART_dependency"):
         periph_name = Database.getSymbolValue(remoteID, "USART_PLIB_API_PREFIX")
 
-        localComponent.getSymbolByID("BTL_TYPE").setValue("UART")
-
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
         localComponent.getSymbolByID("PERIPH_USED").setValue(periph_name)
 
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setSourcePath("../bootloader/templates/mips/bootloader_uart.c.ftl")
+        localComponent.getSymbolByID("BOOTLOADER_SRC").setSourcePath("../bootloader/templates/arm/bootloader_uart.c.ftl")
         localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(True)
-        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(True)
-
-        localComponent.setDependencyEnabled("btl_I2C_dependency", False)
+        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(True)        
 
         Database.setSymbolValue(remoteID, "USART_INTERRUPT_MODE", False)
+        
+        coreComponent = Database.getComponentByID("core")
+        
+        # Enable Systick.
+        coreComponent.getSymbolByID("systickEnable").setValue(True)
 
-    if (srcID == "btl_I2C_dependency"):
-        periph_name = Database.getSymbolValue(remoteID, "I2C_PLIB_API_PREFIX")
-
-        localComponent.getSymbolByID("BTL_TYPE").setValue("I2C")
-
-        localComponent.getSymbolByID("PERIPH_USED").clearValue()
-        localComponent.getSymbolByID("PERIPH_USED").setValue(periph_name)
-
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setSourcePath("../bootloader/templates/mips/bootloader_i2c.c.ftl")
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(True)
-        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(True)
-
-        localComponent.setDependencyEnabled("btl_UART_dependency", False)
+        # Configure systick period to 100 ms
+        coreComponent.getSymbolByID("SYSTICK_PERIOD_MS").setValue(100)    
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
@@ -392,12 +342,17 @@ def onAttachmentDisconnected(source, target):
     srcID = source["id"]
     targetID = target["id"]
 
-    if (srcID == "btl_UART_dependency" or
-        srcID == "btl_I2C_dependency"):
-        localComponent.getSymbolByID("BTL_TYPE").setValue("")
+    if (srcID == "btl_UART_dependency"):        
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
         localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(False)
         localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(False)
+        
+        if srcID == "btl_UART_dependency":
+            
+            coreComponent = Database.getComponentByID("core")
+            
+            # Disable Systick
+            coreComponent.getSymbolByID("systickEnable").setValue(False)            
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0

@@ -21,14 +21,29 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
+def hasSERCOMModule():
+    periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
+    peripherals         = periphNode.getChildren()
+    
+    for module in range (0, len(peripherals)):
+        periphName = str(peripherals[module].getAttribute("name"))
+        if (periphName == "SERCOM"):            
+            return True
+
 def loadModule():
     print("Load Module: Bootloader")
-
+        
     if ("PIC32M" in Variables.get("__PROCESSOR")):
-        bootloaderComponent = Module.CreateComponent("bootloader", "Bootloader", "/Bootloader/", "config/bootloader_mips.py")
-        bootloaderComponent.addDependency("btl_TIMER_dependency", "TMR", False, True)
+        uartBootloaderComponent = Module.CreateComponent("uart_bootloader", "UART Bootloader", "/Bootloader/", "config/bootloader_uart_mips.py")
+        uartBootloaderComponent.addDependency("btl_TIMER_dependency", "TMR", False, True)
     else:
-        bootloaderComponent = Module.CreateComponent("bootloader", "Bootloader", "/Bootloader/", "config/bootloader_arm.py")
+        uartBootloaderComponent = Module.CreateComponent("uart_bootloader", "UART Bootloader", "/Bootloader/", "config/bootloader_uart_arm.py")
+        if (hasSERCOMModule() == True):        
+            i2cBootloaderComponent = Module.CreateComponent("i2c_bootloader", "I2C Bootloader", "/Bootloader/", "config/bootloader_i2c_arm.py")
+            i2cBootloaderComponent.addDependency("btl_I2C_dependency", "I2C", False, True)
+            i2cBootloaderComponent.addDependency("btl_MEMORY_dependency", "MEMORY", False, True)        
 
-    bootloaderComponent.addDependency("btl_UART_dependency", "UART", False, True)
-    bootloaderComponent.addDependency("btl_MEMORY_dependency", "MEMORY", False, True)
+    uartBootloaderComponent.addDependency("btl_UART_dependency", "UART", False, True)
+    uartBootloaderComponent.addDependency("btl_MEMORY_dependency", "MEMORY", False, True)
+    
+    
