@@ -1,5 +1,5 @@
 """*****************************************************************************
-* Copyright (C) 2019 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2020 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -65,7 +65,7 @@ def calcBootloaderSize():
     max_i2c_btl_size    = 2048
     btl_size            = 0
 
-    if (flash_erase_size != 0):                
+    if (flash_erase_size != 0):
         if (flash_erase_size >= max_i2c_btl_size):
             btl_size = flash_erase_size
         else:
@@ -95,7 +95,7 @@ def setAppStartAndCommentVisible(symbol, event):
             comment_enable = True
 
         symbol.setVisible(comment_enable)
-        
+
 def setBootloaderSize(symbol, event):
 
     btl_size = str(calcBootloaderSize())
@@ -132,7 +132,7 @@ def setupCoreComponentSymbols():
 
     coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
-    coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)    
+    coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 
     # Enable PAC component if present
     for module in range (0, len(peripherals)):
@@ -187,7 +187,7 @@ def instantiateComponent(bootloaderComponent):
     btlSizeComment = bootloaderComponent.createCommentSymbol("BTL_SIZE_COMMENT", None)
     btlSizeComment.setLabel("!!! Bootloader size should be aligned to Erase Unit Size of the device !!!")
     btlSizeComment.setVisible(True)
-    
+
     btlCommandStretchClkDesc = "Enabling this option stretches the I2C clock when the bootloader is busy \
                                 with the internal flash erase or write operation. The clock is stretched \
                                 during the acknowledgement phase. This frees the I2C host from repeatedly polling the \
@@ -195,12 +195,12 @@ def instantiateComponent(bootloaderComponent):
                                 If this option is disabled, bootloader responds with a NAK while it is busy with the \
                                 internal flash erase or write operation. This allows the I2C host to communicate \
                                 with other slaves on the same bus."
-    
+
     btlCommandStretchClkEnable = bootloaderComponent.createBooleanSymbol("BTL_CMD_STRETCH_CLK", None)
     btlCommandStretchClkEnable.setLabel("Bootloader Commands Stretch I2C Clock")
     btlCommandStretchClkEnable.setDescription(btlCommandStretchClkDesc)
     btlCommandStretchClkEnable.setDefaultValue(False)
-    btlCommandStretchClkEnable.setVisible(True)    
+    btlCommandStretchClkEnable.setVisible(True)
 
     btlTriggerEnable = bootloaderComponent.createBooleanSymbol("BTL_TRIGGER_ENABLE", None)
     btlTriggerEnable.setLabel("Enable Bootloader Trigger From Firmware")
@@ -239,13 +239,13 @@ def instantiateComponent(bootloaderComponent):
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
+    btlSourceFile.setSourcePath("../bootloader/templates/arm/bootloader_i2c.c.ftl")
     btlSourceFile.setOutputName("bootloader.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
     btlSourceFile.setProjectPath("config/" + configName + "/bootloader/")
     btlSourceFile.setType("SOURCE")
-    btlSourceFile.setEnabled(False)
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/bootloader.h.ftl")
@@ -293,7 +293,6 @@ def instantiateComponent(bootloaderComponent):
     btlLinkerFile.setMarkup(True)
     btlLinkerFile.setOverwrite(True)
     btlLinkerFile.setType("LINKER")
-    btlLinkerFile.setEnabled(False)
 
     btlSystemDefFile = bootloaderComponent.createFileSymbol("BTL_SYS_DEF_HEADER", None)
     btlSystemDefFile.setType("STRING")
@@ -320,17 +319,13 @@ def onAttachmentConnected(source, target):
     remoteComponent = target["component"]
     remoteID = remoteComponent.getID()
     srcID = source["id"]
-    targetID = target["id"]    
+    targetID = target["id"]
 
     if (srcID == "btl_I2C_dependency"):
         periph_name = Database.getSymbolValue(remoteID, "I2C_PLIB_API_PREFIX")
-        
+
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
         localComponent.getSymbolByID("PERIPH_USED").setValue(periph_name)
-
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setSourcePath("../bootloader/templates/arm/bootloader_i2c.c.ftl")
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(True)
-        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(True)        
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
@@ -349,8 +344,6 @@ def onAttachmentDisconnected(source, target):
 
     if (srcID == "btl_I2C_dependency"):
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(False)
-        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(False)                         
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0

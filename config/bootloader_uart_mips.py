@@ -83,11 +83,11 @@ def calcBootloaderSize():
         if (flash_erase_size >= max_uart_btl_size):
             btl_size = flash_erase_size
         else:
-            btl_size = max_uart_btl_size  
-                  
+            btl_size = max_uart_btl_size
+
 
     return btl_size
-        
+
 def setBootloaderSize(symbol, event):
 
     btl_size = str(calcBootloaderSize())
@@ -213,13 +213,13 @@ def instantiateComponent(bootloaderComponent):
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
+    btlSourceFile.setSourcePath("../bootloader/templates/mips/bootloader_uart.c.ftl")
     btlSourceFile.setOutputName("bootloader.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
     btlSourceFile.setProjectPath("config/" + configName + "/bootloader/")
     btlSourceFile.setType("SOURCE")
-    btlSourceFile.setEnabled(False)
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/bootloader.h.ftl")
@@ -293,7 +293,6 @@ def instantiateComponent(bootloaderComponent):
     btlLinkerFile.setMarkup(True)
     btlLinkerFile.setOverwrite(True)
     btlLinkerFile.setType("LINKER")
-    btlLinkerFile.setEnabled(False)
 
     btlSystemDefFile = bootloaderComponent.createFileSymbol("BTL_SYS_DEF_HEADER", None)
     btlSystemDefFile.setType("STRING")
@@ -316,11 +315,7 @@ def onAttachmentConnected(source, target):
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
         localComponent.getSymbolByID("PERIPH_USED").setValue(periph_name)
 
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setSourcePath("../bootloader/templates/mips/bootloader_uart.c.ftl")
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(True)
-        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(True)
-
-        Database.setSymbolValue(remoteID, "USART_INTERRUPT_MODE", False)    
+        Database.setSymbolValue(remoteID, "USART_INTERRUPT_MODE", False)
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
@@ -339,8 +334,6 @@ def onAttachmentDisconnected(source, target):
 
     if (srcID == "btl_UART_dependency"):
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(False)
-        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(False)
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0

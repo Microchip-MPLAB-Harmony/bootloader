@@ -131,7 +131,7 @@ def setupCoreComponentSymbols():
 
     coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
-    coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)    
+    coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 
     # Enable PAC component if present
     for module in range (0, len(peripherals)):
@@ -161,7 +161,7 @@ def instantiateComponent(bootloaderComponent):
         btlDualBank.setVisible(False)
 
     btlDualBankComment = bootloaderComponent.createCommentSymbol("BTL_DUAL_BANK_COMMENT", None)
-    btlDualBankComment.setLabel("!!! WARNING Only Half of th Flash memory will be available for Application !!!")
+    btlDualBankComment.setLabel("!!! WARNING Only Half of the Flash memory will be available for Application !!!")
     btlDualBankComment.setVisible(False)
     btlDualBankComment.setDependencies(setBtlDualBankCommentVisible, ["BTL_DUAL_BANK"])
 
@@ -224,13 +224,13 @@ def instantiateComponent(bootloaderComponent):
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
+    btlSourceFile.setSourcePath("../bootloader/templates/arm/bootloader_uart.c.ftl")
     btlSourceFile.setOutputName("bootloader.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
     btlSourceFile.setProjectPath("config/" + configName + "/bootloader/")
     btlSourceFile.setType("SOURCE")
-    btlSourceFile.setEnabled(False)
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/bootloader.h.ftl")
@@ -278,7 +278,6 @@ def instantiateComponent(bootloaderComponent):
     btlLinkerFile.setMarkup(True)
     btlLinkerFile.setOverwrite(True)
     btlLinkerFile.setType("LINKER")
-    btlLinkerFile.setEnabled(False)
 
     btlSystemDefFile = bootloaderComponent.createFileSymbol("BTL_SYS_DEF_HEADER", None)
     btlSystemDefFile.setType("STRING")
@@ -313,19 +312,15 @@ def onAttachmentConnected(source, target):
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
         localComponent.getSymbolByID("PERIPH_USED").setValue(periph_name)
 
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setSourcePath("../bootloader/templates/arm/bootloader_uart.c.ftl")
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(True)
-        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(True)        
-
         Database.setSymbolValue(remoteID, "USART_INTERRUPT_MODE", False)
-        
+
         coreComponent = Database.getComponentByID("core")
-        
+
         # Enable Systick.
         coreComponent.getSymbolByID("systickEnable").setValue(True)
 
         # Configure systick period to 100 ms
-        coreComponent.getSymbolByID("SYSTICK_PERIOD_MS").setValue(100)    
+        coreComponent.getSymbolByID("SYSTICK_PERIOD_MS").setValue(100)
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
@@ -342,17 +337,13 @@ def onAttachmentDisconnected(source, target):
     srcID = source["id"]
     targetID = target["id"]
 
-    if (srcID == "btl_UART_dependency"):        
+    if (srcID == "btl_UART_dependency"):
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
-        localComponent.getSymbolByID("BOOTLOADER_SRC").setEnabled(False)
-        localComponent.getSymbolByID("BOOTLOADER_LINKER_FILE").setEnabled(False)
-        
-        if srcID == "btl_UART_dependency":
-            
-            coreComponent = Database.getComponentByID("core")
-            
-            # Disable Systick
-            coreComponent.getSymbolByID("systickEnable").setValue(False)            
+
+        coreComponent = Database.getComponentByID("core")
+
+        # Disable Systick
+        coreComponent.getSymbolByID("systickEnable").setValue(False)
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0
