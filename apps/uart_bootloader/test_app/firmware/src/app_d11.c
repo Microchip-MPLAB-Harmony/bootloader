@@ -142,6 +142,8 @@ void APP_D11_Tasks ( void )
         /* Application's initial state. */
         case APP_INIT:
         {
+            printf("\n\r####### Application loaded from Bootloader #######\n\r%s", "");
+
             printf("\n\r####### Press and Hold the Switch to trigger Bootloader #######\n\r%s", "");
 
             appData.state = APP_SWITCH_PRESS_WAIT;
