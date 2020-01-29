@@ -49,10 +49,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "peripheral/coretimer/plib_coretimer.h"
+#include "bootloader/bootloader.h"
 #include "peripheral/clk/plib_clk.h"
 #include "peripheral/gpio/plib_gpio.h"
 #include "peripheral/evic/plib_evic.h"
-#include "bootloader/bootloader.h"
 #include "peripheral/nvm/plib_nvm.h"
 #include "peripheral/uart/plib_uart6.h"
 

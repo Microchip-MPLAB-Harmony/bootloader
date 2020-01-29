@@ -55,7 +55,9 @@
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus // Provide C++ Compatibility
- extern "C" {
+
+    extern "C" {
+
 #endif
 
 // DOM-IGNORE-END
@@ -124,15 +126,17 @@ typedef enum
 } NVM_BOOT_FLASH_WRITE_PROTECT_LOCK;
 
 
+void NVM_Initialize( void );
+
 bool NVM_Read( uint32_t *data, uint32_t length, const uint32_t address );
 
-bool NVM_WordWrite(uint32_t data, uint32_t address);
+bool NVM_WordWrite( uint32_t data, uint32_t address );
 
-bool NVM_QuadWordWrite(uint32_t *data, uint32_t address);
+bool NVM_QuadWordWrite( uint32_t *data, uint32_t address );
 
-bool NVM_RowWrite(uint32_t *data, uint32_t address);
+bool NVM_RowWrite( uint32_t *data, uint32_t address );
 
-bool NVM_PageErase(uint32_t address);
+bool NVM_PageErase( uint32_t address );
 
 NVM_ERROR NVM_ErrorGet( void );
 
@@ -153,7 +157,9 @@ void NVM_BootFlashWriteProtectLock( NVM_BOOT_FLASH_WRITE_PROTECT_LOCK writeProte
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus // Provide C++ Compatibility
-}
+
+    }
+
 #endif
 
 // DOM-IGNORE-END

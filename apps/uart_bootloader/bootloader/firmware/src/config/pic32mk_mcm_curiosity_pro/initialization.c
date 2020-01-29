@@ -107,6 +107,7 @@
 #pragma config IOL1WAY =    ON
 #pragma config FUSBIDIO1 =   ON
 #pragma config FVBUSIO1 =  ON
+#pragma config PWMLOCK =  OFF
 
 /*** BF1SEQ ***/
 #pragma config TSEQ =       0x0
@@ -131,7 +132,6 @@ void SYS_Initialize ( void* data )
     __builtin_disable_interrupts();
 
     CLK_Initialize();
-	GPIO_Initialize();
 
     /* Configure CP0.K0 for optimal performance (cached instruction pre-fetch) */
     __builtin_mtc0(16, 0,(__builtin_mfc0(16, 0) | 0x3));
@@ -142,12 +142,18 @@ void SYS_Initialize ( void* data )
 
 
 
+	GPIO_Initialize();
+
+
+
     if (bootloader_Trigger() == false)
     {
         run_Application();
     }
 
     CORETIMER_Initialize();
+    NVM_Initialize();
+
 	UART6_Initialize();
 
 
