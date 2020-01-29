@@ -35,8 +35,8 @@
           <Name dnOrder="1">initialization.c</Name>
           <LogicalPath dnOrder="2">config/pic32mx470_curiosity/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">673A09CDF3CE1F32D9E7A3DEF38C8741</GeneratedChecksum>
-          <UserChecksum dnOrder="5">673A09CDF3CE1F32D9E7A3DEF38C8741</UserChecksum>
+          <GeneratedChecksum dnOrder="4">EBF212FF20450406560B816235440D33</GeneratedChecksum>
+          <UserChecksum dnOrder="5">EBF212FF20450406560B816235440D33</UserChecksum>
         </File>
         <File dnOrder="4">
           <Type dnOrder="0">SOURCE</Type>
@@ -59,8 +59,8 @@
           <Name dnOrder="1">plib_clk.c</Name>
           <LogicalPath dnOrder="2">config/pic32mx470_curiosity/peripheral/clk/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/clk/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">17CDF6979A6EF5ED9F06937D5B498EE8</GeneratedChecksum>
-          <UserChecksum dnOrder="5">17CDF6979A6EF5ED9F06937D5B498EE8</UserChecksum>
+          <GeneratedChecksum dnOrder="4">292053D50333D348A77FF14D9C0F5749</GeneratedChecksum>
+          <UserChecksum dnOrder="5">292053D50333D348A77FF14D9C0F5749</UserChecksum>
         </File>
         <File dnOrder="7">
           <Type dnOrder="0">SOURCE</Type>
@@ -91,8 +91,8 @@
           <Name dnOrder="1">plib_uart1.c</Name>
           <LogicalPath dnOrder="2">config/pic32mx470_curiosity/peripheral/uart/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/uart/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">C56F1C7F617CFD00093439FD0127C0BD</GeneratedChecksum>
-          <UserChecksum dnOrder="5">C56F1C7F617CFD00093439FD0127C0BD</UserChecksum>
+          <GeneratedChecksum dnOrder="4">D6AA41874F1D30D09D71301479C9CD12</GeneratedChecksum>
+          <UserChecksum dnOrder="5">D6AA41874F1D30D09D71301479C9CD12</UserChecksum>
         </File>
         <File dnOrder="11">
           <Type dnOrder="0">SOURCE</Type>
@@ -203,8 +203,8 @@
           <Name dnOrder="1">toolchain_specifics.h</Name>
           <LogicalPath dnOrder="2">config/pic32mx470_curiosity/</LogicalPath>
           <PhysicalPath dnOrder="3">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">5F0B87C955FBF569CBD67F4861B6B7AD</GeneratedChecksum>
-          <UserChecksum dnOrder="5">5F0B87C955FBF569CBD67F4861B6B7AD</UserChecksum>
+          <GeneratedChecksum dnOrder="4">9A7344615980CB9443B6436E41E2155A</GeneratedChecksum>
+          <UserChecksum dnOrder="5">9A7344615980CB9443B6436E41E2155A</UserChecksum>
         </File>
         <File dnOrder="25">
           <Type dnOrder="0">HEADER</Type>
@@ -219,16 +219,16 @@
         <Setting append="true" category="C32" delimiter=";" dnOrder="0" key="extra-include-directories" value="../src;../src/config/pic32mx470_curiosity;../src/packs/PIC32MX470F512H_DFP;;../src/mips"/>
         <Setting category="C32-LD" dnOrder="1" key="heap-size" value="512"/>
         <Setting category="C32-LD" dnOrder="2" key="no-device-startup-code" value="true"/>
-        <Setting category="C32-LD" dnOrder="3" key="preprocessor-macros" value=""/>
+        <Setting append="true" category="C32-LD" delimiter=";" dnOrder="3" key="preprocessor-macros" value=""/>
       </Settings>
     </Manifest>
     <Settings dnOrder="4">
-      <Setting dnOrder="0" key="CMSISPath" value=".\dev_packs\arm\CMSIS\5.5.1"/>
-      <Setting dnOrder="1" key="DFPPath" value=".\dev_packs\Microchip\PIC32MX_DFP\1.0.208\atdf\PIC32MX470F512H.atdf"/>
+      <Setting dnOrder="0" key="CMSISPath" value=".\dev_packs\arm\CMSIS\5.6.0"/>
+      <Setting dnOrder="1" key="DFPPath" value=".\dev_packs\Microchip\PIC32MX_DFP\1.1.215\atdf\PIC32MX470F512H.atdf"/>
       <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
       <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
       <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_ALL"/>
-      <Setting dnOrder="5" key="PackageFilter" value="bsp;core;csp;"/>
+      <Setting dnOrder="5" key="PackageFilter" value="bootloader;bsp;core;csp;expresslogic_threadx;"/>
     </Settings>
   </Configurator>
 </Configuration>
