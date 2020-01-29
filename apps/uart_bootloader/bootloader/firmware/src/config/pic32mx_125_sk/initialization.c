@@ -108,12 +108,15 @@ void SYS_Initialize ( void* data )
     __builtin_disable_interrupts();
 
     CLK_Initialize();
-	GPIO_Initialize();
 
     /* Set the SRAM wait states to zero */
     BMXCONbits.BMXWSDRM = 0;
 
 
+
+
+
+	GPIO_Initialize();
 
 
 
@@ -124,6 +127,8 @@ void SYS_Initialize ( void* data )
 
     CORETIMER_Initialize();
 	UART2_Initialize();
+
+    NVM_Initialize();
 
 
 }
