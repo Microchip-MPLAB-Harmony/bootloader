@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
- * MPLAB XC Compiler -  PIC32MK GPL linker script
+ * MPLAB XC Compiler -  PIC32MK MCM linker script
  * Build date : Jul 16 2019
  * 
  * Copyright (c) 2019, Microchip Technology Inc. and its subsidiaries ("Microchip")

@@ -50,10 +50,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "peripheral/coretimer/plib_coretimer.h"
+#include "bsp/bsp.h"
 #include "peripheral/clk/plib_clk.h"
 #include "peripheral/gpio/plib_gpio.h"
 #include "peripheral/evic/plib_evic.h"
-#include "bsp/bsp.h"
 #include "peripheral/uart/plib_uart6.h"
 #include "app.h"
 
