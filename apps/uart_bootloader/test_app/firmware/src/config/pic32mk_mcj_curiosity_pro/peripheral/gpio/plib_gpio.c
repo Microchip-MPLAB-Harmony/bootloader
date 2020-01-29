@@ -58,21 +58,19 @@
 void GPIO_Initialize ( void )
 {
     /* PORTA Initialization */
-    LATA = 0x400; /* Initial Latch Value */
+    LATA = 0x0; /* Initial Latch Value */
     TRISACLR = 0x400; /* Direction Control */
     ANSELACLR = 0x4000; /* Digital Mode Enable */
 
     /* PORTB Initialization */
-    LATB = 0x100; /* Initial Latch Value */
-    TRISBCLR = 0x100; /* Direction Control */
     ANSELBCLR = 0x100; /* Digital Mode Enable */
+    CNPUBSET = 0x100; /* Pull-Up Enable */
 
     /* PORTC Initialization */
 
     /* PORTD Initialization */
 
     /* PORTE Initialization */
-    ANSELECLR = 0x2000; /* Digital Mode Enable */
 
     /* PORTF Initialization */
 
@@ -80,7 +78,7 @@ void GPIO_Initialize ( void )
     ANSELGCLR = 0x200; /* Digital Mode Enable */
 
 
-    /* unlock system for PPS configuration */
+    /* Unlock system for PPS configuration */
     SYSKEY = 0x00000000;
     SYSKEY = 0xAA996655;
     SYSKEY = 0x556699AA;

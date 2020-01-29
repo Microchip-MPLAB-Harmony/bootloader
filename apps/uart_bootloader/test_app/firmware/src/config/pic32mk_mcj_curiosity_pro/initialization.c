@@ -73,7 +73,7 @@
 /*** DEVCFG1 ***/
 #pragma config FNOSC =      SPLL
 #pragma config DMTINTV =    WIN_127_128
-#pragma config FSOSCEN =    ON
+#pragma config FSOSCEN =    OFF
 #pragma config IESO =       ON
 #pragma config POSCMOD =    OFF
 #pragma config OSCIOFNC =   OFF
@@ -156,7 +156,6 @@ void SYS_Initialize ( void* data )
 
   
     CLK_Initialize();
-	GPIO_Initialize();
 
     /* Configure CP0.K0 for optimal performance (cached instruction pre-fetch) */
     __builtin_mtc0(16, 0,(__builtin_mfc0(16, 0) | 0x3));
@@ -166,10 +165,12 @@ void SYS_Initialize ( void* data )
     CHECONbits.PREFEN = 1;
 
 
+
+	GPIO_Initialize();
+
     CORETIMER_Initialize();
 	UART2_Initialize();
 
-	BSP_Initialize();
 
 
 
