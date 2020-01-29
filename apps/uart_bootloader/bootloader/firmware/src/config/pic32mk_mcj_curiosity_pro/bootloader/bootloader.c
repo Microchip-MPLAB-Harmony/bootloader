@@ -38,20 +38,8 @@
  *******************************************************************************/
 // DOM-IGNORE-END
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Include Files
-// *****************************************************************************
-// *****************************************************************************
-
 #include "definitions.h"
 #include <device.h>
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Type Definitions
-// *****************************************************************************
-// *****************************************************************************
 
 #define FLASH_START             (0x9d000000UL)
 #define FLASH_LENGTH            (0x80000UL)
@@ -105,12 +93,6 @@ enum
     BL_RESP_CRC_FAIL    = 0x54,
 };
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Global objects
-// *****************************************************************************
-// *****************************************************************************
-
 static uint32_t CACHE_ALIGN input_buffer[WORDS(OFFSET_SIZE + DATA_SIZE)];
 
 static uint32_t CACHE_ALIGN flash_data[WORDS(DATA_SIZE)];
@@ -125,11 +107,22 @@ static uint8_t  input_command       = 0;
 static bool     packet_received     = false;
 static bool     flash_data_ready    = false;
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Bootloader Local Functions
-// *****************************************************************************
-// *****************************************************************************
+
+/* Function to Send the final response for reset command and trigger a reset */
+static void trigger_Reset(void)
+{
+    UART2_WriteByte(BL_RESP_OK);
+
+    while(UART2_TransmitComplete() == false);
+
+    /* Perform system unlock sequence */ 
+    SYSKEY = 0x00000000;
+    SYSKEY = 0xAA996655;
+    SYSKEY = 0x556699AA;
+
+    RSWRSTSET = _RSWRST_SWRST_MASK;
+    (void)RSWRST;
+}
 
 /* Function to Generate CRC by reading the firmware programmed into internal flash */
 static uint32_t crc_generate(void)
@@ -160,7 +153,7 @@ static uint32_t crc_generate(void)
 
     for (i = 0; i < size; i++)
     {
-        data = *(uint8_t *)KVA0_TO_KVA1((FLASH_START + unlock_begin + i));
+        data = *(uint8_t *)KVA0_TO_KVA1((unlock_begin + i));
 
         crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
     }
@@ -244,7 +237,7 @@ static void command_task(void)
 
         uint32_t end    = begin + (input_buffer[SIZE_OFFSET] & SIZE_ALIGN_MASK);
 
-        if (end > begin && end <= FLASH_LENGTH)
+        if (end > begin && end <= (FLASH_START + FLASH_LENGTH))
         {
             unlock_begin = begin;
             unlock_end = end;
@@ -287,17 +280,7 @@ static void command_task(void)
     }
     else if (BL_CMD_RESET == input_command)
     {
-        UART2_WriteByte(BL_RESP_OK);
-
-        while(UART2_TransmitComplete() == false);
-
-        /* Perform system unlock sequence */ 
-        SYSKEY = 0x00000000;
-        SYSKEY = 0xAA996655;
-        SYSKEY = 0x556699AA;
-
-        RSWRSTSET = _RSWRST_SWRST_MASK;
-        (void)RSWRST;
+        trigger_Reset();
     }
     else
     {
@@ -310,9 +293,10 @@ static void command_task(void)
 /* Function to program received application firmware data into internal flash */
 static void flash_task(void)
 {
-    uint32_t addr       = (flash_addr + FLASH_START);
+    uint32_t addr       = flash_addr;
     uint32_t page       = 0;
     uint32_t write_idx  = 0;
+
 
     /* Erase the Current sector */
     NVM_PageErase(addr);
@@ -334,13 +318,6 @@ static void flash_task(void)
 
     UART2_WriteByte(BL_RESP_OK);
 }
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Bootloader Global Functions
-// *****************************************************************************
-// *****************************************************************************
-
 
 void run_Application(void)
 {

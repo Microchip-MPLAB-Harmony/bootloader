@@ -61,14 +61,13 @@ void GPIO_Initialize ( void )
     ANSELACLR = 0x4000; /* Digital Mode Enable */
 
     /* PORTB Initialization */
+    CNPUBSET = 0x100; /* Pull-Up Enable */
 
     /* PORTC Initialization */
 
     /* PORTD Initialization */
 
     /* PORTE Initialization */
-    ANSELECLR = 0x2000; /* Digital Mode Enable */
-    CNPUESET = 0x2000; /* Pull-Up Enable */
 
     /* PORTF Initialization */
 
@@ -76,7 +75,7 @@ void GPIO_Initialize ( void )
     ANSELGCLR = 0x200; /* Digital Mode Enable */
 
 
-    /* unlock system for PPS configuration */
+    /* Unlock system for PPS configuration */
     SYSKEY = 0x00000000;
     SYSKEY = 0xAA996655;
     SYSKEY = 0x556699AA;
