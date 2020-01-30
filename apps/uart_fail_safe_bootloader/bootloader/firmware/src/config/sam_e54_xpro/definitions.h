@@ -51,12 +51,13 @@
 #include "peripheral/nvmctrl/plib_nvmctrl.h"
 #include "peripheral/sercom/usart/plib_sercom2_usart.h"
 #include "peripheral/evsys/plib_evsys.h"
+#include "bootloader/bootloader.h"
 #include "peripheral/port/plib_port.h"
 #include "peripheral/clock/plib_clock.h"
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/systick/plib_systick.h"
 #include "peripheral/pac/plib_pac.h"
-#include "bootloader/bootloader.h"
+#include "peripheral/cmcc/plib_cmcc.h"
 #include "peripheral/dsu/plib_dsu.h"
 
 // DOM-IGNORE-BEGIN
