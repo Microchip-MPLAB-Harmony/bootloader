@@ -156,7 +156,7 @@ static uint32_t crc_generate(void)
 
     for (i = 0; i < size; i++)
     {
-        data = *(uint8_t *)(FLASH_START + unlock_begin + i);
+        data = *(uint8_t *)(unlock_begin + i);
         crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
     }
     return crc;
@@ -239,7 +239,7 @@ static void command_task(void)
 
         uint32_t end    = begin + (input_buffer[SIZE_OFFSET] & SIZE_ALIGN_MASK);
 
-        if (end > begin && end <= FLASH_LENGTH)
+        if (end > begin && end <= (FLASH_START + FLASH_LENGTH))
         {
             unlock_begin = begin;
             unlock_end = end;
@@ -301,7 +301,7 @@ static void command_task(void)
 /* Function to program received application firmware data into internal flash */
 static void flash_task(void)
 {
-    uint32_t addr       = (flash_addr + FLASH_START);
+    uint32_t addr       = flash_addr;
     uint32_t page       = 0;
     uint32_t write_idx  = 0;
 
