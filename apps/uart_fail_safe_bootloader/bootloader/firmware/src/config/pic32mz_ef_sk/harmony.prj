@@ -11,8 +11,8 @@
           <Name dnOrder="1">bootloader.c</Name>
           <LogicalPath dnOrder="2">config/pic32mz_ef_sk/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="3">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">A2910BAE3344C3D241257BA3FB0D9FBB</GeneratedChecksum>
-          <UserChecksum dnOrder="5">A2910BAE3344C3D241257BA3FB0D9FBB</UserChecksum>
+          <GeneratedChecksum dnOrder="4">A8BE28663D3CE77C1B3C3D8C9C03D269</GeneratedChecksum>
+          <UserChecksum dnOrder="5">A8BE28663D3CE77C1B3C3D8C9C03D269</UserChecksum>
         </File>
         <File dnOrder="1">
           <Type dnOrder="0">SOURCE</Type>
