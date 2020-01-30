@@ -137,6 +137,9 @@ void APP_L10_Tasks ( void )
         /* Application's initial state. */
         case APP_L10_INIT:
         {
+            /* Add Delay for the UART Console to get enumerated after reset */
+            APP_TIMER_DelayMs(1000);
+
             printf("\n\r####### Application loaded from Bootloader #######\n\r");
 
             appData.state = APP_L10_BLINK_LED;

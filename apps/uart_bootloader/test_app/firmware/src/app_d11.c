@@ -142,6 +142,9 @@ void APP_D11_Tasks ( void )
         /* Application's initial state. */
         case APP_INIT:
         {
+            /* Add Delay for the UART Console to get enumerated after reset */
+            APP_TIMER_DelayMs(1000);
+
             printf("\n\r####### Application loaded from Bootloader #######\n\r%s", "");
 
             printf("\n\r####### Press and Hold the Switch to trigger Bootloader #######\n\r%s", "");
