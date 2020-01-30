@@ -1,91 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Configuration>
   <Components>
-    <UniqueComponent dnOrder="0" id="bootloader">
-      <Symbols dnOrder="0">
-        <File dnOrder="0" id="BOOTLOADER_LINKER_FILE">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="enabled">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-          </Attributes>
-        </File>
-        <File dnOrder="1" id="BOOTLOADER_SRC">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="enabled">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-            <String dnOrder="1" id="source">
-              <Value dnOrder="0">../bootloader/templates/arm/bootloader_uart.c.ftl</Value>
-            </String>
-          </Attributes>
-        </File>
-        <String dnOrder="2" id="BTL_SIZE">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="visible">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-          </Attributes>
-          <Values dnOrder="1">
-            <Dynamic dnOrder="0" id="bootloader" value="8192"/>
-          </Values>
-        </String>
-        <Boolean dnOrder="3" id="BTL_TRIGGER_ENABLE">
-          <Values dnOrder="0">
-            <User dnOrder="0" value="true"/>
-          </Values>
-        </Boolean>
-        <String dnOrder="4" id="BTL_TRIGGER_LEN">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="visible">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-          </Attributes>
-          <Values dnOrder="1">
-            <User dnOrder="0" value="16"/>
-          </Values>
-        </String>
-        <Combo dnOrder="5" id="BTL_TYPE">
-          <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="UART"/>
-          </Values>
-        </Combo>
-        <String dnOrder="6" id="MEM_USED">
-          <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="NVMCTRL"/>
-          </Values>
-        </String>
-        <String dnOrder="7" id="PERIPH_USED">
-          <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="SERCOM2_USART"/>
-          </Values>
-        </String>
-      </Symbols>
-      <Attachments dnOrder="1">
-        <DirectDependency dnOrder="0" id="btl_MEMORY_dependency">
-          <Attributes dnOrder="0">
-            <String dnOrder="0" id="targetComponentID">
-              <Value dnOrder="0">nvmctrl</Value>
-            </String>
-            <String dnOrder="1" id="targetAttachmentID">
-              <Value dnOrder="0">NVMCTRL_MEMORY</Value>
-            </String>
-          </Attributes>
-        </DirectDependency>
-        <DirectDependency dnOrder="1" id="btl_UART_dependency">
-          <Attributes dnOrder="0">
-            <String dnOrder="0" id="targetComponentID">
-              <Value dnOrder="0">sercom2</Value>
-            </String>
-            <String dnOrder="1" id="targetAttachmentID">
-              <Value dnOrder="0">SERCOM2_UART</Value>
-            </String>
-          </Attributes>
-        </DirectDependency>
-      </Attachments>
-    </UniqueComponent>
-    <UniqueComponent dnOrder="1" id="cmsis"/>
-    <UniqueComponent dnOrder="2" id="core">
+    <UniqueComponent dnOrder="0" id="cmsis"/>
+    <UniqueComponent dnOrder="1" id="core">
       <Symbols dnOrder="0">
         <Boolean dnOrder="0" id="ADVANCED_EXCEPTION">
           <Attributes dnOrder="0">
@@ -96,7 +13,7 @@
         </Boolean>
         <String dnOrder="1" id="APP_START_ADDRESS">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="2000"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="2000"/>
           </Values>
         </String>
         <KeyValueSet dnOrder="2" id="COMPILER_CHOICE">
@@ -138,7 +55,7 @@
         </Menu>
         <Boolean dnOrder="9" id="CoreMainFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <String dnOrder="10" id="CoreMainFileName">
@@ -150,32 +67,32 @@
         </String>
         <Boolean dnOrder="11" id="CoreSysCallsFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="12" id="CoreSysExceptionFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="13" id="CoreSysInitFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="14" id="CoreSysIntFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="15" id="CoreSysStartupFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="16" id="CoreSysStdioSyscallsFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <File dnOrder="17" id="DEBUG_CONSOLE_C">
@@ -479,7 +396,7 @@
             </Boolean>
           </Attributes>
           <Values dnOrder="1">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="72" id="PAC_INTERRUPT_ENABLE">
@@ -525,7 +442,7 @@
         </File>
         <Boolean dnOrder="79" id="PAC_USE">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="true"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="true"/>
           </Values>
         </Boolean>
         <String dnOrder="80" id="PIN_100_FUNCTION_TYPE">
@@ -688,164 +605,169 @@
             <Dynamic dnOrder="0" id="core" value="true"/>
           </Values>
         </Boolean>
-        <Integer dnOrder="112" id="QSPI_CLOCK_FREQUENCY">
+        <String dnOrder="112" id="PORT_REG_NAME">
+          <Values dnOrder="0">
+            <Dynamic dnOrder="0" id="core" value="PORT"/>
+          </Values>
+        </String>
+        <Integer dnOrder="113" id="QSPI_CLOCK_FREQUENCY">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="0"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="113" id="SERCOM2_0_INTERRUPT_ENABLE">
+        <Boolean dnOrder="114" id="SERCOM2_0_INTERRUPT_ENABLE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="114" id="SERCOM2_0_INTERRUPT_ENABLE_UPDATE">
+        <Boolean dnOrder="115" id="SERCOM2_0_INTERRUPT_ENABLE_UPDATE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="true"/>
           </Values>
         </Boolean>
-        <String dnOrder="115" id="SERCOM2_0_INTERRUPT_HANDLER">
+        <String dnOrder="116" id="SERCOM2_0_INTERRUPT_HANDLER">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="SERCOM2_0_Handler"/>
           </Values>
         </String>
-        <Boolean dnOrder="116" id="SERCOM2_0_INTERRUPT_HANDLER_LOCK">
+        <Boolean dnOrder="117" id="SERCOM2_0_INTERRUPT_HANDLER_LOCK">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="117" id="SERCOM2_1_INTERRUPT_ENABLE">
+        <Boolean dnOrder="118" id="SERCOM2_1_INTERRUPT_ENABLE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="118" id="SERCOM2_1_INTERRUPT_ENABLE_UPDATE">
+        <Boolean dnOrder="119" id="SERCOM2_1_INTERRUPT_ENABLE_UPDATE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="true"/>
           </Values>
         </Boolean>
-        <String dnOrder="119" id="SERCOM2_1_INTERRUPT_HANDLER">
+        <String dnOrder="120" id="SERCOM2_1_INTERRUPT_HANDLER">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="SERCOM2_1_Handler"/>
           </Values>
         </String>
-        <Boolean dnOrder="120" id="SERCOM2_1_INTERRUPT_HANDLER_LOCK">
+        <Boolean dnOrder="121" id="SERCOM2_1_INTERRUPT_HANDLER_LOCK">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="121" id="SERCOM2_2_INTERRUPT_ENABLE">
+        <Boolean dnOrder="122" id="SERCOM2_2_INTERRUPT_ENABLE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="122" id="SERCOM2_2_INTERRUPT_ENABLE_UPDATE">
+        <Boolean dnOrder="123" id="SERCOM2_2_INTERRUPT_ENABLE_UPDATE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="true"/>
           </Values>
         </Boolean>
-        <String dnOrder="123" id="SERCOM2_2_INTERRUPT_HANDLER">
+        <String dnOrder="124" id="SERCOM2_2_INTERRUPT_HANDLER">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="SERCOM2_2_Handler"/>
           </Values>
         </String>
-        <Boolean dnOrder="124" id="SERCOM2_2_INTERRUPT_HANDLER_LOCK">
+        <Boolean dnOrder="125" id="SERCOM2_2_INTERRUPT_HANDLER_LOCK">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="125" id="SERCOM2_CORE_CLOCK_ENABLE">
+        <Boolean dnOrder="126" id="SERCOM2_CORE_CLOCK_ENABLE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="true"/>
           </Values>
         </Boolean>
-        <Integer dnOrder="126" id="SERCOM2_CORE_CLOCK_FREQUENCY">
+        <Integer dnOrder="127" id="SERCOM2_CORE_CLOCK_FREQUENCY">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="60000000"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="127" id="SERCOM2_OTHER_INTERRUPT_ENABLE">
+        <Boolean dnOrder="128" id="SERCOM2_OTHER_INTERRUPT_ENABLE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="128" id="SERCOM2_OTHER_INTERRUPT_ENABLE_UPDATE">
+        <Boolean dnOrder="129" id="SERCOM2_OTHER_INTERRUPT_ENABLE_UPDATE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="true"/>
           </Values>
         </Boolean>
-        <String dnOrder="129" id="SERCOM2_OTHER_INTERRUPT_HANDLER">
+        <String dnOrder="130" id="SERCOM2_OTHER_INTERRUPT_HANDLER">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="SERCOM2_OTHER_Handler"/>
           </Values>
         </String>
-        <Boolean dnOrder="130" id="SERCOM2_OTHER_INTERRUPT_HANDLER_LOCK">
+        <Boolean dnOrder="131" id="SERCOM2_OTHER_INTERRUPT_HANDLER_LOCK">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom2" value="false"/>
           </Values>
         </Boolean>
-        <File dnOrder="131" id="STARTUP_C">
+        <File dnOrder="132" id="STARTUP_C">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="132" id="SYSTICK_FILE_0">
+        <File dnOrder="133" id="SYSTICK_FILE_0">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="133" id="SYSTICK_FILE_1">
+        <File dnOrder="134" id="SYSTICK_FILE_1">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="134" id="SYSTICK_FILE_2">
+        <File dnOrder="135" id="SYSTICK_FILE_2">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <Menu dnOrder="135" id="SYSTICK_MENU_0">
+        <Menu dnOrder="136" id="SYSTICK_MENU_0">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <String dnOrder="136" id="SYSTICK_PERIOD">
+        <String dnOrder="137" id="SYSTICK_PERIOD">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="0xb71b00"/>
           </Values>
         </String>
-        <Float dnOrder="137" id="SYSTICK_PERIOD_MS">
+        <Float dnOrder="138" id="SYSTICK_PERIOD_MS">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="100.0"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="100.0"/>
           </Values>
         </Float>
-        <Integer dnOrder="138" id="SYSTICK_PERIOD_US">
+        <Integer dnOrder="139" id="SYSTICK_PERIOD_US">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="100000"/>
           </Values>
         </Integer>
-        <Setting dnOrder="139" id="XC32_LINKER_PREPROC_MARCOS">
+        <Setting dnOrder="140" id="XC32_LINKER_PREPROC_MARCOS">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="value">
               <Value dnOrder="0">ROM_ORIGIN=0x2000;ROM_LENGTH=0xfe000</Value>
             </String>
           </Attributes>
         </Setting>
-        <Boolean dnOrder="140" id="systickEnable">
+        <Boolean dnOrder="141" id="systickEnable">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="true"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="true"/>
           </Values>
         </Boolean>
-        <File dnOrder="141" id="systickSystemInitFile">
+        <File dnOrder="142" id="systickSystemInitFile">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
@@ -854,9 +776,9 @@
         </File>
       </Symbols>
     </UniqueComponent>
-    <UniqueComponent dnOrder="3" id="dfp"/>
-    <UniqueComponent dnOrder="4" id="dsu"/>
-    <UniqueComponent dnOrder="5" id="evsys">
+    <UniqueComponent dnOrder="2" id="dfp"/>
+    <UniqueComponent dnOrder="3" id="dsu"/>
+    <UniqueComponent dnOrder="4" id="evsys">
       <Symbols dnOrder="0">
         <Boolean dnOrder="0" id="EVSYS_CHANNEL_0_USER_READY">
           <Values dnOrder="0">
@@ -1020,11 +942,11 @@
         </Boolean>
       </Symbols>
     </UniqueComponent>
-    <UniqueComponent dnOrder="6" id="nvmctrl">
+    <UniqueComponent dnOrder="5" id="nvmctrl">
       <Symbols dnOrder="0">
         <Boolean dnOrder="0" id="INTERRUPT_ENABLE">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Integer dnOrder="1" id="NVM_RWS">
@@ -1037,7 +959,7 @@
         <DirectCapability dnOrder="0" id="NVMCTRL_MEMORY">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="targetComponentID">
-              <Value dnOrder="0">bootloader</Value>
+              <Value dnOrder="0">uart_bootloader</Value>
             </String>
             <String dnOrder="1" id="targetAttachmentID">
               <Value dnOrder="0">btl_MEMORY_dependency</Value>
@@ -1046,7 +968,7 @@
         </DirectCapability>
       </Attachments>
     </UniqueComponent>
-    <UniqueComponent dnOrder="7" id="sercom2">
+    <UniqueComponent dnOrder="6" id="sercom2">
       <Symbols dnOrder="0">
         <Integer dnOrder="0" id="I2CM_BAUD">
           <Values dnOrder="0">
@@ -1113,7 +1035,7 @@
         </Integer>
         <Boolean dnOrder="10" id="USART_INTERRUPT_MODE">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <KeyValueSet dnOrder="11" id="USART_RXPO">
@@ -1150,7 +1072,7 @@
         <DirectCapability dnOrder="2" id="SERCOM2_UART">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="targetComponentID">
-              <Value dnOrder="0">bootloader</Value>
+              <Value dnOrder="0">uart_bootloader</Value>
             </String>
             <String dnOrder="1" id="targetAttachmentID">
               <Value dnOrder="0">btl_UART_dependency</Value>
@@ -1159,19 +1081,80 @@
         </DirectCapability>
       </Attachments>
     </UniqueComponent>
+    <UniqueComponent dnOrder="7" id="uart_bootloader">
+      <Symbols dnOrder="0">
+        <String dnOrder="0" id="BTL_SIZE">
+          <Attributes dnOrder="0">
+            <Boolean dnOrder="0" id="visible">
+              <Value dnOrder="0">true</Value>
+            </Boolean>
+          </Attributes>
+          <Values dnOrder="1">
+            <Dynamic dnOrder="0" id="uart_bootloader" value="8192"/>
+          </Values>
+        </String>
+        <Boolean dnOrder="1" id="BTL_TRIGGER_ENABLE">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="true"/>
+          </Values>
+        </Boolean>
+        <String dnOrder="2" id="BTL_TRIGGER_LEN">
+          <Attributes dnOrder="0">
+            <Boolean dnOrder="0" id="visible">
+              <Value dnOrder="0">true</Value>
+            </Boolean>
+          </Attributes>
+          <Values dnOrder="1">
+            <User dnOrder="0" value="16"/>
+          </Values>
+        </String>
+        <String dnOrder="3" id="MEM_USED">
+          <Values dnOrder="0">
+            <Dynamic dnOrder="0" id="uart_bootloader" value="NVMCTRL"/>
+          </Values>
+        </String>
+        <String dnOrder="4" id="PERIPH_USED">
+          <Values dnOrder="0">
+            <Dynamic dnOrder="0" id="uart_bootloader" value="SERCOM2_USART"/>
+          </Values>
+        </String>
+      </Symbols>
+      <Attachments dnOrder="1">
+        <DirectDependency dnOrder="0" id="btl_MEMORY_dependency">
+          <Attributes dnOrder="0">
+            <String dnOrder="0" id="targetComponentID">
+              <Value dnOrder="0">nvmctrl</Value>
+            </String>
+            <String dnOrder="1" id="targetAttachmentID">
+              <Value dnOrder="0">NVMCTRL_MEMORY</Value>
+            </String>
+          </Attributes>
+        </DirectDependency>
+        <DirectDependency dnOrder="1" id="btl_UART_dependency">
+          <Attributes dnOrder="0">
+            <String dnOrder="0" id="targetComponentID">
+              <Value dnOrder="0">sercom2</Value>
+            </String>
+            <String dnOrder="1" id="targetAttachmentID">
+              <Value dnOrder="0">SERCOM2_UART</Value>
+            </String>
+          </Attributes>
+        </DirectDependency>
+      </Attachments>
+    </UniqueComponent>
   </Components>
   <UserData>
     <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
     <ComponentGraph dnOrder="1" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="bootloader" x="264" y="148"/>
-        <ElementPosition dnOrder="1" id="cmsis" x="660" y="20"/>
-        <ElementPosition dnOrder="2" id="core" x="560" y="20"/>
-        <ElementPosition dnOrder="3" id="dfp" x="340" y="20"/>
-        <ElementPosition dnOrder="4" id="dsu" x="19" y="21"/>
-        <ElementPosition dnOrder="5" id="evsys" x="180" y="20"/>
-        <ElementPosition dnOrder="6" id="nvmctrl" x="25" y="106"/>
-        <ElementPosition dnOrder="7" id="sercom2" x="27" y="202"/>
+        <ElementPosition dnOrder="0" id="cmsis" x="660" y="20"/>
+        <ElementPosition dnOrder="1" id="core" x="560" y="20"/>
+        <ElementPosition dnOrder="2" id="dfp" x="340" y="20"/>
+        <ElementPosition dnOrder="3" id="dsu" x="19" y="21"/>
+        <ElementPosition dnOrder="4" id="evsys" x="180" y="20"/>
+        <ElementPosition dnOrder="5" id="nvmctrl" x="25" y="106"/>
+        <ElementPosition dnOrder="6" id="sercom2" x="27" y="202"/>
+        <ElementPosition dnOrder="7" id="uart_bootloader" x="237" y="136"/>
       </ElementPositions>
     </ComponentGraph>
   </UserData>
