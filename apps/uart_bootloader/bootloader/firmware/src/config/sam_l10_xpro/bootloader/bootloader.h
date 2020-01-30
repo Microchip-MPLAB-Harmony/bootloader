@@ -41,11 +41,12 @@
 
 #define BTL_TRIGGER_RAM_START   0x20000000
 
-#define BTL_TRIGGER_LEN         16
+#define BTL_TRIGGER_LEN         0
+
 
 // *****************************************************************************
 /* Function:
-    bool bootloader_Trigger(void);
+    bool bootloader_Trigger( void );
 
  Summary:
     Checks if Bootloader has to be executed at startup.
@@ -104,7 +105,7 @@ bool bootloader_Trigger( void );
 
 // *****************************************************************************
 /* Function:
-    void run_Application(void);
+    void run_Application( void );
 
  Summary:
     Runs the programmed application at startup.
@@ -148,7 +149,7 @@ void run_Application( void );
 
 // *****************************************************************************
 /* Function:
-    void bootloader_Start(void);
+    void bootloader_Start( void );
 
  Summary:
     Starts bootloader execution.

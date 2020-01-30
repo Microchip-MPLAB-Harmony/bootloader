@@ -69,7 +69,7 @@ bootloader_size        = 2048;
  * ram[2] = 0x5048434D;
  * ram[3] = 0x5048434D;
  */
-bootloader_request_len = 16;
+bootloader_request_len = 0;
 
 #define ROM_START 0x00000000
 
