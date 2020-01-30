@@ -458,7 +458,7 @@ static void command_task(void)
 /* Function to program received application firmware data into internal flash */
 static void flash_task(void)
 {
-    uint32_t addr       = (flash_addr);
+    uint32_t addr       = flash_addr;
     uint32_t page       = 0;
     uint32_t write_idx  = 0;
 

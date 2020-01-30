@@ -11,8 +11,8 @@
           <Name dnOrder="1">bootloader.c</Name>
           <LogicalPath dnOrder="2">config/pic32mk_mcm_curiosity_pro/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="3">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">DAAA86B2E1E68B1C407E27BF409F0772</GeneratedChecksum>
-          <UserChecksum dnOrder="5">DAAA86B2E1E68B1C407E27BF409F0772</UserChecksum>
+          <GeneratedChecksum dnOrder="4">AE70855494B29CB7EF831EA27B107942</GeneratedChecksum>
+          <UserChecksum dnOrder="5">AE70855494B29CB7EF831EA27B107942</UserChecksum>
         </File>
         <File dnOrder="1">
           <Type dnOrder="0">SOURCE</Type>
