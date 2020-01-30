@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app.h
+    app_arm.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -43,8 +43,8 @@
  *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef _APP_H
-#define _APP_H
+#ifndef _APP_ARM_H
+#define _APP_ARM_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -159,7 +159,7 @@ typedef struct
     This routine must be called from the SYS_Initialize function.
 */
 
-void APP_Initialize ( void );
+void APP_ARM_Initialize ( void );
 
 
 /*******************************************************************************
@@ -192,7 +192,7 @@ void APP_Initialize ( void );
     This routine must be called from SYS_Tasks() routine.
  */
 
-void APP_Tasks( void );
+void APP_ARM_Tasks( void );
 
 
 

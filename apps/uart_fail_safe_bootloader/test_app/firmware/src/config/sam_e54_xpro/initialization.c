@@ -108,6 +108,8 @@ void SYS_Initialize ( void* data )
     CLOCK_Initialize();
 
 
+
+
     SERCOM2_USART_Initialize();
 
 	BSP_Initialize();
@@ -118,7 +120,7 @@ void SYS_Initialize ( void* data )
 
 
 
-    APP_Initialize();
+    APP_ARM_Initialize();
 
 
     NVIC_Initialize();

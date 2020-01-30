@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    app.c
+    app_arm.c
 
   Summary:
     This file contains the source code for the MPLAB Harmony application.
@@ -52,7 +52,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#include "app.h"
+#include "app_arm.h"
 #include "definitions.h"
 
 // *****************************************************************************
@@ -118,7 +118,7 @@ static volatile uint16_t nvmctrlStatus = 0;
     See prototype in app.h.
  */
 
-void APP_Initialize ( void )
+void APP_ARM_Initialize ( void )
 {
     appData.state = APP_INIT;
 
@@ -134,7 +134,7 @@ void APP_Initialize ( void )
     See prototype in app.h.
  */
 
-void APP_Tasks ( void )
+void APP_ARM_Tasks ( void )
 {
 
     /* Check the application's current state. */

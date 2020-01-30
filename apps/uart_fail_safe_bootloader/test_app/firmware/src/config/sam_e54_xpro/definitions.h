@@ -57,7 +57,8 @@
 #include "peripheral/clock/plib_clock.h"
 #include "peripheral/nvic/plib_nvic.h"
 #include "peripheral/systick/plib_systick.h"
-#include "app.h"
+#include "peripheral/cmcc/plib_cmcc.h"
+#include "app_arm.h"
 
 
 
