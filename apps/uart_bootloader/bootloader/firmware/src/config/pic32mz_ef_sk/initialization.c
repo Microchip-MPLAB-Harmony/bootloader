@@ -127,11 +127,15 @@ void SYS_Initialize ( void* data )
     __builtin_disable_interrupts();
 
     CLK_Initialize();
-	GPIO_Initialize();
+    
     /* Configure Prefetch, Wait States and ECC */
     PRECONbits.PREFEN = 3;
     PRECONbits.PFMWS = 2;
     CFGCONbits.ECCCON = 3;
+
+
+
+	GPIO_Initialize();
 
 
 
@@ -142,6 +146,8 @@ void SYS_Initialize ( void* data )
 
     CORETIMER_Initialize();
 	UART2_Initialize();
+
+    NVM_Initialize();
 
 
 }
