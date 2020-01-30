@@ -1,91 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Configuration>
   <Components>
-    <UniqueComponent dnOrder="0" id="bootloader">
-      <Symbols dnOrder="0">
-        <File dnOrder="0" id="BOOTLOADER_LINKER_FILE">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="enabled">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-          </Attributes>
-        </File>
-        <File dnOrder="1" id="BOOTLOADER_SRC">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="enabled">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-            <String dnOrder="1" id="source">
-              <Value dnOrder="0">../bootloader/templates/arm/bootloader_uart.c.ftl</Value>
-            </String>
-          </Attributes>
-        </File>
-        <String dnOrder="2" id="BTL_SIZE">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="visible">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-          </Attributes>
-          <Values dnOrder="1">
-            <Dynamic dnOrder="0" id="bootloader" value="8192"/>
-          </Values>
-        </String>
-        <Boolean dnOrder="3" id="BTL_TRIGGER_ENABLE">
-          <Values dnOrder="0">
-            <User dnOrder="0" value="true"/>
-          </Values>
-        </Boolean>
-        <String dnOrder="4" id="BTL_TRIGGER_LEN">
-          <Attributes dnOrder="0">
-            <Boolean dnOrder="0" id="visible">
-              <Value dnOrder="0">true</Value>
-            </Boolean>
-          </Attributes>
-          <Values dnOrder="1">
-            <User dnOrder="0" value="16"/>
-          </Values>
-        </String>
-        <Combo dnOrder="5" id="BTL_TYPE">
-          <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="UART"/>
-          </Values>
-        </Combo>
-        <String dnOrder="6" id="MEM_USED">
-          <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="EFC"/>
-          </Values>
-        </String>
-        <String dnOrder="7" id="PERIPH_USED">
-          <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="USART1"/>
-          </Values>
-        </String>
-      </Symbols>
-      <Attachments dnOrder="1">
-        <DirectDependency dnOrder="0" id="btl_MEMORY_dependency">
-          <Attributes dnOrder="0">
-            <String dnOrder="0" id="targetComponentID">
-              <Value dnOrder="0">efc</Value>
-            </String>
-            <String dnOrder="1" id="targetAttachmentID">
-              <Value dnOrder="0">EFC_MEMORY</Value>
-            </String>
-          </Attributes>
-        </DirectDependency>
-        <DirectDependency dnOrder="1" id="btl_UART_dependency">
-          <Attributes dnOrder="0">
-            <String dnOrder="0" id="targetComponentID">
-              <Value dnOrder="0">usart1</Value>
-            </String>
-            <String dnOrder="1" id="targetAttachmentID">
-              <Value dnOrder="0">USART1_UART</Value>
-            </String>
-          </Attributes>
-        </DirectDependency>
-      </Attachments>
-    </UniqueComponent>
-    <UniqueComponent dnOrder="1" id="cmsis"/>
-    <UniqueComponent dnOrder="2" id="core">
+    <UniqueComponent dnOrder="0" id="cmsis"/>
+    <UniqueComponent dnOrder="1" id="core">
       <Symbols dnOrder="0">
         <Integer dnOrder="0" id="ACC_CLOCK_FREQUENCY">
           <Values dnOrder="0">
@@ -116,7 +33,7 @@
         </Integer>
         <String dnOrder="5" id="APP_START_ADDRESS">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="402000"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="402000"/>
           </Values>
         </String>
         <Boolean dnOrder="6" id="CLK_PLLA_ENABLE">
@@ -143,7 +60,7 @@
         </Menu>
         <Boolean dnOrder="10" id="CoreMainFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <String dnOrder="11" id="CoreMainFileName">
@@ -155,32 +72,32 @@
         </String>
         <Boolean dnOrder="12" id="CoreSysCallsFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="13" id="CoreSysExceptionFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="14" id="CoreSysInitFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="15" id="CoreSysIntFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="16" id="CoreSysStartupFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Boolean dnOrder="17" id="CoreSysStdioSyscallsFile">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Integer dnOrder="18" id="DACC_CLOCK_FREQUENCY">
@@ -757,7 +674,7 @@
             </Float>
           </Attributes>
           <Values dnOrder="1">
-            <Dynamic dnOrder="0" id="bootloader" value="100.0"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="100.0"/>
           </Values>
         </Float>
         <Integer dnOrder="128" id="SYSTICK_PERIOD_US">
@@ -859,7 +776,7 @@
         </Integer>
         <Boolean dnOrder="147" id="systickEnable">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="true"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="true"/>
           </Values>
         </Boolean>
         <File dnOrder="148" id="systickSystemInitFile">
@@ -871,12 +788,12 @@
         </File>
       </Symbols>
     </UniqueComponent>
-    <UniqueComponent dnOrder="3" id="dfp"/>
-    <UniqueComponent dnOrder="4" id="efc">
+    <UniqueComponent dnOrder="2" id="dfp"/>
+    <UniqueComponent dnOrder="3" id="efc">
       <Symbols dnOrder="0">
         <Boolean dnOrder="0" id="INTERRUPT_ENABLE">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Integer dnOrder="1" id="NVM_RWS">
@@ -889,13 +806,75 @@
         <DirectCapability dnOrder="0" id="EFC_MEMORY">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="targetComponentID">
-              <Value dnOrder="0">bootloader</Value>
+              <Value dnOrder="0">uart_bootloader</Value>
             </String>
             <String dnOrder="1" id="targetAttachmentID">
               <Value dnOrder="0">btl_MEMORY_dependency</Value>
             </String>
           </Attributes>
         </DirectCapability>
+      </Attachments>
+    </UniqueComponent>
+    <UniqueComponent dnOrder="4" id="uart_bootloader">
+      <Symbols dnOrder="0">
+        <String dnOrder="0" id="BTL_SIZE">
+          <Attributes dnOrder="0">
+            <Boolean dnOrder="0" id="visible">
+              <Value dnOrder="0">true</Value>
+            </Boolean>
+          </Attributes>
+          <Values dnOrder="1">
+            <Dynamic dnOrder="0" id="uart_bootloader" value="8192"/>
+            <User dnOrder="1" value="8192"/>
+          </Values>
+        </String>
+        <Boolean dnOrder="1" id="BTL_TRIGGER_ENABLE">
+          <Values dnOrder="0">
+            <User dnOrder="0" value="true"/>
+          </Values>
+        </Boolean>
+        <String dnOrder="2" id="BTL_TRIGGER_LEN">
+          <Attributes dnOrder="0">
+            <Boolean dnOrder="0" id="visible">
+              <Value dnOrder="0">true</Value>
+            </Boolean>
+          </Attributes>
+          <Values dnOrder="1">
+            <User dnOrder="0" value="16"/>
+          </Values>
+        </String>
+        <String dnOrder="3" id="MEM_USED">
+          <Values dnOrder="0">
+            <Dynamic dnOrder="0" id="uart_bootloader" value="EFC"/>
+          </Values>
+        </String>
+        <String dnOrder="4" id="PERIPH_USED">
+          <Values dnOrder="0">
+            <Dynamic dnOrder="0" id="uart_bootloader" value="USART1"/>
+          </Values>
+        </String>
+      </Symbols>
+      <Attachments dnOrder="1">
+        <DirectDependency dnOrder="0" id="btl_MEMORY_dependency">
+          <Attributes dnOrder="0">
+            <String dnOrder="0" id="targetComponentID">
+              <Value dnOrder="0">efc</Value>
+            </String>
+            <String dnOrder="1" id="targetAttachmentID">
+              <Value dnOrder="0">EFC_MEMORY</Value>
+            </String>
+          </Attributes>
+        </DirectDependency>
+        <DirectDependency dnOrder="1" id="btl_UART_dependency">
+          <Attributes dnOrder="0">
+            <String dnOrder="0" id="targetComponentID">
+              <Value dnOrder="0">usart1</Value>
+            </String>
+            <String dnOrder="1" id="targetAttachmentID">
+              <Value dnOrder="0">USART1_UART</Value>
+            </String>
+          </Attributes>
+        </DirectDependency>
       </Attachments>
     </UniqueComponent>
     <UniqueComponent dnOrder="5" id="usart1">
@@ -917,7 +896,7 @@
         </Integer>
         <Boolean dnOrder="3" id="USART_INTERRUPT_MODE">
           <Values dnOrder="0">
-            <Dynamic dnOrder="0" id="bootloader" value="false"/>
+            <Dynamic dnOrder="0" id="uart_bootloader" value="false"/>
           </Values>
         </Boolean>
         <Comment dnOrder="4" id="USART_NVIC_ENABLE_COMMENT">
@@ -932,7 +911,7 @@
         <DirectCapability dnOrder="0" id="USART1_UART">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="targetComponentID">
-              <Value dnOrder="0">bootloader</Value>
+              <Value dnOrder="0">uart_bootloader</Value>
             </String>
             <String dnOrder="1" id="targetAttachmentID">
               <Value dnOrder="0">btl_UART_dependency</Value>
@@ -946,11 +925,11 @@
     <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
     <ComponentGraph dnOrder="1" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
-        <ElementPosition dnOrder="0" id="bootloader" x="263" y="129"/>
-        <ElementPosition dnOrder="1" id="cmsis" x="340" y="20"/>
-        <ElementPosition dnOrder="2" id="core" x="240" y="20"/>
-        <ElementPosition dnOrder="3" id="dfp" x="20" y="20"/>
-        <ElementPosition dnOrder="4" id="efc" x="53" y="91"/>
+        <ElementPosition dnOrder="0" id="cmsis" x="340" y="20"/>
+        <ElementPosition dnOrder="1" id="core" x="240" y="20"/>
+        <ElementPosition dnOrder="2" id="dfp" x="20" y="20"/>
+        <ElementPosition dnOrder="3" id="efc" x="53" y="91"/>
+        <ElementPosition dnOrder="4" id="uart_bootloader" x="256" y="126"/>
         <ElementPosition dnOrder="5" id="usart1" x="54" y="197"/>
       </ElementPositions>
     </ComponentGraph>
