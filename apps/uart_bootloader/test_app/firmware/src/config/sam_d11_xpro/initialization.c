@@ -57,6 +57,7 @@
 
 
 
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Driver Initialization Data
@@ -105,6 +106,8 @@ void SYS_Initialize ( void* data )
     PORT_Initialize();
 
     CLOCK_Initialize();
+
+
 
 
     NVMCTRL_Initialize( );
