@@ -11,8 +11,8 @@
           <Name dnOrder="1">bootloader.c</Name>
           <LogicalPath dnOrder="2">config/sam_ha1_xpro/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="3">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">6B4B62A665788B86C87F96C9DD4D18E4</GeneratedChecksum>
-          <UserChecksum dnOrder="5">6B4B62A665788B86C87F96C9DD4D18E4</UserChecksum>
+          <GeneratedChecksum dnOrder="4">6DC7D985FFBFD94A175BBCE751B75BF5</GeneratedChecksum>
+          <UserChecksum dnOrder="5">6DC7D985FFBFD94A175BBCE751B75BF5</UserChecksum>
         </File>
         <File dnOrder="1">
           <Type dnOrder="0">SOURCE</Type>
@@ -59,8 +59,8 @@
           <Name dnOrder="1">plib_nvic.c</Name>
           <LogicalPath dnOrder="2">config/sam_ha1_xpro/peripheral/nvic/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/nvic/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">D0684B5522FCD6E33EAAF787D58818BE</GeneratedChecksum>
-          <UserChecksum dnOrder="5">D0684B5522FCD6E33EAAF787D58818BE</UserChecksum>
+          <GeneratedChecksum dnOrder="4">AC446C5EB1759A1D0CEC4EAFCE4705F6</GeneratedChecksum>
+          <UserChecksum dnOrder="5">AC446C5EB1759A1D0CEC4EAFCE4705F6</UserChecksum>
         </File>
         <File dnOrder="7">
           <Type dnOrder="0">SOURCE</Type>
