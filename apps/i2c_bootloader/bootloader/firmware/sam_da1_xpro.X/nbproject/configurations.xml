@@ -165,8 +165,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMDA1_DFP" vendor="Microchip" version="2.0.14"/>
         <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
+        <pack name="SAMDA1_DFP" vendor="Microchip" version="2.0.14"/>
       </packs>
       <compileType>
         <linkerTool>
