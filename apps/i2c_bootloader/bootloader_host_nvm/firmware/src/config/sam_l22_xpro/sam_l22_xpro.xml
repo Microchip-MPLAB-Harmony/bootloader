@@ -763,7 +763,7 @@
         <ElementPosition dnOrder="0" id="cmsis" x="330" y="60"/>
         <ElementPosition dnOrder="1" id="core" x="720" y="20"/>
         <ElementPosition dnOrder="2" id="dfp" x="340" y="20"/>
-        <ElementPosition dnOrder="3" id="dsu" x="173" y="109"/>
+        <ElementPosition dnOrder="3" id="dsu" x="184" y="108"/>
         <ElementPosition dnOrder="4" id="evsys" x="180" y="20"/>
         <ElementPosition dnOrder="5" id="nvmctrl" x="20" y="20"/>
         <ElementPosition dnOrder="6" id="pm" x="560" y="20"/>
