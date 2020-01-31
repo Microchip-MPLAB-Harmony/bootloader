@@ -323,107 +323,112 @@
             <Dynamic dnOrder="0" id="core" value="0x0"/>
           </Values>
         </String>
-        <Boolean dnOrder="62" id="SERCOM4_CORE_CLOCK_ENABLE">
+        <String dnOrder="62" id="PORT_REG_NAME">
+          <Values dnOrder="0">
+            <Dynamic dnOrder="0" id="core" value="PORT"/>
+          </Values>
+        </String>
+        <Boolean dnOrder="63" id="SERCOM4_CORE_CLOCK_ENABLE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom4" value="true"/>
           </Values>
         </Boolean>
-        <Integer dnOrder="63" id="SERCOM4_CORE_CLOCK_FREQUENCY">
+        <Integer dnOrder="64" id="SERCOM4_CORE_CLOCK_FREQUENCY">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="32000000"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="64" id="SERCOM4_INTERRUPT_ENABLE">
+        <Boolean dnOrder="65" id="SERCOM4_INTERRUPT_ENABLE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom4" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="65" id="SERCOM4_INTERRUPT_ENABLE_UPDATE">
+        <Boolean dnOrder="66" id="SERCOM4_INTERRUPT_ENABLE_UPDATE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="true"/>
           </Values>
         </Boolean>
-        <String dnOrder="66" id="SERCOM4_INTERRUPT_HANDLER">
+        <String dnOrder="67" id="SERCOM4_INTERRUPT_HANDLER">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom4" value="SERCOM4_Handler"/>
           </Values>
         </String>
-        <Boolean dnOrder="67" id="SERCOM4_INTERRUPT_HANDLER_LOCK">
+        <Boolean dnOrder="68" id="SERCOM4_INTERRUPT_HANDLER_LOCK">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom4" value="false"/>
           </Values>
         </Boolean>
-        <File dnOrder="68" id="SYSTICK_FILE_0">
+        <File dnOrder="69" id="SYSTICK_FILE_0">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="69" id="SYSTICK_FILE_1">
+        <File dnOrder="70" id="SYSTICK_FILE_1">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <File dnOrder="70" id="SYSTICK_FILE_2">
+        <File dnOrder="71" id="SYSTICK_FILE_2">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </File>
-        <Menu dnOrder="71" id="SYSTICK_MENU_0">
+        <Menu dnOrder="72" id="SYSTICK_MENU_0">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">true</Value>
             </Boolean>
           </Attributes>
         </Menu>
-        <String dnOrder="72" id="SYSTICK_PERIOD">
+        <String dnOrder="73" id="SYSTICK_PERIOD">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="0x7d00"/>
           </Values>
         </String>
-        <Integer dnOrder="73" id="SYSTICK_PERIOD_US">
+        <Integer dnOrder="74" id="SYSTICK_PERIOD_US">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="1000"/>
           </Values>
         </Integer>
-        <Boolean dnOrder="74" id="SysTick_INTERRUPT_ENABLE">
+        <Boolean dnOrder="75" id="SysTick_INTERRUPT_ENABLE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="true"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="75" id="SysTick_INTERRUPT_ENABLE_UPDATE">
+        <Boolean dnOrder="76" id="SysTick_INTERRUPT_ENABLE_UPDATE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="false"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="76" id="SysTick_INTERRUPT_HANDLER_LOCK">
+        <Boolean dnOrder="77" id="SysTick_INTERRUPT_HANDLER_LOCK">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="core" value="true"/>
           </Values>
         </Boolean>
-        <Boolean dnOrder="77" id="USE_SYSTICK_INTERRUPT">
+        <Boolean dnOrder="78" id="USE_SYSTICK_INTERRUPT">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
         </Boolean>
-        <Setting dnOrder="78" id="XC32_LINKER_PREPROC_MARCOS">
+        <Setting dnOrder="79" id="XC32_LINKER_PREPROC_MARCOS">
           <Attributes dnOrder="0">
             <String dnOrder="0" id="value">
               <Value dnOrder="0">ROM_ORIGIN=0x800;ROM_LENGTH=0x3f800</Value>
             </String>
           </Attributes>
         </Setting>
-        <Boolean dnOrder="79" id="systickEnable">
+        <Boolean dnOrder="80" id="systickEnable">
           <Values dnOrder="0">
             <User dnOrder="0" value="true"/>
           </Values>
         </Boolean>
-        <File dnOrder="80" id="systickSystemInitFile">
+        <File dnOrder="81" id="systickSystemInitFile">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="enabled">
               <Value dnOrder="0">true</Value>
@@ -560,7 +565,12 @@
           </Values>
         </String>
         <KeyValueSet dnOrder="2" id="SERCOM_MODE">
-          <Values dnOrder="0">
+          <Attributes dnOrder="0">
+            <Boolean dnOrder="0" id="readOnly">
+              <Value dnOrder="0">true</Value>
+            </Boolean>
+          </Attributes>
+          <Values dnOrder="1">
             <Dynamic dnOrder="0" id="sercom4" value="0"/>
           </Values>
         </KeyValueSet>
@@ -688,7 +698,7 @@
         <ElementPosition dnOrder="6" id="nvmctrl" x="20" y="20"/>
         <ElementPosition dnOrder="7" id="pm" x="430" y="60"/>
         <ElementPosition dnOrder="8" id="sercom4" x="26" y="190"/>
-        <ElementPosition dnOrder="9" id="stdio" x="253" y="206"/>
+        <ElementPosition dnOrder="9" id="stdio" x="202" y="204"/>
       </ElementPositions>
     </ComponentGraph>
   </UserData>
