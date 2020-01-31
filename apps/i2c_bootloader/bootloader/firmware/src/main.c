@@ -100,6 +100,9 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
 
+    /* Indicate that bootloader code is running */
+    LED_Clear();
+
     bootloader_Start();
 
     /* Execution should not come here during normal operation */
