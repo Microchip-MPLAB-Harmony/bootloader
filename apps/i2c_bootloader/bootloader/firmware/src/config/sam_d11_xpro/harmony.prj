@@ -11,8 +11,8 @@
           <Name dnOrder="1">bootloader.c</Name>
           <LogicalPath dnOrder="2">config/sam_d11_xpro/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="3">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">3855FF27AE098CE6BDC56ECC6F79C2C0</GeneratedChecksum>
-          <UserChecksum dnOrder="5">3855FF27AE098CE6BDC56ECC6F79C2C0</UserChecksum>
+          <GeneratedChecksum dnOrder="4">AE1301FCEB63D8C523033DE00C9C3B56</GeneratedChecksum>
+          <UserChecksum dnOrder="5">AE1301FCEB63D8C523033DE00C9C3B56</UserChecksum>
         </File>
         <File dnOrder="1">
           <Type dnOrder="0">SOURCE</Type>
