@@ -79,11 +79,11 @@
 typedef enum
 {
     BL_COMMAND_UNLOCK = 0xA0,
-    BL_COMMAND_ERASE,
-    BL_COMMAND_PROGRAM,
-    BL_COMMAND_VERIFY,
-    BL_COMMAND_RESET,
-    BL_COMMAND_READ_STATUS,
+    BL_COMMAND_ERASE = 0xA1,
+    BL_COMMAND_PROGRAM = 0xA2,
+    BL_COMMAND_VERIFY = 0xA3,
+    BL_COMMAND_RESET = 0xA4,
+    BL_COMMAND_READ_STATUS = 0xA5,
     BL_COMMAND_MAX,
 }BL_COMMAND;
 
@@ -214,7 +214,7 @@ static bool BL_I2CMasterWriteHandler(uint8_t rdByte)
 
             blProtocol.nCmdArgWords = 0;
 
-            if (blProtocol.command >= BL_COMMAND_MAX)
+            if ((blProtocol.command < BL_COMMAND_UNLOCK) || (blProtocol.command >= BL_COMMAND_MAX))
             {
                 SET_BIT(blProtocol.status, BL_STATUS_BIT_INVALID_COMMAND);
                 return false;

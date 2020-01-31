@@ -11,8 +11,8 @@
           <Name dnOrder="1">bootloader.c</Name>
           <LogicalPath dnOrder="2">config/sam_e54_xpro/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="3">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">59A1C1F82962DA66C63B8059847569B4</GeneratedChecksum>
-          <UserChecksum dnOrder="5">59A1C1F82962DA66C63B8059847569B4</UserChecksum>
+          <GeneratedChecksum dnOrder="4">60CDD81203B0DF39F59C5E88878BAE24</GeneratedChecksum>
+          <UserChecksum dnOrder="5">60CDD81203B0DF39F59C5E88878BAE24</UserChecksum>
         </File>
         <File dnOrder="1">
           <Type dnOrder="0">SOURCE</Type>
@@ -67,8 +67,8 @@
           <Name dnOrder="1">plib_nvic.c</Name>
           <LogicalPath dnOrder="2">config/sam_e54_xpro/peripheral/nvic/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/nvic/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">A1A3B7BE595D37F770A2449276309A5A</GeneratedChecksum>
-          <UserChecksum dnOrder="5">A1A3B7BE595D37F770A2449276309A5A</UserChecksum>
+          <GeneratedChecksum dnOrder="4">55F5C982FD0AFEC435C3233CD7D45188</GeneratedChecksum>
+          <UserChecksum dnOrder="5">55F5C982FD0AFEC435C3233CD7D45188</UserChecksum>
         </File>
         <File dnOrder="8">
           <Type dnOrder="0">SOURCE</Type>
