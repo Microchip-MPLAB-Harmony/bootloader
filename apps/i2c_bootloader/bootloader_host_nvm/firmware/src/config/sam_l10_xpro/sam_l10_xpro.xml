@@ -857,7 +857,7 @@
         <ElementPosition dnOrder="4" id="evsys" x="180" y="20"/>
         <ElementPosition dnOrder="5" id="nvmctrl" x="20" y="20"/>
         <ElementPosition dnOrder="6" id="pm" x="560" y="20"/>
-        <ElementPosition dnOrder="7" id="sercom1" x="13" y="147"/>
+        <ElementPosition dnOrder="7" id="sercom1" x="19" y="135"/>
       </ElementPositions>
     </ComponentGraph>
     <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
