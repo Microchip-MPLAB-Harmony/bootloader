@@ -1071,66 +1071,71 @@
             </Boolean>
           </Attributes>
         </KeyValueSet>
-        <Boolean dnOrder="19" id="USART_INTERRUPT_MODE">
+        <KeyValueSet dnOrder="19" id="USART_FORM">
+          <Values dnOrder="0">
+            <Dynamic dnOrder="0" id="sercom7" value="0"/>
+          </Values>
+        </KeyValueSet>
+        <Boolean dnOrder="20" id="USART_INTERRUPT_MODE">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <KeyValueSet dnOrder="20" id="USART_PARITY_MODE">
+        <KeyValueSet dnOrder="21" id="USART_PARITY_MODE">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </KeyValueSet>
-        <Boolean dnOrder="21" id="USART_RUNSTDBY">
+        <Boolean dnOrder="22" id="USART_RUNSTDBY">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <KeyValueSet dnOrder="22" id="USART_RXPO">
+        <KeyValueSet dnOrder="23" id="USART_RXPO">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </KeyValueSet>
-        <Boolean dnOrder="23" id="USART_RX_ENABLE">
+        <Boolean dnOrder="24" id="USART_RX_ENABLE">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </Boolean>
-        <Integer dnOrder="24" id="USART_SAMPLE_COUNT">
+        <Integer dnOrder="25" id="USART_SAMPLE_COUNT">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom7" value="16"/>
           </Values>
         </Integer>
-        <Integer dnOrder="25" id="USART_SAMPLE_RATE">
+        <Integer dnOrder="26" id="USART_SAMPLE_RATE">
           <Values dnOrder="0">
             <Dynamic dnOrder="0" id="sercom7" value="0"/>
           </Values>
         </Integer>
-        <KeyValueSet dnOrder="26" id="USART_STOP_BIT">
+        <KeyValueSet dnOrder="27" id="USART_STOP_BIT">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </KeyValueSet>
-        <KeyValueSet dnOrder="27" id="USART_TXPO">
+        <KeyValueSet dnOrder="28" id="USART_TXPO">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">false</Value>
             </Boolean>
           </Attributes>
         </KeyValueSet>
-        <Boolean dnOrder="28" id="USART_TX_ENABLE">
+        <Boolean dnOrder="29" id="USART_TX_ENABLE">
           <Attributes dnOrder="0">
             <Boolean dnOrder="0" id="visible">
               <Value dnOrder="0">false</Value>
@@ -1150,7 +1155,7 @@
         <ElementPosition dnOrder="3" id="dsu" x="344" y="55"/>
         <ElementPosition dnOrder="4" id="evsys" x="180" y="20"/>
         <ElementPosition dnOrder="5" id="nvmctrl" x="20" y="20"/>
-        <ElementPosition dnOrder="6" id="sercom7" x="10" y="134"/>
+        <ElementPosition dnOrder="6" id="sercom7" x="23" y="125"/>
       </ElementPositions>
     </ComponentGraph>
   </UserData>
