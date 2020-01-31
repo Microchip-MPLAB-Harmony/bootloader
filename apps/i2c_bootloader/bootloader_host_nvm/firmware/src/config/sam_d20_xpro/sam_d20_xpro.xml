@@ -703,8 +703,7 @@
     </UniqueComponent>
   </Components>
   <UserData>
-    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="0"/>
-    <ComponentGraph dnOrder="1" id="__ROOTVIEW">
+    <ComponentGraph dnOrder="0" id="__ROOTVIEW">
       <ElementPositions dnOrder="0">
         <ElementPosition dnOrder="0" id="cmsis" x="330" y="60"/>
         <ElementPosition dnOrder="1" id="core" x="560" y="20"/>
@@ -712,8 +711,9 @@
         <ElementPosition dnOrder="3" id="dsu" x="170" y="80"/>
         <ElementPosition dnOrder="4" id="evsys" x="180" y="20"/>
         <ElementPosition dnOrder="5" id="nvmctrl" x="20" y="20"/>
-        <ElementPosition dnOrder="6" id="sercom2" x="17" y="131"/>
+        <ElementPosition dnOrder="6" id="sercom2" x="20" y="130"/>
       </ElementPositions>
     </ComponentGraph>
+    <GraphSettings canvasHeight="400" canvasWidth="400" dnOrder="1"/>
   </UserData>
 </Configuration>
