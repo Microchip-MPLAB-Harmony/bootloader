@@ -177,8 +177,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAML22_DFP" vendor="Microchip" version="3.1.30"/>
         <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
+        <pack name="SAML22_DFP" vendor="Microchip" version="3.1.30"/>
       </packs>
       <compileType>
         <linkerTool>
