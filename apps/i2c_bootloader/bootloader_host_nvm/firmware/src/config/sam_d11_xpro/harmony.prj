@@ -99,8 +99,8 @@
           <Name dnOrder="1">plib_port.c</Name>
           <LogicalPath dnOrder="2">config/sam_d11_xpro/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="3">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="4">10302F71B46DAF0F0F9776A529445CF9</GeneratedChecksum>
-          <UserChecksum dnOrder="5">10302F71B46DAF0F0F9776A529445CF9</UserChecksum>
+          <GeneratedChecksum dnOrder="4">B0BB8A92E4F3765776649FCB0FB870FA</GeneratedChecksum>
+          <UserChecksum dnOrder="5">B0BB8A92E4F3765776649FCB0FB870FA</UserChecksum>
         </File>
         <File dnOrder="12">
           <Type dnOrder="0">SOURCE</Type>
