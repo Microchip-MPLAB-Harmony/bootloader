@@ -91,12 +91,12 @@ typedef enum
     APP_INIT = 0,
     APP_DISK_MOUNT_WAIT,
     APP_CURRENT_DRIVE_SET,
-    APP_FILE_OPEN,            
+    APP_FILE_OPEN,
     APP_WAIT_SWITCH_PRESS,
     APP_LOAD_I2C_SLAVE_DATA,
     APP_SEND_UNLOCK_COMMAND,
     APP_WAIT_UNLOCK_COMMAND_TRANSFER_COMPLETE,
-	APP_SEND_ERASE_COMMAND,
+    APP_SEND_ERASE_COMMAND,
     APP_WAIT_ERASE_COMMAND_TRANSFER_COMPLETE,
     APP_SEND_WRITE_COMMAND,
     APP_WAIT_WRITE_COMMAND_TRANSFER_COMPLETE,
@@ -104,6 +104,7 @@ typedef enum
     APP_WAIT_VERIFY_COMMAND_TRANSFER_COMPLETE,
     APP_READ_STATUS,
     APP_SEND_RESET_COMMAND,
+    APP_WAIT_RESET_COMMAND_TRANSFER_COMPLETE,
     APP_SUCCESSFUL,
     APP_ERROR,
     APP_IDLE,
@@ -121,24 +122,23 @@ typedef enum
 } APP_TRANSFER_STATUS;
 
 typedef enum
-{    
+{
     APP_BL_COMMAND_UNLOCK = 0xA0,
-	APP_BL_COMMAND_ERASE,
-    APP_BL_COMMAND_PROGRAM,    
-    APP_BL_COMMAND_VERIFY,
-    APP_BL_COMMAND_RESET,	
-    APP_BL_COMMAND_READ_STATUS,  
-    APP_BL_COMMAND_MAX,
+    APP_BL_COMMAND_ERASE = 0xA1,
+    APP_BL_COMMAND_PROGRAM = 0xA2,
+    APP_BL_COMMAND_VERIFY = 0xA3,
+    APP_BL_COMMAND_RESET = 0xA4,
+    APP_BL_COMMAND_READ_STATUS = 0xA5
 }APP_BL_COMMAND;
 
 typedef struct
-{    
+{
     uint16_t                i2cSlaveAddr;
     uint32_t                erasePageSize;
-	uint32_t				programPageSize;
+    uint32_t                programPageSize;
     uint32_t                appStartAddr;
     char*                   filename;
-    
+
 }APP_FIRMWARE_UPDATE_INFO;
 
 // *****************************************************************************
@@ -155,7 +155,7 @@ typedef struct
  */
 
 typedef struct
-{        
+{
     APP_STATES                                  state;
     APP_STATES                                  nextState;
     uint8_t                                     i2cSlaveIndex;
@@ -165,18 +165,18 @@ typedef struct
     uint32_t                                    programPageSize;
     uint32_t                                    appStartAddr;
     /* SDCard related variables */
-    SYS_FS_HANDLE                               fileHandle;    
-    uint32_t                                    fileSize;            
-    volatile bool                               isSDCardMount;      
+    SYS_FS_HANDLE                               fileHandle;
+    uint32_t                                    fileSize;
+    volatile bool                               isSDCardMount;
     /* I2C Bootloader related variables */
-    volatile APP_TRANSFER_STATUS                trasnferStatus;  
+    volatile APP_TRANSFER_STATUS                trasnferStatus;
     uint32_t                                    appImageSize;
     uint32_t                                    imageSizeMultipleOfPage;
     uint32_t                                    nBytesWritten;
     uint32_t                                    nBytesWrittenInErasedPage;
     uint32_t                                    crcVal;
-    uint8_t                                     status;            
-    uint8_t                                     wrBuffer[APP_MAX_MEM_PAGE_SIZE + APP_PROTOCOL_HEADER_MAX_SIZE];        
+    uint8_t                                     status;
+    uint8_t                                     wrBuffer[APP_MAX_MEM_PAGE_SIZE + APP_PROTOCOL_HEADER_MAX_SIZE];
 
 } APP_DATA;
 
