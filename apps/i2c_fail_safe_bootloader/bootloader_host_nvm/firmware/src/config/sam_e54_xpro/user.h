@@ -72,7 +72,7 @@ extern "C" {
  * #define APP_PROGRAM_PAGE_SIZE       (512L)
  * #define APP_IMAGE_START_ADDR        0x2000UL 
  */
-#define APP_HEX_HEADER_FILE         "test_app_images/image_pattern_hex_sam_e54_xpro.h"
+#define APP_HEX_HEADER_FILE         "test_app_images/image_pattern_hex_sam_e54_xpro_bootloader_app_merged.h"
 #define APP_I2C_SLAVE_ADDR          0x0054
 #define APP_ERASE_PAGE_SIZE         (8192L)  
 /* This example programs all the pages in an erase row in one shot. In case the 
