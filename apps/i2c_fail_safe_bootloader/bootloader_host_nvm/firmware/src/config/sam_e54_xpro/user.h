@@ -56,7 +56,7 @@ extern "C" {
 // Section: User Configuration macros
 // *****************************************************************************
 // *****************************************************************************
-    
+
 /* Include the Hex header file of the application to be programmed by the 
  * I2C host bootloader application. 
  * Specify the I2C slave address, Erase page size and Program Page size.
@@ -86,8 +86,12 @@ extern "C" {
  * the APP_IMAGE_START_ADDR must be set to 0x00 (start of bootloader). Ensure the
  * bootloader and application is also configured with the same value of application 
  * start address. 
+ * If bank swap feature is enabled, the application start address must be set to
+ * 0x80000UL when programming the combined bootloader and application binary to 
+ * the inactive bank. Once the bootloader is programmed to the inactive bank 
+ * and only application is being programmed, the address must be set to 0x82000UL
  */
-#define APP_IMAGE_START_ADDR        0x2000UL  
+#define APP_IMAGE_START_ADDR        0x80000UL
     
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
