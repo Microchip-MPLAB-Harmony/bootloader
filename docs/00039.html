@@ -48,7 +48,8 @@ Running The Application</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-
+<p class="Element10">
+Perform the steps provided under <strong>Running The Application</strong> section of either the <a href="00019.html" target="topic">bootloader_host_nvm</a> or <a href="00024.html" target="topic">bootloader_host_sdcard</a> application to program the test application (if not already done).</p>
 <ol class="Element630">
 <li value="1" class="Element600">Open the Terminal application (Ex.:Tera Term) on the computer.</li>
 <li value="2" class="Element600">Configure the serial port settings as follows:
@@ -59,66 +60,130 @@ Running The Application</div>
 <li class="Element601">Stop : 1 Bit</li>
 <li class="Element601">Flow Control : None</li>
 </ul></li>
-<li value="3" class="Element600">Program the test application using the bootloader. Depending on the host bootloader application used for programming refer to either the <a href="00019.html" target="topic">bootloader_host_nvm</a> or <a href="00024.html" target="topic">bootloader_host_sdcard</a> application help on steps required to program the test application.</li>
-<li value="4" class="Element600">If the application is programmed successfully then LED should start blinking<strong> </strong>and the following message should be printed on the console.</li>
-</ol><p class="Element10" style="text-align: center;">
-<img src="test_app_console_output.png" border="0" alt="" title=""></p>
+<li value="3" class="Element600">If the application is programmed successfully then LED should start blinking<strong> </strong>and the following message should be printed on the console.</li>
+</ol><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+<strong>For SAM L10 Device:</strong> </p><p class="Element10" style="text-align: center;">
+<img src="bootloader_uart_test_app_console_l10.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+<strong>For Other Devices:</strong> </p><p class="Element10" style="text-align: center;">
+<img src="test_app_console_output.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<div class="Element63">
+<div class="TableDiv">
+<table cellspacing="0" class="Table1">
+<tr>
+<td class="Element65" valign="top" width="25%">
+<div class="Element66">
+Kit Name (Target)&nbsp;</div></td><td class="Element65" valign="top" width="75%">
+<div class="Element66">
+LED Name&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM HA1G16A Xplained Pro&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="25%">
+<div class="Element68">
+SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr></table></div></div>
+<p class="Element10">
+&nbsp;</p>
+
 <ol class="Element630">
-<li value="5" class="Element600">Press and hold the user switch to re-trigger the bootloader from the application.</li>
+<li value="4" class="Element600">Press and hold the user switch to re-trigger the bootloader from the application.(<strong>This Step is not applicable for SAM L10 Device</strong>)</li>
 </ol><p class="Element10">
 &nbsp;</p>
 <div class="Element63">
 <div class="TableDiv">
 <table cellspacing="0" class="Table1">
 <tr>
-<td class="Element65" valign="top" width="90%">
+<td class="Element65" valign="top" width="89%">
 <div class="Element66">
-Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="10%">
+Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="11%">
 <div class="Element66">
 Switch Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
+<td class="Element67" valign="top" width="89%">
 <div class="Element68">
-SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
-<div class="Element68">
-SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
+<td class="Element67" valign="top" width="89%">
 <div class="Element68">
-SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
-<div class="Element68">
-SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
+<td class="Element67" valign="top" width="89%">
 <div class="Element68">
-SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
-<div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
+<td class="Element67" valign="top" width="89%">
 <div class="Element68">
-SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
-<div class="Element68">
-SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="90%">
+<td class="Element67" valign="top" width="89%">
 <div class="Element68">
-SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="89%">
+<div class="Element68">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="89%">
+<div class="Element68">
+SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+<div class="Element68">
+SW0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="89%">
+<div class="Element68">
+SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 SW0&nbsp;</div></td></tr></table></div></div>
 </div>

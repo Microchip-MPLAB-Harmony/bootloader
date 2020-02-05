@@ -49,15 +49,19 @@ bootloader_host_nvm</div>
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
 <p class="Element10">
-The user application binary must be converted to a header file containing the application image in HEX format in a C style array. A <a href="00040.html" target="topic">btl_bin_to_hex_gen.py</a> utility is provided to do this conversion.</p>
+The user application binary must be converted to a header file containing the application image in HEX format in a C style array. A <a href="00040.html" target="topic">btl_bin_to_hex_gen.py</a> utility is provided to do this conversion. </p><p class="Element10" style="text-align: center;">
+<img src="fail_safe_bootloader_host_nvm_app.png" border="0" alt="" title=""></p><p class="Element10">
+To program the bootloader to the inactive flash bank, the user application binary may be combined with the bootloader using the <a href="00040.html" target="topic">btl_app_merge_bin.py</a> utility. The combined binary file must be converted to a header file using the <a href="00040.html" target="topic">btl_bin_to_hex_gen.py</a> utility. </p><p class="Element10" style="text-align: center;">
+<img src="fail_safe_combined_bootloader_app_diagram.png" border="0" alt="" title=""></p>
 <ul class="Element630">
-<li class="Element600">Add the generated application image header file is to the bootloader host application project. Rebuild and program the host bootloader application. This results in the application image being copied in the host MCU's flash (NVM).</li>
+<li class="Element600">Add the generated HEX image header file (of the application; or bootloader and application combined) to the bootloader host application project. Rebuild and program the host bootloader application. This results in the application image being copied in the host MCU's flash (NVM).</li>
 <li class="Element600">Press the user switch on the target board to trigger bootloader.</li>
-<li class="Element600">Press the user switch on the host board to start the programming operation. The host bootloader application sends the application image stored in it's internal flash (NVM) to the target board over the I2C bus and then swaps the flash banks.</li>
+<li class="Element600">Press the user switch on the host board to start the programming operation. The host bootloader application sends the HEX image stored in it's internal flash (NVM) to the target board over the I2C bus and then swaps the flash banks.</li>
 </ul><p class="Element10">
 &nbsp;</p>
 <p class="Element10" style="text-align: center;">
-<img src="bootloader_host_nvm_app.png" border="0" alt="" title=""></p></div>
+&nbsp;</p>
+</div>
 </div>
 <a name="546F70696373"></a><div class="Element14">
 Topics</div>

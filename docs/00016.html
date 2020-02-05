@@ -52,128 +52,91 @@ Running The Application</div>
 <ol class="Element630">
 <li value="1" class="Element600">Connect a micro USB cable to the DEBUG port.</li>
 <li value="2" class="Element600">Build and program the application using the MPLAB X IDE.</li>
-<li value="3" class="Element600"> Press and hold the User Switch as mentioned in below table and then press Reset button or Power cycle the device to force trigger bootloader at startup.</li>
-</ol><div class="Element63">
-<div class="TableDiv">
-<table cellspacing="0" class="Table1">
-<tr>
-<td class="Element65" valign="top" width="89%">
-<div class="Element66">
-Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="11%">
-<div class="Element66">
-Switch Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM HA1G16A Xplained Pro&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="89%">
-<div class="Element68">
-SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="11%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
+<li value="3" class="Element600">Press and hold the User Switch as mentioned in below table and then press Reset button or Power cycle the device to force trigger bootloader at startup. The User LED will be turned on to indicate that the bootloader code is running.
+<ul class="Element631">
+<li class="Element601"><strong>Note: </strong>The User LED will also turn on when the bootloader does not find a valid application; i.e. the first word of the application (stack pointer), contains 0xFFFFFFFF.</li>
+</ul></li>
+</ol><p class="Element10">
 &nbsp;</p>
-<p class="Element10">
-The User LED will be turned on to indicate that the bootloader code is running.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p><div class="Element63">
+<div class="Element63">
 <div class="TableDiv">
 <table cellspacing="0" class="Table1">
 <tr>
-<td class="Element65" valign="top" width="25%">
+<td class="Element65" valign="top" width="80%">
 <div class="Element66">
-Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="75%">
+Kit Name&nbsp;</div></td><td class="Element65" valign="top" width="9%">
+<div class="Element66">
+Switch Name&nbsp;</div></td><td class="Element65" valign="top" width="11%">
 <div class="Element66">
 LED Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+<td class="Element67" valign="top" width="80%">
 <div class="Element68">
-SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+<td class="Element67" valign="top" width="80%">
 <div class="Element68">
-SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+<td class="Element67" valign="top" width="80%">
 <div class="Element68">
-SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+<td class="Element67" valign="top" width="80%">
 <div class="Element68">
-SAM HA1G16A Xplained Pro&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
 <div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+<td class="Element67" valign="top" width="80%">
 <div class="Element68">
-SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+<td class="Element67" valign="top" width="80%">
 <div class="Element68">
-SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM HA1G16A Xplained Pro&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
+<div class="Element68">
+LED0&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="80%">
+<div class="Element68">
+SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="9%">
+<div class="Element68">
+SW0&nbsp;</div></td><td class="Element67" valign="top" width="11%">
 <div class="Element68">
 LED0&nbsp;</div></td></tr></table></div></div>
 <p class="Element10">
@@ -200,7 +163,32 @@ bootloader/apps/<a href="00033.html" target="topic">i2c_bootloader</a>/bootloade
 bootloader/apps/<a href="00033.html" target="topic">i2c_bootloader</a>/bootloader_host_sdcard/firmware&nbsp;</div></td><td class="Element67" valign="top" width="45%">
 <div class="Element68">
 <a href="00024.html" target="topic">bootloader_host_sdcard</a>&nbsp;</div></td></tr></table></div></div>
-</div>
+<p class="Element10">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="5" class="Element600"> The below steps are needed only when the bootloader itself is being updated. To update the bootloader, the fuse settings must be disabled and binary must be generated. Launch MHC for the I2C bootloader application</li>
+</ol><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Disable Fuse Settings</strong></li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="fail_safe_bootloader_system_config.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Specifing post build option to generate binary file:</strong></li>
+</ul><p class="Element10">
+The below option must be specified in <strong>Project Properties &gt; Building &gt; Execute this line after build</strong>, to automatically generate the binary file from hex file once the build is complete </p><div class="Element13"><div class="Element12"><pre class="Element12">${MP_CC_DIR}\xc32-objcopy -I ihex -O binary &quot;${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.hex&quot; &quot;${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.bin&quot;</pre></div></div>
+<p class="Element10" style="text-align: center;">
+<img src="fail_safe_bootloader_building_option.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600">Build the project</li>
+<li class="Element600">Refer to Running The Application section of either the <a href="00019.html" target="topic">bootloader_host_nvm</a> (Step 2 onwards) or <a href="00024.html" target="topic">bootloader_host_sdcard</a> (Step 3 onwards) for steps required to upgrade the bootloader.</li>
+</ul></div>
 </div>
 </div>
 <!-- End Page Content -->

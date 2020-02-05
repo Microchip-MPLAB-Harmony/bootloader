@@ -113,7 +113,7 @@ Example usage:&nbsp;</p>
 <p class="Element10">
 python &lt;harmony3_path&gt;<strong>\bootloader\tools\btl_bin_to_hex_gen.py -b &lt;binary_file&gt; -o &lt;hex_file&gt; -d &lt;device&gt;</strong>&nbsp;</p>
 <p class="Element10">
-&nbsp;</p><div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_bin_to_hex_gen.py -b D:\harmony\bootloader\apps\i2c_bootloader\test_app\firmware\sam_d20_xpro.X\dist\sam_d20_xpro\production\sam_d20_xpro.X.production.bin -o D:\harmony\bootloader\apps\i2c_bootloader\bootloader_host_nvm\firmware\src\test_app_images\image_pattern_hex_sam_d20_xpro.h -d samd2x</pre></div></div>
+&nbsp;</p><div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_bin_to_hex_gen.py -b &lt;harmony3_path&gt;\bootloader\apps\i2c_bootloader\test_app\firmware\sam_d20_xpro.X\dist\sam_d20_xpro\production\sam_d20_xpro.X.production.bin -o &lt;harmony3_path&gt;\bootloader\apps\i2c_bootloader\bootloader_host_nvm\firmware\src\test_app_images\image_pattern_hex_sam_d20_xpro.h -d samd2x</pre></div></div>
 <p class="Element10">
 &nbsp;</p>
 <p class="Element10" style="text-align: center;">
@@ -137,7 +137,8 @@ Fail Safe Update Mode Usage Example</div>
 <p class="Element10">
 &nbsp;</p>
 <p class="Element10" style="text-align: center;">
-<img src="bootloader_uart_fail_safe_app_merger_console.png" border="0" alt="" title=""></p></div>
+<img src="bootloader_uart_fail_safe_app_merger_console.png" border="0" alt="" title=""></p><p class="Element10">
+Note: The bootloader and application combined binary <strong>btl_app_merged.bin </strong>will be generated in the path from where the<strong> btl_app_merge_bin.py</strong> was called from.</p></div>
 </div>
 </div>
 <!-- End Page Content -->
