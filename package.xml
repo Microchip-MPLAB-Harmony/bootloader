@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Package name="bootloader">
     <Dependencies>
-        <Dependency name="csp" version="3.0"/>
+        <Dependency name="csp" version="3.6.1"/>
+        <Dependency name="core" version="3.6.1"/>
+        <Dependency name="bsp" version="3.6.1"/>
     </Dependencies>
 </Package>
