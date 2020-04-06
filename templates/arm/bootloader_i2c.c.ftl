@@ -319,13 +319,13 @@ static bool BL_I2CMasterWriteHandler(uint8_t rdByte)
                     /* Save application start address and size for future reference */
                     if ((blProtocol.cmdProtocol.unlockCommand.appImageStartAddr + blProtocol.cmdProtocol.unlockCommand.appImageSize) < FLASH_LENGTH)
                     {
-                        blProtocol.appImageStartAddr = blProtocol.cmdProtocol.unlockCommand.appImageStartAddr;
-                        blProtocol.appImageEndAddr = blProtocol.cmdProtocol.unlockCommand.appImageStartAddr + blProtocol.cmdProtocol.unlockCommand.appImageSize;
+                        SET_BIT(blProtocol.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
+                        return false;
                     }
                     else
                     {
-                        SET_BIT(blProtocol.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
-                        return false;
+                        blProtocol.appImageStartAddr = blProtocol.cmdProtocol.unlockCommand.appImageStartAddr;
+                        blProtocol.appImageEndAddr = blProtocol.cmdProtocol.unlockCommand.appImageStartAddr + blProtocol.cmdProtocol.unlockCommand.appImageSize;
                     }
                 }
                 else if (blProtocol.command == BL_COMMAND_PROGRAM)
