@@ -317,7 +317,7 @@ static bool BL_I2CMasterWriteHandler(uint8_t rdByte)
                 if (blProtocol.command == BL_COMMAND_UNLOCK)
                 {
                     /* Save application start address and size for future reference */
-                    if ((blProtocol.cmdProtocol.unlockCommand.appImageStartAddr + blProtocol.cmdProtocol.unlockCommand.appImageSize) < FLASH_LENGTH)
+                    if ((blProtocol.cmdProtocol.unlockCommand.appImageStartAddr + blProtocol.cmdProtocol.unlockCommand.appImageSize) > FLASH_LENGTH)
                     {
                         SET_BIT(blProtocol.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
                         return false;
