@@ -66,8 +66,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/samd20e15bu_wlcsp/peripheral/nvic/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/nvic/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">AC446C5EB1759A1D0CEC4EAFCE4705F6</GeneratedChecksum>
-          <UserChecksum dnOrder="6">AC446C5EB1759A1D0CEC4EAFCE4705F6</UserChecksum>
+          <GeneratedChecksum dnOrder="5">D0684B5522FCD6E33EAAF787D58818BE</GeneratedChecksum>
+          <UserChecksum dnOrder="6">D0684B5522FCD6E33EAAF787D58818BE</UserChecksum>
         </File>
         <File dnOrder="7">
           <Type dnOrder="0">SOURCE</Type>
@@ -93,8 +93,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/samd20e15bu_wlcsp/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">DEF6A08473BA90F08340A757A746C056</GeneratedChecksum>
-          <UserChecksum dnOrder="6">DEF6A08473BA90F08340A757A746C056</UserChecksum>
+          <GeneratedChecksum dnOrder="5">2A326D00EB26F6C6A1A3C7EB1FD08FC6</GeneratedChecksum>
+          <UserChecksum dnOrder="6">2A326D00EB26F6C6A1A3C7EB1FD08FC6</UserChecksum>
         </File>
         <File dnOrder="10">
           <Type dnOrder="0">SOURCE</Type>
@@ -147,8 +147,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/samd20e15bu_wlcsp/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="4">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">243929B600F8BB6AEC3641CB1C4EB34F</GeneratedChecksum>
-          <UserChecksum dnOrder="6">243929B600F8BB6AEC3641CB1C4EB34F</UserChecksum>
+          <GeneratedChecksum dnOrder="5">41ED3C22BBA2A443811848CD57DF5825</GeneratedChecksum>
+          <UserChecksum dnOrder="6">41ED3C22BBA2A443811848CD57DF5825</UserChecksum>
         </File>
         <File dnOrder="16">
           <Type dnOrder="0">HEADER</Type>
@@ -381,8 +381,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/samd20e15bu_wlcsp/peripheral/port/</LogicalPath>
           <PhysicalPath dnOrder="4">/peripheral/port/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">822267BE0FD69B10AB7BC03B9F2972BB</GeneratedChecksum>
-          <UserChecksum dnOrder="6">822267BE0FD69B10AB7BC03B9F2972BB</UserChecksum>
+          <GeneratedChecksum dnOrder="5">41CC3FB0F323A838FB636A9F030C7D96</GeneratedChecksum>
+          <UserChecksum dnOrder="6">41CC3FB0F323A838FB636A9F030C7D96</UserChecksum>
         </File>
         <File dnOrder="42">
           <Type dnOrder="0">HEADER</Type>
@@ -498,8 +498,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3"/>
           <PhysicalPath dnOrder="4">/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">9C7A27B237CD5A9767104BF6EA59AAED</GeneratedChecksum>
-          <UserChecksum dnOrder="6">9C7A27B237CD5A9767104BF6EA59AAED</UserChecksum>
+          <GeneratedChecksum dnOrder="5">5838B1405290C73D287FC6A9347B1FF8</GeneratedChecksum>
+          <UserChecksum dnOrder="6">5838B1405290C73D287FC6A9347B1FF8</UserChecksum>
         </File>
       </Files>
       <Settings dnOrder="1">

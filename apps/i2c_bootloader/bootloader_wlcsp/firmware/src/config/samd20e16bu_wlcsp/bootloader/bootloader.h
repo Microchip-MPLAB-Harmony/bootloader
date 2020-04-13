@@ -41,7 +41,7 @@
 
 #define BTL_TRIGGER_RAM_START   0x20000000
 
-#define BTL_TRIGGER_LEN         0
+#define BTL_TRIGGER_LEN         16
 
 
 // *****************************************************************************
