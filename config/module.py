@@ -21,29 +21,65 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
-def hasSERCOMModule():
+unSupportedFamilies = ["SAM9", "SAMA5"]
+
+#Define Bootloader component names
+bootloaderComponents = [
+    {"name":"uart", "label": "UART", "dependency":["MEMORY", "UART", "TMR"], "mips_support":"True", "condition":"True"},
+    {"name":"i2c", "label": "I2C", "dependency":["MEMORY", "I2C"], "mips_support":"False", "condition":"True"},
+]
+
+def hasPeripheral(peripheral):
     periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
     peripherals         = periphNode.getChildren()
-    
+
     for module in range (0, len(peripherals)):
         periphName = str(peripherals[module].getAttribute("name"))
-        if (periphName == "SERCOM"):            
+        if (periphName == peripheral):
             return True
 
-def loadModule():
-    print("Load Module: Bootloader")
-        
-    if ("PIC32M" in Variables.get("__PROCESSOR")):
-        uartBootloaderComponent = Module.CreateComponent("uart_bootloader", "UART Bootloader", "/Bootloader/", "config/bootloader_uart_mips.py")
-        uartBootloaderComponent.addDependency("btl_TIMER_dependency", "TMR", False, True)
-    else:
-        uartBootloaderComponent = Module.CreateComponent("uart_bootloader", "UART Bootloader", "/Bootloader/", "config/bootloader_uart_arm.py")
-        if (hasSERCOMModule() == True):        
-            i2cBootloaderComponent = Module.CreateComponent("i2c_bootloader", "I2C Bootloader", "/Bootloader/", "config/bootloader_i2c_arm.py")
-            i2cBootloaderComponent.addDependency("btl_I2C_dependency", "I2C", False, True)
-            i2cBootloaderComponent.addDependency("btl_MEMORY_dependency", "MEMORY", False, True)        
+    return False
 
-    uartBootloaderComponent.addDependency("btl_UART_dependency", "UART", False, True)
-    uartBootloaderComponent.addDependency("btl_MEMORY_dependency", "MEMORY", False, True)
-    
-    
+def loadModule():
+
+    # Do not add Bootloader Component for unsupported families
+    coreFamily   = ATDF.getNode( "/avr-tools-device-file/devices/device" ).getAttribute( "family" )
+    if ((any(x == coreFamily for x in unSupportedFamilies) == True)):
+        return
+
+    print("Load Module: Bootloader")
+
+    for bootloaderComponent in bootloaderComponents:
+
+        timer_dep = False
+
+        #check if component should be created
+        if eval(bootloaderComponent['condition']):
+            Name        = bootloaderComponent['name']
+            Label       = bootloaderComponent['label'] + " Bootloader"
+
+            # To be removed once I2C Slave is supported on other devices
+            if ((Name == "i2c") and (hasPeripheral("SERCOM") == False)):
+                continue
+
+            mips_support = eval(bootloaderComponent['mips_support'])
+
+            if (("PIC32M" in Variables.get("__PROCESSOR")) and (mips_support == True)):
+                filePath  = "config/bootloader_" + Name + "_mips.py"
+                timer_dep = True
+            else:
+                filePath  = "config/bootloader_" + Name + "_arm.py"
+
+            displayPath = "/Bootloader/"
+
+            Component = Module.CreateComponent(Name + "_bootloader", Label, displayPath, filePath )
+
+            if "dependency" in bootloaderComponent:
+                for dep in bootloaderComponent['dependency']:
+                    if (dep == "TMR"): 
+                        if (timer_dep == True):
+                            Component.addDependency("btl_TIMER_dependency", dep, False, True)
+                    else:
+                        Component.addDependency("btl_" + dep + "_dependency", dep, False, True)
+
+        Component.setDisplayType("Bootloader")
