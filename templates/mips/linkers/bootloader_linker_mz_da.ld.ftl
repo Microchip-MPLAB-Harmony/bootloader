@@ -114,7 +114,7 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 <#assign btlFlashStartAddress = "0x9FC01000">
 <#assign btlFlashSize = "${BTL_SIZE}">
 
-<#if BTL_TRIGGER_LEN != "0">
+<#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
     <#lt><#assign btlRamStartAddress = "${BTL_RAM_START} + ${BTL_TRIGGER_LEN}">
     <#lt><#assign btlRamSize = "${BTL_RAM_SIZE} - ${BTL_TRIGGER_LEN}">
 <#else>
@@ -125,7 +125,6 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 MEMORY
 {
   kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize}
-  kseg0_boot_mem              : ORIGIN = 0x9FC004B0, LENGTH = 0x0
   kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x480
   kseg1_boot_mem_4B0          : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0
   config_BFC0FF3C             : ORIGIN = 0xBFC0FF3C, LENGTH = 0x4
@@ -1556,15 +1555,6 @@ SECTIONS
     __vector_offset_default = . - _ebase_address;
     KEEP(*(.vector_default))
   } > kseg0_program_mem
-
-  /*  The startup code is in the .reset.startup section.
-   *  Keep this here for backwards compatibility with older
-   *  C32 v1.xx releases.
-   */
-  .startup ORIGIN(kseg0_boot_mem) :
-  {
-    KEEP(*(.startup))
-  } > kseg0_boot_mem
 
   /* Code Sections - Note that input sections *(.text) and *(.text.*)
    * are not mapped here. The best-fit allocator locates them,

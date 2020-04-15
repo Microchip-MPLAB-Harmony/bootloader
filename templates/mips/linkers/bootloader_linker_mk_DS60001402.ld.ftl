@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
- * MPLAB XC Compiler -  PIC32MK GPG/GPH/MCJ Bootloader linker script
+ * MPLAB XC Compiler -  PIC32MK GPD/GPE/MCF Bootloader linker script
  * Build date : Jul 16 2019
  * 
  * Copyright (c) 2019, Microchip Technology Inc. and its subsidiaries ("Microchip")
@@ -109,22 +109,23 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
  * their absolute addresses.
  *************************************************************************/
 
+<#assign btlFlashStartAddress = "${BTL_START}">
+<#assign btlFlashSize = "${BTL_SIZE}">
 
+<#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
+    <#lt><#assign btlRamStartAddress = "${BTL_RAM_START} + ${BTL_TRIGGER_LEN}">
+    <#lt><#assign btlRamSize = "${BTL_RAM_SIZE} - ${BTL_TRIGGER_LEN}">
+<#else>
+    <#lt><#assign btlRamStartAddress = "${BTL_RAM_START}">
+    <#lt><#assign btlRamSize = "${BTL_RAM_SIZE}">
+</#if>
 
 MEMORY
 {
-  kseg0_program_mem     (rx)  : ORIGIN = 0x9FC01000, LENGTH = 8192
-  kseg0_boot_mem              : ORIGIN = 0x9FC004B0, LENGTH = 0x0
-  debug_exec_mem              : ORIGIN = 0x9FC04490, LENGTH = 0xB70
+  kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize}
+  debug_exec_mem              : ORIGIN = 0x9FC20490, LENGTH = 0x3B20
   kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x480
   kseg1_boot_mem_4B0          : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0
-  config_BFC03F40             : ORIGIN = 0xBFC03F40, LENGTH = 0x4
-  config_BFC03F44             : ORIGIN = 0xBFC03F44, LENGTH = 0x4
-  config_BFC03F48             : ORIGIN = 0xBFC03F48, LENGTH = 0x4
-  config_BFC03F4C             : ORIGIN = 0xBFC03F4C, LENGTH = 0x4
-  config_BFC03F5C             : ORIGIN = 0xBFC03F5C, LENGTH = 0x4
-  config_BFC03F6C             : ORIGIN = 0xBFC03F6C, LENGTH = 0x4
-  config_BFC03F70             : ORIGIN = 0xBFC03F70, LENGTH = 0x4
   config_BFC03FC0             : ORIGIN = 0xBFC03FC0, LENGTH = 0x4
   config_BFC03FC4             : ORIGIN = 0xBFC03FC4, LENGTH = 0x4
   config_BFC03FC8             : ORIGIN = 0xBFC03FC8, LENGTH = 0x4
@@ -133,14 +134,16 @@ MEMORY
   config_BFC03FEC             : ORIGIN = 0xBFC03FEC, LENGTH = 0x4
   config_BFC03FF0             : ORIGIN = 0xBFC03FF0, LENGTH = 0x4
   lowerbootaliaslastpage      : ORIGIN = 0xBFC04000, LENGTH = 0x1000
-  boot1                       : ORIGIN = 0xBFC40000, LENGTH = 0x3F30
-  config_BFC43F40             : ORIGIN = 0xBFC43F40, LENGTH = 0x4
-  config_BFC43F44             : ORIGIN = 0xBFC43F44, LENGTH = 0x4
-  config_BFC43F48             : ORIGIN = 0xBFC43F48, LENGTH = 0x4
-  config_BFC43F4C             : ORIGIN = 0xBFC43F4C, LENGTH = 0x4
-  config_BFC43F5C             : ORIGIN = 0xBFC43F5C, LENGTH = 0x4
-  config_BFC43F6C             : ORIGIN = 0xBFC43F6C, LENGTH = 0x4
-  config_BFC43F70             : ORIGIN = 0xBFC43F70, LENGTH = 0x4
+  upperbootalias              : ORIGIN = 0xBFC20000, LENGTH = 0x3FB0
+  config_BFC23FC0             : ORIGIN = 0xBFC23FC0, LENGTH = 0x4
+  config_BFC23FC4             : ORIGIN = 0xBFC23FC4, LENGTH = 0x4
+  config_BFC23FC8             : ORIGIN = 0xBFC23FC8, LENGTH = 0x4
+  config_BFC23FCC             : ORIGIN = 0xBFC23FCC, LENGTH = 0x4
+  config_BFC23FDC             : ORIGIN = 0xBFC23FDC, LENGTH = 0x4
+  config_BFC23FEC             : ORIGIN = 0xBFC23FEC, LENGTH = 0x4
+  config_BFC23FF0             : ORIGIN = 0xBFC23FF0, LENGTH = 0x4
+  upperbootaliaslastpage      : ORIGIN = 0xBFC24000, LENGTH = 0x1000
+  boot1                       : ORIGIN = 0xBFC40000, LENGTH = 0x3FB0
   config_BFC43FC0             : ORIGIN = 0xBFC43FC0, LENGTH = 0x4
   config_BFC43FC4             : ORIGIN = 0xBFC43FC4, LENGTH = 0x4
   config_BFC43FC8             : ORIGIN = 0xBFC43FC8, LENGTH = 0x4
@@ -164,15 +167,24 @@ MEMORY
   config_BFC45034             : ORIGIN = 0xBFC45034, LENGTH = 0x4
   config_BFC45038             : ORIGIN = 0xBFC45038, LENGTH = 0x4
   config_BFC4503C             : ORIGIN = 0xBFC4503C, LENGTH = 0x4
-  kseg0_data_mem       (w!x)  : ORIGIN = 0x80000000 + 16, LENGTH = 0x10000 - 16
+  boot2                       : ORIGIN = 0xBFC60000, LENGTH = 0x3FB0
+  config_BFC63FC0             : ORIGIN = 0xBFC63FC0, LENGTH = 0x4
+  config_BFC63FC4             : ORIGIN = 0xBFC63FC4, LENGTH = 0x4
+  config_BFC63FC8             : ORIGIN = 0xBFC63FC8, LENGTH = 0x4
+  config_BFC63FCC             : ORIGIN = 0xBFC63FCC, LENGTH = 0x4
+  config_BFC63FDC             : ORIGIN = 0xBFC63FDC, LENGTH = 0x4
+  config_BFC63FEC             : ORIGIN = 0xBFC63FEC, LENGTH = 0x4
+  config_BFC63FF0             : ORIGIN = 0xBFC63FF0, LENGTH = 0x4
+  boot2lastpage               : ORIGIN = 0xBFC64000, LENGTH = 0x1000
+  kseg0_data_mem       (w!x)  : ORIGIN = ${btlRamStartAddress}, LENGTH = ${btlRamSize}
   sfrs                        : ORIGIN = 0xBF800000, LENGTH = 0x100000
-  configsfrs_BFC03F30         : ORIGIN = 0xBFC03F30, LENGTH = 0x1C
   configsfrs_BFC03FB0         : ORIGIN = 0xBFC03FB0, LENGTH = 0x1C
-  configsfrs_BFC43F30         : ORIGIN = 0xBFC43F30, LENGTH = 0x1C
+  configsfrs_BFC23FB0         : ORIGIN = 0xBFC23FB0, LENGTH = 0x1C
   configsfrs_BFC43FB0         : ORIGIN = 0xBFC43FB0, LENGTH = 0x1C
   configsfrs_BFC45000         : ORIGIN = 0xBFC45000, LENGTH = 0x1C
   configsfrs_BFC45020         : ORIGIN = 0xBFC45020, LENGTH = 0x10
   configsfrs_BFC45030         : ORIGIN = 0xBFC45030, LENGTH = 0x10
+  configsfrs_BFC63FB0         : ORIGIN = 0xBFC63FB0, LENGTH = 0x1C
 }
 
 /*************************************************************************
@@ -181,27 +193,6 @@ MEMORY
  *************************************************************************/
 SECTIONS
 {
-  .config_BFC03F40 : {
-    KEEP(*(.config_BFC03F40))
-  } > config_BFC03F40
-  .config_BFC03F44 : {
-    KEEP(*(.config_BFC03F44))
-  } > config_BFC03F44
-  .config_BFC03F48 : {
-    KEEP(*(.config_BFC03F48))
-  } > config_BFC03F48
-  .config_BFC03F4C : {
-    KEEP(*(.config_BFC03F4C))
-  } > config_BFC03F4C
-  .config_BFC03F5C : {
-    KEEP(*(.config_BFC03F5C))
-  } > config_BFC03F5C
-  .config_BFC03F6C : {
-    KEEP(*(.config_BFC03F6C))
-  } > config_BFC03F6C
-  .config_BFC03F70 : {
-    KEEP(*(.config_BFC03F70))
-  } > config_BFC03F70
   .config_BFC03FC0 : {
     KEEP(*(.config_BFC03FC0))
   } > config_BFC03FC0
@@ -223,27 +214,27 @@ SECTIONS
   .config_BFC03FF0 : {
     KEEP(*(.config_BFC03FF0))
   } > config_BFC03FF0
-  .config_BFC43F40 : {
-    KEEP(*(.config_BFC43F40))
-  } > config_BFC43F40
-  .config_BFC43F44 : {
-    KEEP(*(.config_BFC43F44))
-  } > config_BFC43F44
-  .config_BFC43F48 : {
-    KEEP(*(.config_BFC43F48))
-  } > config_BFC43F48
-  .config_BFC43F4C : {
-    KEEP(*(.config_BFC43F4C))
-  } > config_BFC43F4C
-  .config_BFC43F5C : {
-    KEEP(*(.config_BFC43F5C))
-  } > config_BFC43F5C
-  .config_BFC43F6C : {
-    KEEP(*(.config_BFC43F6C))
-  } > config_BFC43F6C
-  .config_BFC43F70 : {
-    KEEP(*(.config_BFC43F70))
-  } > config_BFC43F70
+  .config_BFC23FC0 : {
+    KEEP(*(.config_BFC23FC0))
+  } > config_BFC23FC0
+  .config_BFC23FC4 : {
+    KEEP(*(.config_BFC23FC4))
+  } > config_BFC23FC4
+  .config_BFC23FC8 : {
+    KEEP(*(.config_BFC23FC8))
+  } > config_BFC23FC8
+  .config_BFC23FCC : {
+    KEEP(*(.config_BFC23FCC))
+  } > config_BFC23FCC
+  .config_BFC23FDC : {
+    KEEP(*(.config_BFC23FDC))
+  } > config_BFC23FDC
+  .config_BFC23FEC : {
+    KEEP(*(.config_BFC23FEC))
+  } > config_BFC23FEC
+  .config_BFC23FF0 : {
+    KEEP(*(.config_BFC23FF0))
+  } > config_BFC23FF0
   .config_BFC43FC0 : {
     KEEP(*(.config_BFC43FC0))
   } > config_BFC43FC0
@@ -310,6 +301,27 @@ SECTIONS
   .config_BFC4503C : {
     KEEP(*(.config_BFC4503C))
   } > config_BFC4503C
+  .config_BFC63FC0 : {
+    KEEP(*(.config_BFC63FC0))
+  } > config_BFC63FC0
+  .config_BFC63FC4 : {
+    KEEP(*(.config_BFC63FC4))
+  } > config_BFC63FC4
+  .config_BFC63FC8 : {
+    KEEP(*(.config_BFC63FC8))
+  } > config_BFC63FC8
+  .config_BFC63FCC : {
+    KEEP(*(.config_BFC63FCC))
+  } > config_BFC63FCC
+  .config_BFC63FDC : {
+    KEEP(*(.config_BFC63FDC))
+  } > config_BFC63FDC
+  .config_BFC63FEC : {
+    KEEP(*(.config_BFC63FEC))
+  } > config_BFC63FEC
+  .config_BFC63FF0 : {
+    KEEP(*(.config_BFC63FF0))
+  } > config_BFC63FF0
 }
 SECTIONS
 {
@@ -1111,15 +1123,6 @@ SECTIONS
     __vector_offset_default = . - _ebase_address;
     KEEP(*(.vector_default))
   } > kseg0_program_mem
-
-  /*  The startup code is in the .reset.startup section.
-   *  Keep this here for backwards compatibility with older
-   *  C32 v1.xx releases.
-   */
-  .startup ORIGIN(kseg0_boot_mem) :
-  {
-    KEEP(*(.startup))
-  } > kseg0_boot_mem
 
   /* Code Sections - Note that input sections *(.text) and *(.text.*)
    * are not mapped here. The best-fit allocator locates them,

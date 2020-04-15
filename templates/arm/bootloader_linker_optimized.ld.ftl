@@ -54,34 +54,37 @@ SEARCH_DIR(.)
  */
 ENTRY(__XC32_RESET_HANDLER_NAME)
 
-/* Bootloader Size is calculated with below criteria with optimization level -O1
+#define ROM_START ${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}
+
+/* Bootloader size is calculated with below criteria with optimization level -O1
  * bootloader size = Minimum Flash Erase Size Or actual bootloader ELF size
                      (Rounded of to nearest erase boundary) whichever is
                      greater.
  */
-bootloader_size        = ${BTL_SIZE};
-
-/* Bootloader Request pattern needs to be stored in starting 16 Bytes of Ram
- * by the application if it wants to run bootloader at startup without any
- * external trigger.
- * ram[0] = 0x5048434D;
- * ram[1] = 0x5048434D;
- * ram[2] = 0x5048434D;
- * ram[3] = 0x5048434D;
- */
-bootloader_request_len = ${BTL_TRIGGER_LEN};
-
-#define ROM_START ${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}
-
-#define ROM_SIZE  bootloader_size
+#define ROM_SIZE  ${BTL_SIZE}
 
 #if (ROM_SIZE > ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE})
     #  error ROM_SIZE is greater than the max size of ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}
 #endif
 
-#define RAM_START (${BTL_RAM_START} + bootloader_request_len)
+<#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
+    <#lt>/* Bootloader Trigger pattern needs to be stored in starting ${BTL_TRIGGER_LEN} Bytes of Ram
+    <#lt> * by the application if it wants to run bootloader at startup without any
+    <#lt> * external trigger.
+    <#lt> * Example:
+    <#lt> *     ram[0] = 0x5048434D;
+    <#lt> *     ram[1] = 0x5048434D;
+    <#lt> *     ....
+    <#lt> *     ram[n] = 0x5048434D;
+    <#lt> */
+    <#lt>#define RAM_START (${BTL_RAM_START} + ${BTL_TRIGGER_LEN})
 
-#define RAM_SIZE  (${BTL_RAM_SIZE} - bootloader_request_len)
+    <#lt>#define RAM_SIZE  (${BTL_RAM_SIZE} - ${BTL_TRIGGER_LEN})
+<#else>
+    <#lt>#define RAM_START ${BTL_RAM_START}
+
+    <#lt>#define RAM_SIZE  ${BTL_RAM_SIZE}
+</#if>
 
 #if (RAM_SIZE > ${BTL_RAM_SIZE})
     #  error RAM_SIZE is greater than the max size of ${BTL_RAM_SIZE}

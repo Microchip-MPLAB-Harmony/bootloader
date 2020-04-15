@@ -43,16 +43,72 @@
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
-
+<#if HarmonyCore??>
+    <#if HarmonyCore.ENABLE_DRV_COMMON == true ||
+         HarmonyCore.ENABLE_SYS_COMMON == true ||
+         HarmonyCore.ENABLE_APP_FILE == true >
+        <#lt>#include "configuration.h"
+    </#if>
+</#if>
 #include "definitions.h"
 #include "device.h"
+
+
 
 // ****************************************************************************
 // ****************************************************************************
 // Section: Configuration Bits
 // ****************************************************************************
 // ****************************************************************************
+<#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
+<#-- In case of TrustZone Fuse settings are set in secure mode -->
+<#else>
 ${core.LIST_SYSTEM_INIT_C_CONFIG_BITS_INITIALIZATION}
+</#if>
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Driver Initialization Data
+// *****************************************************************************
+// *****************************************************************************
+${core.LIST_SYSTEM_INIT_C_DRIVER_INITIALIZATION_DATA}
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: System Data
+// *****************************************************************************
+// *****************************************************************************
+<#if HarmonyCore??>
+    <#if HarmonyCore.ENABLE_DRV_COMMON == true ||
+         HarmonyCore.ENABLE_SYS_COMMON == true >
+        <#lt>/* Structure to hold the object handles for the modules in the system. */
+        <#lt>SYSTEM_OBJECTS sysObj;
+    </#if>
+</#if>
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Library/Stack Initialization Data
+// *****************************************************************************
+// *****************************************************************************
+${core.LIST_SYSTEM_INIT_C_LIBRARY_INITIALIZATION_DATA}
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: System Initialization
+// *****************************************************************************
+// *****************************************************************************
+${core.LIST_SYSTEM_INIT_C_SYSTEM_INITIALIZATION}
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Local initialization functions
+// *****************************************************************************
+// *****************************************************************************
+${core.LIST_SYSTEM_INIT_C_INITIALIZER_STATIC_FUNCTIONS}
+
 
 /*******************************************************************************
   Function:
@@ -62,7 +118,7 @@ ${core.LIST_SYSTEM_INIT_C_CONFIG_BITS_INITIALIZATION}
     Initializes the board, services, drivers, application and other modules.
 
   Remarks:
- */
+*/
 
 void SYS_Initialize ( void* data )
 {
@@ -97,4 +153,13 @@ void SYS_Initialize ( void* data )
 </#if>
 
     <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_PERIPHERALS}
+    <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_DRIVERS}
+    <#lt>${core.LIST_SYSTEM_INIT_C_INITIALIZE_SYSTEM_SERVICES}
+    <#lt>${core.LIST_SYSTEM_INIT_C_INITIALIZE_MIDDLEWARE}
+    <#if HarmonyCore??>
+        <#lt><#if HarmonyCore.ENABLE_APP_FILE == true >
+                <#lt>${core.LIST_SYSTEM_INIT_C_APP_INITIALIZE_DATA}
+        <#lt></#if>
+    </#if>
+    <#lt>${core.LIST_SYSTEM_INIT_INTERRUPTS}
 }

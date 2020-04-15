@@ -142,6 +142,8 @@ static bool     flash_data_ready    = false;
 
     <#lt>    DSU_CRCCalculate (addr, size, 0xffffffff, &crc);
 
+    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
+
     <#lt>    return crc;
     <#lt>}
 <#else>
@@ -389,7 +391,7 @@ bool __WEAK bootloader_Trigger(void)
     return false;
 }
 
-void bootloader_Start(void)
+void bootloader_Tasks(void)
 {
     while (1)
     {

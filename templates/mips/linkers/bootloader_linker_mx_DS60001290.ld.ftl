@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
- * MPLAB XC Compiler -  PIC32MX 1XX/2XX XLP Bootloader linker script
+ * MPLAB XC Compiler -  PIC32MX 1XX/2XX/5XX Bootloader linker script
  * Build date : Jul 16 2019
  * 
  * Copyright (c) 2019, Microchip Technology Inc. and its subsidiaries ("Microchip")
@@ -71,7 +71,7 @@ OPTIONAL("processor.o")
  *   xc32-gcc src.c -Wl,--defsym=_ebase_address=0x9D001000
  *************************************************************************/
 PROVIDE(_vector_spacing = 0x0001);
-PROVIDE(_ebase_address = 0x9FC00300);
+PROVIDE(_ebase_address = 0x9D000000);
 
 /*************************************************************************
  * Memory Address Equates
@@ -85,8 +85,8 @@ PROVIDE(_ebase_address = 0x9FC00300);
 _RESET_ADDR                    = 0xBFC00000;
 _BEV_EXCPT_ADDR                = 0xBFC00380;
 _DBG_EXCPT_ADDR                = 0xBFC00480;
-_DBG_CODE_ADDR                 = 0xBFC02000;
-_DBG_CODE_SIZE                 = 0xFF0;
+_DBG_CODE_ADDR                 = 0x9FC00490;
+_DBG_CODE_SIZE                 = 0x760;
 _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 
 /*************************************************************************
@@ -104,7 +104,7 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 <#assign btlFlashStartAddress = "${BTL_START}">
 <#assign btlFlashSize = "${BTL_SIZE}">
 
-<#if BTL_TRIGGER_LEN != "0">
+<#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
     <#lt><#assign btlRamStartAddress = "${BTL_RAM_START} + ${BTL_TRIGGER_LEN}">
     <#lt><#assign btlRamSize = "${BTL_RAM_SIZE} - ${BTL_TRIGGER_LEN}">
 <#else>
@@ -116,16 +116,14 @@ MEMORY
 {
   kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize} /* All C files will be located here */
   kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x490
-  kseg0_boot_mem              : ORIGIN = 0x9FC00490, LENGTH = 0x0
-  exception_mem               : ORIGIN = 0x9FC01000, LENGTH = 0x1000
-  debug_exec_mem              : ORIGIN = 0xBFC02000, LENGTH = 0xFF0
-  config3                     : ORIGIN = 0xBFC02FF0, LENGTH = 0x4
-  config2                     : ORIGIN = 0xBFC02FF4, LENGTH = 0x4
-  config1                     : ORIGIN = 0xBFC02FF8, LENGTH = 0x4
-  config0                     : ORIGIN = 0xBFC02FFC, LENGTH = 0x4
+  debug_exec_mem              : ORIGIN = 0x9FC00490, LENGTH = 0x760
+  config3                     : ORIGIN = 0xBFC00BF0, LENGTH = 0x4
+  config2                     : ORIGIN = 0xBFC00BF4, LENGTH = 0x4
+  config1                     : ORIGIN = 0xBFC00BF8, LENGTH = 0x4
+  config0                     : ORIGIN = 0xBFC00BFC, LENGTH = 0x4
   kseg1_data_mem       (w!x)  : ORIGIN = ${btlRamStartAddress}, LENGTH = ${btlRamSize}
   sfrs                        : ORIGIN = 0xBF800000, LENGTH = 0x100000
-  configsfrs                  : ORIGIN = 0xBFC02FF0, LENGTH = 0x10
+  configsfrs                  : ORIGIN = 0xBFC00BF0, LENGTH = 0x10
 }
 
 /*************************************************************************
@@ -134,17 +132,17 @@ MEMORY
  *************************************************************************/
 SECTIONS
 {
-  .config_BFC02FF0 : {
-    KEEP(*(.config_BFC02FF0))
+  .config_BFC00BF0 : {
+    KEEP(*(.config_BFC00BF0))
   } > config3
-  .config_BFC02FF4 : {
-    KEEP(*(.config_BFC02FF4))
+  .config_BFC00BF4 : {
+    KEEP(*(.config_BFC00BF4))
   } > config2
-  .config_BFC02FF8 : {
-    KEEP(*(.config_BFC02FF8))
+  .config_BFC00BF8 : {
+    KEEP(*(.config_BFC00BF8))
   } > config1
-  .config_BFC02FFC : {
-    KEEP(*(.config_BFC02FFC))
+  .config_BFC00BFC : {
+    KEEP(*(.config_BFC00BFC))
   } > config0
 }
 SECTIONS
@@ -173,16 +171,7 @@ SECTIONS
   .app_excpt _GEN_EXCPT_ADDR :
   {
     KEEP(*(.gen_handler))
-  } > exception_mem
-
-  /*  The startup code is in the .reset.startup section.
-   *  Keep this here for backwards compatibility with older
-   *  C32 v1.xx releases.
-   */
-  .startup ORIGIN(kseg0_boot_mem) :
-  {
-    KEEP(*(.startup))
-  } > kseg0_boot_mem
+  } > kseg0_program_mem
 
   /* Code Sections - Note that input sections *(.text) and *(.text.*)
    * are not mapped here. The best-fit allocator locates them,

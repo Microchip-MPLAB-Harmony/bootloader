@@ -64,7 +64,7 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
 
-    bootloader_Start();
+    bootloader_Tasks();
 
     /* Execution should not come here during normal operation */
     return ( EXIT_FAILURE );

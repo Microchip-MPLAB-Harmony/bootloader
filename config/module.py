@@ -65,10 +65,9 @@ def loadModule():
             mips_support = eval(bootloaderComponent['mips_support'])
 
             if (("PIC32M" in Variables.get("__PROCESSOR")) and (mips_support == True)):
-                filePath  = "config/bootloader_" + Name + "_mips.py"
                 timer_dep = True
-            else:
-                filePath  = "config/bootloader_" + Name + "_arm.py"
+
+            filePath  = "config/bootloader_" + Name + ".py"
 
             displayPath = "/Bootloader/"
 
