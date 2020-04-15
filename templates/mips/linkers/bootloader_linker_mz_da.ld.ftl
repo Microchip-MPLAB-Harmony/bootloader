@@ -105,13 +105,11 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
  * Only sections specifically assigned to these regions can be allocated
  * into these regions.
  *
- * The Debug exception vector is located at 0x9FC00480.
- *
  * The config_<address> sections are used to locate the config words at
  * their absolute addresses.
  *************************************************************************/
 
-<#assign btlFlashStartAddress = "0x9FC01000">
+<#assign btlFlashStartAddress = "${BTL_START}">
 <#assign btlFlashSize = "${BTL_SIZE}">
 
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >

@@ -64,14 +64,21 @@ for mem_idx in range(0, len(addr_space_children)):
             ram_start   = "0xA0000000"
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
-    if ("PIC32MX" in Variables.get("__PROCESSOR")):
-        if ((any(x == mem_seg for x in BootFlashNames) == True)):
-            if (addr_space_children[mem_idx].getAttribute("size") == "0xbf0"):
-                # Bootloader start address is in Program Flash memory as Boot Flash Memory is only 3KB
-                btl_start = "0x9D000000"
-            else:
-                # The bootloader code will be placed after the startup code ending at 0x9FC00490
-                btl_start = "0x9FC00500"
+    if ((btl_type != "UART") and (btl_type != "I2C")):
+        if (("PIC32MX" in Variables.get("__PROCESSOR")) or
+            ("PIC32MK" in Variables.get("__PROCESSOR"))):
+            # Bootloader start address is in Program Flash memory as
+            # Bootloader size is greater than Boot Flash Memory (3KB and 12KB)
+            btl_start = "0x9D000000"
+    else:
+        if ("PIC32MX" in Variables.get("__PROCESSOR")):
+            if ((any(x == mem_seg for x in BootFlashNames) == True)):
+                if (addr_space_children[mem_idx].getAttribute("size") == "0xbf0"):
+                    # Bootloader start address is in Program Flash memory as Boot Flash Memory is only 3KB
+                    btl_start = "0x9D000000"
+                else:
+                    # The bootloader code will be placed after the startup code ending at 0x9FC00490
+                    btl_start = "0x9FC00500"
 
 def activateAndConnectDependencies(component):
     global btl_type
