@@ -192,6 +192,8 @@ static BL_PROTOCOL                          blProtocol;
     <#lt>       &crc
     <#lt>   );
 
+    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
+
     <#lt>    return crc;
     <#lt>}
 <#else>
