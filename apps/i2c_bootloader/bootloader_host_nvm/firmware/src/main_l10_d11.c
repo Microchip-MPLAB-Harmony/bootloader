@@ -170,6 +170,8 @@ static uint32_t APP_CRCGenerate(void)
         0xffffffff,
         &crc
     );
+	
+	PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
 
     return crc;
 }
