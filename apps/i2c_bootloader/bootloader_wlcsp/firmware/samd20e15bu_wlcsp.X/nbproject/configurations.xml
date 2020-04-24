@@ -159,8 +159,8 @@
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="SAMD20_DFP" vendor="Microchip" version="3.2.49"/>
         <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
+        <pack name="SAMD20_DFP" vendor="Microchip" version="3.2.49"/>
       </packs>
       <compileType>
         <linkerTool>

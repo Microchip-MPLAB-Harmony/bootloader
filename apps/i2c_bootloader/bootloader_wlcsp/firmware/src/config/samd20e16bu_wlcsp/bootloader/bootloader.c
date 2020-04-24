@@ -181,6 +181,8 @@ static uint32_t BL_CRCGenerate(void)
        &crc
    );
 
+    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
+
     return crc;
 }
 

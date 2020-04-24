@@ -12,8 +12,8 @@
           <Security dnOrder="2">NON_SECURE</Security>
           <LogicalPath dnOrder="3">config/samd20e16bu_wlcsp/bootloader/</LogicalPath>
           <PhysicalPath dnOrder="4">/bootloader/</PhysicalPath>
-          <GeneratedChecksum dnOrder="5">039E5B6B18F47DAB12933EB38CC24D4D</GeneratedChecksum>
-          <UserChecksum dnOrder="6">039E5B6B18F47DAB12933EB38CC24D4D</UserChecksum>
+          <GeneratedChecksum dnOrder="5">2C7F510B3935264FAD75EB8DCC061546</GeneratedChecksum>
+          <UserChecksum dnOrder="6">2C7F510B3935264FAD75EB8DCC061546</UserChecksum>
         </File>
         <File dnOrder="1">
           <Type dnOrder="0">SOURCE</Type>
@@ -517,7 +517,7 @@
       <Setting dnOrder="2" key="FORCE_OPTIMIZATION" value="false"/>
       <Setting dnOrder="3" key="GENERATE_BACKUP" value="true"/>
       <Setting dnOrder="4" key="MERGE_STRATEGY" value="USER_ALL"/>
-      <Setting dnOrder="5" key="PackageFilter" value="bootloader;bsp;core;cryptoauthlib;csp;micrium_ucos3;touch;usb;"/>
+      <Setting dnOrder="5" key="PackageFilter" value="bootloader;bsp;core;cryptoauthlib;csp;micrium_ucos3;net;touch;usb;"/>
     </Settings>
   </Configurator>
 </Configuration>
