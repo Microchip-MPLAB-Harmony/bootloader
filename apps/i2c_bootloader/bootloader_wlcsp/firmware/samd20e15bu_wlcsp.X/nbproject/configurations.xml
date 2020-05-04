@@ -153,7 +153,7 @@
         <targetDevice>ATSAMD20E15BU</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool></platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.40</languageToolchainVersion>
         <platform>3</platform>
@@ -162,6 +162,8 @@
         <pack name="CMSIS" vendor="ARM" version="5.4.0"/>
         <pack name="SAMD20_DFP" vendor="Microchip" version="3.2.49"/>
       </packs>
+      <ScriptingSettings>
+      </ScriptingSettings>
       <compileType>
         <linkerTool>
           <linkerLibItems>
@@ -291,7 +293,7 @@
         <property key="map-file" value="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"/>
         <property key="no-device-startup-code" value="true"/>
         <property key="no-startup-files" value="true"/>
-        <property key="oXC32ld-extra-opts" value=""/>
+        <property key="oXC32ld-extra-opts" value="-nostartfiles"/>
         <property key="optimization-level" value=""/>
         <property key="preprocessor-macros" value="ROM_ORIGIN=0x800;ROM_LENGTH=0x7800"/>
         <property key="remove-unused-sections" value="true"/>
@@ -339,6 +341,7 @@
         <property key="mdtcm" value=""/>
         <property key="mitcm" value=""/>
         <property key="mstacktcm" value="false"/>
+        <property key="omit-pack-options" value="1"/>
         <property key="relaxed-math" value="false"/>
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
