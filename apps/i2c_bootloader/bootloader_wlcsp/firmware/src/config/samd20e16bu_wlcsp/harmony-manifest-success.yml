@@ -4,11 +4,11 @@
 
 
 project: bootloader_wlcsp
-creation_date: 2020-04-30T13:28:15.602+05:30[Asia/Calcutta]	# ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
+creation_date: 2020-05-04T10:10:15.111+05:30[Asia/Calcutta]	# ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
 operating_system: Windows 10
 mhc_mode: IDE				# [IDE|Standalone|Headless]
 mplabx_version: --Please Update your plugin--		# if MPLAB X plugin only
-plugin_version: v3.3.0.1		# if MPLAB X plugin only
+plugin_version: v3.4.2		# if MPLAB X plugin only
 
 modules:
     - {name: "bootloader", version: ""}
@@ -28,5 +28,5 @@ modules:
     - {name: "mplabx_plugin", version: ""}
     - {name: "net", version: ""}
     - {name: "touch", version: "v3.5.0"}
-    - {name: "usb", version: ""}
+    - {name: "usb", version: "v3.5.0"}
 
