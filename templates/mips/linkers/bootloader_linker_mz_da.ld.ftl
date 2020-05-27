@@ -110,7 +110,11 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
  *************************************************************************/
 
 <#assign btlFlashStartAddress = "${BTL_START}">
-<#assign btlFlashSize = "${BTL_SIZE}">
+<#if BTL_TYPE == "USB_HOST_MSD" >
+    <#lt><#assign btlFlashSize = "0x2FF00 - 0x1000">
+<#else>
+    <#lt><#assign btlFlashSize = "${BTL_SIZE}">
+</#if>
 
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
     <#lt><#assign btlRamStartAddress = "${BTL_RAM_START} + ${BTL_TRIGGER_LEN}">
@@ -123,6 +127,12 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 MEMORY
 {
   kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize}
+<#if BTL_TYPE == "USB_HOST_MSD" >
+  /* Bootloader needs to be placed in both the Boot Flash Panels (lower and upper boot alias).
+     Below region is used to fill 0xFF in reserved space between these two panles.
+   */
+  protected_reg               : ORIGIN = 0x9FC14000, LENGTH = 0x20000-0x14000
+</#if>
   kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x480
   kseg1_boot_mem_4B0          : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0
   config_BFC0FF3C             : ORIGIN = 0xBFC0FF3C, LENGTH = 0x4
@@ -2071,5 +2081,14 @@ SECTIONS
     __pic32_tlb_init_values_end = ABSOLUTE(.);
     __pic32_tlb_init_values_count = 8 ;
   } > kseg1_boot_mem_4B0
+<#if BTL_TYPE == "USB_HOST_MSD" >
+
+  .fill1 :
+  {
+    FILL(0xFF);
+    . = ORIGIN(protected_reg) + LENGTH(protected_reg) - 1;
+    BYTE(0xFF)
+  } > protected_reg
+</#if>
 }
 

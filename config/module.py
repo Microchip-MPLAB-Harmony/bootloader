@@ -30,6 +30,7 @@ bootloaderComponents = [
     {"name":"uart", "label": "UART", "dependency":["MEMORY", "UART", "TMR"], "mips_support":"True", "condition":"True"},
     {"name":"i2c", "label": "I2C", "dependency":["MEMORY", "I2C"], "mips_support":"False", "condition":"True"},
     {"name":"usb_device_hid", "label": "USB Device HID", "dependency":["MEMORY", "USB_DEVICE_HID"], "mips_support":"True", "condition":"True"},
+    {"name":"usb_host_msd", "label": "USB Host MSD", "dependency":["MEMORY", "SYS_FS"], "mips_support":"True", "condition":"True"},
 ]
 
 def hasPeripheral(peripheral):
@@ -88,6 +89,8 @@ def loadModule():
                     if (dep == "TMR"): 
                         if (timer_dep == True):
                             Component.addDependency("btl_TIMER_dependency", dep, False, True)
+                    elif (dep == "SYS_FS"):
+                        Component.addDependency("btl_" + dep + "_dependency", dep, True, True)
                     else:
                         Component.addDependency("btl_" + dep + "_dependency", dep, False, True)
 
