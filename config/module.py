@@ -31,6 +31,7 @@ bootloaderComponents = [
     {"name":"i2c", "label": "I2C", "dependency":["MEMORY", "I2C"], "mips_support":"False", "condition":"True"},
     {"name":"usb_device_hid", "label": "USB Device HID", "dependency":["MEMORY", "USB_DEVICE_HID"], "mips_support":"True", "condition":"True"},
     {"name":"usb_host_msd", "label": "USB Host MSD", "dependency":["MEMORY", "SYS_FS"], "mips_support":"True", "condition":"True"},
+    {"name":"sdcard", "label": "SDCARD", "dependency":["MEMORY", "SYS_FS"], "mips_support":"True", "condition":"True"},
 ]
 
 def hasPeripheral(peripheral):
