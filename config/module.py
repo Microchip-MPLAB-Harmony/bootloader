@@ -23,31 +23,29 @@
 
 unSupportedFamilies = ["SAM9", "SAMA5"]
 
-USBNames = ["USB", "USBHS"]
+I2CNames        = ["SERCOM"]
+USBNames        = ["USB", "USBHS"]
 
-#Define Bootloader component names
-bootloaderComponents = [
-    {"name":"uart", "label": "UART", "dependency":["MEMORY", "UART", "TMR"], "mips_support":"True", "condition":"True"},
-    {"name":"i2c", "label": "I2C", "dependency":["MEMORY", "I2C"], "mips_support":"False", "condition":"True"},
-    {"name":"usb_device_hid", "label": "USB Device HID", "dependency":["MEMORY", "USB_DEVICE_HID"], "mips_support":"True", "condition":"True"},
-    {"name":"usb_host_msd", "label": "USB Host MSD", "dependency":["MEMORY", "SYS_FS"], "mips_support":"True", "condition":"True"},
-    {"name":"sdcard", "label": "SDCARD", "dependency":["MEMORY", "SYS_FS"], "mips_support":"True", "condition":"True"},
-]
-
-def hasPeripheral(peripheral):
+def hasPeripheral(peripheralList):
     periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
     peripherals         = periphNode.getChildren()
 
     for module in range (0, len(peripherals)):
         periphName = str(peripherals[module].getAttribute("name"))
-        if (peripheral == "USB"):
-            if ((any(x == periphName for x in USBNames) == True)):
-                return True
-        else:
-            if (periphName == peripheral):
-                return True
+
+        if ((any(x == periphName for x in peripheralList) == True)):
+            return True
 
     return False
+
+#Define Bootloader component names
+bootloaderComponents = [
+    {"name":"uart", "label": "UART", "dependency":["MEMORY", "UART", "TMR"], "condition":"True"},
+    {"name":"i2c", "label": "I2C", "dependency":["MEMORY", "I2C"], "condition":'hasPeripheral(I2CNames)'},
+    {"name":"usb_device_hid", "label": "USB Device HID", "dependency":["MEMORY", "USB_DEVICE_HID"], "condition":'hasPeripheral(USBNames)'},
+    {"name":"usb_host_msd", "label": "USB Host MSD", "dependency":["MEMORY", "SYS_FS"], "condition":'hasPeripheral(USBNames)'},
+    {"name":"sdcard", "label": "SDCARD", "dependency":["MEMORY", "SYS_FS"], "condition":"True"},
+]
 
 def loadModule():
 
@@ -67,16 +65,7 @@ def loadModule():
             Name        = bootloaderComponent['name']
             Label       = bootloaderComponent['label'] + " Bootloader"
 
-            # To be removed once I2C Slave is supported on other devices
-            if ((Name == "i2c") and (hasPeripheral("SERCOM") == False)):
-                continue
-
-            if (("usb" in Name) and (hasPeripheral("USB") == False)):
-                continue
-
-            mips_support = eval(bootloaderComponent['mips_support'])
-
-            if (("PIC32M" in Variables.get("__PROCESSOR")) and (mips_support == True)):
+            if ("PIC32M" in Variables.get("__PROCESSOR")):
                 timer_dep = True
 
             filePath  = "config/bootloader_" + Name + ".py"
