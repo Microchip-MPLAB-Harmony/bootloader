@@ -25,6 +25,7 @@ unSupportedFamilies = ["SAM9", "SAMA5"]
 
 I2CNames        = ["SERCOM"]
 USBNames        = ["USB", "USBHS"]
+EthernetNames   = ["ETH", "GMAC"]
 
 def hasPeripheral(peripheralList):
     periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
@@ -45,6 +46,7 @@ bootloaderComponents = [
     {"name":"usb_device_hid", "label": "USB Device HID", "dependency":["MEMORY", "USB_DEVICE_HID"], "condition":'hasPeripheral(USBNames)'},
     {"name":"usb_host_msd", "label": "USB Host MSD", "dependency":["MEMORY", "SYS_FS"], "condition":'hasPeripheral(USBNames)'},
     {"name":"sdcard", "label": "SDCARD", "dependency":["MEMORY", "SYS_FS"], "condition":"True"},
+    {"name":"udp", "label": "UDP", "dependency":["MEMORY"], "condition":'hasPeripheral(EthernetNames)'},
 ]
 
 def loadModule():
