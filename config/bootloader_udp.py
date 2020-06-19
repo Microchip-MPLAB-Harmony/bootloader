@@ -125,7 +125,7 @@ def instantiateComponent(bootloaderComponent):
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
-    btlSourceFile.setSourcePath("../bootloader/templates/src/unified/bootloader_unified.c.ftl")
+    btlSourceFile.setSourcePath("../bootloader/templates/src/unified/bootloader.c.ftl")
     btlSourceFile.setOutputName("bootloader.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
@@ -214,15 +214,6 @@ def onAttachmentConnected(source, target):
     srcID = source["id"]
     targetID = target["id"]
 
-#    if (srcID == "btl_USB_DEVICE_HID_dependency"):
-#        hidIndex = remoteComponent.getSymbolByID("CONFIG_USB_DEVICE_FUNCTION_INDEX").getValue()
-
-#        localComponent.getSymbolByID("USB_DEVICE_INDEX").setValue(hidIndex)
-
-        # Configure USB Component
-#        remoteComponent.getSymbolByID("CONFIG_USB_DEVICE_HID_REPORT_DESCRIPTOR_TYPE").setReadOnly(True)
-#        remoteComponent.getSymbolByID("CONFIG_USB_DEVICE_HID_REPORT_DESCRIPTOR_TYPE").setValue("Custom")
-
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
         localComponent.getSymbolByID("MEM_USED").setValue(remoteID.upper())
@@ -237,12 +228,6 @@ def onAttachmentDisconnected(source, target):
     remoteID = remoteComponent.getID()
     srcID = source["id"]
     targetID = target["id"]
-
-#    if (srcID == "btl_USB_DEVICE_HID_dependency"):
-#        localComponent.getSymbolByID("USB_DEVICE_INDEX").clearValue()
-
-#        # Deconfigure USB Component
-#        remoteComponent.getSymbolByID("CONFIG_USB_DEVICE_HID_REPORT_DESCRIPTOR_TYPE").setReadOnly(False)
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0
