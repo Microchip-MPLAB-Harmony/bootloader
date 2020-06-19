@@ -243,7 +243,7 @@ def main():
 
     size = len(data)
 
-    verbose(options.verbose, 'Unlocking')
+    verbose(options.verbose, 'Unlocking\n')
     resp = send_request(port, BL_CMD_UNLOCK, uint32(8), uint32(address) + uint32(size))
 
     if resp != BL_RESP_OK:
@@ -251,8 +251,6 @@ def main():
 
     # Create data blocks of ERASE_SIZE each
     blocks = [data[i:i + ERASE_SIZE] for i in range(0, len(data), ERASE_SIZE)]
-
-    verbose(options.verbose, 'Uploading %d blocks at address %d (0x%x)\n' % (len(blocks), address, address))
 
     addr = address
 
