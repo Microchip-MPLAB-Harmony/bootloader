@@ -210,7 +210,7 @@ def main():
 
     try:
         address = int(options.address, 0)
-    except (ValueError, inst):
+    except ValueError as inst:
         error('invalid address value: %s' % options.address)
 
     if (("SAM" in device)):
@@ -222,7 +222,7 @@ def main():
 
     try:
         port = serial.Serial(options.port, options.baud, timeout=1)
-    except (serial.serialutil.SerialException, inst):
+    except serial.serialutil.SerialException as inst:
         error(inst)
 
     if options.tune:
@@ -232,7 +232,7 @@ def main():
 
     try:
         data = data = [(x) for x in open(options.file, 'rb').read()]
-    except (Exception, inst):
+    except Exception as inst:
         error(inst)
 
     while len(data) % ERASE_SIZE > 0:

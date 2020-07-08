@@ -84,7 +84,7 @@ def main():
 
     try:
         offset = int(options.offset, 0)
-    except (ValueError, inst):
+    except ValueError as inst:
         error('invalid offset value: %s' % options.offset)
 
     if offset < BOOTLOADER_SIZE:
