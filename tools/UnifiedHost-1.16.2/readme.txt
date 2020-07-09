@@ -6,13 +6,6 @@
 # Support
 Email: MCC_Support@microchip.com
 This application requires the Java 1.8 runtime.
-For the required Java FX support, and an alternative source to the legacy Java installer can be found here:
-Azul Zulu Community OpenJDK with OpenJFX is recommended; OpenJFX is required for use with UBHA.
-https://www.azul.com/downloads/zulu-community/?&version=java-8-lts&package=jdk-fx 
-
-Ensure to select the appropriate operating system, and architecture (32/64 bit).
-Additional info: https://www.azul.com/products/zulu-enterprise/jdk-comparison-matrix/
-
 Users of Microchip products can receive assistance through several channels:
 
  - Distributor or Representative
@@ -35,20 +28,19 @@ v 0.1.15:	Fixed bug in PIC16 erase being half expected length during command cha
 v 1.0.0:	Release version to support PIC24 family of devices. Added beta support for AVR devices.
 v 1.15.0:   Release version to support dsPIC33 family of devices. Release support for AVR devices.
 v 1.15.1:   Fixed bugs to support PIC-IOT WG Development Board, phantom byte for degenerate blocks and restrict data packet size to MAX_PACKET_SIZE - HEADER_SIZE.
-v 1.16.0:   AVR code protocol modified to handle large future devices.
+v 1.16.1:   Updated HID4JAVA library used for USB communication. Updates to AVR support to support MCC generated code. Extended PIC32 timeout(s) to 20s (from 8) UDP, USB
+v 1.16.2:   32-bit devices no longer wait for responds from Reset Command. Bugfixes for 16-bit support: 1) Self Verify issue with larger parts with 2) no report, 3) End Address corruption on read properties, 4) Exception thrown on UART disconnect.
 
 # NEWS	A basic changelog, intended for users
 -Incremented version information; see Changelog
 -Added readme file on release of version: 0.1.14
--Added CheckSum support for PIC32
+-Added Checksum support for PIC32
 -Bug fixes, Added Release Notes v 0.1.15 along with readme file. Added support for up to 32-bit checksum value calculation.
 -Added Synch Byte expectation to AVR packet support.
 -Fixed Typo in Help-->About text which indicated incorrect Utility version
--Added logger support: requires launching from command prompt with below text:
+-Added logger support requires launching from command prompt with below text:
 * -Djava.util.logging.config.file="C:\<DirectoryLocation>"
 
-# Debug Log
-The UBHA supports the ability to view Debug Logger message through use of the packaged logging.properties file.
 i.e.: To Launch from Command Prompt
 >java -Djava.util.logging.config.file="<Drive: e.g. C>:\<MyDirectory>\<UnifiedHost-version>\logging.properties" -jar UnifiedHost-<version>.jar
 
