@@ -39,8 +39,8 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
 else:
     bootloaderCore = "bootloader_arm.py"
     btlSizes = {
-                "CORTEX-M0PLUS"     : [38912],
-                "CORTEX-M23"        : [38912],
+                "CORTEX-M0PLUS"     : [43008],
+                "CORTEX-M23"        : [43008],
                 "CORTEX-M4"         : [40960],
                 "CORTEX-M7"         : [40960],
     }
