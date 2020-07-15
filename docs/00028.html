@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>Running The Application</title>
+<title>fs_bootloader::run_Application Function</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00006.html" target="topic">Applications Help</a> &gt; I2C Bootloader &gt; <a href="00024.html" target="topic">bootloader_host_sdcard</a> &gt; <a href="00028.html" target="topic">Running The Application</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00000.html" target="topic">FS Bootloaders</a> &gt; <a href="00018.html" target="topic">Library Interface</a> &gt; a) System Functions &gt; <a href="00028.html" target="topic">fs_bootloader::run_Application Function</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00026.html" target="topic">Previous</a> | <a href="00024.html" target="topic">Up</a> | <a href="00035.html" target="topic">Next</a></div>
+<a href="00027.html" target="topic">Previous</a> | <a href="00018.html" target="topic">Up</a> | <a href="00007.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader bootloader_host_sdcard Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: fs_bootloader::run_Application Topic Title: fs_bootloader::run_Application Function)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-Running The Application</div>
+fs_bootloader::run_Application Function</div>
 </div>
 </div>
 
@@ -49,242 +49,45 @@ Running The Application</div>
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
 <p class="Element10">
-Program the sample test application available under bootloader/apps/<a href="00033.html" target="topic">i2c_bootloader</a>/test_app <strong>OR</strong> program any other application.&nbsp;</p>
+This function can be used to run programmed application though bootloader at startup.&nbsp;</p>
 <p class="Element10">
-<strong>If any application other than the one provided under bootloader/apps/<a href="00033.html" target="topic">i2c_bootloader</a>/test_app is used then follow the below steps, otherwise skip to Step 2.</strong>&nbsp;</p>
+If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to the application start address to run the application programmed through bootloader and never returns.&nbsp;</p>
 <p class="Element10">
-&nbsp;</p>
-<ol class="Element630">
-<li value="1" class="Element600">Follow the steps provided under <a href="00005.html" target="topic">I2C Bootloader Application Configurations</a> and then regenerate the project. (Note: If the bootloader itself is being updated, follow Step 5 under <a href="00016.html" target="topic">Running the Application</a> section of bootloader, to generate the bootloader binary file)</li>
-<li value="2" class="Element600">Build the application.</li>
-<li value="3" class="Element600">Configure the bootloader_host_sdcard applicaiton:</li>
-</ol><p class="Element10">
-Open the bootloader_host_sdcard project in MPLABX IDE and open the app.c or app_same54.c file. Specify the following details in the <i>firmwareUpdateInfo</i> data structure:</p>
-<ul class="Element630">
-<li class="Element600"><i>i2cSlaveAddr</i> - Specify the I2C slave address</li>
-<li class="Element600"><i>erasePageSize</i> - Specify the erase page size of the target (target = MCU being programmed)</li>
-<li class="Element600"><i>programPageSize</i> - Specify the program page size of the target (target = MCU being programmed). It can either be set to the program page size or can be set to the size of the erase page size of the target. In the demo example, it is set equal to the size of the erase page. On embedded host where RAM is limited, it may be set to the actual program page size to reduce the RAM used to hold the program data. For example, for SAM D20, the <i>programPageSize</i> can be set either to 64 (program page size) or 256 (erase page size).</li>
-<li class="Element600"><i>appStartAddr</i> - Specify the user application start address (This value should be same as the application start address specified in Step 1 above). If the bootloader itself is being upgraded then the <i>appStartAddr</i> must be set to 0x00 (start of the bootloader). Also, ensure that the bootloader is also configured with the same value of application start address. Refer <strong>Bootloader System Configuration </strong>section under <a href="00009.html" target="topic">I2C Bootloader Configurations help</a></li>
-<li class="Element600"><i>filename</i> - Specify the filename of the application binary</li>
-</ul><p class="Element10">
-&nbsp;</p>
+If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function and executes bootloader for accepting a new application firmware.</p></div>
+</div>
+<a name="43"></a><div class="Element99">
+C</div>
+<div class="Element101"><div class="Element100"><pre class="Element100"><strong><span style="color: #000080">void</span></strong> <strong><span style="color: #000000">run_Application</span></strong>();</pre></div></div>
+<a name="507265636F6E646974696F6E73"></a><div class="Element14">
+Preconditions</div>
+<div class="Element11">
+<div class="Element10">
 <p class="Element10">
-Similarly, add firmware update information for other slaves (if any) on the I2C bus. The APP_BL_NUM_I2C_SLAVES must be set equal to the number of slaves being programmed on the I2C bus.&nbsp;</p>
+<a href="00027.html" target="topic">bootloader_Trigger</a>() must be called to check for bootloader triggers at startup.</p></div>
+</div>
+<a name="52657475726E73"></a><div class="Element14">
+Returns</div>
+<div class="Element11">
+<div class="Element10">
 <p class="Element10">
-&nbsp;</p><p class="Element10" style="text-align: center;">
-<img src="bootloader_host_sdcard_app_config.png" border="0" alt="" title="">&nbsp;</p><p class="Element10">
-&nbsp;</p>
+None</p></div>
+</div>
+<a name="4578616D706C65"></a><div class="Element14">
+Example</div>
+<div class="Element11">
+<div class="Element10">
+<div class="Element13"><div class="Element12"><pre class="Element12">
+    NVMCTRL_Initialize();
 
-<ol class="Element630">
-<li value="4" class="Element600">Make sure the I2C lines (SCL, SDA and GND) between the embedded host board and the target board (the board being programmed)</li>
-<li value="5" class="Element600">Connect a micro USB cable to the DEBUG port.</li>
-<li value="6" class="Element600">Build and Program the bootloader_host_sdcard application using MPLAB X IDE.</li>
-<li value="7" class="Element600">Copy the application binary into the SD card and insert the SD card in the SD card slot</li>
-<li value="8" class="Element600">Open a terminal application (Ex.:Tera Term) on the computer. Configure the serial port settings for the <strong>host</strong> board terminal as follows:
-<ul class="Element631">
-<li class="Element601">Baud : 115200</li>
-<li class="Element601">Data : 8 Bits</li>
-<li class="Element601">Parity : None</li>
-<li class="Element601">Stop : 1 Bit</li>
-<li class="Element601">Flow Control : None</li>
-</ul></li>
-<li value="9" class="Element600"><strong>If test application is being programmed</strong>, open another instance of terminal application (Ex.:Tera Term) on the computer. Configure the serial port settings for the <strong>target</strong> board terminal as follows:
-<ul class="Element631">
-<li class="Element601">Baud : 115200</li>
-<li class="Element601">Data : 8 Bits</li>
-<li class="Element601">Parity : None</li>
-<li class="Element601">Stop : 1 Bit</li>
-<li class="Element601">Flow Control : None</li>
-</ul></li>
-<li value="10" class="Element600"> On the target device, press and hold the User Switch as mentioned in below table and then press Reset button or Power cycle to force trigger bootloader at startup. An on-board LED (as mentioned in the below table) will be turned-on to indicate that the boot-loader is running.</li>
-</ol><p class="Element10">
-<strong>Note: </strong>The User LED will also turn on when the bootloader does not find a valid application; i.e. the first word of the application (stack pointer), contains 0xFFFFFFFF.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p><div class="Element63">
-<div class="TableDiv">
-<table cellspacing="0" class="Table1">
-<tr>
-<td class="Element65" valign="top" width="25%">
-<div class="Element66">
-Kit Name (Target)&nbsp;</div></td><td class="Element65" valign="top" width="35%">
-<div class="Element66">
-Switch Name&nbsp;</div></td><td class="Element65" valign="top" width="40%">
-<div class="Element66">
-LED Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM HA1G16A Xplained Pro&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
-&nbsp;</p>
+    PORT_Initialize();
 
-<ol class="Element630">
-<li value="11" class="Element600"><strong>Press </strong>the User Switch on the embedded host board as mentioned in the below table to start programming of the user application</li>
-</ol><p class="Element10">
-&nbsp;</p>
-<div class="Element63">
-<div class="TableDiv">
-<table cellspacing="0" class="Table1">
-<tr>
-<td class="Element65" valign="top" width="25%">
-<div class="Element66">
-Kit Name (Embedded Host)&nbsp;</div></td><td class="Element65" valign="top" width="75%">
-<div class="Element66">
-Switch Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-SW0&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
-&nbsp;</p>
+    <strong><span style="color: #000080">if</span></strong> (<a href="00027.html" target="topic">bootloader_Trigger</a>() == <strong><span style="color: #000080">false</span></strong>)
+    {
+        run_Application();
+    }
 
-<ol class="Element630">
-<li value="12" class="Element600">Once the programming is complete, the target board will be reset. Upon re-start, the boot-loader will jump to the user application.</li>
-</ol><p class="Element10">
-The following message will be displayed on the terminal for the bootloader host application once the programming is complete successfully. </p><p class="Element10" style="text-align: center;">
-<img src="bootloader_host_sdcard_output.png" border="0" alt="" title=""></p><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="13" class="Element600"><strong>If test application is programmed </strong>then the following message will be displayed on the terminal for the target board. Also, an LED will blink on the target board.</li>
-</ol><p class="Element10" style="text-align: center;">
-<img src="test_app_console_output.png" border="0" alt="" title=""></p><p class="Element10">
-&nbsp;</p>
-<div class="Element63">
-<div class="TableDiv">
-<table cellspacing="0" class="Table1">
-<tr>
-<td class="Element65" valign="top" width="25%">
-<div class="Element66">
-Kit Name (Target)&nbsp;</div></td><td class="Element65" valign="top" width="75%">
-<div class="Element66">
-LED Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM HA1G16A Xplained Pro&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="75%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-&nbsp;</p>
+    CLOCK_Initialize();
+</pre></div></div>
 </div>
 </div>
 </div>
@@ -292,7 +95,7 @@ LED0&nbsp;</div></td></tr></table></div></div>
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00006.html" target="topic">Applications Help</a> &gt; I2C Bootloader &gt; <a href="00024.html" target="topic">bootloader_host_sdcard</a> &gt; <a href="00028.html" target="topic">Running The Application</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00000.html" target="topic">FS Bootloaders</a> &gt; <a href="00018.html" target="topic">Library Interface</a> &gt; a) System Functions &gt; <a href="00028.html" target="topic">fs_bootloader::run_Application Function</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -303,10 +106,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00026.html" target="topic">Previous</a> | <a href="00024.html" target="topic">Up</a> | <a href="00035.html" target="topic">Next</a></div>
+<a href="00027.html" target="topic">Previous</a> | <a href="00018.html" target="topic">Up</a> | <a href="00007.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader bootloader_host_sdcard Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: fs_bootloader::run_Application Topic Title: fs_bootloader::run_Application Function)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>Running The Application</title>
+<title>Application Configurations</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00006.html" target="topic">Applications Help</a> &gt; I2C Fail Safe Bootloader &gt; <a href="00047.html" target="topic">bootloader_host_nvm</a> &gt; <a href="00051.html" target="topic">Running The Application</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00050.html" target="topic">UART Bootloader</a> &gt; <a href="00056.html" target="topic">Configuring the Library</a> &gt; <a href="00051.html" target="topic">Application Configurations</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00049.html" target="topic">Previous</a> | <a href="00047.html" target="topic">Up</a> | <a href="00052.html" target="topic">Next</a></div>
+<a href="00055.html" target="topic">Previous</a> | <a href="00056.html" target="topic">Up</a> | <a href="00052.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Fail Safe Bootloader bootloader_host_nvm Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Application Configurations Topic Title: Application Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-Running The Application</div>
+Application Configurations</div>
 </div>
 </div>
 
@@ -48,150 +48,72 @@ Running The Application</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-<p class="Element10">
-Program one of the sample test application image available under <strong>bootloader/apps/i2c_fail_safe_bootloader/bootloader_host_nvm/firmware/src/test_app_images</strong> OR program any other application.&nbsp;</p>
-<p class="Element10">
-Following two test application image hex files are available under bootloader/apps/i2c_fail_safe_bootloader/bootloader_host_nvm/firmware/src/test_app_images </p><div class="Element63">
-<div class="TableDiv">
-<table cellspacing="0" class="Table1">
-<tr>
-<td class="Element65" valign="top" width="23%">
-<div class="Element66">
-Hex File Name&nbsp;</div></td><td class="Element65" valign="top" width="77%">
-<div class="Element66">
-Description&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="23%">
-<div class="Element68">
-image_pattern_hex_sam_e54_bootloader_xpro_app_merged.h&nbsp;</div></td><td class="Element67" valign="top" width="77%">
-<div class="Element68">
-Combined bootloader and application HEX header file. This must be programmed once to program both bootloader and application into the inactive flash bank.&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="23%">
-<div class="Element68">
-image_pattern_hex_sam_e54_xpro.h&nbsp;</div></td><td class="Element67" valign="top" width="77%">
-<div class="Element68">
-Test application HEX header file. The test application HEX file alone can be programmed after the bootloader is copied to the inactive flash bank.&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
-If one of the sample test application image is being programmed then <strong>skip to step 4</strong>. If other application is used then follow the below steps:&nbsp;</p>
+<div class="Element15">
+SAM Device Application System Configuration</div>
 <p class="Element10">
 &nbsp;</p>
-<p class="Element10">
-For generating a combined bootloader and application image HEX follow steps 1, 2 and 3. For generating only the application image HEX follow steps 1 and 3:</p>
-<ol class="Element630">
-<li value="1" class="Element600">Generating application binary - Follow the steps provided under <a href="00005.html" target="topic">I2C Bootloader Application Configurations</a> and then re-generate and build the project.</li>
-<li value="2" class="Element600">Generating bootloader binary and combining it with the application binary - Follow the steps 5-8, provided under <a href="00046.html" target="topic">Running The Application</a> section of the <a href="00042.html" target="topic">fail safe bootloader</a></li>
-<li value="3" class="Element600">Convert the generated binary (which may either be a combined bootloader and application image or only the application image) to a header file containing the image data in a C style array:
-<ul class="Element631">
-<li class="Element601">The bootloader and application combined binary <strong>btl_app_merged.bin </strong>will be generated in the path from where the<strong> btl_app_merge_bin.py</strong> was called from.</li>
-<li class="Element601">On a Windows machine, open the command prompt and launch the <strong><a href="00040.html" target="topic">btl_bin_to_hex_gen.py</a></strong> utility to generate a header file containing the image data in an array.</li>
-</ul></li>
-</ol><p class="Element10">
-python &lt;harmony3_path&gt;<strong>\bootloader\tools\btl_bin_to_hex_gen.py -b &lt;binary_file&gt; -o &lt;hex_file&gt; -d &lt;device&gt;</strong>&nbsp;</p>
-<p class="Element10">
-Refer the <a href="00040.html" target="topic">Bootloader Tools Help</a> section for converting the binary to hex using the btl_bin_to_hex_gen.py utility.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p><p class="Element10" style="text-align: center;">
-<img src="fail_safe_bin_to_hex_gen.png" border="0" alt="" title="">&nbsp;</p><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="4" class="Element600">Next step is to add the application hex header file generated from above steps (OR if the test application is used then the header files are already available under <strong>bootloader/apps/i2c_fail_safe_bootloader/bootloader_host_nvm/firmware/src/test_app_images</strong>) to the I2C embedded host application (bootloader_host_nvm):
-<ul class="Element631">
-<li class="Element601">Open the <strong>bootloader_host_nvm</strong> project (for the appropriate development board) in MPLABX IDE</li>
-<li class="Element601">Open the &quot;user.h&quot; file as shown below:</li>
-</ul></li>
-</ol><p class="Element10" style="text-align: center;">
-<img src="fail_safe_bootloader_host_nvm_user_file_path.png" border="0" alt="" title=""></p><p class="Element10">
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_application_system_config.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<span style="color: #000000"><strong>System Configuration for Application</strong></span></p><p class="Element10">
 &nbsp;</p>
 
 <ul class="Element630">
-<li class="Element600">In the &quot;user.h&quot; file specify the following:
+<li class="Element600"><strong>Generate Fuse Settings:</strong>
 <ul class="Element631">
-<li class="Element601">APP_HEX_HEADER_FILE: Specify the relative path to the generated header file containing the application hex image in an array</li>
-<li class="Element601">APP_I2C_SLAVE_ADDR: Specify the I2C slave address</li>
-<li class="Element601">APP_ERASE_PAGE_SIZE: Specify the erase page size of the target (target = MCU being programmed)</li>
-<li class="Element601">APP_PROGRAM_PAGE_SIZE: Specify the program page size of the target (target = MCU being programmed). The macro can either be set to the program page size or can be set to the size of the erase page size of the target. In the demo example, the macro is set equal to the size of the erase page. On embedded host where RAM is limited, the macro may be set to the actual program page size to reduce the RAM used to hold the program data.</li>
-<li class="Element601">APP_IMAGE_START_ADDR: Specify the user application start address (This value should be same as the application start address specified in Step 1 above). Ensure the bootloader and application are also configured with the same value of application start address. Refer <strong>Bootloader System Configuration </strong>section under <a href="00009.html" target="topic">I2C Bootloader Configurations help</a>. If bank swap feature is enabled, the application start address must be set to 0x80000UL when programming the combined bootloader and application binary to the inactive bank. Once the bootloader is programmed to the inactive bank and only application is being programmed, the address must be set to 0x82000UL.</li>
+<li class="Element601">Fuse settings needs to be disabled for the application which will be boot-loaded as the fuse settings are supposed to be programmed through programming tool from bootloader code.</li>
+<li class="Element601">Also the fuse settings are not programmable through firmware</li>
+<li class="Element601">Enabling the fuse settings also increases the size of the binary when generated through the hex file</li>
+</ul></li>
+<li class="Element600"><span style="color: #000000"><strong>Application Start Address (Hex):</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Start address of the application from where the it will be run</span></li>
+<li class="Element601"><span style="color: #000000">This value should be equal to or greater than the bootloader size</span></li>
+<li class="Element601"><span style="color: #000000">As this value will be used by bootloader to Jump to application at device reset it should match the value provided to bootloader code during generation</span></li>
+<li class="Element601"><span style="color: #000000">After the project is regenerated, the ROM_ORIGIN and ROM_LENGTH are the XC32 linker variables which will be overridden with value provided for <strong>Application Start Address (Hex)</strong> and can be verified under Options for xc32-ld in Project Properties in MPLABX IDE as shown below.</span></li>
 </ul></li>
 </ul><p class="Element10">
 &nbsp;</p>
+<div class="Element15">
+SAM Device Application Settings in MPLAB-X IDE</div>
+<p class="Element10">
+&nbsp;</p>
 <p class="Element10" style="text-align: center;">
-<img src="fail_safe_bootloader_host_nvm_user_file_modification.png" border="0" alt="" title=""></p><p class="Element10">
+<img src="bootloader_application_mplab_settings.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Linker Settings in MPLAB-X</strong>&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_application_mplab_build_settings.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Build Settings for generating Binary</strong></p><p class="Element10">
 &nbsp;</p>
 
-<ol class="Element630">
-<li value="5" class="Element600">Connect a micro USB cable to the DEBUG port.</li>
-<li value="6" class="Element600">Build and program the bootloader_host_nvm application using the MPLAB X IDE</li>
-<li value="7" class="Element600">Make sure the I2C lines (SCL, SDA and GND) are connected between the embedded host board and the target board (the board being programmed)</li>
-<li value="8" class="Element600"><strong>If test application is being programmed</strong>, open a terminal application (Ex.:Tera Term) on the computer. Configure the serial port settings for the console used for the target board:
+<ul class="Element630">
+<li class="Element600"><strong>Preprocessor macro definitions:</strong>
 <ul class="Element631">
-<li class="Element601">Baud : 115200</li>
-<li class="Element601">Data : 8 Bits</li>
-<li class="Element601">Parity : None</li>
-<li class="Element601">Stop : 1 Bit</li>
-<li class="Element601">Flow Control : None</li>
+<li class="Element601">ROM-ORIGIN and ROM_LENGTH are the XC32 linker variables which will be overridden with values provided here</li>
+<li class="Element601">This values are auto populated with value of Application start address provided in MHC after regeneration</li>
 </ul></li>
-<li value="9" class="Element600">On the target board (the board being programmed), press and hold the User Switch as mentioned in below table and then press Reset button or Power cycle to force trigger bootloader at startup. An on-board LED (as mentioned in the below table) will be turned-on to indicate that bootloader code is running on the target.</li>
-</ol><p class="Element10">
-<strong>Note: </strong>The User LED will also turn on when the bootloader does not find a valid application; i.e. the first word of the application (stack pointer), contains 0xFFFFFFFF.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p><div class="Element63">
-<div class="TableDiv">
-<table cellspacing="0" class="Table1">
-<tr>
-<td class="Element65" valign="top" width="25%">
-<div class="Element66">
-Kit Name (Target)&nbsp;</div></td><td class="Element65" valign="top" width="40%">
-<div class="Element66">
-Switch Name&nbsp;</div></td><td class="Element65" valign="top" width="35%">
-<div class="Element66">
-LED Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="10" class="Element600">Press<strong> </strong>the User Switch on the embedded host board to trigger programming of the user application. Once the programming is complete, the on-board LED on the embedded host board will be turned on indicating success.</li>
-</ol><p class="Element10">
-&nbsp;</p>
-<p class="Element10">
-The following table provides the Switch and LED names on Embedded Host </p><div class="Element63">
-<div class="TableDiv">
-<table cellspacing="0" class="Table1">
-<tr>
-<td class="Element65" valign="top" width="25%">
-<div class="Element66">
-Kit Name (Target)&nbsp;</div></td><td class="Element65" valign="top" width="40%">
-<div class="Element66">
-Switch Name&nbsp;</div></td><td class="Element65" valign="top" width="35%">
-<div class="Element66">
-LED Name&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
-<div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td><td class="Element67" valign="top" width="40%">
-<div class="Element68">
-SW0&nbsp;</div></td><td class="Element67" valign="top" width="35%">
-<div class="Element68">
-LED0&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="11" class="Element600">Once the programming is complete, the target board will be reset. Upon re-start, the boot-loader will jump to the user application. <strong>If the test application is programmed</strong> then an LED starts blinking on the target board and the following message will be displayed on the console. The NVM Flash Bank Can be <strong>BANK A or BANK B</strong> based on from where the program is running for <strong>SAM Devices</strong>.</li>
-</ol><p class="Element10" style="text-align: center;">
-<img src="bootloader_i2c_fail_safe_test_app_console1.png" border="0" alt="" title=""></p></div>
+<li class="Element600"><strong>Additional Options:</strong>
+<ul class="Element631">
+<li class="Element601">RAM_ORIGIN and RAM_LENGTH values should be provided for reserving 16 bytes of start of RAM to trigger bootloader from firmware</li>
+<li class="Element601">This is optional and can be ignored if not required</li>
+</ul></li>
+<li class="Element600"><strong>Execute the line after Build:</strong>
+<ul class="Element631">
+<li class="Element601">This option can be used to automatically generate the binary file from hex file once the build is complete</li>
+</ul></li>
+</ul><div class="Element13"><div class="Element12"><pre class="Element12">${MP_CC_DIR}/xc32-objcopy -I ihex -O binary ${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.hex ${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.bin</pre></div></div>
+</div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00006.html" target="topic">Applications Help</a> &gt; I2C Fail Safe Bootloader &gt; <a href="00047.html" target="topic">bootloader_host_nvm</a> &gt; <a href="00051.html" target="topic">Running The Application</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00050.html" target="topic">UART Bootloader</a> &gt; <a href="00056.html" target="topic">Configuring the Library</a> &gt; <a href="00051.html" target="topic">Application Configurations</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -202,10 +124,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00049.html" target="topic">Previous</a> | <a href="00047.html" target="topic">Up</a> | <a href="00052.html" target="topic">Next</a></div>
+<a href="00055.html" target="topic">Previous</a> | <a href="00056.html" target="topic">Up</a> | <a href="00052.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Fail Safe Bootloader bootloader_host_nvm Running The Application Topic Title: Running The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Application Configurations Topic Title: Application Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

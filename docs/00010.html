@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>Bootloader Execution Flow</title>
+<title>Bootloader Framework</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00030.html" target="topic">How The Library Works</a> &gt; <a href="00010.html" target="topic">Bootloader Execution Flow</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00000.html" target="topic">FS Bootloaders</a> &gt; <a href="00010.html" target="topic">Bootloader Framework</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00018.html" target="topic">Previous</a> | <a href="00030.html" target="topic">Up</a> | <a href="00061.html" target="topic">Next</a></div>
+<a href="00000.html" target="topic">Previous</a> | <a href="00000.html" target="topic">Up</a> | <a href="00017.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Bootloader Execution Flow Topic Title: Bootloader Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: FS Bootloader Bootloader Framework Topic Title: Bootloader Framework)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-Bootloader Execution Flow</div>
+Bootloader Framework</div>
 </div>
 </div>
 
@@ -48,54 +48,34 @@ Bootloader Execution Flow</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-<p class="Element10">
-<strong>Bootloader Execution Flow</strong></p>
-<ul class="Element630">
-<li class="Element600">The Bootloader code starts executing on a device Reset</li>
-<li class="Element600">The Bootloader calls the <strong>bootloader_Trigger</strong> routine. If the <strong>bootloader_Trigger</strong> routine returns true, it enters the firmware upgrade mode, otherwise the Bootloader checks if a valid application (first 4 bytes of application are not equal to 0xFFFFFFFF) is programmed. If a valid application is found it starts running the application.</li>
-<li class="Element600">The Bootloader performs Flash erase/program operations while in the firmware upgrade mode</li>
-</ul><p class="Element10">
+<p class="Element10" style="text-align: center;">
+<img src="fs_bootloader_block_diagram.png" border="0" alt="" title=""></p><p class="Element10">
 &nbsp;</p>
 <p class="Element10" style="text-align: center;">
-<img src="basic_bootloader_execution_flow.png" border="0" alt="" title="">&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
+<strong>Bootloader Block Diagram</strong></p><p class="Element10">
 &nbsp;</p>
 <div class="Element15">
-Firmware Upgrade Mode Execution Flow:</div>
-<p class="Element10">
-There are two state machines. One state machine processes the I2C events, parses the recevied I2C packets and triggers flash operations. The second state machine performs the flash operations (read/write/verify).</p><div class="Element15">
-Bootloader I2C Events Processor Task Flow</div>
+Bootloader Task</div>
 
 <ul class="Element630">
-<li class="Element600">Bootloader I2C Events Processor Task polls and processes the I2C events.</li>
-<li class="Element600">This task is responsible for parsing and responding to the bootloader commands</li>
-<li class="Element600">Once complete packet is received it sets the BUSY flag in the status byte and also sets appropriate flags for the Flash Programming Task to execute the command (Erase/Program/Verify)</li>
-</ul><p class="Element10" style="text-align: center;">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="BL_I2C_EventsProcess_state_machine.png" border="0" alt="" title="">&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-&nbsp;</p>
-<div class="Element15">
-Flash Programming Task Flow</div>
-
-<ul class="Element630">
-<li class="Element600">This task is responsible for executing the Erase/Program and Verify commands</li>
-<li class="Element600">This task is non-blocking. It submits a Erase/Program request and then checks the status of flash operation whenever it gets a chance to run</li>
-<li class="Element600">Once the flash operation is complete, it clears the BUSY flag and sets appropriate error flags (if any) in the status byte.</li>
-</ul><p class="Element10" style="text-align: center;">
-<img src="bl_flash_state_machine.png" border="0" alt="" title=""></p></div>
+<li class="Element600">Uses File System Service to read the Binary file from the media</li>
+<li class="Element600">Erases the Flash memory</li>
+<li class="Element600">Programs the hex file records into Flash memory</li>
+<li class="Element600">Jumps to the Application</li>
+<li class="Element600">Runs in Cooperative mode with other tasks in the system</li>
+<li class="Element600">Current Supported Communication interfaces are
+<ul class="Element631">
+<li class="Element601"><strong>USB Host MSD</strong></li>
+<li class="Element601"><strong>SDCARD</strong></li>
+</ul></li>
+</ul></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00030.html" target="topic">How The Library Works</a> &gt; <a href="00010.html" target="topic">Bootloader Execution Flow</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00000.html" target="topic">FS Bootloaders</a> &gt; <a href="00010.html" target="topic">Bootloader Framework</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -106,10 +86,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00018.html" target="topic">Previous</a> | <a href="00030.html" target="topic">Up</a> | <a href="00061.html" target="topic">Next</a></div>
+<a href="00000.html" target="topic">Previous</a> | <a href="00000.html" target="topic">Up</a> | <a href="00017.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Bootloader Execution Flow Topic Title: Bootloader Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: FS Bootloader Bootloader Framework Topic Title: Bootloader Framework)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

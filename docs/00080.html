@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>SAM Device Layout</title>
+<title>Bootloader Linker Scripts</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00062.html" target="topic">UART Bootloader</a> &gt; <a href="00076.html" target="topic">How The Library Works</a> &gt; Bootloader Memory Layout &gt; <a href="00080.html" target="topic">SAM Device Layout</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00005.html" target="topic">Unified Bootloaders</a> &gt; <a href="00081.html" target="topic">Configuring the Library</a> &gt; <a href="00080.html" target="topic">Bootloader Linker Scripts</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00084.html" target="topic">Previous</a> | <a href="00076.html" target="topic">Up</a> | <a href="00079.html" target="topic">Next</a></div>
+<a href="00078.html" target="topic">Previous</a> | <a href="00081.html" target="topic">Up</a> | <a href="00075.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Memory Layout SAM Topic Title: SAM Device Layout)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Unified Bootloader Bootloader Linker Scripts Topic Title: Bootloader Linker Scripts)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-SAM Device Layout</div>
+Bootloader Linker Scripts</div>
 </div>
 </div>
 
@@ -48,50 +48,263 @@ SAM Device Layout</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-<p class="Element10">
-The placement of the Bootloader and the application in flash memory should be such that the application will not overwrite the Bootloader, and the Bootloader can properly program the application when it is downloaded.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p>
+
 <ul class="Element630">
-<li class="Element600">Bootloader code is always placed at start of the flash address</li>
-<li class="Element600">The application code can be placed anywhere after the bootloader end address. The application start address should be Aligned to Erase Unit Size</li>
-<li class="Element600">As the Bootloader code requires the application start address to be mentioned at compile time, it should match in both the application and bootloader</li>
+<li class="Element600"><span style="color: #000000">Bootloader library uses a custom linker script generated through MHC for PIC32M devices</span></li>
+<li class="Element600"><span style="color: #000000">The values populated in the linker script are based on the Bootloader component MHC configurations</span></li>
+</ul><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600">The vector address of a given interrupt is calculated using Exception Base (EBASE) CPU register, which provides a 4 KB page-aligned base address value located in the kernel segment (kseg) address space.</li>
+<li class="Element600">The MIPS32 core requires that Interrupt Vector Tables (IVTs) be placed on a 4 KB boundary</li>
+<li class="Element600">The address is calculated by using EBASE and VS values. The VS bits provide the vector spacing between adjacent vector addresses</li>
+<li class="Element600">Each vector in the table is created as an output section located at an absolute address based on values of the _ebase_address and _vector_spacing symbols</li>
+</ul><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600">Default Reset Address for all the PIC32M devices is <strong>0xBFC00000.</strong></li>
+<li class="Element600">Bootloader reset handler and startup code are placed in <strong>kseg1_boot_mem</strong> region.</li>
+<li class="Element600">Size of the bootloader may vary between different bootloaders</li>
+<li class="Element600">Below are few configurations to be taken care in the linker script</li>
 </ul><p class="Element10">
 &nbsp;</p>
 <div class="Element15">
-Note</div>
-<p class="Element10">
-The start address and the end address of the Bootloader and the application will vary for different devices. Refer to respective Data sheets for details of Flash memory layout.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p><div class="Element15">
-Basic Memory Layout</div>
+PIC32MZ Devices</div>
+
+<ul class="Element630">
+<li class="Element600">Bootloader code resides completely in Boot Flash memory</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element13"><div class="Element12"><pre class="Element12">PROVIDE(_vector_spacing = 0x0001);
+PROVIDE(_ebase_address = 0x9FC01000);
+
+_RESET_ADDR                 = 0xBFC00000;
+
+kseg0_program_mem     (rx)  : ORIGIN = 0x9FC01000, LENGTH = 45056
+kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x480
+kseg1_boot_mem_4B0          : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0
+...
+...
+
+<i><span style="color: #008000">/* Boot Sections */</span></i>
+.reset _RESET_ADDR :
+{
+  KEEP(*(.reset))
+  KEEP(*(.reset.startup))
+} &gt; kseg1_boot_mem
+
+.cache_init :
+{
+  *(.cache_init)
+  *(.cache_init.*)
+} &gt; kseg1_boot_mem_4B0
+
+
+<i><span style="color: #008000">/* Interrupt vector table with vector offsets */</span></i>
+.vectors _ebase_address + 0x200 :
+{
+  <i><span style="color: #008000">/*  Symbol __vector_offset_n points to .vector_n if it exists,
+   *  otherwise points to the default handler. The
+   *  vector_offset_init.o module then provides a .data section
+   *  containing values used to initialize the vector-offset SFRs
+   *  in the crt0 startup code.
+   */</span></i>
+  . = ALIGN(4) ;
+  __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default);
+  KEEP(*(.vector_0))
+
+  ...
+  ...
+  <i><span style="color: #008000">/* Default interrupt handler */</span></i>
+  . = ALIGN(4) ;
+  __vector_offset_default = . - _ebase_address;
+  KEEP(*(.vector_default))
+} &gt; kseg0_program_mem</pre></div></div>
 <p class="Element10">
 &nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="bootloader_basic_memory_layout_sam.png" border="0" alt="" title=""></p><p class="Element10">
+<p class="Element10">
 &nbsp;</p>
 <div class="Element15">
-Fail Safe Update Memory layout</div>
+Using Both Boot Flash Panels on PIC32MZ device</div>
+
+<ul class="Element630">
+<li class="Element600">For PIC32MZ devices, with two 80 KB Boot Flash panels, the Bootloader may or may not fit entirely in one Boot Flash panel.</li>
+<li class="Element600">In order to fit some of the Bootloaders, the linker script makes the two Boot Flash panels look like one contiguous Boot Flash memory. Unimplemented areas are blocked using a fill command to the linker</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element13"><div class="Element12"><pre class="Element12">kseg0_program_mem     (rx)  : ORIGIN = 0x9FC01000, LENGTH = 0x2FF00 - 0x1000
+
+<i><span style="color: #008000">/* Bootloader needs to be placed in both the Boot Flash Panels (lower and upper boot alias).
+   Below region is used to fill 0xFF in reserved space between these two panles.
+*/</span></i>
+protected_reg               : ORIGIN = 0x9FC14000, LENGTH = 0x20000-0x14000
+
+...
+...
+
+SECTIONS
+{
+  .fill1 :
+  {
+    FILL(0xFF);
+    . = ORIGIN(protected_reg) + LENGTH(protected_reg) - 1;
+    BYTE(0xFF)
+  } &gt; protected_reg
+}
+</pre></div></div>
+<p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+PIC32MX Devices</div>
+
+<ul class="Element630">
+<li class="Element600">For devices with <strong>3 KB of Boot Flash</strong>, only the reset handler is placed in Boot Flash, with the Interrupt Vector Table (IVT) and bootloader code is placed in Program Flash starting from <strong>(0x9D000000)</strong></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element13"><div class="Element12"><pre class="Element12">PROVIDE(_vector_spacing = 0x0001);
+PROVIDE(_ebase_address = 0x9D000000);
+
+_RESET_ADDR                    = 0xBFC00000;
+
+kseg0_program_mem     (rx)  : ORIGIN = 0x9D000000, LENGTH = 32768 <i><span style="color: #008000">/* All C files will be located here */</span></i>
+kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x490
+</pre></div></div>
+<div class="Element13"><div class="Element12"><pre class="Element12">...
+...
+
+<i><span style="color: #008000">/* Boot Sections */</span></i>
+.reset _RESET_ADDR :
+{
+  KEEP(*(.reset))
+  KEEP(*(.reset.startup))
+} &gt; kseg1_boot_mem
+...
+
+.vector_0 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 0) :
+{
+   KEEP(*(.vector_0))
+} &gt; kseg0_program_mem
+ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &lt;= (_vector_spacing &lt;&lt; 5), &quot;function at exception vector 0 too large&quot;)
+
+.vector_1 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 1) :
+{
+   KEEP(*(.vector_1))
+} &gt; kseg0_program_mem
+ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &lt;= (_vector_spacing &lt;&lt; 5), &quot;function at exception vector 1 too large&quot;)
+...
+...
+</pre></div></div>
 <p class="Element10">
 &nbsp;</p>
 
 <ul class="Element630">
-<li class="Element600">Fail Safe update mode is only supported for devices which have dual bank support in flash.</li>
-<li class="Element600">Bootloader code is always placed at start of both the flash banks as upon reset the device runs from either of bank as per configuration. Refer to device data sheet for more details on flash banks</li>
-<li class="Element600">Application start address should always be the actual physical address being mapped after reset. Bootloader takes care of placing the application in opposite bank.</li>
+<li class="Element600">For devices with <strong>12 KB of Boot Flash</strong>, the Interrupt Vector Table (IVT) and the reset hanlder are placed in Boot Flash, and the remaining portion of the Bootloader is placed inside the Program Flash starting from <strong>(0x9D000000)</strong></li>
 </ul><p class="Element10">
 &nbsp;</p>
+<div class="Element13"><div class="Element12"><pre class="Element12">PROVIDE(_vector_spacing = 0x0001);
+PROVIDE(_ebase_address = 0x9FC01000);
+
+_RESET_ADDR                    = 0xBFC00000;
+
+kseg0_program_mem     (rx)  : ORIGIN = 0x9D000000, LENGTH = 32768 <i><span style="color: #008000">/* All C files will be located here */</span></i>
+kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x490
+exception_mem               : ORIGIN = 0x9FC01000, LENGTH = 0x1000 <i><span style="color: #008000">/* All Vectors will be stored here */</span></i>
+
+...
+...
+
+<i><span style="color: #008000">/* Boot Sections */</span></i>
+.reset _RESET_ADDR :
+{
+  KEEP(*(.reset))
+  KEEP(*(.reset.startup))
+} &gt; kseg1_boot_mem
+...
+
+.vector_0 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 0) :
+{
+   KEEP(*(.vector_0))
+} &gt; exception_mem
+ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &lt;= (_vector_spacing &lt;&lt; 5), &quot;function at exception vector 0 too large&quot;)
+
+.vector_1 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 1) :
+{
+   KEEP(*(.vector_1))
+} &gt; exception_mem
+ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &lt;= (_vector_spacing &lt;&lt; 5), &quot;function at exception vector 1 too large&quot;)
+...
+...
+</pre></div></div>
 <p class="Element10">
 &nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="bootloader_fail_safe_upate_memory_layout_sam.png" border="0" alt="" title=""></p></div>
+<div class="Element15">
+PIC32MK Devices</div>
+
+<ul class="Element630">
+<li class="Element600">Devices with <strong>12 KB of Boot Flash</strong>, the Interrupt Vector Table (IVT) and the reset hanlder are placed in Boot Flash, and the remaining portion of the Bootloader is placed inside the Program Flash starting from <strong>(0x9D000000)</strong></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element13"><div class="Element12"><pre class="Element12">PROVIDE(_vector_spacing = 0x0001);
+PROVIDE(_ebase_address = 0x9FC01000);
+
+_RESET_ADDR                    = 0xBFC00000;
+
+kseg0_program_mem     (rx)  : ORIGIN = 0x9D000000, LENGTH = 32768 <i><span style="color: #008000">/* All C files will be located here */</span></i>
+kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x480
+exception_mem               : ORIGIN = 0x9FC01000, LENGTH = 0x1000 <i><span style="color: #008000">/* All Vectors will be stored here */</span></i>
+
+...
+...
+
+<i><span style="color: #008000">/* Boot Sections */</span></i>
+.reset _RESET_ADDR :
+{
+  KEEP(*(.reset))
+  KEEP(*(.reset.startup))
+} &gt; kseg1_boot_mem
+...
+
+<i><span style="color: #008000">/* Interrupt vector table with vector offsets */</span></i>
+.vectors _ebase_address + 0x200 :
+{
+  <i><span style="color: #008000">/*  Symbol __vector_offset_n points to .vector_n if it exists,
+   *  otherwise points to the default handler. The
+   *  vector_offset_init.o module then provides a .data section
+   *  containing values used to initialize the vector-offset SFRs
+   *  in the crt0 startup code.
+   */</span></i>
+  . = ALIGN(4) ;
+  __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default);
+  KEEP(*(.vector_0))
+
+  ...
+  ...
+  <i><span style="color: #008000">/* Default interrupt handler */</span></i>
+  . = ALIGN(4) ;
+  __vector_offset_default = . - _ebase_address;
+  KEEP(*(.vector_default))
+} &gt; exception_mem
+...
+...
+</pre></div></div>
+<p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Note</div>
+
+<ul class="Element630">
+<li class="Element600">Device configuration bits should be updated by bootloader only</li>
+<li class="Element600">The bootloader linker script is generated using generic templates for the device family. Generated linker script should be modified if there any changes or modifications to the specific device being used.</li>
+</ul></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00062.html" target="topic">UART Bootloader</a> &gt; <a href="00076.html" target="topic">How The Library Works</a> &gt; Bootloader Memory Layout &gt; <a href="00080.html" target="topic">SAM Device Layout</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00005.html" target="topic">Unified Bootloaders</a> &gt; <a href="00081.html" target="topic">Configuring the Library</a> &gt; <a href="00080.html" target="topic">Bootloader Linker Scripts</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -102,10 +315,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00084.html" target="topic">Previous</a> | <a href="00076.html" target="topic">Up</a> | <a href="00079.html" target="topic">Next</a></div>
+<a href="00078.html" target="topic">Previous</a> | <a href="00081.html" target="topic">Up</a> | <a href="00075.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Memory Layout SAM Topic Title: SAM Device Layout)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Unified Bootloader Bootloader Linker Scripts Topic Title: Bootloader Linker Scripts)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

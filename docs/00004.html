@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>I2C Bootloader</title>
+<title>Bootloader Framework</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00004.html" target="topic">Bootloader Framework</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00104.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00032.html" target="topic">Next</a></div>
+<a href="00003.html" target="topic">Previous</a> | <a href="00003.html" target="topic">Up</a> | <a href="00050.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Topic Title: I2C Bootloader)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Bootloader Optimized Framework Topic Title: Bootloader Framework)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-I2C Bootloader</div>
+Bootloader Framework</div>
 </div>
 </div>
 
@@ -48,59 +48,72 @@ I2C Bootloader</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-</div>
-</div>
-<a name="546F70696373"></a><div class="Element14">
-Topics</div>
-<div class="Element11">
-<div class="Element10">
-<div class="Element212">
-<div class="TableDiv">
-<table cellspacing="0" class="Table0">
-<tr>
-<td class="Element200" valign="top" width="35%">
-<div class="Element201">
-Name&nbsp;</div></td><td class="Element204" valign="top" width="65%">
-<div class="Element205">
-Description&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00032.html" target="topic">Introduction</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This library provides<span style="color: #000000"> software I2C Bootloader Library available on the Microchip family of Micro-controllers</span>&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00030.html" target="topic">How The Library Works</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This section describes how the I2C Bootloader Library Works.&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00029.html" target="topic">Configuring the Library</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-<span style="color: #000000">This section provides information on how to configure Bootloader library and application.</span>&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00033.html" target="topic">Library Interface</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This section describes the Application Programming Interface (API) functions of the Bootloader library<span style="color: #0000FF">.</span><br>Refer to each section for a detailed description.&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00040.html" target="topic">Bootloader Tools Help</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This section describes the usage of bootloader host tools&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00006.html" target="topic">Applications Help</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This section provides help for the I2C Bootloader applications.&nbsp;</div></td></tr></table></div></div>
-</div>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_block_diagram.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Bootloader Block Diagram</strong></p><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+The Bootloader framework is divided into 3 sub-systems&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<ol class="Element630">
+<li value="1" class="Element600"><strong>Communication Task:</strong>
+<ul class="Element631">
+<li class="Element601">This task is responsible for receiving data from host PC or Embedded Host through the selected communication interface</li>
+<li class="Element601">The task keeps polling for data to be received when bootloader is in idle mode</li>
+<li class="Element601">The task also validates the incoming packet from host with expected header information</li>
+<li class="Element601">Once the packet reception is completed communication task gives control to command processor</li>
+</ul></li>
+</ol><p class="Element10">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="2" class="Element600"><strong>Command Processor:</strong>
+<ul class="Element631">
+<li class="Element601">This task processes the commands received from communication tasks and provides response back to host accordingly</li>
+<li class="Element601">If the command received is a program command it gives control to the programming task</li>
+</ul></li>
+</ol><p class="Element10">
+&nbsp;</p>
+
+<ol class="Element630">
+<li value="3" class="Element600"><strong>Programming Task:</strong>
+<ul class="Element631">
+<li class="Element601">This task is responsible to program the internal flash memory with data packet received</li>
+<li class="Element601">The task uses the NVM peripheral library to perform the Unlock/Erase/Write Operations</li>
+<li class="Element601">The task also invokes communication task in parallel to receive next packet while waiting for the flash operation to complete for SAM Devices</li>
+</ul></li>
+</ol><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Key Features</div>
+
+<ul class="Element630">
+<li class="Element600">Simple and Optimized Bootloader</li>
+<li class="Element600"><strong>For SAM Devices</strong>
+<ul class="Element631">
+<li class="Element601">Supports simultaneous Flash memory write and reception of the next block of data, Achieved by loading bootloader into flash and running from SRAM</li>
+<li class="Element601">Has capability to self update as it is running from SRAM</li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_ram_layout.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600">At reset the bootloader Reset handler copies the entire bootloader firmware into SRAM from Start location and start executing from SRAM</li>
+<li class="Element600">Once the application is called from bootloader, applications startup code takes control over SRAM and starts executing</li>
+</ul></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00004.html" target="topic">Bootloader Framework</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -111,10 +124,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00104.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00032.html" target="topic">Next</a></div>
+<a href="00003.html" target="topic">Previous</a> | <a href="00003.html" target="topic">Up</a> | <a href="00050.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Topic Title: I2C Bootloader)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Bootloader Optimized Framework Topic Title: Bootloader Framework)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

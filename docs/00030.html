@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>How The Library Works</title>
+<title>Application Configurations</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00030.html" target="topic">How The Library Works</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00029.html" target="topic">I2C Bootloader</a> &gt; <a href="00039.html" target="topic">Configuring the Library</a> &gt; <a href="00030.html" target="topic">Application Configurations</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00032.html" target="topic">Previous</a> | <a href="00004.html" target="topic">Up</a> | <a href="00015.html" target="topic">Next</a></div>
+<a href="00034.html" target="topic">Previous</a> | <a href="00039.html" target="topic">Up</a> | <a href="00037.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader How The Library Works Topic Title: How The Library Works)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Application Configurations Topic Title: Application Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-How The Library Works</div>
+Application Configurations</div>
 </div>
 </div>
 
@@ -49,64 +49,67 @@ How The Library Works</div>
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
 <p class="Element10">
-This section describes how the I2C Bootloader Library Works.</p></div>
-</div>
-<a name="546F70696373"></a><div class="Element14">
-Topics</div>
-<div class="Element11">
-<div class="Element10">
-<div class="Element212">
-<div class="TableDiv">
-<table cellspacing="0" class="Table0">
-<tr>
-<td class="Element200" valign="top" width="35%">
-<div class="Element201">
-Name&nbsp;</div></td><td class="Element204" valign="top" width="65%">
-<div class="Element205">
-Description&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00015.html" target="topic">Bootloader Protocol</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This section describes the I2C bootloader protocol and the supported commands&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00018.html" target="topic">Bootloader Trigger Methods</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This section describes different methods used to enter bootloader&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00010.html" target="topic">Bootloader Execution Flow</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This section describes the bootloader execution flow.&nbsp;</div></td></tr></table></div></div>
-</div>
-</div>
-<a name="426F6F746C6F61646572204D656D6F7279204C61796F7574"></a><div class="Element14">
-Bootloader Memory Layout</div>
-<div class="Element11">
-<div class="Element10">
-<div class="Element212">
-<div class="TableDiv">
-<table cellspacing="0" class="Table0">
-<tr>
-<td class="Element200" valign="top" width="35%">
-<div class="Element201">
-Name&nbsp;</div></td><td class="Element204" valign="top" width="65%">
-<div class="Element205">
-Description&nbsp;</div></td></tr><tr>
-<td class="Element202" valign="top" width="35%">
-<div class="Element203">
-<a href="00061.html" target="topic">SAM Device Layout</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
-<div class="Element207">
-This Section describes the memory layout for bootloader on SAM Devices&nbsp;</div></td></tr></table></div></div>
-</div>
+<strong>SAM Device Application Settings in System Configuration</strong> </p><p class="Element10" style="text-align: center;">
+<img src="application_project_graph.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<span style="color: #000000"><strong>System Configuration for Application</strong></span></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Disable Fuse Settings:</strong>
+<ul class="Element631">
+<li class="Element601">Fuse settings needs to be disabled for the application which will be boot-loaded as the fuse settings are supposed to be programmed through programming tool from bootloader code.</li>
+<li class="Element601">Also the fuse settings are not programmable through firmware</li>
+<li class="Element601">Enabling the fuse settings also increases the size of the binary when generated through the hex file</li>
+<li class="Element601">Launch MHC and uncheck the <strong>Generate Fuse Settings</strong> option under the System block in MHC</li>
+<li class="Element601">When updating the <strong>bootloader </strong>itself, make sure that the fuse settings for the bootloader application are also <strong>disabled</strong>.</li>
+</ul></li>
+<li class="Element600"><strong>Specify the <span style="color: #000000">Application Start Address:</strong></span>
+<ul class="Element631">
+<li class="Element601">Specify the <span style="color: #000000">Start address from where the application will run under the <strong>Application Start Address (Hex) </strong>option in System block in MHC.</span></li>
+<li class="Element601"><span style="color: #000000">This value should be equal to or greater than the bootloader size and must be aligned to the erase unit size on that device.</span></li>
+<li class="Element601"><span style="color: #000000">As this value will be used by bootloader to Jump to application at device reset it should match the value provided to bootloader code</span></li>
+<li class="Element601"><span style="color: #000000">The<strong> Application Start Address (Hex)</strong> will be used to generate XC32 compiler settings to place the code at intended address</span></li>
+<li class="Element601">After the project is regenerated, the ROM_ORIGIN and ROM_LENGTH are the XC32 linker variables which will be overridden with value provided for <span style="color: #000000"><strong> Application Start Address (Hex)</strong> and can be verified under Options for xc32-ld in Project Properties in MPLABX IDE as shown below.</span></li>
+</ul></li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="mplabx_settings.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+SAM Device Application Settings in MPLABX IDE</div>
+
+<ul class="Element630">
+<li class="Element600"><strong>Specifing post build option to generate binary file:</strong></li>
+</ul><p class="Element10">
+The below option can be specified in <strong>Project Properties &gt; Building &gt; Execute this line after build</strong>, to automatically generate the binary file from hex file once the build is complete </p><div class="Element13"><div class="Element12"><pre class="Element12">${MP_CC_DIR}\xc32-objcopy -I ihex -O binary &quot;${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.hex&quot; &quot;${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.bin&quot;</pre></div></div>
+
+<ul class="Element630">
+<li class="Element600">The generated binary file can directly be copied on to the SD card when using <span class="Element145">bootloader_host_sdcard</span> host application</li>
+<li class="Element600">The generated binary file will serve as an input to the <strong>btl_bin_to_hex_gen.py</strong> to generate a C style array containing HEX data when the <span class="Element145">bootloader_host_nvm</span> host application is used</li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="pp_building.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Build Settings for generating Binary</strong>&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Additional settings (Optional):</strong>
+<ul class="Element631">
+<li class="Element601">RAM_ORIGIN and RAM_LENGTH values should be provided for reserving 16 bytes of start of RAM to trigger bootloader from firmware. Under Project Properties, expand options for <strong>xc32-ld </strong>and define the values for RAM_ORIGIN and RAM_LENGTH under <strong>Additional options</strong>.</li>
+<li class="Element601">This is optional and can be ignored if not required</li>
+</ul></li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="pp_xc32ld.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Linker Settings in MPLABX IDE</strong></p></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00030.html" target="topic">How The Library Works</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00029.html" target="topic">I2C Bootloader</a> &gt; <a href="00039.html" target="topic">Configuring the Library</a> &gt; <a href="00030.html" target="topic">Application Configurations</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -117,10 +120,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00032.html" target="topic">Previous</a> | <a href="00004.html" target="topic">Up</a> | <a href="00015.html" target="topic">Next</a></div>
+<a href="00034.html" target="topic">Previous</a> | <a href="00039.html" target="topic">Up</a> | <a href="00037.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader How The Library Works Topic Title: How The Library Works)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Application Configurations Topic Title: Application Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

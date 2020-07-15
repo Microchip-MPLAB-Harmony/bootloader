@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>Bootloader Tools Help</title>
+<title>How The Library Works</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00040.html" target="topic">Bootloader Tools Help</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00029.html" target="topic">I2C Bootloader</a> &gt; <a href="00040.html" target="topic">How The Library Works</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00058.html" target="topic">Previous</a> | <a href="00004.html" target="topic">Up</a> | <a href="00006.html" target="topic">Next</a></div>
+<a href="00041.html" target="topic">Previous</a> | <a href="00029.html" target="topic">Up</a> | <a href="00036.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Tools Help Topic Title: Bootloader Tools Help)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader How The Library Works Topic Title: How The Library Works)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-Bootloader Tools Help</div>
+How The Library Works</div>
 </div>
 </div>
 
@@ -48,104 +48,65 @@ Bootloader Tools Help</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-<div class="Element63">
+<p class="Element10">
+This section describes how the I2C Bootloader Library Works.</p></div>
+</div>
+<a name="546F70696373"></a><div class="Element14">
+Topics</div>
+<div class="Element11">
+<div class="Element10">
+<div class="Element212">
 <div class="TableDiv">
-<table cellspacing="0" class="Table1">
+<table cellspacing="0" class="Table0">
 <tr>
-<td class="Element65" valign="top" width="7%">
-<div class="Element66">
-Python Script&nbsp;</div></td><td class="Element65" valign="top" width="63%">
-<div class="Element66">
-Description&nbsp;</div></td><td class="Element65" valign="top" width="30%">
-<div class="Element66">
-Preconditions&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="7%">
-<div class="Element68">
-<strong>bootloader/tools/btl_bin_to_hex_gen.py</strong>&nbsp;</div></td><td class="Element67" valign="top" width="63%">
-<div class="Element68">
-</p>
-<ul class="Element630">
-<li class="Element600">This script should be used to convert the binary output to a C style array containing Hex output. It is mainly when programming the application using the bootloader_host_nvm host application</li>
-<li class="Element600">If size of the input binary file is not aligned to device erase boundary it appends 0xFF to the binary to make it aligned and then generates the Hex output</li>
-<li class="Element600">User must specify the binary file to convert (-b), hex output file (-o) and the device (-d)</li>
-</ul><p class="Element68">
-&nbsp;</div></td><td class="Element67" valign="top" width="30%">
-<div class="Element68">
-</p>
-<ul class="Element630">
-<li class="Element600">Compatible with<strong> Python 3.x</strong></li>
-</ul><p class="Element68">
-&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="7%">
-<div class="Element68">
-<strong>bootloader/tools/btl_app_merge_bin.py </strong>&nbsp;</div></td><td class="Element67" valign="top" width="63%">
-<div class="Element68">
-</p>
-<ul class="Element630">
-<li class="Element600">This script should be used to merge the bootloader binary and application binary</li>
-<li class="Element600">It creates a merged binary output where bootloader is placed from start and the application will be placed at the offset passed as parameter</li>
-<li class="Element600">If the application offset is not equal to end of bootloader offset it fills the gap with 0xFF until the application offset</li>
-<li class="Element600">The merged binary will be used by btl_host.py as input for fail safe update</li>
-</ul><p class="Element68">
-&nbsp;</div></td><td class="Element67" valign="top" width="30%">
-<div class="Element68">
-</p>
-<ul class="Element630">
-<li class="Element600">Compatible with <strong>Python 3.x </strong></li>
-</ul><p class="Element68">
-&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10">
-Example usage:&nbsp;</p>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10">
-<strong>btl_bin_to_hex_gen.py</strong>&nbsp;</p>
-<p class="Element10">
-&nbsp;</p><div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_bin_to_hex_gen.py --help</pre></div></div>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="bin_to_hex_gen_tool_help.png" border="0" alt="" title="">&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-&nbsp;</p>
-<p class="Element10">
-python &lt;harmony3_path&gt;<strong>\bootloader\tools\btl_bin_to_hex_gen.py -b &lt;binary_file&gt; -o &lt;hex_file&gt; -d &lt;device&gt;</strong>&nbsp;</p>
-<p class="Element10">
-&nbsp;</p><div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_bin_to_hex_gen.py -b &lt;harmony3_path&gt;\bootloader\apps\i2c_bootloader\test_app\firmware\sam_d20_xpro.X\dist\sam_d20_xpro\production\sam_d20_xpro.X.production.bin -o &lt;harmony3_path&gt;\bootloader\apps\i2c_bootloader\bootloader_host_nvm\firmware\src\test_app_images\image_pattern_hex_sam_d20_xpro.h -d samd2x</pre></div></div>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="bin_to_hex_gen_tool_example.png" border="0" alt="" title=""></p><p class="Element10">
-&nbsp;</p>
-<div class="Element15">
-Fail Safe Update Mode Usage Example</div>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10">
-<strong>btl_app_merge_bin.py</strong>&nbsp;</p>
-<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_app_merge_bin.py --help</pre></div></div>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="bootloader_app_merge_help.png" border="0" alt="" title=""></p><p class="Element10">
-&nbsp;</p>
-<p class="Element10">
-&nbsp;</p>
-<div class="Element13"><div class="Element12"><pre class="Element12">python &lt;harmony3_path&gt;\bootloader\tools\btl_app_merge_bin.py -o 0x2000 -b &lt;harmony3_path&gt;\bootloader\apps\i2c_bootloader\fail_safe_bootloader\bootloader\firmware\sam_e54_xpro.X\dist\sam_e54_xpro\production\sam_e54_xpro.X.production.bin -a &lt;harmony3_path&gt;\bootloader\apps\i2c_bootloader\fail_safe_bootloader\test_app\firmware\sam_e54_xpro.X\dist\sam_e54_xpro\production\sam_e54_xpro.X.production.bin</pre></div></div>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="bootloader_uart_fail_safe_app_merger_console.png" border="0" alt="" title=""></p><p class="Element10">
-Note: The bootloader and application combined binary <strong>btl_app_merged.bin </strong>will be generated in the path from where the<strong> btl_app_merge_bin.py</strong> was called from.</p></div>
+<td class="Element200" valign="top" width="35%">
+<div class="Element201">
+Name&nbsp;</div></td><td class="Element204" valign="top" width="65%">
+<div class="Element205">
+Description&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="35%">
+<div class="Element203">
+<a href="00036.html" target="topic">Bootloader Protocol</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+This section describes the I2C bootloader protocol and the supported commands&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="35%">
+<div class="Element203">
+<a href="00038.html" target="topic">Bootloader Trigger Methods</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+This section describes different methods used to enter bootloader&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="35%">
+<div class="Element203">
+<a href="00033.html" target="topic">Bootloader Execution Flow</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+This section describes the bootloader execution flow.&nbsp;</div></td></tr></table></div></div>
+</div>
+</div>
+<a name="426F6F746C6F61646572204D656D6F7279204C61796F7574"></a><div class="Element14">
+Bootloader Memory Layout</div>
+<div class="Element11">
+<div class="Element10">
+<div class="Element212">
+<div class="TableDiv">
+<table cellspacing="0" class="Table0">
+<tr>
+<td class="Element200" valign="top" width="35%">
+<div class="Element201">
+Name&nbsp;</div></td><td class="Element204" valign="top" width="65%">
+<div class="Element205">
+Description&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="35%">
+<div class="Element203">
+<a href="00049.html" target="topic">SAM Device Layout</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+This Section describes the memory layout for bootloader on SAM Devices&nbsp;</div></td></tr></table></div></div>
+</div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00040.html" target="topic">Bootloader Tools Help</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00029.html" target="topic">I2C Bootloader</a> &gt; <a href="00040.html" target="topic">How The Library Works</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -156,10 +117,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00058.html" target="topic">Previous</a> | <a href="00004.html" target="topic">Up</a> | <a href="00006.html" target="topic">Next</a></div>
+<a href="00041.html" target="topic">Previous</a> | <a href="00029.html" target="topic">Up</a> | <a href="00036.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Tools Help Topic Title: Bootloader Tools Help)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader How The Library Works Topic Title: How The Library Works)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

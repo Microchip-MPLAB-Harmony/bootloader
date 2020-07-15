@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>Hardware Setup</title>
+<title>Bootloader Sizing and Considerations</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00006.html" target="topic">Applications Help</a> &gt; I2C Bootloader &gt; <a href="00019.html" target="topic">bootloader_host_nvm</a> &gt; <a href="00022.html" target="topic">Hardware Setup</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00000.html" target="topic">FS Bootloaders</a> &gt; <a href="00012.html" target="topic">Configuring the Library</a> &gt; <a href="00022.html" target="topic">Bootloader Sizing and Considerations</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00023.html" target="topic">Previous</a> | <a href="00019.html" target="topic">Up</a> | <a href="00020.html" target="topic">Next</a></div>
+<a href="00016.html" target="topic">Previous</a> | <a href="00012.html" target="topic">Up</a> | <a href="00018.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader bootloader_host_nvm Hardware Setup Topic Title: Hardware Setup)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: FS Bootloader Sizing and Considerations Topic Title: Bootloader Sizing and Considerations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-Hardware Setup</div>
+Bootloader Sizing and Considerations</div>
 </div>
 </div>
 
@@ -48,195 +48,55 @@ Hardware Setup</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
+<div class="Element15">
+Bootloader Sizes</div>
+
+<ul class="Element630">
+<li class="Element600">The example Bootloaders provided have optimization settings for use by most MPLAB XC32 C/C++ Compiler users, which is –O1.</li>
+<li class="Element600">However, in terms of size, this option does not produce the most optimal code. Turning on the –Os will reduce the size of the Bootloader.</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Note</div>
+
+<ul class="Element630">
+<li class="Element600">The bootloader size for all the configurations will be rounded off to the nearest erase unit size</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Size change considerations (For SAM and PIC32MX/MK devices)</div>
 <p class="Element10">
-<strong>Note:</strong> The I2C slave under the Hardware Setup section, refers to the evaluation kit running either the <a href="00007.html" target="topic">bootloader</a>.&nbsp;</p>
+It must be ensured that the user application’s memory region does not overlap with the memory region reserved for the Bootloader.&nbsp;</p>
 <p class="Element10">
 &nbsp;</p>
-<ol class="Element630">
-<li value="1" class="Element600"><strong>Project sam_c21n_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamc21n-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM C21N Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM5 PAD[0]/PB16) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamc21n-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM C21N Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM5 PAD[1]/PB17) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamc21n-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM C21N Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamc21n-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM C21N Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
+<p class="Element10">
+The Bootloader generated by MHC should be considered a starting point for your product’s Bootloader. As such, adding new features may cause the Bootloader to exceed the default size calculated.&nbsp;</p>
+<p class="Element10">
 &nbsp;</p>
-
-<ol class="Element630">
-<li value="2" class="Element600"> <strong>Project sam_d11_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMD11-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D11 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM1 PAD[0]/PA22) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMD11-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D11 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM1 PAD[1]/PA23) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMD11-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D11 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMD11-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D11 Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
+<p class="Element10">
+If the size of the Bootloader changes, the following steps should be performed to adjust both the Bootloader and the application in order to make sure that both fit and make best use of the device memory:</p>
+<ul class="Element630">
+<li class="Element600">Increase the <strong>Bootloader Size</strong> in Bootloader MHC config menu to some approximate value and regenerate the code</li>
+<li class="Element600">Determine the new ending address of the Bootloader. This can be done by using either the .map file generated by MPLAB X IDE with the respective Compiler, or by using the ELFViewer plug-in for MPLAB X IDE</li>
+<li class="Element600">Round the size from the map file to the nearest <strong>ERASE unit size</strong> value</li>
+<li class="Element600">Enter the new value again in <strong>Bootloader Size</strong> in Bootloader MHC config menu</li>
+<li class="Element600">Change the Application start Address from system settings in both Bootloader and application projects accordingly if it is falling inside bootloader region</li>
+<li class="Element600">Recompile both the Bootloader and the application, as well as test operations.</li>
+</ul><p class="Element10">
 &nbsp;</p>
-
-<ol class="Element630">
-<li value="3" class="Element600"> <strong>Project sam_d20_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAMD20-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D20 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM2 PAD[0]/PA08) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAMD20-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D20 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM2 PAD[1]/PA09) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAMD20-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D20 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAMD20-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D20 Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="4" class="Element600"> <strong>Project sam_d21_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D21 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM2 PAD[0]/PA08) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D21 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM2 PAD[1]/PA09) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D21 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsamd21-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM D21 Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="5" class="Element600"> <strong>Project sam_da1_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM DA1 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM2 PAD[0]/PA08) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM DA1 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM2 PAD[1]/PA09) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM DA1 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMDA1-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM DA1 Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="6" class="Element600"> <strong>Project sam_e54_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsame54-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM E54 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM7 PAD[0]/PD08) on EXT3 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsame54-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM E54 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM7 PAD[1]/PD09) on EXT3 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsame54-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM E54 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/atsame54-xpro');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM E54 Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="7" class="Element600"> <strong>Project sam_ha1_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMHA1G16A-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM HA1G16A Xplained Pro</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM2 PAD[0]/PA08) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMHA1G16A-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM HA1G16A Xplained Pro</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM2 PAD[1]/PA09) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMHA1G16A-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM HA1G16A Xplained Pro</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/ATSAMHA1G16A-XPRO');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM HA1G16A Xplained Pro</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="8" class="Element600"><strong>Project sam_l10_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320204');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L10 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM1 PAD[0]/PA16) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320204');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L10 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM1 PAD[1]/PA17) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320204');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L10 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/DevelopmentTools/ProductDetails/dm320204');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L10 Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="9" class="Element600"><strong>Project sam_l21_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML21-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L21 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM2 PAD[0]/PA08) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML21-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L21 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM2 PAD[1]/PA09) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML21-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L21 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML21-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L21 Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol><p class="Element10">
-&nbsp;</p>
-
-<ol class="Element630">
-<li value="10" class="Element600"><strong>Project sam_l22_xpro.X</strong>
-<ul class="Element631">
-<li class="Element601"><strong>Hardware Used</strong>
-<ul class="Element632">
-<li class="Element602"><a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML22-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L22 Xplained Pro Evaluation Kit</a></li>
-</ul></li>
-<li class="Element601"><strong>Hardware Setup</strong>
-<ul class="Element632">
-<li class="Element602">Connect the I2C SDA line of the I2C slave to Pin 11 (SERCOM5 PAD[0]/PB30) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML22-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L22 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect the I2C SCL line of the I2C slave to Pin 12 (SERCOM5 PAD[1]/PB31) on EXT1 of <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML22-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L22 Xplained Pro Evaluation Kit</a></li>
-<li class="Element602">Connect a ground wire between the <a href="#" onclick="openExternalLink('https://www.microchip.com/developmenttools/ProductDetails/ATSAML22-XPRO-B');"><img src="indicator_external_link.gif" border="0" alt="" title="">SAM L22 Xplained Pro Evaluation Kit</a> and the I2C slave</li>
-<li class="Element602">Connect a micro USB cable to the DEBUG USB port</li>
-</ul></li>
-</ul></li>
-</ol></div>
+<p class="Element10">
+If only the Application start address needs to be modified for application then perform following steps:</p>
+<ul class="Element630">
+<li class="Element600">Change the Application start Address from system settings in both Bootloader and application projects accordingly</li>
+<li class="Element600">Recompile both the Bootloader and the application, as well as test operations</li>
+</ul></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00006.html" target="topic">Applications Help</a> &gt; I2C Bootloader &gt; <a href="00019.html" target="topic">bootloader_host_nvm</a> &gt; <a href="00022.html" target="topic">Hardware Setup</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00000.html" target="topic">FS Bootloaders</a> &gt; <a href="00012.html" target="topic">Configuring the Library</a> &gt; <a href="00022.html" target="topic">Bootloader Sizing and Considerations</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -247,10 +107,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00023.html" target="topic">Previous</a> | <a href="00019.html" target="topic">Up</a> | <a href="00020.html" target="topic">Next</a></div>
+<a href="00016.html" target="topic">Previous</a> | <a href="00012.html" target="topic">Up</a> | <a href="00018.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader bootloader_host_nvm Hardware Setup Topic Title: Hardware Setup)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: FS Bootloader Sizing and Considerations Topic Title: Bootloader Sizing and Considerations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

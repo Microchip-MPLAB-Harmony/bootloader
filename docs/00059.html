@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>i2c_bootloader::bootloader_Trigger Function</title>
+<title>System Level Execution Flow</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00033.html" target="topic">Library Interface</a> &gt; a) System Functions &gt; <a href="00059.html" target="topic">i2c_bootloader::bootloader_Trigger Function</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00050.html" target="topic">UART Bootloader</a> &gt; <a href="00060.html" target="topic">How The Library Works</a> &gt; Bootloader Execution Flow &gt; <a href="00059.html" target="topic">System Level Execution Flow</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00033.html" target="topic">Previous</a> | <a href="00033.html" target="topic">Up</a> | <a href="00060.html" target="topic">Next</a></div>
+<a href="00063.html" target="topic">Previous</a> | <a href="00060.html" target="topic">Up</a> | <a href="00058.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: i2c_bootloader::bootloader_Trigger Topic Title: i2c_bootloader::bootloader_Trigger Function)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Execution Flow System Level Topic Title: System Level Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-i2c_bootloader::bootloader_Trigger Function</div>
+System Level Execution Flow</div>
 </div>
 </div>
 
@@ -48,98 +48,51 @@ i2c_bootloader::bootloader_Trigger Function</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-<p class="Element10">
-This function can be used to check for a External HW trigger or Internal firmware trigger to execute bootloader at startup.&nbsp;</p>
-<p class="Element10">
-This function has to be implemented by the bootloader application to override the WEAK implementation in bootloader.c&nbsp;</p>
-<p class="Element10">
-The checks in trigger function should happen before any system resources are initialized apart for PORT, As the same system resource can be Re-initialized by the application if bootloader jumps to it and may cause issues.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p>
+<div class="Element15">
+Basic Bootloader System Level Execution Flow</div>
+
 <ul class="Element630">
-<li class="Element600"><strong>External Trigger: </strong> Can be achieved by triggering a GPIO_PIN at startup.</li>
-<li class="Element600"><strong>Firmware Trigger: </strong> Application firmware which wants to execute bootloader at startup needs to fill first n bytes of ram location with a request pattern. The Number of bytes to be reserved for storing the pattern has to be configured in bootloader component configuration in MHC.</li>
+<li class="Element600">The Bootloader code starts executing on a device Reset</li>
+<li class="Element600">If there are no conditions to enter the firmware upgrade mode, the Bootloader starts executing the user application</li>
+<li class="Element600">The Bootloader performs Flash erase/program operations while in the firmware upgrade mode</li>
 </ul><p class="Element10">
 &nbsp;</p>
-<div class="Element13"><div class="Element12"><pre class="Element12">    uint32_t *sram = (uint32_t *)BTL_TRIGGER_RAM_START;
-
-    sram[0] = 0x5048434D;
-    sram[1] = 0x5048434D;
-    sram[2] = 0x5048434D;
-    sram[3] = 0x5048434D;</pre></div></div>
-</div>
-</div>
-<a name="43"></a><div class="Element99">
-C</div>
-<div class="Element101"><div class="Element100"><pre class="Element100"><strong><span style="color: #000080">bool</span></strong> <strong><span style="color: #000000">bootloader_Trigger</span></strong>();</pre></div></div>
-<a name="507265636F6E646974696F6E73"></a><div class="Element14">
-Preconditions</div>
-<div class="Element11">
-<div class="Element10">
+<p class="Element10" style="text-align: center;">
+<img src="basic_bootloader_execution_flow.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
 <p class="Element10">
-PORT/PIO Initialize must have been called.</p></div>
-</div>
-<a name="52657475726E73"></a><div class="Element14">
-Returns</div>
-<div class="Element11">
-<div class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Fail Safe Update Bootloader System Level Execution Flow (PIC32M Devices)</div>
 
 <ul class="Element630">
-<li class="Element600">True : If any of trigger is detected.</li>
-<li class="Element600">False : If no trigger is detected..</li>
-</ul></div>
-</div>
-<a name="4578616D706C65"></a><div class="Element14">
-Example</div>
-<div class="Element11">
-<div class="Element10">
-<div class="Element13"><div class="Element12"><pre class="Element12">
-<strong><span style="color: #000080">#define</span></strong> BTL_TRIGGER_PATTERN  0x5048434D
-
-<strong><span style="color: #000080">static</span></strong> uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START;
-
-<strong><span style="color: #000080">bool</span></strong> bootloader_Trigger(<strong><span style="color: #000080">void</span></strong>)
-{
-    <i><span style="color: #008000">// Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter</span></i>
-    <i><span style="color: #008000">// Bootloader.</span></i>
-    <strong><span style="color: #000080">if</span></strong> (BTL_TRIGGER_PATTERN == ramStart[0] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[1] &amp;&amp;
-        BTL_TRIGGER_PATTERN == ramStart[2] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[3])
-    {
-        ramStart[0] = 0;
-        <strong><span style="color: #000080">return</span></strong> <strong><span style="color: #000080">true</span></strong>;
-    }
-
-    <i><span style="color: #008000">// Check for Switch press to enter Bootloader</span></i>
-    <strong><span style="color: #000080">if</span></strong> (SWITCH_Get() == 0)
-    {
-        <strong><span style="color: #000080">return</span></strong> <strong><span style="color: #000080">true</span></strong>;
-    }
-
-    <strong><span style="color: #000080">return</span></strong> <strong><span style="color: #000080">false</span></strong>;
-}
-
-<strong><span style="color: #000080">void</span></strong> SYS_Initialize()
-{
-    NVMCTRL_Initialize();
-
-    PORT_Initialize();
-
-    <strong><span style="color: #000080">if</span></strong> (bootloader_Trigger() == <strong><span style="color: #000080">false</span></strong>)
-    {
-        <a href="00060.html" target="topic">run_Application</a>();
-    }
-
-    CLOCK_Initialize();
-}
-</pre></div></div>
-</div>
+<li class="Element600">Bootloader always maps <strong>Bank 1 to lower region</strong> at boot up irrespective of cause for reset <strong>(Hard/Soft)</strong>.
+<ul class="Element631">
+<li class="Element601">This is required because if<strong> Swap bit was set </strong>and a<strong> soft reset </strong>was triggered the <strong>value is retained</strong> but if <strong>Swap bit was set</strong> and <strong>Hard reset</strong> was triggered the <strong>value is cleared</strong></li>
+</ul></li>
+<li class="Element600">Once Swap bit is cleared and Bank 1 is mapped to lower region it performs below operation
+<ul class="Element631">
+<li class="Element601">If Bank 1 serial number is <strong>greater than</strong> Bank 2 serial number it just continues for trigger check or runs application from Bank 1, As Bank 1 is already mapped to lower region in above step (<strong>Bank 1 is Active Bank</strong>)</li>
+<li class="Element601">If Bank 2 serial number is <strong>greater than</strong> Bank 1 serial number it <strong>maps Bank 2 to lower region</strong> by setting the Swap bit and proceeds to trigger check or runs application from Bank 2 (<strong>Bank 2 is Active Bank</strong>)</li>
+</ul></li>
+<li class="Element600">Whenever Bootlader programs new application in the <strong>Inactive bank</strong> and <strong>swap bank</strong> command is received it reads the serial number from Active bank, increments by 1 and then writes to Bank 2 serial
+<ul class="Element631">
+<li class="Element601"><strong>Bank 2 Serial number = Bank 1 serial number + 1</strong></li>
+<li class="Element601">Start address of inactive bank is equal start of mid of flash</li>
+</ul></li>
+<li class="Element600"><strong>If the Host application requests to update the Active Bank and the address falls into the active bank serial sector it sends an error response and aborts the programming operation</strong></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="fail_safe_update_bootloader_execution_flow.png" border="0" alt="" title=""></p></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00033.html" target="topic">Library Interface</a> &gt; a) System Functions &gt; <a href="00059.html" target="topic">i2c_bootloader::bootloader_Trigger Function</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00050.html" target="topic">UART Bootloader</a> &gt; <a href="00060.html" target="topic">How The Library Works</a> &gt; Bootloader Execution Flow &gt; <a href="00059.html" target="topic">System Level Execution Flow</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -150,10 +103,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00033.html" target="topic">Previous</a> | <a href="00033.html" target="topic">Up</a> | <a href="00060.html" target="topic">Next</a></div>
+<a href="00063.html" target="topic">Previous</a> | <a href="00060.html" target="topic">Up</a> | <a href="00058.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: i2c_bootloader::bootloader_Trigger Topic Title: i2c_bootloader::bootloader_Trigger Function)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Execution Flow System Level Topic Title: System Level Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

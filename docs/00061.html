@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>SAM Device Layout</title>
+<title>Library Interface</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00030.html" target="topic">How The Library Works</a> &gt; Bootloader Memory Layout &gt; <a href="00061.html" target="topic">SAM Device Layout</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00050.html" target="topic">UART Bootloader</a> &gt; <a href="00061.html" target="topic">Library Interface</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00010.html" target="topic">Previous</a> | <a href="00030.html" target="topic">Up</a> | <a href="00029.html" target="topic">Next</a></div>
+<a href="00066.html" target="topic">Previous</a> | <a href="00050.html" target="topic">Up</a> | <a href="00072.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: SAM Device Layout Topic Title: SAM Device Layout)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Library Interface Topic Title: Library Interface)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-SAM Device Layout</div>
+Library Interface</div>
 </div>
 </div>
 
@@ -49,136 +49,61 @@ SAM Device Layout</div>
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
 <p class="Element10">
-<strong>Description</strong>&nbsp;</p>
+This section describes the Application Programming Interface (API) functions of the Bootloader library<span style="color: #0000FF">.</span>&nbsp;</p>
 <p class="Element10">
-The placement of the Bootloader and the application in flash memory should be such that the application does not overwrite the Bootloader, and the Bootloader can properly program the application when it is downloaded.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p>
-<ul class="Element630">
-<li class="Element600">Bootloader code is always placed at start of the flash address</li>
-<li class="Element600">The application code can be placed anywhere after the bootloader end address. Refer the below table for the bootloader size on each supported device.</li>
-<li class="Element600">As the Bootloader code requires the application start address to be mentioned at compile time, it should match in both the application and bootloader</li>
-</ul><p class="Element10">
-&nbsp;</p>
-<div class="Element63">
+Refer to each section for a detailed description.</p></div>
+</div>
+<a name="61292053797374656D2046756E6374696F6E73"></a><div class="Element14">
+a) System Functions</div>
+<div class="Element11">
+<div class="Element10">
+<div class="Element212">
 <div class="TableDiv">
-<table cellspacing="0" class="Table1">
+<table cellspacing="0" class="Table0">
 <tr>
-<td class="Element65" valign="top" width="33%">
-<div class="Element66">
-Device&nbsp;</div></td><td class="Element65" valign="top" width="43%">
-<div class="Element66">
-Bootloader size aligned to Erase Unit boundary&nbsp;</div></td><td class="Element65" valign="top" width="24%">
-<div class="Element66">
-Erase Unit Size (bytes)&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM C21n&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM D11&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM D20&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM D21&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM DA1&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM E54&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x2000&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-8192&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM L10&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM L11&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM L21&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="33%">
-<div class="Element68">
-SAM L22&nbsp;</div></td><td class="Element67" valign="top" width="43%">
-<div class="Element68">
-0x800&nbsp;</div></td><td class="Element67" valign="top" width="24%">
-<div class="Element68">
-256&nbsp;</div></td></tr></table></div></div>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10">
-<strong>Note</strong>&nbsp;</p>
-<p class="Element10">
-The start address and the end address of the Bootloader and the application will vary for different devices. Refer to respective Data sheets for details of Flash memory layout.&nbsp;</p>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10">
-<strong>Basic Memory Layout</strong>&nbsp;</p>
-<p class="Element10">
-&nbsp;</p><p class="Element10" style="text-align: center;">
-<img src="bootloader_basic_memory_layout_sam.png" border="0" alt="" title="">&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-&nbsp;</p><div class="Element15">
-Fail Safe Update Memory layout</div>
-<p class="Element10">
-&nbsp;</p>
-
-<ul class="Element630">
-<li class="Element600">Fail Safe update mode is only supported for devices which have dual bank support in flash.</li>
-<li class="Element600">Bootloader code is always placed at start of both the flash banks as upon reset the device runs from either of bank as per configuration. Refer to device data sheet for more details on flash banks</li>
-<li class="Element600">Application start address should always be the offset from actual physical address being mapped after reset. Bootloader takes care of placing the application in opposite bank.</li>
-</ul><p class="Element10">
-&nbsp;</p>
-<p class="Element10">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="bootloader_fail_safe_upate_memory_layout_sam.png" border="0" alt="" title=""></p></div>
+<td class="Element200" valign="top" width="10%" style="white-space: nowrap;">
+<div class="Element201">
+ &nbsp;</div></td><td class="Element200" valign="top" width="25%">
+<div class="Element201">
+Name&nbsp;</div></td><td class="Element204" valign="top" width="65%">
+<div class="Element205">
+Description&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="10%" style="white-space: nowrap;">
+<div class="Element203">
+<img src="indicator_method.gif" border="0" alt="" title="">&nbsp;</div></td><td class="Element202" valign="top" width="25%">
+<div class="Element203">
+<a href="00072.html" target="topic">bootloader_Tasks</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+Starts bootloader execution.&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="10%" style="white-space: nowrap;">
+<div class="Element203">
+<img src="indicator_method.gif" border="0" alt="" title="">&nbsp;</div></td><td class="Element202" valign="top" width="25%">
+<div class="Element203">
+<a href="00073.html" target="topic">bootloader_Trigger</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+Checks if Bootloader has to be executed at startup.&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="10%" style="white-space: nowrap;">
+<div class="Element203">
+<img src="indicator_method.gif" border="0" alt="" title="">&nbsp;</div></td><td class="Element202" valign="top" width="25%">
+<div class="Element203">
+<a href="00074.html" target="topic">run_Application</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+Runs the programmed application at startup.&nbsp;</div></td></tr><tr>
+<td class="Element202" valign="top" width="10%" style="white-space: nowrap;">
+<div class="Element203">
+<img src="indicator_method.gif" border="0" alt="" title="">&nbsp;</div></td><td class="Element202" valign="top" width="25%">
+<div class="Element203">
+<a href="00071.html" target="topic">bootloader_ProgramFlashBankSelect</a>&nbsp;</div></td><td class="Element206" valign="top" width="65%">
+<div class="Element207">
+Selects Appropriate Program Flash Bank after reset.&nbsp;</div></td></tr></table></div></div>
+</div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00030.html" target="topic">How The Library Works</a> &gt; Bootloader Memory Layout &gt; <a href="00061.html" target="topic">SAM Device Layout</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00050.html" target="topic">UART Bootloader</a> &gt; <a href="00061.html" target="topic">Library Interface</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -189,10 +114,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00010.html" target="topic">Previous</a> | <a href="00030.html" target="topic">Up</a> | <a href="00029.html" target="topic">Next</a></div>
+<a href="00066.html" target="topic">Previous</a> | <a href="00050.html" target="topic">Up</a> | <a href="00072.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: SAM Device Layout Topic Title: SAM Device Layout)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Library Interface Topic Title: Library Interface)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

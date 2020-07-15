@@ -29,7 +29,7 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00002.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00000.html" target="topic">Next</a></div>
+<a href="00002.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00003.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
 <a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Bootloader Introduction Topic Title: Introduction)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
@@ -58,7 +58,108 @@ Introduction</div>
 <li class="Element600"><span style="color: #000000">Firmware upgrades</span></li>
 <li class="Element600"><span style="color: #000000">Application integrity</span></li>
 <li class="Element600"><span style="color: #000000">Starting the application</span></li>
-</ul></div>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+<span style="color: #000000">Following table provides summary on supported bootloaders</span>&nbsp;</p>
+<div class="Element63">
+<div class="TableDiv">
+<table cellspacing="0" class="Table1">
+<tr>
+<td class="Element65" valign="top" width="10%">
+<div class="Element66">
+Category&nbsp;</div></td><td class="Element65" valign="top" width="10%">
+<div class="Element66">
+Bootloader protocols&nbsp;</div></td><td class="Element65" valign="top" width="80%">
+<div class="Element66">
+Description&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00003.html" target="topic">Optimized</a>&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00050.html" target="topic">UART</a>&nbsp;</div></td><td class="Element67" valign="top" width="80%">
+<div class="Element68">
+</p>
+<ul class="Element630">
+<li class="Element600">Supported on SAM and PIC32M devices</li>
+<li class="Element600">Uses Harmony 3 UART PLIB to communicate</li>
+<li class="Element600">Has capability to self update as it is running from SRAM for SAM Devices</li>
+<li class="Element600">Supports Fail Safe update</li>
+<li class="Element600">Takes <strong>Binary File</strong> as input</li>
+<li class="Element600">Uses <strong>command line host script</strong> to receive binary from Host PC</li>
+</ul><p class="Element68">
+&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00003.html" target="topic">Optimized</a>&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00029.html" target="topic">I2C</a>&nbsp;</div></td><td class="Element67" valign="top" width="80%">
+<div class="Element68">
+</p>
+<ul class="Element630">
+<li class="Element600">Supported Only on CortexM0+ and CortexM4 based SAM Devices</li>
+<li class="Element600">Uses Harmony 3 I2C PLIB to communicate</li>
+<li class="Element600">Has capability to self update as it is running from SRAM for SAM Devices</li>
+<li class="Element600">Supports Fail Safe update</li>
+<li class="Element600">Takes<strong> Binary File</strong> as input</li>
+<li class="Element600">Receives Binary from an <strong>I2C Embedded Host Device</strong></li>
+</ul><p class="Element68">
+&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00005.html" target="topic">Unified</a>&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00005.html" target="topic">USB Device HID</a>&nbsp;</div></td><td class="Element67" valign="top" width="80%">
+<div class="Element68">
+</p>
+<ul class="Element630">
+<li class="Element600">Supported on SAM and PIC32M devices</li>
+<li class="Element600">Uses Harmony 3 USB Device HID Driver to communicate</li>
+<li class="Element600">Takes <strong>Normalized Hex File</strong> as input</li>
+<li class="Element600">Uses<strong> Unified Host application</strong> to receive the hex file from Host PC</li>
+</ul><p class="Element68">
+&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00005.html" target="topic">Unified</a>&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00005.html" target="topic">UDP</a>&nbsp;</div></td><td class="Element67" valign="top" width="80%">
+<div class="Element68">
+</p>
+<ul class="Element630">
+<li class="Element600">Supported on SAM and PIC32M devices</li>
+<li class="Element600">Uses Harmony 3 TCIP Stack to communicate</li>
+<li class="Element600">Takes <strong>Normalized Hex File</strong> as input</li>
+<li class="Element600">Uses<strong> Unified Host application</strong> to receive the hex file from Host PC</li>
+</ul><p class="Element68">
+&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00000.html" target="topic">FS</a>&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00000.html" target="topic">USB Host MSD</a>&nbsp;</div></td><td class="Element67" valign="top" width="80%">
+<div class="Element68">
+</p>
+<ul class="Element630">
+<li class="Element600">Supported on SAM and PIC32M devices</li>
+<li class="Element600">Uses Harmony 3 File System Service to communicate</li>
+<li class="Element600">Takes <strong>Binary File</strong> as input</li>
+</ul><p class="Element68">
+&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00000.html" target="topic">FS</a>&nbsp;</div></td><td class="Element67" valign="top" width="10%">
+<div class="Element68">
+<a href="00000.html" target="topic">SDCARD</a>&nbsp;</div></td><td class="Element67" valign="top" width="80%">
+<div class="Element68">
+</p>
+<ul class="Element630">
+<li class="Element600">Supported on SAM and PIC32M devices</li>
+<li class="Element600">Uses Harmony 3 File System Service to communicate</li>
+<li class="Element600">Takes <strong>Binary File</strong> as input</li>
+</ul><p class="Element68">
+&nbsp;</div></td></tr></table></div></div>
+</div>
 </div>
 </div>
 <!-- End Page Content -->
@@ -76,7 +177,7 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00002.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00000.html" target="topic">Next</a></div>
+<a href="00002.html" target="topic">Previous</a> | <a href="00002.html" target="topic">Up</a> | <a href="00003.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
 <a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Bootloader Introduction Topic Title: Introduction)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>

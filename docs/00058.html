@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>i2c_bootloader::bootloader_Start Function</title>
+<title>Firmware Upgrade Mode Execution Flow</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00033.html" target="topic">Library Interface</a> &gt; a) System Functions &gt; <a href="00058.html" target="topic">i2c_bootloader::bootloader_Start Function</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00050.html" target="topic">UART Bootloader</a> &gt; <a href="00060.html" target="topic">How The Library Works</a> &gt; Bootloader Execution Flow &gt; <a href="00058.html" target="topic">Firmware Upgrade Mode Execution Flow</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00060.html" target="topic">Previous</a> | <a href="00033.html" target="topic">Up</a> | <a href="00040.html" target="topic">Next</a></div>
+<a href="00059.html" target="topic">Previous</a> | <a href="00060.html" target="topic">Up</a> | <a href="00056.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: i2c_bootloader::bootloader_Start Topic Title: i2c_bootloader::bootloader_Start Function)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Execution Flow Firmware Upgrade Mode Topic Title: Firmware Upgrade Mode Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-i2c_bootloader::bootloader_Start Function</div>
+Firmware Upgrade Mode Execution Flow</div>
 </div>
 </div>
 
@@ -48,56 +48,74 @@ i2c_bootloader::bootloader_Start Function</div>
 <a name="PageContent"></a><div class="Element58">
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
-<p class="Element10">
-This function can be used to start bootloader execution.&nbsp;</p>
-<p class="Element10">
-The function continuously waits for the I2C commands from the bootloader host and performs flash Erase/Program/Verify operations&nbsp;</p>
-<p class="Element10">
-Once the complete application is received, programmed and verified successfully, it resets the device to jump into programmed application.&nbsp;</p>
-<p class="Element10">
-Before Jumping into application it clears the initial 16 bytes of ram memory so that the bootloader is not triggered at reset in case application has previously filled it to have a internal firmware trigger.</p></div>
-</div>
-<a name="43"></a><div class="Element99">
-C</div>
-<div class="Element101"><div class="Element100"><pre class="Element100"><strong><span style="color: #000080">void</span></strong> <strong><span style="color: #000000">bootloader_Start</span></strong>();</pre></div></div>
-<a name="507265636F6E646974696F6E73"></a><div class="Element14">
-Preconditions</div>
-<div class="Element11">
-<div class="Element10">
-<p class="Element10">
-<a href="00059.html" target="topic">bootloader_Trigger</a>() must be called to check for bootloader triggers at startup.</p></div>
-</div>
-<a name="52657475726E73"></a><div class="Element14">
-Returns</div>
-<div class="Element11">
-<div class="Element10">
-<p class="Element10">
-None</p></div>
-</div>
-<a name="52656D61726B73"></a><div class="Element14">
-Remarks</div>
-<div class="Element11">
-<div class="Element10">
-<p class="Element10">
-This function never returns.</p></div>
-</div>
-<a name="4578616D706C65"></a><div class="Element14">
-Example</div>
-<div class="Element11">
-<div class="Element10">
-<div class="Element13"><div class="Element12"><pre class="Element12">
-    SYS_Initialize( NULL );
+<div class="Element15">
+Bootloader Task Flow</div>
 
-    bootloader_Start();
-</pre></div></div>
-</div>
+<ul class="Element630">
+<li class="Element600">Bootloader task is the main task which calls the 3 sub-tasks in a forever loop.</li>
+<li class="Element600">It always calls the communication task to poll for command packets from host</li>
+<li class="Element600">Once complete packet is received it calls Command task to process the received command</li>
+<li class="Element600">If the command received was a data command it calls programming task to flash the application</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="bootloader_task_execution_flow.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Communication Task Flow</div>
+
+<ul class="Element630">
+<li class="Element600">This task is used to receive the data bytes from host PC</li>
+<li class="Element600">If there are valid GUARD bytes received at start of packet it proceeds further to receive the whole packet or else reports error and waits for next command</li>
+<li class="Element600">All bytes of the command frame must be sent within 100 ms of each other. After 100 ms of idle time, incomplete command is discarded and bootloader goes back to waiting for a new Command.</li>
+<li class="Element600">This behavior allows host to re-synchronize in the case of synchronization loss.</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="communication_task_execution_flow.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Command Task Flow</div>
+
+<ul class="Element630">
+<li class="Element600">This task processes the packet received for supported commands</li>
+<li class="Element600">If the received command is a DATA command, it sets <strong>ready_to_flash</strong> flag so that the bootloader task can call programming task</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="command_task_execution_flow.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Programming Task Flow</div>
+
+<ul class="Element630">
+<li class="Element600">This task performs flash operations on the received data</li>
+<li class="Element600"><strong>For SAM Devices</strong>
+<ul class="Element631">
+<li class="Element601">As the bootloader is running from RAM, While waiting for flash operations to complete it calls <strong>communication task </strong>to receive the next command in parallel</li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="programming_task_execution_flow_sam.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>For PIC32M Devices</strong></li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="programming_task_execution_flow_pic32m.png" border="0" alt="" title=""></p></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00033.html" target="topic">Library Interface</a> &gt; a) System Functions &gt; <a href="00058.html" target="topic">i2c_bootloader::bootloader_Start Function</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00050.html" target="topic">UART Bootloader</a> &gt; <a href="00060.html" target="topic">How The Library Works</a> &gt; Bootloader Execution Flow &gt; <a href="00058.html" target="topic">Firmware Upgrade Mode Execution Flow</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -108,10 +126,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00060.html" target="topic">Previous</a> | <a href="00033.html" target="topic">Up</a> | <a href="00040.html" target="topic">Next</a></div>
+<a href="00059.html" target="topic">Previous</a> | <a href="00060.html" target="topic">Up</a> | <a href="00056.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: i2c_bootloader::bootloader_Start Topic Title: i2c_bootloader::bootloader_Start Function)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Execution Flow Firmware Upgrade Mode Topic Title: Firmware Upgrade Mode Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

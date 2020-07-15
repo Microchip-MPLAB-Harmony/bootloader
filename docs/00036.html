@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>Building The Application</title>
+<title>Bootloader Protocol</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00006.html" target="topic">Applications Help</a> &gt; I2C Bootloader &gt; <a href="00035.html" target="topic">test_app</a> &gt; <a href="00036.html" target="topic">Building The Application</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00029.html" target="topic">I2C Bootloader</a> &gt; <a href="00040.html" target="topic">How The Library Works</a> &gt; <a href="00036.html" target="topic">Bootloader Protocol</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00035.html" target="topic">Previous</a> | <a href="00035.html" target="topic">Up</a> | <a href="00038.html" target="topic">Next</a></div>
+<a href="00040.html" target="topic">Previous</a> | <a href="00040.html" target="topic">Up</a> | <a href="00038.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader test_app Building The Application Topic Title: Building The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Bootloader Protocol Topic Title: Bootloader Protocol)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-Building The Application</div>
+Bootloader Protocol</div>
 </div>
 </div>
 
@@ -49,85 +49,186 @@ Building The Application</div>
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
 <p class="Element10">
-The parent folder for all the MPLAB X projects for this application is given below: </p><div class="Element63">
-<div class="TableDiv">
-<table cellspacing="0" class="Table1">
-<tr>
-<td class="Element65" valign="top" width="25%">
-<div class="Element66">
-Application Path&nbsp;</div></td><td class="Element65" valign="top" width="75%">
-<div class="Element66">
-bootloader/apps/<a href="00033.html" target="topic">i2c_bootloader</a>/test_app/firmware&nbsp;</div></td></tr></table></div></div>
+This section describes the I2C bootloader commands. Each command argument is of 4 bytes and must be sent in <strong>big-endian (MSB first)</strong> format.&nbsp;</p>
 <p class="Element10">
 &nbsp;</p>
 <p class="Element10">
-<span style="color: #000000">To build the application, refer the following table and open the appropriate project file in the MPLAB X IDE.</span> </p><div class="Element63">
+<strong><u>Unlock Command (0xA0):</u></strong>&nbsp;</p>
+<ul class="Element630">
+<li class="Element600">Unlock command is used to specify the application start address and size of the application. Unlock command must be issued before issuing any other command.</li>
+<li class="Element600">Payload:
+<ul class="Element631">
+<li class="Element601">Arg 0 - Application start address. The start address is device dependent and must be aligned to an Erase Unit boundary which is also device dependent.</li>
+<li class="Element601">Arg 1 - Application size. It must be rounded off to the nearest erase unit size .</li>
+</ul></li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="unlock_command_range.png" border="0" alt="" title=""></p><div class="Element63">
 <div class="TableDiv">
 <table cellspacing="0" class="Table1">
 <tr>
-<td class="Element65" valign="top" width="25%">
+<td class="Element65" valign="top" width="35%">
 <div class="Element66">
-Project Name&nbsp;</div></td><td class="Element65" valign="top" width="75%">
+Device&nbsp;</div></td><td class="Element65" valign="top" width="41%">
 <div class="Element66">
-Description&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+Application Start Address (see Note 1)&nbsp;</div></td><td class="Element65" valign="top" width="25%">
+<div class="Element66">
+Erase Unit Size (bytes)&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
 <div class="Element68">
-sam_c21n_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM C21n&nbsp;</div></td><td class="Element67" valign="top" width="41%">
 <div class="Element68">
-SAM C21N Xplained Pro Evaluation Kit&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
 <div class="Element68">
-sam_d11_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
 <div class="Element68">
-SAM D11 Xplained Pro Evaluation Kit&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+SAM D11&nbsp;</div></td><td class="Element67" valign="top" width="41%">
 <div class="Element68">
-sam_d20_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
 <div class="Element68">
-SAM D20 Xplained Pro Evaluation Kit&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
 <div class="Element68">
-sam_d21_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM D20&nbsp;</div></td><td class="Element67" valign="top" width="41%">
 <div class="Element68">
-SAM D21 Xplained Pro Evaluation Kit&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
 <div class="Element68">
-sam_da1_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
 <div class="Element68">
-SAM DA1 Xplained Pro Evaluation Kit&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+SAM D21&nbsp;</div></td><td class="Element67" valign="top" width="41%">
 <div class="Element68">
-sam_e54_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
 <div class="Element68">
-SAM E54 Xplained Pro Evaluation Kit&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
 <div class="Element68">
-sam_ha1_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM DA1&nbsp;</div></td><td class="Element67" valign="top" width="41%">
 <div class="Element68">
-SAM HA1 Xplained Pro&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
 <div class="Element68">
-sam_l10_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
 <div class="Element68">
-SAM L10 Xplained Pro Evaluation Kit&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+SAM E54&nbsp;</div></td><td class="Element67" valign="top" width="41%">
 <div class="Element68">
-sam_l21_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+0x2000&nbsp;</div></td><td class="Element67" valign="top" width="25%">
 <div class="Element68">
-SAM L21 Xplained Pro Evaluation Kit&nbsp;</div></td></tr><tr>
-<td class="Element67" valign="top" width="25%">
+8192&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
 <div class="Element68">
-sam_l22_xpro.X&nbsp;</div></td><td class="Element67" valign="top" width="75%">
+SAM L10&nbsp;</div></td><td class="Element67" valign="top" width="41%">
 <div class="Element68">
-SAM L22 Xplained Pro Evaluation Kit&nbsp;</div></td></tr></table></div></div>
-</div>
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
+<div class="Element68">
+SAM L11&nbsp;</div></td><td class="Element67" valign="top" width="41%">
+<div class="Element68">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
+<div class="Element68">
+SAM L21&nbsp;</div></td><td class="Element67" valign="top" width="41%">
+<div class="Element68">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
+<div class="Element68">
+256&nbsp;</div></td></tr><tr>
+<td class="Element67" valign="top" width="35%">
+<div class="Element68">
+SAM L22&nbsp;</div></td><td class="Element67" valign="top" width="41%">
+<div class="Element68">
+0x800&nbsp;</div></td><td class="Element67" valign="top" width="25%">
+<div class="Element68">
+256&nbsp;</div></td></tr></table></div></div>
+<p class="Element10">
+<strong>Note 1</strong>: The application start address must be greater than or equal to the value specified in the table and must align to the erase page unit on that device.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<ul class="Element630">
+<li class="Element600">The memory address range specified in Unlock command will be used to validate the addresses sent for other commands. The memory address specified by all other commands must lie within the address range specified for the Unlock command.</li>
+<li class="Element600">Bootloader will calculate CRC over the entire range of memory specified by the Unlock command</li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="unlock_command.png" border="0" alt="" title=""></p><p class="Element10">
+<strong><u>Erase Command (0xA1):</u></strong></p>
+<ul class="Element630">
+<li class="Element600">Erase command erases a flash page as specified by the Erase Ppage Address argument</li>
+<li class="Element600">Payload:
+<ul class="Element631">
+<li class="Element601">Arg 0 - Starting memory address of the flash page being erased.</li>
+</ul></li>
+<li class="Element600">The flash page being erased must lie within the address range specified by the Unlock command; else the bootloader will NAK the command and the INVALID ADDRESS error bit will be set in the status byte.</li>
+<li class="Element600">If the command is accepted successfully, the bootloader will set the BUSY bit in the status byte. The host application must poll the status byte and ensure that the command is completed successfully (status byte indicates bootloader is not busy and no error bits are set) before issuing a new command.</li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="erase_command.png" border="0" alt="" title=""></p><p class="Element10">
+<strong>Note</strong>: Depending on the value specified for <strong>Bootloader Commands Stretch I2C Clock, </strong> the bootloader may either stretch the I2C clock or respond with NAK while it is busy.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+<strong><u>Program Command (0xA2):</u></strong>&nbsp;</p>
+<ul class="Element630">
+<li class="Element600">Program command is used to send the image data</li>
+<li class="Element600">Payload:
+<ul class="Element631">
+<li class="Element601">Arg 0 - Number of bytes to program - must be a multiple of the flash page size. Depending on the value specified, one or more flash pages within the erase unit can be programmed. For example, if the erase row size is 256 bytes and program page size is 64 bytes, the number of bytes to program can either be 64, 128, 192 or 256.</li>
+<li class="Element601">Arg 1 - Program Memory Address - memory address to program to. It must be aligned to the start address of the flash page being programmed.</li>
+</ul></li>
+<li class="Element600">The flash page being programmed must lie within the address range specified by the Unlock command; else the bootloader will NAK the command and the INVALID ADDRESS error bit will be set in the status byte.</li>
+<li class="Element600">If the command is accepted successfully, the bootloader will set the busy bit in the status byte. The host application must poll the status byte and ensure that the command is completed successfully (status byte indicates bootloader is not busy and no error bits are set) before issuing a new command.</li>
+<li class="Element600">The bootloader host application must ensure that the flash page being programmed is erased before issuing the Program Command</li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="program_command.png" border="0" alt="" title=""></p><p class="Element10">
+<strong>Note</strong>: Depending on the value specified for <strong>Bootloader Commands Stretch I2C Clock, </strong> the bootloader may either stretch the I2C clock or respond with NAK while it is busy.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+<strong><u>Verify Command (0xA3):</u></strong>&nbsp;</p>
+<ul class="Element630">
+<li class="Element600">Verify command is used to verify the programmed application image.</li>
+<li class="Element600">Payload:
+<ul class="Element631">
+<li class="Element601">Arg 0 - Application Image CRC - CRC is a standard IEEE CRC32 with a polynomial of 0xEDB88320</li>
+</ul></li>
+<li class="Element600">The bootloader host application must calculate the CRC of the application image over the entire memory range specified in the Unlock command and provide it to the bootloader. The CRC is a standard IEEE CRC32 with a polynomial of 0xEDB88320.</li>
+<li class="Element600">The bootloader upon receiving the Verify command, calculates the CRC over the range of addresses specified by the Unlock command by reading the flash memory contents and compares it with the received CRC value.</li>
+<li class="Element600">If the command is accepted successfully, the bootloader will set the busy bit in the status byte. The host application must poll the status byte and ensure that the CRC verification is successful (status byte indicates bootloader is not busy and no error bits are set) before issuing the Reset Command.</li>
+<li class="Element600">If the calculated CRC and received CRC values do not match, the CRC_ERROR bit is set in the Status byte.</li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="verify_command.png" border="0" alt="" title=""></p><p class="Element10">
+<strong>Note</strong>: The bootloader will stretch the I2C clock while it is busy verifying the application image.&nbsp;</p>
+<p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+<strong><u>Reset Command (0xA4):</u></strong>&nbsp;</p>
+<ul class="Element630">
+<li class="Element600">Reset command is used to exit the bootloader and run the application. The system takes a reset after receiving the Reset Command</li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="reset_command.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+<p class="Element10">
+<strong><u>Read Status Command (0xA5):</u></strong></p>
+<ul class="Element630">
+<li class="Element600">Returns the bootloader status. The bootloader status can be read any time.</li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="status_byte.png" border="0" alt="" title=""></p><p class="Element10">
+<strong><u>Flash Bank Swap and Reset Command (0xA6):</u></strong></p>
+<ul class="Element630">
+<li class="Element600">Resets the device and swaps the flash bank.</li>
+</ul><p class="Element10" style="text-align: center;">
+<img src="bank_swap_reset_command.png" border="0" alt="" title=""></p>
+<ul class="Element630">
+<li class="Element600">This command is enabled only when <strong>Fail safe update</strong> feature is selected for bootloader and the device has support for <strong>Dual Bank update</strong></li>
+<li class="Element600">Bank Swap and Reset command is used to <strong>Swap the inactive bank to active bank</strong> and trigger a reset to exit the bootloader and run the new application programmed in the inactive bank</li>
+</ul></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00006.html" target="topic">Applications Help</a> &gt; I2C Bootloader &gt; <a href="00035.html" target="topic">test_app</a> &gt; <a href="00036.html" target="topic">Building The Application</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00029.html" target="topic">I2C Bootloader</a> &gt; <a href="00040.html" target="topic">How The Library Works</a> &gt; <a href="00036.html" target="topic">Bootloader Protocol</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -138,10 +239,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00035.html" target="topic">Previous</a> | <a href="00035.html" target="topic">Up</a> | <a href="00038.html" target="topic">Next</a></div>
+<a href="00040.html" target="topic">Previous</a> | <a href="00040.html" target="topic">Up</a> | <a href="00038.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader test_app Building The Application Topic Title: Building The Application)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Bootloader Protocol Topic Title: Bootloader Protocol)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

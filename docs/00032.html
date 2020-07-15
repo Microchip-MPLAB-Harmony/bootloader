@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>Introduction</title>
+<title>Bootloader Configurations</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00032.html" target="topic">Introduction</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00029.html" target="topic">I2C Bootloader</a> &gt; <a href="00039.html" target="topic">Configuring the Library</a> &gt; <a href="00032.html" target="topic">Bootloader Configurations</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00004.html" target="topic">Previous</a> | <a href="00004.html" target="topic">Up</a> | <a href="00030.html" target="topic">Next</a></div>
+<a href="00039.html" target="topic">Previous</a> | <a href="00039.html" target="topic">Up</a> | <a href="00034.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Introduction Topic Title: Introduction)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Bootloader Configurations Topic Title: Bootloader Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-Introduction</div>
+Bootloader Configurations</div>
 </div>
 </div>
 
@@ -49,23 +49,79 @@ Introduction</div>
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
 <p class="Element10">
-<span style="color: #000000">The I2C bootloader Library can be used to upgrade firmware on a target device without the need for an external programmer or debugger.</span>&nbsp;</p>
-<p class="Element10">
+<strong>Bootloader Specific User Configurations</strong> </p><p class="Element10" style="text-align: center;">
+<img src="i2c_bootloader_project_graph.png" border="0" alt="" title=""></p><p class="Element10">
 &nbsp;</p>
-<p class="Element10">
-<span style="color: #000000">Features:</span></p>
+
 <ul class="Element630">
-<li class="Element600"><span style="color: #000000">Small Size (&lt; 2 KByte)</span></li>
-<li class="Element600"><span style="color: #000000">Allows updating itself (Bootloader code runs from RAM)</span></li>
-<li class="Element600"><span style="color: #000000">Image verification using CRC32</span></li>
-</ul></div>
+<li class="Element600"><span style="color: #000000"><strong>Bootloader Peripheral Used:</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Specifies the I2C peripheral instance used by the bootloader</span></li>
+<li class="Element601"><span style="color: #000000">The name of the peripheral will vary from device to device</span></li>
+</ul></li>
+<li class="Element600"><span style="color: #000000"><strong>Bootloader Memory Used:</strong></span>
+<ul class="Element631">
+<li class="Element601">Specifies the memory peripheral used by bootloader to perform flash operations</li>
+<li class="Element601"><span style="color: #000000">The name of the peripheral may vary from device to device</span></li>
+</ul></li>
+<li class="Element600"><strong>Bootloader Size (Bytes):</strong>
+<ul class="Element631">
+<li class="Element601">Specifies the maximum flash memory size required by the bootloader</li>
+<li class="Element601">This size will vary from device to device and will always be aligned to device erase unit size</li>
+</ul></li>
+<li class="Element600"><strong>Enable Bootloader Trigger From Firmware:</strong>
+<ul class="Element631">
+<li class="Element601">This Option can be used to Force Trigger bootloader from application firmware after a soft reset. It does so by reserving the specified number of bytes in SRAM from the start of the RAM. The reserved memory is updated by the application with a pre-defined pattern. The bootloader firmware in the bootlaoder_Trigger() routine, can check the reserved memory for the pre-defined pattern and enter bootloader mode if the pattern matches.</li>
+<li class="Element601"><strong>Number Of Bytes To Reserve From Start Of RAM:</strong>
+<ul class="Element632">
+<li class="Element602">This option adds the provided offset to RAM Start address in bootloader linker script.</li>
+<li class="Element602">Application firmware can store some pattern in the reserved bytes region from RAM start for bootloader to check at reset in bootloader_Trigger() function</li>
+</ul></li>
+</ul></li>
+<li class="Element600"><strong>Bootloader Commands Stretch I2C Clock:</strong>
+<ul class="Element631">
+<li class="Element601">This Option is used to decide if bootloader stretches clock when it is busy or sends NAK. Enabling this option stretches the I2C clock when the bootloader is busy with the internal flash erase or write operation. The clock is stretched during the acknowledgement phase. This frees the I2C host from repeatedly polling the status of the sent command. If this option is disabled, the bootloader responds with a NAK while it is busy with the internal flash erase or write operation. This allows the I2C host to communicate with other slaves on the same bus, while the bootloader is busy.</li>
+</ul></li>
+<li class="Element600"><strong>Use Dual Bank For Safe Flash Update:</strong>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Used to configure bootloader to use Dual banks of device to upload the application</span></li>
+<li class="Element601"><span style="color: #000000">This option is visible only for devices supporting Dual flash banks (Example SAM E54)</span></li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Bootloader System Configuration</div>
+<p class="Element10" style="text-align: center;">
+<img src="i2c_bootloader_project_graph_system.png" border="0" alt="" title=""></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><span style="color: #000000"><strong>Application Start Address (Hex):</strong></span>
+<ul class="Element631">
+<li class="Element601"><span style="color: #000000">Start address of the application which will programmed by bootloader. The application must be configured to start from the address specified here.</span></li>
+<li class="Element601"><span style="color: #000000">The start address must be aligned to the erase unit size on that device</span></li>
+<li class="Element601"><span style="color: #000000">By default this value is set equal to the bootloader size (aligned to erase unit). It can be modified as per user need.</span></li>
+<li class="Element601"><span style="color: #000000">This value will be used by bootloader to Jump to application at device reset</span></li>
+</ul></li>
+</ul><p class="Element10">
+&nbsp;</p>
+<div class="Element15">
+Note</div>
+
+<ul class="Element630">
+<li class="Element600">For optimizing the code Bootloader component disables generation of default interrupt and exception files as shown below</li>
+<li class="Element600">Enabling these interrupts explicitly may still not work as bootloader uses custom startup file which has its own Interrupt table populating only the reset handler</li>
+</ul><p class="Element10">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="i2c_bootloader_interrupt_disable.png" border="0" alt="" title=""></p></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00004.html" target="topic">I2C Bootloader</a> &gt; <a href="00032.html" target="topic">Introduction</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00003.html" target="topic">Optimized Bootloaders</a> &gt; <a href="00029.html" target="topic">I2C Bootloader</a> &gt; <a href="00039.html" target="topic">Configuring the Library</a> &gt; <a href="00032.html" target="topic">Bootloader Configurations</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -76,10 +132,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00004.html" target="topic">Previous</a> | <a href="00004.html" target="topic">Up</a> | <a href="00030.html" target="topic">Next</a></div>
+<a href="00039.html" target="topic">Previous</a> | <a href="00039.html" target="topic">Up</a> | <a href="00034.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Introduction Topic Title: Introduction)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: I2C Bootloader Bootloader Configurations Topic Title: Bootloader Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->

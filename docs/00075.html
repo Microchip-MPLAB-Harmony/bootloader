@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html>
 <head>
-<title>System Level Execution Flow</title>
+<title>Application Configurations</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Doc-O-Matic" />
     <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -18,7 +18,7 @@
 <!-- Begin Page Header -->
 <div class="Element710" id="areafixed">
 <div class="Element94">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00062.html" target="topic">UART Bootloader</a> &gt; <a href="00076.html" target="topic">How The Library Works</a> &gt; Bootloader Execution Flow &gt; <a href="00075.html" target="topic">System Level Execution Flow</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00005.html" target="topic">Unified Bootloaders</a> &gt; <a href="00081.html" target="topic">Configuring the Library</a> &gt; <a href="00075.html" target="topic">Application Configurations</a></div>
 <div class="Element92">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -29,12 +29,12 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element90">
-<a href="00079.html" target="topic">Previous</a> | <a href="00076.html" target="topic">Up</a> | <a href="00074.html" target="topic">Next</a></div>
+<a href="00080.html" target="topic">Previous</a> | <a href="00081.html" target="topic">Up</a> | <a href="00077.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element96">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Execution Flow System Level Topic Title: System Level Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Unified Bootloader Application Configurations Topic Title: Application Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table><div class="Element5">
-System Level Execution Flow</div>
+Application Configurations</div>
 </div>
 </div>
 
@@ -49,50 +49,70 @@ System Level Execution Flow</div>
 <a name="4465736372697074696F6E"></a><div class="Element11">
 <div class="Element10">
 <div class="Element15">
-Basic Bootloader System Level Execution Flow</div>
-
-<ul class="Element630">
-<li class="Element600">The Bootloader code starts executing on a device Reset</li>
-<li class="Element600">If there are no conditions to enter the firmware upgrade mode, the Bootloader starts executing the user application</li>
-<li class="Element600">The Bootloader performs Flash erase/program operations while in the firmware upgrade mode</li>
-</ul><p class="Element10">
-&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-<img src="basic_bootloader_execution_flow.png" border="0" alt="" title="">&nbsp;</p>
-<p class="Element10" style="text-align: center;">
-&nbsp;</p>
+SAM Device Application System Configuration</div>
 <p class="Element10">
 &nbsp;</p>
-<div class="Element15">
-Fail Safe Update Bootloader System Level Execution Flow (PIC32M Devices)</div>
+<p class="Element10" style="text-align: center;">
+<img src="application_config_mhc_setting.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<span style="color: #000000"><strong>System Configuration for Application</strong></span></p><p class="Element10">
+&nbsp;</p>
 
 <ul class="Element630">
-<li class="Element600">Bootloader always maps <strong>Bank 1 to lower region</strong> at boot up irrespective of cause for reset <strong>(Hard/Soft)</strong>.
+<li class="Element600"><strong>Generate Fuse Settings:</strong>
 <ul class="Element631">
-<li class="Element601">This is required because if<strong> Swap bit was set </strong>and a<strong> soft reset </strong>was triggered the <strong>value is retained</strong> but if <strong>Swap bit was set</strong> and <strong>Hard reset</strong> was triggered the <strong>value is cleared</strong></li>
+<li class="Element601">Fuse settings needs to be disabled for the application which will be boot-loaded as the fuse settings are supposed to be programmed through programming tool from bootloader code.</li>
+<li class="Element601">Also the fuse settings are not programmable through firmware</li>
+<li class="Element601">Enabling the fuse settings also increases the size of the binary when generated through the hex file</li>
 </ul></li>
-<li class="Element600">Once Swap bit is cleared and Bank 1 is mapped to lower region it performs below operation
+<li class="Element600"><span style="color: #000000"><strong>Application Start Address (Hex):</strong></span>
 <ul class="Element631">
-<li class="Element601">If Bank 1 serial number is <strong>greater than</strong> Bank 2 serial number it just continues for trigger check or runs application from Bank 1, As Bank 1 is already mapped to lower region in above step (<strong>Bank 1 is Active Bank</strong>)</li>
-<li class="Element601">If Bank 2 serial number is <strong>greater than</strong> Bank 1 serial number it <strong>maps Bank 2 to lower region</strong> by setting the Swap bit and proceeds to trigger check or runs application from Bank 2 (<strong>Bank 2 is Active Bank</strong>)</li>
+<li class="Element601"><span style="color: #000000">Start address of the application from where the it will be run</span></li>
+<li class="Element601"><span style="color: #000000">This value should be equal to or greater than the bootloader size</span></li>
+<li class="Element601"><span style="color: #000000">As this value will be used by bootloader to Jump to application at device reset it should match the value provided to bootloader code during generation</span></li>
+<li class="Element601"><span style="color: #000000">After the project is regenerated, the ROM_ORIGIN and ROM_LENGTH are the XC32 linker variables which will be overridden with value provided for **Application Start Address (Hex)** and can be verified under Options for xc32-ld in Project Properties in MPLABX IDE as shown below.</span></li>
 </ul></li>
-<li class="Element600">Whenever Bootlader programs new application in the <strong>Inactive bank</strong> and <strong>swap bank</strong> command is received it reads the serial number from Active bank, increments by 1 and then writes to Bank 2 serial
-<ul class="Element631">
-<li class="Element601"><strong>Bank 2 Serial number = Bank 1 serial number + 1</strong></li>
-<li class="Element601">Start address of inactive bank is equal start of mid of flash</li>
-</ul></li>
-<li class="Element600"><strong>If the Host application requests to update the Active Bank and the address falls into the active bank serial sector it sends an error response and aborts the programming operation</strong></li>
 </ul><p class="Element10">
 &nbsp;</p>
+<div class="Element15">
+SAM Device Application Settings in MPLAB-X IDE</div>
+<p class="Element10">
+&nbsp;</p>
 <p class="Element10" style="text-align: center;">
-<img src="fail_safe_update_bootloader_execution_flow.png" border="0" alt="" title=""></p></div>
+<img src="application_config_xc32_ld_rom.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Linker Settings in MPLAB-X</strong>&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<img src="application_config_normalize_hex.png" border="0" alt="" title="">&nbsp;</p>
+<p class="Element10" style="text-align: center;">
+<strong>Build Setting to Normalize Hex File</strong></p><p class="Element10">
+&nbsp;</p>
+
+<ul class="Element630">
+<li class="Element600"><strong>Preprocessor macro definitions:</strong>
+<ul class="Element631">
+<li class="Element601">ROM-ORIGIN and ROM_LENGTH are the XC32 linker variables which will be overridden with values provided here</li>
+<li class="Element601">This values are auto populated with value of Application start address provided in MHC after regeneration</li>
+</ul></li>
+<li class="Element600"><strong>Additional Options:</strong>
+<ul class="Element631">
+<li class="Element601">RAM_ORIGIN and RAM_LENGTH values should be provided for reserving 16 bytes of start of RAM to trigger bootloader from firmware</li>
+<li class="Element601">This is optional and can be ignored if not required</li>
+</ul></li>
+<li class="Element600"><strong>Normalize hex file:</strong>
+<ul class="Element631">
+<li class="Element601">Check the <strong>Normalize hex file</strong> option as shown below, as the Unified bootloader host application takes hex file as an input. Normalizing the hex file will make sure the data in the hex file is arranged sequentially</li>
+</ul></li>
+</ul></div>
 </div>
 </div>
 <!-- End Page Content -->
 
 <!-- Begin Page Footer -->
 <div class="Element95">
-<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00062.html" target="topic">UART Bootloader</a> &gt; <a href="00076.html" target="topic">How The Library Works</a> &gt; Bootloader Execution Flow &gt; <a href="00075.html" target="topic">System Level Execution Flow</a></div>
+<a href="00002.html" target="topic">Bootloader Library Help</a> &gt; <a href="00005.html" target="topic">Unified Bootloaders</a> &gt; <a href="00081.html" target="topic">Configuring the Library</a> &gt; <a href="00075.html" target="topic">Application Configurations</a></div>
 <div class="Element93">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr><td width="25%">
@@ -103,10 +123,10 @@ MPLAB Harmony Bootloader Help</div>
 <a href="contents.html" target="tocidx">Contents</a> | <a href="00002.html" target="topic">Home</a></div>
 </td><td width="25%">
 <div class="Element91">
-<a href="00079.html" target="topic">Previous</a> | <a href="00076.html" target="topic">Up</a> | <a href="00074.html" target="topic">Next</a></div>
+<a href="00080.html" target="topic">Previous</a> | <a href="00081.html" target="topic">Up</a> | <a href="00077.html" target="topic">Next</a></div>
 </td><td width="25%">
 <div class="Element97">
-<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Uart Bootloader Execution Flow System Level Topic Title: System Level Execution Flow)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
+<a href="mailto:docerrors@microchip.com&subject=MPLAB Harmony Documentation Feedback (Topic ID: Unified Bootloader Application Configurations Topic Title: Application Configurations)&body=Thank you for your feedback! Please include a description of your feedback, and indicate whether you are reporting an an error in the documentation or an enhancement.">Documentation Feedback</a><br> <a href="http://support.microchip.com" target="_blank">Microchip Support</a></div>
 </td></tr></table></div>
 
 <!-- End Page Footer -->
