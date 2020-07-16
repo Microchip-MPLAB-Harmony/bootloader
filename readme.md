@@ -27,13 +27,21 @@ and interface reference information.
 
 | Folder    | Description                                                |
 |-----------|------------------------------------------------------------|
-| apps      | Bootloader example applications                            |
 | config    | Bootloader module configuration scripts                    |
 | doc       | Bootloader module library help documentation               |
 | docs      | Bootloader module library HTML help documentation          |
 | templates | Bootloader and system file templates                       |
-| tools     | Bootl0ader Host scripts                                    |
+| tools     | Bootloader Host scripts                                    |
 
+# Bootloader Application Repositories
+
+| Repo name                                                                                         | Description                            |
+|---------------------------------------------------------------------------------------------------|----------------------------------------|
+| [bootloader_apps_uart](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_uart)           | UART Bootloader Applications           |
+| [bootloader_apps_i2c](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_i2c)             | I2C Bootloader Applications            |
+| [bootloader_apps_usb](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_usb)             | USB Bootloader Applications            |
+| [bootloader_apps_ethernet](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_ethernet)   | Ethernet Bootloader Applications       |
+| [bootloader_apps_sdcard](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_sdcard)       | SDCARD Bootloader Applications         |
 
 ____
 

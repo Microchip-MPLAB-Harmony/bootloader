@@ -3,6 +3,91 @@
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Bootloader Release v3.4.0
+### New Features
+
+- This release introduces support for
+    - USB Device HID Bootloader for SAM and PIC32M family of 32-bit microcontrollers.
+    - USB Host MSD Bootloader for SAM and PIC32M family of 32-bit microcontrollers.
+    - Ethernet UDP Bootloader for SAM and PIC32M family of 32-bit microcontrollers.
+    - SD Card Bootloader for SAM and PIC32M family of 32-bit microcontrollers.
+
+
+- Bootloader demo application are placed in below repositories
+    - [bootloader_apps_uart](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_uart)
+    - [bootloader_apps_i2c](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_i2c)
+    - [bootloader_apps_usb](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_usb)
+    - [bootloader_apps_ethernet](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_ethernet)
+    - [bootloader_apps_sdcard](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_sdcard)
+
+### Bootloaders Supported on different product families
+- The following table provides supported bootloders for different product families
+
+    | Product Family                 | UART   | I2C    | USB Device HID | USB Host MSD | UDP   | SDCARD   | UART Fail Safe | I2C Fail Safe |
+    | ------------------------------ | ------ | ------ | -------------- | ------------ | ----- | -------- | -------------- | ------------- |
+    | SAM D09/D10/D11                | Yes    | Yes    | No             | No           | NA    | No       | NA             | NA            |
+    | SAM D20                        | Yes    | Yes    | NA             | NA           | NA    | Yes      | NA             | NA            |
+    | SAM D21/DA1                    | Yes    | Yes    | Yes            | Yes          | NA    | Yes      | NA             | NA            |
+    | SAM HA1                        | Yes    | Yes    | NA             | NA           | NA    | No       | NA             | NA            |
+    | SAM C20/C21                    | Yes    | Yes    | NA             | NA           | NA    | Yes      | NA             | NA            |
+    | SAM L21                        | Yes    | Yes    | Yes            | Yes          | NA    | Yes      | NA             | NA            |
+    | SAM L22                        | Yes    | Yes    | Yes            | Yes          | NA    | Yes      | NA             | NA            |
+    | SAM L10/L11                    | Yes    | Yes    | NA             | NA           | NA    | Yes      | NA             | NA            |
+    | SAM D5x/E5x                    | Yes    | Yes    | Yes            | Yes          | Yes   | Yes      | Yes            | Yes           |
+    | SAM G5x                        | Yes    | No     | Yes            | Yes          | NA    | Yes      | NA             | NA            |
+    | SAM E70/S70/V70/V71            | Yes    | No     | Yes            | Yes          | Yes   | Yes      | NA             | NA            |
+    | PIC32MX5XX/6XX/7XX             | Yes    | No     | Yes            | Yes          | Yes   | Yes      | NA             | NA            |
+    | PIC32MX330/350/370/430/450/470 | Yes    | No     | Yes            | Yes          | NA    | Yes      | NA             | NA            |
+    | PIC32MX1XX/2XX/5XX             | Yes    | No     | Yes            | Yes          | NA    | Yes      | NA             | NA            |
+    | PIC32MX1XX/2XX                 | Yes    | No     | Yes            | Yes          | NA    | Yes      | NA             | NA            |
+    | PIC32MX1XX/2XX XLP             | Yes    | No     | Yes            | Yes          | NA    | Yes      | NA             | NA            |
+    | PIC32MK GPD/GPE/MCF            | Yes    | NA     | Yes            | Yes          | NA    | Yes      | Yes            | NA            |
+    | PIC32MK GPG/MCJ                | Yes    | No     | NA             | NA           | NA    | Yes      | NA             | NA            |
+    | PIC32MK GPK/MCM                | Yes    | No     | Yes            | Yes          | NA    | Yes      | Yes            | No            |
+    | PIC32MZ EF                     | Yes    | No     | Yes            | Yes          | Yes   | Yes      | Yes            | No            |
+    | PIC32MZ DA                     | Yes    | No     | Yes            | Yes          | Yes   | Yes      | Yes            | No            |
+
+
+### Known Issues
+
+The current known issues are as follows:
+
+* Initialized global variables will not be initialized at startup for UART and I2C bootloaders.
+
+* Unified Host application when configured to use USB protocol has to be closed before programming any PIC32M based application using MPLAB X IDE
+
+### Development Tools
+
+* [MPLAB® X IDE v5.40](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v2.41](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * MPLAB® Harmony Configurator (MHC) v3.5.0 and above.
+
+## Bootloader Release v3.3.0
+### New Features
+
+- This Release adds I2C Bootloader WLCSP applications for SAMD20 family of 32-bit microcontrollers
+
+    - The following WLCSP devices are shipped with preprogrammed bootloader
+
+    | Device Part Number     |
+    | ---------------------- |
+    | SAMD20 (ATSAMD20E15BU) |
+    | SAMD20 (ATSAMD20E16BU) |
+
+
+### Known Issues
+
+- N/A
+
+### Development Tools
+
+* [MPLAB® X IDE v5.40](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v2.41](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * MPLAB® Harmony Configurator (MHC) v3.5.0 and above
+
+
 ## Bootloader Release v3.2.0
 ### New Features
 
