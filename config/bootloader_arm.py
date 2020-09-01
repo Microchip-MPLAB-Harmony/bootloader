@@ -234,6 +234,9 @@ def generateHwCRCGeneratorSymbol(bootloaderComponent):
     btlHwCrc.setDefaultValue(crcEnable)
 
 def generateLinkerFileSymbol(bootloaderComponent):
+    # Disable Default linker script generation
+    Database.setSymbolValue("core", "ADD_LINKER_FILE", False)
+
     # Generate Bootloader Linker Script
     btlLinkerPath = "../bootloader/templates/arm/bootloader_linker_optimized.ld.ftl"
 

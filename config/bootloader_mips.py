@@ -244,8 +244,8 @@ def generateHwCRCGeneratorSymbol(bootloaderComponent):
     return
 
 def generateLinkerFileSymbol(bootloaderComponent):
-
-    coreComponent = Database.getComponentByID("core")
+    # Disable Default linker script generation
+    Database.setSymbolValue("core", "ADD_LINKER_FILE", False)
 
     # DS60001168 --> PIC32MX1XX/2XX
     # DS60001185 --> PIC32MX330/350/370/430/450/470
