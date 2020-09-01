@@ -47,6 +47,16 @@ else:
 # Call bootloader core python
 execfile(Module.getPath() + "/config/" + bootloaderCore)
 
+def handleMessage(messageID, args):
+
+    result_dict = {}
+
+    if (messageID == "REQUEST_CONFIG_PARAMS"):
+        if args.get("localComponentID") != None:
+            result_dict = Database.sendMessage(args["localComponentID"], "UART_INTERRUPT_MODE", {"isEnabled":False})
+
+    return result_dict
+
 def setBtlDualBankCommentVisible(symbol, event):
     symbol.setVisible(event["value"])
 
@@ -178,8 +188,6 @@ def onAttachmentConnected(source, target):
 
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
         localComponent.getSymbolByID("PERIPH_USED").setValue(periph_name)
-
-        Database.setSymbolValue(remoteID, "USART_INTERRUPT_MODE", False)
 
         coreComponent = Database.getComponentByID("core")
 
