@@ -37,6 +37,18 @@ btlSizes = {
 # Call bootloader core python
 execfile(Module.getPath() + "/config/" + bootloaderCore)
 
+def handleMessage(messageID, args):
+
+    result_dict = {}
+
+    if (messageID == "REQUEST_CONFIG_PARAMS"):
+        if args.get("localComponentID") != None:
+            result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_MODE", {"isEnabled":True, "isReadOnly":True})
+            result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_INTERRUPT_MODE", {"isEnabled":False, "isReadOnly":True})
+            result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_SMART_MODE", {"isEnabled":False, "isReadOnly":True})
+
+    return result_dict
+
 def setBtlDualBankCommentVisible(symbol, event):
     symbol.setVisible(event["value"])
 
@@ -182,9 +194,14 @@ def onAttachmentDisconnected(source, target):
     remoteID = remoteComponent.getID()
     srcID = source["id"]
     targetID = target["id"]
+    dummyDict = {}
 
     if (srcID == "btl_I2C_dependency"):
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
+
+        dummyDict = Database.sendMessage(remoteID, "I2C_SLAVE_MODE", {"isReadOnly":False})
+        dummyDict = Database.sendMessage(remoteID, "I2C_SLAVE_INTERRUPT_MODE", {"isReadOnly":False})
+        dummyDict = Database.sendMessage(remoteID, "I2C_SLAVE_SMART_MODE", {"isReadOnly":False})
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0
