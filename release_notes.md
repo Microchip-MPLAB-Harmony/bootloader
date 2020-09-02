@@ -3,6 +3,16 @@
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Bootloader Release v3.4.1
+
+- Updated Bootloader component to disable default linker file generation added in csp v3.8.0 as it requires custom linker file
+
+### Known Issues
+- No changes from v3.4.0
+
+### Development Tools
+- No changes from v3.4.0
+
 ## Bootloader Release v3.4.0
 ### New Features
 
