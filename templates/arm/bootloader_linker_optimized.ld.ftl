@@ -100,6 +100,20 @@ MEMORY
 {
   rom (rx) : ORIGIN = ROM_START, LENGTH = ROM_SIZE
   ram (rwx) : ORIGIN = RAM_START, LENGTH = RAM_SIZE
+<#if BTL_CAN_PRESENT?? && BTL_CAN_PRESENT == true && core.DATA_CACHE_ENABLE?? && core.DATA_CACHE_ENABLE == true>
+  <#if core.CoreUseMPU == true>
+  <#assign MPU_REGION_NAME = "core.MPU_Region_Name" + BTL_MPU_REGION_NUMBER>
+  <#assign MPU_REGION_ADDR = "core.MPU_Region_" + BTL_MPU_REGION_NUMBER + "_Address">
+  <#assign MPU_REGION_SIZE = "core.MPU_Region_" + BTL_MPU_REGION_NUMBER + "_Size">
+  <#if MPU_REGION_NAME?eval?has_content>
+  ${MPU_REGION_NAME?eval} (RWX) : ORIGIN = 0x${MPU_REGION_ADDR?eval}, LENGTH = (1 << (${MPU_REGION_SIZE?eval} + 1))
+  <#else>
+  #error MPU Region ${BTL_MPU_REGION_NUMBER} is not configured
+  </#if>
+  <#else>
+  #error MPU Region ${BTL_MPU_REGION_NUMBER} is not configured
+  </#if>
+</#if>
 }
 
 /*************************************************************************
@@ -147,6 +161,18 @@ SECTIONS
     . = ALIGN(4);
     _etext = .;
 
+<#if BTL_CAN_PRESENT?? && BTL_CAN_PRESENT == true && core.DATA_CACHE_ENABLE?? && core.DATA_CACHE_ENABLE == true>
+    <#assign MPU_REGION_NAME = "core.MPU_Region_Name" + BTL_MPU_REGION_NUMBER>
+    .${PERIPH_USED?lower_case}_message_ram (NOLOAD):
+    {
+    . = ALIGN(4);
+    _s_${PERIPH_USED?lower_case}_message_ram = .;
+    *(.${PERIPH_USED?lower_case}_message_ram)
+    . = ALIGN(4);
+    _e_${PERIPH_USED?lower_case}_message_ram = .;
+    } > ${MPU_REGION_NAME?eval}
+
+</#if>
     /* Locate text/rodata in special data section to be copied
        in startup sequence. */
     .data :

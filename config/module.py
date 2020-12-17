@@ -26,6 +26,7 @@ unSupportedFamilies = ["SAM9", "SAMA5"]
 I2CNames        = ["SERCOM"]
 USBNames        = ["USB", "USBHS"]
 EthernetNames   = ["ETH", "GMAC"]
+CANNames        = ["CAN", "MCAN"]
 
 def hasPeripheral(peripheralList):
     periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
@@ -39,6 +40,10 @@ def hasPeripheral(peripheralList):
 
     return False
 
+def hasPeripheralAndCoreArchitecture(peripheralList, coreArchitecture):
+    return ((coreArchitecture in ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture")) and
+             hasPeripheral(peripheralList))
+
 #Define Bootloader component names
 bootloaderComponents = [
     {"name":"uart", "label": "UART", "dependency":["MEMORY", "UART", "TMR"], "condition":"True"},
@@ -47,6 +52,7 @@ bootloaderComponents = [
     {"name":"usb_host_msd", "label": "USB Host MSD", "dependency":["MEMORY", "SYS_FS"], "condition":'hasPeripheral(USBNames)'},
     {"name":"sdcard", "label": "SDCARD", "dependency":["MEMORY", "SYS_FS"], "condition":"True"},
     {"name":"udp", "label": "UDP", "dependency":["MEMORY"], "condition":'hasPeripheral(EthernetNames)'},
+    {"name":"can", "label": "CAN", "dependency":["MEMORY", "CAN"], "condition":'hasPeripheralAndCoreArchitecture(CANNames, "CORTEX-M")'}
 ]
 
 def loadModule():
@@ -78,7 +84,7 @@ def loadModule():
 
             if "dependency" in bootloaderComponent:
                 for dep in bootloaderComponent['dependency']:
-                    if (dep == "TMR"): 
+                    if (dep == "TMR"):
                         if (timer_dep == True):
                             Component.addDependency("btl_TIMER_dependency", dep, False, True)
                     elif (dep == "SYS_FS"):
