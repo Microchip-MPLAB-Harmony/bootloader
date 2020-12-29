@@ -28,6 +28,8 @@ import optparse
 
 # Supported Devices [ERASE_PAGE_SIZE, BOOTLOADER_SIZE]
 devices = {
+            "SAME7X"    : [8192, 8192],
+            "SAMV7X"    : [8192, 8192],
             "SAME5X"    : [8192, 8192],
             "SAMD5X"    : [8192, 8192],
             "SAMC2X"    : [256, 2048],
@@ -96,7 +98,7 @@ def main():
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')    
     parser.add_option('-b', '--binfile', dest='binfile', help='binary file to convert', metavar='FILE')
     parser.add_option('-o', '--outputHexfile', dest='hexfile', help='output hex file', metavar='FILE')    
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/samha1/saml1x/saml2x)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x)', metavar='DEV')
 
     (options, args) = parser.parse_args()    
 
