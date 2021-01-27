@@ -34,6 +34,7 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
                 "PIC32MX"     : [81920],
                 "PIC32MZDA"   : [86016],
                 "PIC32MZEF"   : [86016],
+                "PIC32MZW"    : [86016],
     }
 else:
     bootloaderCore = "bootloader_arm.py"

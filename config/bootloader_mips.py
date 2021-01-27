@@ -274,6 +274,8 @@ def generateLinkerFileSymbol(bootloaderComponent):
         btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_ef.ld.ftl")
     elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
         btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_da.ld.ftl")
+    elif (re.match("PIC32MZ.[0-9]*W", Variables.get("__PROCESSOR"))):
+        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_w1.ld.ftl")
     elif ("PIC32MX" in Variables.get("__PROCESSOR")):
         btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_" + deviceFamily + ".ld.ftl")
     elif ("PIC32MK" in Variables.get("__PROCESSOR")):

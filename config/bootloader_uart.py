@@ -34,6 +34,7 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
                 "PIC32MK"     : [8192],
                 "PIC32MZDA"   : [8192],
                 "PIC32MZEF"   : [8192],
+                "PIC32MZW"    : [8192],
     }
 else:
     bootloaderCore = "bootloader_arm.py"
@@ -102,10 +103,14 @@ def instantiateComponent(bootloaderComponent):
 
     generateHwCRCGeneratorSymbol(bootloaderComponent)
 
+    btlDualBankEnable = False
+
     if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
         btlDualBankEnable = True
     elif ("PIC32MZ" in Variables.get("__PROCESSOR")):
-        btlDualBankEnable = True
+        if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+            btlDualBankEnable = True
     elif ("PIC32MK" in Variables.get("__PROCESSOR")):
         if (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
             re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
@@ -113,8 +118,6 @@ def instantiateComponent(bootloaderComponent):
             btlDualBankEnable = False
         else:
             btlDualBankEnable = True
-    else:
-        btlDualBankEnable = False
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
     btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")

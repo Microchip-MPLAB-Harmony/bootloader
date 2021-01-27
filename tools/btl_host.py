@@ -64,7 +64,9 @@ devices = {
             "SAMHA1"    : [256, 2048],
             "PIC32MK"   : [4096, 8192],
             "PIC32MZ"   : [16384, 16384],
+            "PIC32MZW"  : [4096, 8192],
             "PIC32MX"   : [1024, 4096],
+
 }
 
 #------------------------------------------------------------------------------
@@ -173,7 +175,7 @@ def main():
     parser.add_option('-p', '--sectorSize', dest='sectSize', help='Device Sector Size in Bytes', metavar='SectSize')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/pic32mk/pic32mx/pic32mz)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/pic32mk/pic32mx/pic32mz/pic32mzw)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 
