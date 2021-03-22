@@ -53,6 +53,7 @@ bootloaderComponents = [
     {"name":"sdcard", "label": "SDCARD", "dependency":["MEMORY", "SYS_FS"], "condition":"True"},
     {"name":"udp", "label": "UDP", "dependency":["MEMORY"], "condition":'hasPeripheral(EthernetNames)'},
     {"name":"can", "label": "CAN", "dependency":["MEMORY", "CAN"], "condition":'hasPeripheralAndCoreArchitecture(CANNames, "CORTEX-M")'},
+    {"name":"serial_mem", "label": "Serial Memory", "dependency":["MEMORY"], "condition":"True"},
 ]
 
 def loadModule():
@@ -100,5 +101,9 @@ def loadModule():
                         depGeneric = True
 
                     Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
+
+                    if ((Name == "serial_mem") && (dep == "MEMORY")):
+                        # Requires two Dependencies of same type (MEMORY)
+                        Component.addDependency("btl_" + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
 
         Component.setDisplayType("Bootloader")
