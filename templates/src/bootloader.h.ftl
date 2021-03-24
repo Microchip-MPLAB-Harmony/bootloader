@@ -42,10 +42,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+<#if core.CoreArchitecture == "MIPS">
+    <#lt>#include "sys/kmem.h"
+</#if>
+
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
     <#if core.CoreArchitecture == "MIPS">
-        <#lt>#include "sys/kmem.h"
-
         <#lt>#define BTL_TRIGGER_RAM_START   KVA0_TO_KVA1(${BTL_RAM_START})
     <#else>
         <#lt>#define BTL_TRIGGER_RAM_START   ${BTL_RAM_START}
