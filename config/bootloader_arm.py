@@ -87,18 +87,18 @@ def calcBootloaderSize():
     coreArch     = Database.getSymbolValue("core", "CoreArchitecture")
 
     # Get the Maximum bootloader size value defined in bootloader protocol python file
-    if (coreArch in btlSizes):
-        max_usb_btl_size   = btlSizes[coreArch][0]
-    else:
+    max_btl_size = getMaxBootloaderSize(coreArch)
+
+    if (max_btl_size == 0):
         return 0
 
     btl_size = 0
 
     if (flash_erase_size != 0):
-        if (flash_erase_size >= max_usb_btl_size):
+        if (flash_erase_size >= max_btl_size):
             btl_size = flash_erase_size
         else:
-            btl_size = max_usb_btl_size
+            btl_size = max_btl_size
 
     return btl_size
 
@@ -159,7 +159,7 @@ def generateCommonSymbols(bootloaderComponent):
     global btl_type
 
     btlMemUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
-    btlMemUsed.setLabel("Bootloader Memory Used")
+    btlMemUsed.setLabel("Bootloader NVM Memory Used")
     btlMemUsed.setReadOnly(True)
     btlMemUsed.setDefaultValue("")
 

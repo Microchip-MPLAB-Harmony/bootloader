@@ -115,18 +115,18 @@ def calcBootloaderSize():
     coreFamily   = ATDF.getNode( "/avr-tools-device-file/devices/device" ).getAttribute( "family" )
 
     # Get the Maximum bootloader size value defined in bootloader protocol python file
-    if (coreFamily in btlSizes):
-        max_usb_btl_size   = btlSizes[coreFamily][0]
-    else:
+    max_btl_size = getMaxBootloaderSize(coreFamily)
+
+    if (max_btl_size == 0):
         return 0
 
     btl_size = 0
 
     if (flash_erase_size != 0):
-        if (flash_erase_size >= max_usb_btl_size):
+        if (flash_erase_size >= max_btl_size):
             btl_size = flash_erase_size
         else:
-            btl_size = max_usb_btl_size
+            btl_size = max_btl_size
 
     return btl_size
 
@@ -188,7 +188,7 @@ def generateCommonSymbols(bootloaderComponent):
     global btl_type
 
     btlMemUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
-    btlMemUsed.setLabel("Bootloader Memory Used")
+    btlMemUsed.setLabel("Bootloader NVM Memory Used")
     btlMemUsed.setReadOnly(True)
     btlMemUsed.setDefaultValue("")
 
@@ -239,6 +239,11 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setDefaultValue(ram_size)
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
+
+    # Disable Control Register Locks
+    result_dict = {}
+
+    result_dict = Database.sendMessage("core", "CONTROL_REGISTER_LOCK", {"isEnabled":False})
 
 def generateHwCRCGeneratorSymbol(bootloaderComponent):
     return

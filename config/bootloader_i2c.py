@@ -34,6 +34,13 @@ btlSizes = {
             "CORTEX-M7"         : [2048],
 }
 
+def getMaxBootloaderSize(arch):
+
+    if (arch in btlSizes):
+        return btlSizes[arch][0]
+    else:
+        return 0
+
 # Call bootloader core python
 execfile(Module.getPath() + "/config/" + bootloaderCore)
 
