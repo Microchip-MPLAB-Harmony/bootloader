@@ -52,7 +52,7 @@ bootloaderComponents = [
     {"name":"usb_host_msd", "label": "USB Host MSD", "dependency":["MEMORY", "SYS_FS"], "condition":'hasPeripheral(USBNames)'},
     {"name":"sdcard", "label": "SDCARD", "dependency":["MEMORY", "SYS_FS"], "condition":"True"},
     {"name":"udp", "label": "UDP", "dependency":["MEMORY"], "condition":'hasPeripheral(EthernetNames)'},
-    {"name":"can", "label": "CAN", "dependency":["MEMORY", "CAN"], "condition":'hasPeripheralAndCoreArchitecture(CANNames, "CORTEX-M")'}
+    {"name":"can", "label": "CAN", "dependency":["MEMORY", "CAN"], "condition":'hasPeripheralAndCoreArchitecture(CANNames, "CORTEX-M")'},
 ]
 
 def loadModule():
@@ -66,15 +66,10 @@ def loadModule():
 
     for bootloaderComponent in bootloaderComponents:
 
-        timer_dep = False
-
         #check if component should be created
         if eval(bootloaderComponent['condition']):
             Name        = bootloaderComponent['name']
             Label       = bootloaderComponent['label'] + " Bootloader"
-
-            if ("PIC32M" in Variables.get("__PROCESSOR")):
-                timer_dep = True
 
             filePath  = "config/bootloader_" + Name + ".py"
 
@@ -84,12 +79,26 @@ def loadModule():
 
             if "dependency" in bootloaderComponent:
                 for dep in bootloaderComponent['dependency']:
-                    if (dep == "TMR"):
-                        if (timer_dep == True):
-                            Component.addDependency("btl_TIMER_dependency", dep, False, True)
+
+                    depId           = "btl_" + dep + "_dependency"
+                    depDisplayName  = dep
+                    depGeneric      = False
+                    depRequired     = True
+
+                    if (dep == "MEMORY"):
+                        depDisplayName = "MEMORY (NVM)"
+
+                    elif (dep == "TMR"):
+                        if ("PIC32M" in Variables.get("__PROCESSOR")):
+                            depId = "btl_TIMER_dependency"
+                        else:
+                            # Skip Adding dependency
+                            continue
+
                     elif (dep == "SYS_FS"):
-                        Component.addDependency("btl_" + dep + "_dependency", dep, True, True)
-                    else:
-                        Component.addDependency("btl_" + dep + "_dependency", dep, False, True)
+                        # Generic Dependency
+                        depGeneric = True
+
+                    Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
 
         Component.setDisplayType("Bootloader")
