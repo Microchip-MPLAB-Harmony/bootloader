@@ -102,7 +102,7 @@ def loadModule():
 
                     Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
 
-                    if ((Name == "serial_mem") && (dep == "MEMORY")):
+                    if ((Name == "serial_mem") and (dep == "MEMORY")):
                         # Requires two Dependencies of same type (MEMORY)
                         Component.addDependency("btl_" + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
 
