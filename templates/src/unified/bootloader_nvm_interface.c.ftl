@@ -75,37 +75,73 @@ bool bootloader_NvmIsBusy(void)
     return (${MEM_USED}_IsBusy());
 }
 
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+    <#if core.CoreArchitecture == "MIPS" >
+        <#lt>T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
+
+        <#lt>/* Function to read the Serial number from Flash bank mapped to lower region */
+        <#lt>static uint32_t get_LowerFlashSerial(void)
+        <#lt>{
+        <#lt>    T_FLASH_SERIAL *lower_flash_serial = LOWER_FLASH_SERIAL_READ;
+
+        <#lt>    return (lower_flash_serial->serial);
+        <#lt>}
+
+        <#lt>/* Function to update the serial number based on address */
+        <#lt>void bootloader_NvmUpdateFlashSerial(uint32_t addr)
+        <#lt>{
+        <#lt>    uint32_t upper_flash_serial;
+
+        <#lt>    /* Increment Upper Mapped Flash panel serial by 1 to be ahead of the
+        <#lt>     * current running Lower Mapped Flash panel serial
+        <#lt>     */
+        <#lt>    upper_flash_serial = (get_LowerFlashSerial() + 1);
+
+        <#lt>    update_flash_serial.serial     = upper_flash_serial;
+        <#lt>    update_flash_serial.prologue   = FLASH_SERIAL_PROLOGUE;
+        <#lt>    update_flash_serial.epilogue   = FLASH_SERIAL_EPILOGUE;
+
+        <#lt>    ${MEM_USED}_QuadWordWrite((uint32_t *)&update_flash_serial, addr);
+
+        <#lt>    while(bootloader_NvmIsBusy() == true)
+        <#lt>    {
+
+        <#lt>    }
+        <#lt>}
+    <#else>
+        <#lt>/* Function to Swap the Bank and Reset */
+        <#lt>void bootloader_NvmSwapAndReset( void )
+        <#lt>{
+        <#lt>    ${MEM_USED}_BankSwap();
+        <#lt>}
+    </#if>
+</#if>
+
 void bootloader_NvmAppErase( void )
 {
     uint32_t flashAddr = APP_START_ADDRESS;
 
-    bool interruptStatus;
-
-    interruptStatus = SYS_INT_Disable();
-
-    while (flashAddr < (FLASH_START + FLASH_LENGTH))
+    while (flashAddr < FLASH_END_ADDRESS)
     {
         ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flashAddr);
 
-        while(bootloader_NvmIsBusy() == true);
+        while(bootloader_NvmIsBusy() == true)
+        {
+
+        }
 
         flashAddr += ERASE_BLOCK_SIZE;
     }
-
-    SYS_INT_Restore(interruptStatus);
 }
 
 void bootloader_NVMPageWrite(uint32_t address, uint8_t* data)
 {
-    bool interruptStatus;
-
-    interruptStatus = SYS_INT_Disable();
-
     ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)data, address);
 
-    while(bootloader_NvmIsBusy() == true);
+    while(bootloader_NvmIsBusy() == true)
+    {
 
-    SYS_INT_Restore(interruptStatus);
+    }
 }
 
 static void bootloader_AlignProgAddress(uint32_t curAddress)
@@ -171,14 +207,23 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
 
                     while(HexRecordSt.RecDataLen) // Loop till all bytes are done.
                     {
-<#if __PROCESSOR?matches("PIC32M.*") == true>
+<#if core.CoreArchitecture == "MIPS">
                         curAddress = (uint32_t)(PA_TO_KVA0(HexRecordSt.Address));
 <#else>
                         curAddress = (uint32_t)HexRecordSt.Address;
 </#if>
 
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+                        /* Add the Inactive Bank Offset to the address received from hex */
+                        curAddress = (curAddress + INACTIVE_BANK_OFFSET);
+</#if>
+
                         // Make sure we are writing in the desired application memory space.
-                        if(((curAddress >= APP_START_ADDRESS) && (curAddress <= (FLASH_START + FLASH_LENGTH))))
+<#if core.CoreArchitecture == "MIPS" && BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+                        if((curAddress >= APP_START_ADDRESS) && (curAddress <= UPPER_FLASH_SERIAL_START))
+<#else>
+                        if((curAddress >= APP_START_ADDRESS) && (curAddress <= FLASH_END_ADDRESS))
+</#if>
                         {
                             /* Initiate write and Align the program address to next page
                              * when we have received Page size of data

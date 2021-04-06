@@ -39,7 +39,7 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
 else:
     bootloaderCore = "bootloader_arm.py"
     btlSizes = {
-                "CORTEX-M4"         : [49152],
+                "CORTEX-M4"         : [57344],
                 "CORTEX-M7"         : [57344],
     }
 
@@ -71,7 +71,13 @@ def getLinkerParams(btlLength, triggerLength):
 def setLinkerParams(symbol, event):
     component = symbol.getComponent()
 
-    btlLength = int(component.getSymbolByID("BTL_SIZE").getValue())
+    liveUpdateEnabled = component.getSymbolByID("BTL_LIVE_UPDATE").getValue()
+
+    if (liveUpdateEnabled == True):
+        btlLength = int(component.getSymbolByID("BTL_LIVE_UPDATE_SIZE").getValue())
+    else:
+        btlLength = int(component.getSymbolByID("BTL_SIZE").getValue())
+
     triggerLength = int(component.getSymbolByID("BTL_TRIGGER_LEN").getValue())
 
     linkerParams = getLinkerParams(btlLength, triggerLength)
@@ -109,7 +115,76 @@ def setupTcpIPComponents(bootloaderComponent):
     # Enable UDP Protocol
     Database.setSymbolValue("tcpip_transport_config", "TCPIP_AUTOCONFIG_ENABLE_UDP", True)
 
+def setBtlLiveUpdate(symbol, event):
+    global flash_size
+    global btl_start
+
+    component = symbol.getComponent()
+
+    if (event["value"] == True):
+        component.getSymbolByID("BTL_SIZE").setReadOnly(True)
+
+        component.getSymbolByID("BTL_TRIGGER_ENABLE").setVisible(False)
+
+        component.getSymbolByID("BTL_APP_START_ADDR_COMMENT").setVisible(False)
+
+        if ("PIC32MZ" in Variables.get("__PROCESSOR")):
+            component.getSymbolByID("BTL_START").setValue("0x9D000000")
+
+            component.getSymbolByID("BOOTLOADER_LINKER_FILE").setOutputName("live_update.ld")
+
+            if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR"))):
+                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_ef_live_update.ld.ftl")
+            elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_da_live_update.ld.ftl")
+
+        component.getSymbolByID("INITIALIZATION_BOOTLOADER_C").setEnabled(False)
+
+        coreComponent = Database.getComponentByID("core")
+
+        coreComponent.getSymbolByID("CoreSysInitFile").setValue(True)
+    else:
+        component.getSymbolByID("BTL_SIZE").setReadOnly(False)
+
+        component.getSymbolByID("BTL_TRIGGER_ENABLE").setVisible(True)
+
+        if ("PIC32MZ" in Variables.get("__PROCESSOR")):
+            component.getSymbolByID("BTL_START").setValue(btl_start)
+
+            component.getSymbolByID("BOOTLOADER_LINKER_FILE").setOutputName("btl.ld")
+
+            if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR"))):
+                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_ef.ld.ftl")
+            elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_da.ld.ftl")
+
+        component.getSymbolByID("INITIALIZATION_BOOTLOADER_C").setEnabled(True)
+
+        coreComponent = Database.getComponentByID("core")
+
+        coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
+
+    symbol.setVisible(event["value"])
+
+def setBtlLiveUpdateReset(symbol, event):
+    if (event["value"] == True):
+        symbol.setVisible(True)
+    else:
+        symbol.setVisible(False)
+
+        # Clear User setting
+        symbol.setReadOnly(True)
+        symbol.setReadOnly(False)
+
+def setBtlLiveUpdateSize(symbol, event):
+    if (event["value"] == True):
+        symbol.setVisible(True)
+    else:
+        symbol.setVisible(False)
+
 def instantiateComponent(bootloaderComponent):
+    global flash_size
+
     configName = Variables.get("__CONFIGURATION_NAME")
 
     setupCoreComponentSymbols()
@@ -121,14 +196,37 @@ def instantiateComponent(bootloaderComponent):
     btlUdpPortNumber.setVisible(True)
     btlUdpPortNumber.setDefaultValue("6234")
 
-    if ("PIC32M" not in Variables.get("__PROCESSOR")):
-        # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
-        xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
-        xc32LdPreprocessroMacroSym.setCategory("C32-LD")
-        xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
-        xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
-        xc32LdPreprocessroMacroSym.setAppend(True, ";")
-        xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
+    btlDualBankEnable = False
+
+    if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
+        btlDualBankEnable = True
+    elif ("PIC32MZ" in Variables.get("__PROCESSOR")):
+        if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+            btlDualBankEnable = True
+
+    btlLiveUpdate = bootloaderComponent.createBooleanSymbol("BTL_LIVE_UPDATE", None)
+    btlLiveUpdate.setLabel("Use Dual Bank For Live Update")
+    btlLiveUpdate.setVisible(btlDualBankEnable)
+
+    length = str((flash_size / 2))
+
+    btlLiveUpdateSize = bootloaderComponent.createStringSymbol("BTL_LIVE_UPDATE_SIZE", btlLiveUpdate)
+    btlLiveUpdateSize.setLabel("Live Update Flash Bank Size (Bytes)")
+    btlLiveUpdateSize.setVisible(btlLiveUpdate.getValue())
+    btlLiveUpdateSize.setDefaultValue(length)
+    btlLiveUpdateSize.setDependencies(setBtlLiveUpdateSize, ["BTL_LIVE_UPDATE"])
+
+    btlLiveUpdateReset = bootloaderComponent.createBooleanSymbol("BTL_LIVE_UPDATE_RESET", btlLiveUpdate)
+    btlLiveUpdateReset.setLabel("Trigger Reset After Live Update")
+    btlLiveUpdateReset.setVisible(btlLiveUpdate.getValue())
+    btlLiveUpdateReset.setDependencies(setBtlLiveUpdateReset, ["BTL_LIVE_UPDATE"])
+
+    btlLiveUpdateComment = bootloaderComponent.createCommentSymbol("BTL_LIVE_UPDATE_COMMENT", None)
+    btlLiveUpdateComment.setLabel("!!! WARNING Only Half of the Flash memory will be available for Application !!!")
+    btlLiveUpdateComment.setVisible(False)
+    btlLiveUpdateComment.setDependencies(setBtlLiveUpdate, ["BTL_LIVE_UPDATE"])
+
 
     #################### Code Generation ####################
 
@@ -176,7 +274,7 @@ def instantiateComponent(bootloaderComponent):
     btlDatastreamHeaderFile.setProjectPath("config/" + configName + "/bootloader/datastream/")
     btlDatastreamHeaderFile.setType("HEADER")
 
-    btlDatastreamUsbHIDSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_DATASTREAM_USB_DEVICE_HID_SRC", None)
+    btlDatastreamUsbHIDSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_DATASTREAM_UDP_SRC", None)
     btlDatastreamUsbHIDSourceFile.setSourcePath("../bootloader/templates/src/unified/datastream/datastream_udp.c.ftl")
     btlDatastreamUsbHIDSourceFile.setOutputName("datastream_udp.c")
     btlDatastreamUsbHIDSourceFile.setMarkup(True)
@@ -212,6 +310,14 @@ def instantiateComponent(bootloaderComponent):
 
     if ("PIC32M" in Variables.get("__PROCESSOR")):
         generateLinkerFileSymbol(bootloaderComponent)
+    else:
+        # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
+        xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
+        xc32LdPreprocessroMacroSym.setCategory("C32-LD")
+        xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
+        xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
+        xc32LdPreprocessroMacroSym.setAppend(True, ";")
+        xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN", "BTL_LIVE_UPDATE"])
 
 def onAttachmentConnected(source, target):
     global flash_erase_size

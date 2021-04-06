@@ -59,7 +59,7 @@
 <#if core.CoreArchitecture == "MIPS" && BTL_DUAL_BANK?? && BTL_DUAL_BANK == true >
     <#lt>// *****************************************************************************
     <#lt>/* Function:
-    <#lt>    bool bootloader_ProgramFlashBankSelect( void );
+    <#lt>    void bootloader_ProgramFlashBankSelect( void );
     <#lt>
     <#lt> Summary:
     <#lt>    Selects Appropriate Program Flash Bank after reset.
@@ -98,108 +98,154 @@
     <#lt>void bootloader_ProgramFlashBankSelect( void );
 </#if>
 
-// *****************************************************************************
-/* Function:
-    bool bootloader_Trigger( void );
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+    <#lt>// *****************************************************************************
+    <#lt>/* Function:
+    <#lt>    void bootloader_SwapAndReset( void );
+    <#lt>
+    <#if core.CoreArchitecture == "MIPS">
+        <#lt> Summary:
+        <#lt>    Updates the Serial number in Inactive Bank and triggers Reset.
 
- Summary:
-    Checks if Bootloader has to be executed at startup.
+        <#lt> Description:
+        <#lt>    This function can be used by the application to update the serial number in inactive
+        <#lt>    bank and trigger reset after Live Update is Completed.
 
- Description:
-    This function can be used to check for a External HW trigger or Internal firmware
-    trigger to execute bootloader at startup.
+        <#lt>    Switcher in Boot Flash Memory should know the address at compile time where the serial
+        <#lt>    number is stored in each bank. It reads the serial number from both banks, Compares the
+        <#lt>    values and maps the bank with highest serial number to lower region.
+    <#else>
+        <#lt> Summary:
+        <#lt>    Swaps Bank and triggers reset.
 
-    This check should happen before any system resources are initialized apart for PORT
-    as the same system resource can be Re-initialized by the application if bootloader jumps
-    to it and may cause issues.
+        <#lt> Description:
+        <#lt>    This function can be used by the application to swap bank and trigger reset
+        <#lt>    after Live Update is Completed.
+    </#if>
 
-    - <b>External Trigger: </b>
-        Is achieved by triggering the selected GPIO_PIN in bootloader configuration
-        in MHC.
-    - <b>Firmware Trigger: </b>
-        Application firmware which wants to execute bootloader at startup needs to
-        fill first 16 bytes of ram location with bootloader request pattern.
+    <#lt> Precondition:
+    <#lt>    - Live Update has to be completed before calling this function
 
-        <code>
-            uint32_t *sram = (uint32_t *)RAM_START_ADDRESS;
+    <#lt> Parameters:
+    <#lt>    None.
+    <#lt>
+    <#lt> Returns:
+    <#lt>    None.
 
-            sram[0] = 0x5048434D;
-            sram[1] = 0x5048434D;
-            sram[2] = 0x5048434D;
-            sram[3] = 0x5048434D;
-        </code>
+    <#lt> Example:
+    <#lt>    <code>
 
- Precondition:
-    PORT/PIO Initialize must have been called.
+    <#lt>        bootloader_SwapAndReset( void );
 
- Parameters:
-    None.
+    <#lt>    </code>
+    <#lt>*/
+    <#lt>void bootloader_SwapAndReset( void );
+</#if>
 
- Returns:
-    - True  : If any of trigger is detected.
-    - False : If no trigger is detected..
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false >
+    <#lt>// *****************************************************************************
+    <#lt>/* Function:
+    <#lt>    bool bootloader_Trigger( void );
 
- Example:
-    <code>
+    <#lt>Summary:
+    <#lt>    Checks if Bootloader has to be executed at startup.
 
-        NVMCTRL_Initialize();
+    <#lt>Description:
+    <#lt>    This function can be used to check for a External HW trigger or Internal firmware
+    <#lt>    trigger to execute bootloader at startup.
 
-        PORT_Initialize();
+    <#lt>    This check should happen before any system resources are initialized apart for PORT
+    <#lt>    as the same system resource can be Re-initialized by the application if bootloader jumps
+    <#lt>    to it and may cause issues.
 
-        if (bootloader_Trigger() == false)
-        {
-            run_Application();
-        }
+    <#lt>    - <b>External Trigger: </b>
+    <#lt>        Is achieved by triggering the selected GPIO_PIN in bootloader configuration
+    <#lt>        in MHC.
+    <#lt>    - <b>Firmware Trigger: </b>
+    <#lt>        Application firmware which wants to execute bootloader at startup needs to
+    <#lt>        fill first 16 bytes of ram location with bootloader request pattern.
 
-        CLOCK_Initialize();
+    <#lt>        <code>
+    <#lt>            uint32_t *sram = (uint32_t *)RAM_START_ADDRESS;
 
-    </code>
-*/
-bool bootloader_Trigger( void );
+    <#lt>            sram[0] = 0x5048434D;
+    <#lt>            sram[1] = 0x5048434D;
+    <#lt>            sram[2] = 0x5048434D;
+    <#lt>            sram[3] = 0x5048434D;
+    <#lt>        </code>
 
-// *****************************************************************************
-/* Function:
-    void run_Application( void );
+    <#lt>Precondition:
+    <#lt>    PORT/PIO Initialize must have been called.
 
- Summary:
-    Runs the programmed application at startup.
+    <#lt>Parameters:
+    <#lt>    None.
 
- Description:
-    This function can be used to run programmed application though bootloader at startup.
+    <#lt>Returns:
+    <#lt>    - True  : If any of trigger is detected.
+    <#lt>    - False : If no trigger is detected..
 
-    If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to
-    the application start address to run the application programmed through bootloader and
-    never returns.
+    <#lt>Example:
+    <#lt>    <code>
 
-    If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function
-    and executes bootloader for accepting a new application firmware.
+    <#lt>        NVMCTRL_Initialize();
 
- Precondition:
-    bootloader_Trigger() must be called to check for bootloader triggers at startup.
+    <#lt>        PORT_Initialize();
 
- Parameters:
-    None.
+    <#lt>        if (bootloader_Trigger() == false)
+    <#lt>        {
+    <#lt>            run_Application();
+    <#lt>        }
 
- Returns:
-    None
+    <#lt>        CLOCK_Initialize();
 
- Example:
-    <code>
+    <#lt>    </code>
+    <#lt>*/
+    <#lt>bool bootloader_Trigger( void );
 
-        NVMCTRL_Initialize();
+    <#lt>// *****************************************************************************
+    <#lt>/* Function:
+    <#lt>    void run_Application( void );
 
-        PORT_Initialize();
+    <#lt>Summary:
+    <#lt>    Runs the programmed application at startup.
 
-        if (bootloader_Trigger() == false)
-        {
-            run_Application();
-        }
+    <#lt>Description:
+    <#lt>    This function can be used to run programmed application though bootloader at startup.
 
-        CLOCK_Initialize();
+    <#lt>    If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to
+    <#lt>    the application start address to run the application programmed through bootloader and
+    <#lt>    never returns.
 
-    </code>
-*/
-void run_Application( void );
+    <#lt>    If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function
+    <#lt>    and executes bootloader for accepting a new application firmware.
+
+    <#lt>Precondition:
+    <#lt>    bootloader_Trigger() must be called to check for bootloader triggers at startup.
+
+    <#lt>Parameters:
+    <#lt>    None.
+
+    <#lt>Returns:
+    <#lt>    None
+
+    <#lt>Example:
+    <#lt>    <code>
+
+    <#lt>        NVMCTRL_Initialize();
+
+    <#lt>        PORT_Initialize();
+
+    <#lt>        if (bootloader_Trigger() == false)
+    <#lt>        {
+    <#lt>            run_Application();
+    <#lt>        }
+
+    <#lt>        CLOCK_Initialize();
+
+    <#lt>    </code>
+    <#lt>*/
+    <#lt>void run_Application( void );
+</#if>
 
 // *****************************************************************************
 /* Function:

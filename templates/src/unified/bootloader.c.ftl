@@ -148,14 +148,16 @@ BOOTLOADER_DATA btlData =
     .usrBufferEventComplete = false
 };
 
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false >
+    <#lt>bool __WEAK bootloader_Trigger(void)
+    <#lt>{
+    <#lt>    /* Function can be overriden with custom implementation */
+    <#lt>    return false;
+    <#lt>}
+</#if>
 
 <#if core.CoreArchitecture == "MIPS">
-    <#lt>static void bootloader_TriggerReset(void)
+    <#lt>void bootloader_TriggerReset(void)
     <#lt>{
     <#lt>    /* Perform system unlock sequence */
     <#lt>    SYSKEY = 0x00000000;
@@ -166,42 +168,46 @@ bool __WEAK bootloader_Trigger(void)
     <#lt>    (void)RSWRST;
     <#lt>}
 
-    <#lt>void run_Application(void)
-    <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
+    <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false >
+        <#lt>void run_Application(void)
+        <#lt>{
+        <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
 
-    <#lt>    void (*fptr)(void);
+        <#lt>    void (*fptr)(void);
 
-    <#lt>    /* Set default to APP_RESET_ADDRESS */
-    <#lt>    fptr = (void (*)(void))APP_START_ADDRESS;
+        <#lt>    /* Set default to APP_RESET_ADDRESS */
+        <#lt>    fptr = (void (*)(void))APP_START_ADDRESS;
 
-    <#lt>    if (msp == 0xffffffff)
-    <#lt>    {
-    <#lt>        return;
-    <#lt>    }
+        <#lt>    if (msp == 0xffffffff)
+        <#lt>    {
+        <#lt>        return;
+        <#lt>    }
 
-    <#lt>    fptr();
-    <#lt>}
+        <#lt>    fptr();
+        <#lt>}
+    </#if>
 <#else>
-    <#lt>static void bootloader_TriggerReset(void)
+    <#lt>void bootloader_TriggerReset(void)
     <#lt>{
     <#lt>    NVIC_SystemReset();
     <#lt>}
 
-    <#lt>void run_Application(void)
-    <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-    <#lt>    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
+    <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false >
+        <#lt>void run_Application(void)
+        <#lt>{
+        <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
+        <#lt>    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
 
-    <#lt>    if (msp == 0xffffffff)
-    <#lt>    {
-    <#lt>        return;
-    <#lt>    }
+        <#lt>    if (msp == 0xffffffff)
+        <#lt>    {
+        <#lt>        return;
+        <#lt>    }
 
-    <#lt>    __set_MSP(msp);
+        <#lt>    __set_MSP(msp);
 
-    <#lt>    asm("bx %0"::"r" (reset_vector));
-    <#lt>}
+        <#lt>    asm("bx %0"::"r" (reset_vector));
+        <#lt>}
+    </#if>
 </#if>
 
 static const uint16_t crc_table[16] =
@@ -366,6 +372,21 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
     }
 }
 
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+    <#lt>void bootloader_SwapAndReset( void )
+    <#lt>{
+        <#if core.CoreArchitecture == "MIPS" >
+            <#lt>    /* Update Serial number of Inactive bank */
+            <#lt>    bootloader_NvmUpdateFlashSerial(UPPER_FLASH_SERIAL_START);
+
+            <#lt>    bootloader_TriggerReset();
+        <#else>
+            <#lt>    /* Swap bank and Reset */
+            <#lt>    bootloader_NvmSwapAndReset();
+        </#if>
+    <#lt>}
+</#if>
+
 void bootloader_Tasks( void )
 {
     uint32_t BuffLen=0;
@@ -483,7 +504,16 @@ void bootloader_Tasks( void )
 
         case BOOTLOADER_ENTER_APPLICATION:
         {
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+    <#if BTL_LIVE_UPDATE_RESET?? && BTL_LIVE_UPDATE_RESET == true >
+            bootloader_SwapAndReset();
+    <#else>
+            /* Waiting for New Update */
+            btlData.currentState = BOOTLOADER_GET_COMMAND;
+    </#if>
+<#else>
             bootloader_TriggerReset();
+</#if>
             break;
         }
 
