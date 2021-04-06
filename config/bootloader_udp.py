@@ -53,6 +53,9 @@ def getMaxBootloaderSize(arch):
 # Call bootloader core python
 execfile(Module.getPath() + "/config/" + bootloaderCore)
 
+# Call RTOS Settings python
+execfile(Module.getPath() + "/config/bootloader_rtos.py")
+
 def getLinkerParams(btlLength, triggerLength):
     global ram_start
     global ram_size
@@ -227,6 +230,8 @@ def instantiateComponent(bootloaderComponent):
     btlLiveUpdateComment.setVisible(False)
     btlLiveUpdateComment.setDependencies(setBtlLiveUpdate, ["BTL_LIVE_UPDATE"])
 
+    # Generate RTOS specific Symbols
+    generateRTOSSymbols(bootloaderComponent, btlLiveUpdate.getValue())
 
     #################### Code Generation ####################
 
