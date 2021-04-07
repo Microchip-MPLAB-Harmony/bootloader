@@ -142,7 +142,8 @@
     <#lt>void bootloader_SwapAndReset( void );
 </#if>
 
-<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false >
+<#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
+     (!BTL_LIVE_UPDATE??) >
     <#lt>// *****************************************************************************
     <#lt>/* Function:
     <#lt>    bool bootloader_Trigger( void );

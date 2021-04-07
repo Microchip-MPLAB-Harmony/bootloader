@@ -148,7 +148,8 @@ BOOTLOADER_DATA btlData =
     .usrBufferEventComplete = false
 };
 
-<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false >
+<#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
+     (!BTL_LIVE_UPDATE??) >
     <#lt>bool __WEAK bootloader_Trigger(void)
     <#lt>{
     <#lt>    /* Function can be overriden with custom implementation */
@@ -168,7 +169,8 @@ BOOTLOADER_DATA btlData =
     <#lt>    (void)RSWRST;
     <#lt>}
 
-    <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false >
+    <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
+         (!BTL_LIVE_UPDATE??) >
         <#lt>void run_Application(void)
         <#lt>{
         <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
@@ -192,7 +194,8 @@ BOOTLOADER_DATA btlData =
     <#lt>    NVIC_SystemReset();
     <#lt>}
 
-    <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false >
+    <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
+         (!BTL_LIVE_UPDATE??) >
         <#lt>void run_Application(void)
         <#lt>{
         <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
