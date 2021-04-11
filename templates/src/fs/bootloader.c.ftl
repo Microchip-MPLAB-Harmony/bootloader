@@ -238,7 +238,10 @@ void bootloader_NvmAppErase( uint32_t appLength )
     {
         ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flashAddr);
 
-        while(${MEM_USED}_IsBusy() == true);
+        while(${MEM_USED}_IsBusy() == true)
+        {
+
+        }
 
         flashAddr += ERASE_BLOCK_SIZE;
         appLength -= ERASE_BLOCK_SIZE;
@@ -249,7 +252,10 @@ void bootloader_NVMPageWrite(uint8_t* data)
 {
     ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)data, btlData.progAddr);
 
-    while(${MEM_USED}_IsBusy() == true);
+    while(${MEM_USED}_IsBusy() == true)
+    {
+
+    }
 
     btlData.progAddr += PAGE_SIZE;
 }

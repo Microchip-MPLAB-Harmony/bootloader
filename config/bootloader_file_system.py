@@ -1,5 +1,5 @@
 """*****************************************************************************
-* Copyright (C) 2020 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2021 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -23,30 +23,87 @@
 global btlSizes
 global btl_type
 
-btl_type = "USB_HOST_MSD"
+# Do not Change Order
+mediaList = ["SDCARD", "SERIAL_MEMORY", "USB_HOST_MSD"]
+
+btl_type = mediaList[0]
 
 bootloaderCore = ""
+
+USBNames        = ["USB", "USBHS"]
+
+def hasPeripheral(peripheralList):
+    periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
+    peripherals         = periphNode.getChildren()
+
+    for module in range (0, len(peripherals)):
+        periphName = str(peripherals[module].getAttribute("name"))
+
+        if ((any(x == periphName for x in peripheralList) == True)):
+            return True
+
+    return False
 
 # Maximum Size for Bootloader [BYTES]
 if ("PIC32M" in Variables.get("__PROCESSOR")):
     bootloaderCore = "bootloader_mips.py"
-    btlSizes = {
+    sdcard_btlSizes = {
+                "PIC32MX"     : [49152],
+                "PIC32MK"     : [49152],
+                "PIC32MZDA"   : [53248],
+                "PIC32MZEF"   : [53248],
+                "PIC32MZW"    : [53248],
+    }
+
+    serial_memory_btlSizes = {
+                "PIC32MX"     : [40960],
+                "PIC32MK"     : [36864],
+                "PIC32MZDA"   : [49152],
+                "PIC32MZEF"   : [49152],
+                "PIC32MZW"    : [45056],
+    }
+
+    usb_host_msd_btlSizes = {
                 "PIC32MX"     : [69632],
                 "PIC32MK"     : [69632],
                 "PIC32MZDA"   : [81920],
                 "PIC32MZEF"   : [81920],
-                "PIC32MZW"    : [81920],
+                "PIC32MZW"    : [69632],
     }
 else:
     bootloaderCore = "bootloader_arm.py"
-    btlSizes = {
+    sdcard_btlSizes = {
+                "CORTEX-M0PLUS"     : [29696],
+                "CORTEX-M23"        : [29696],
+                "CORTEX-M4"         : [32768],
+                "CORTEX-M7"         : [32768],
+    }
+
+    serial_memory_btlSizes = {
+                "CORTEX-M0PLUS"     : [21504],
+                "CORTEX-M23"        : [21504],
+                "CORTEX-M4"         : [24576],
+                "CORTEX-M7"         : [24576],
+    }
+
+    usb_host_msd_btlSizes = {
                 "CORTEX-M0PLUS"     : [43008],
                 "CORTEX-M23"        : [43008],
                 "CORTEX-M4"         : [40960],
                 "CORTEX-M7"         : [40960],
     }
 
+btlSize_dict = {
+    mediaList[0]    : sdcard_btlSizes,
+    mediaList[1]    : serial_memory_btlSizes,
+    mediaList[2]    : usb_host_msd_btlSizes,
+}
+
 def getMaxBootloaderSize(arch):
+    global btlSizes
+    global btl_type
+
+    btlSizes = btlSize_dict[btl_type]
 
     if (arch in btlSizes):
         return btlSizes[arch][0]
@@ -81,6 +138,21 @@ def setLinkerParams(symbol, event):
 
     symbol.setValue(linkerParams)
 
+def setMediaInformation(symbol, event):
+    global btl_type
+
+    component = symbol.getComponent()
+
+    btl_type = component.getSymbolByID("MEDIA_TYPE").getSelectedKey()
+
+    component.getSymbolByID("BTL_TYPE").setValue(btl_type)
+
+    btlSize = str(calcBootloaderSize())
+
+    component.getSymbolByID("BTL_SIZE").setReadOnly(True)
+    component.getSymbolByID("BTL_SIZE").setValue(btlSize)
+    component.getSymbolByID("BTL_SIZE").setReadOnly(False)
+
 def setupCoreComponentSymbols():
 
     coreComponent = Database.getComponentByID("core")
@@ -92,6 +164,17 @@ def setupCoreComponentSymbols():
 def instantiateComponent(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
 
+    btlMediaType = bootloaderComponent.createKeyValueSetSymbol("MEDIA_TYPE", None)
+    btlMediaType.setLabel("Bootloader Media Type")
+    btlMediaType.addKey(mediaList[0], "0", "SDCARD")
+    btlMediaType.addKey(mediaList[1], "1", "Serial Memory")
+    if (hasPeripheral(USBNames) == True):
+        btlMediaType.addKey(mediaList[2]  , "2", "USB Mass Storage Device")
+    btlMediaType.setOutputMode("Key")
+    btlMediaType.setDisplayMode("Description")
+    btlMediaType.setDefaultValue(0)
+    btlMediaType.setDependencies(setMediaInformation, ["MEDIA_TYPE"])
+
     setupCoreComponentSymbols()
 
     generateCommonSymbols(bootloaderComponent)
@@ -101,14 +184,6 @@ def instantiateComponent(bootloaderComponent):
     btlAppImagePath.setVisible(True)
     btlAppImagePath.setDefaultValue("image.bin")
 
-    if ("PIC32M" not in Variables.get("__PROCESSOR")):
-        # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
-        xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
-        xc32LdPreprocessroMacroSym.setCategory("C32-LD")
-        xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
-        xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
-        xc32LdPreprocessroMacroSym.setAppend(True, ";")
-        xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
 
     #################### Code Generation ####################
 
@@ -157,6 +232,14 @@ def instantiateComponent(bootloaderComponent):
 
     if ("PIC32M" in Variables.get("__PROCESSOR")):
         generateLinkerFileSymbol(bootloaderComponent)
+    else:
+        # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
+        xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
+        xc32LdPreprocessroMacroSym.setCategory("C32-LD")
+        xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
+        xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
+        xc32LdPreprocessroMacroSym.setAppend(True, ";")
+        xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
 
 def onAttachmentConnected(source, target):
     global flash_erase_size
@@ -199,4 +282,4 @@ def onAttachmentDisconnected(source, target):
 def finalizeComponent(bootloaderComponent):
     res = Database.activateComponents(["sys_fs"])
 
-    activateAndConnectDependencies("usb_host_msd_bootloader")
+    activateAndConnectDependencies("file_system_bootloader")
