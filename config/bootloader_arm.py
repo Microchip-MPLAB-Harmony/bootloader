@@ -248,6 +248,7 @@ def generateLinkerFileSymbol(bootloaderComponent):
     btlLinkerFile.setOverwrite(True)
     btlLinkerFile.setType("LINKER")
 
+# Used by Optimized Bootloaders
 def generateXC32SettingsAndFileSymbol(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
 
@@ -272,3 +273,10 @@ def generateXC32SettingsAndFileSymbol(bootloaderComponent):
     xc32ClearDataSection.setCategory("C32")
     xc32ClearDataSection.setKey("place-data-into-section")
     xc32ClearDataSection.setValue("false")
+
+    # Set Optimization level to -O2
+    xc32Optimization = bootloaderComponent.createSettingSymbol("XC32_OPTIMIZATION", None)
+    xc32Optimization.setCategory("C32")
+    xc32Optimization.setKey("optimization-level")
+    xc32Optimization.setValue("-O2")
+
