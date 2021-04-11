@@ -61,7 +61,7 @@ def handleMessage(messageID, args):
 
     if (messageID == "REQUEST_CONFIG_PARAMS"):
         if args.get("localComponentID") != None:
-            result_dict = Database.sendMessage(args["localComponentID"], "UART_INTERRUPT_MODE", {"isEnabled":False})
+            result_dict = Database.sendMessage(args["localComponentID"], "UART_BLOCKING_MODE", {"isEnabled":True})
 
     return result_dict
 
