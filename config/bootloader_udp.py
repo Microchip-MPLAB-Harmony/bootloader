@@ -53,8 +53,8 @@ def getMaxBootloaderSize(arch):
 # Call bootloader core python
 execfile(Module.getPath() + "/config/" + bootloaderCore)
 
-# Call RTOS Settings python
-execfile(Module.getPath() + "/config/bootloader_rtos.py")
+# Call Bootloader Live Update Settings python
+execfile(Module.getPath() + "/config/bootloader_live_update.py")
 
 def getLinkerParams(btlLength, triggerLength):
     global ram_start
@@ -118,76 +118,7 @@ def setupTcpIPComponents(bootloaderComponent):
     # Enable UDP Protocol
     Database.setSymbolValue("tcpip_transport_config", "TCPIP_AUTOCONFIG_ENABLE_UDP", True)
 
-def setBtlLiveUpdate(symbol, event):
-    global flash_size
-    global btl_start
-
-    component = symbol.getComponent()
-
-    if (event["value"] == True):
-        component.getSymbolByID("BTL_SIZE").setReadOnly(True)
-
-        component.getSymbolByID("BTL_TRIGGER_ENABLE").setVisible(False)
-
-        component.getSymbolByID("BTL_APP_START_ADDR_COMMENT").setVisible(False)
-
-        if ("PIC32MZ" in Variables.get("__PROCESSOR")):
-            component.getSymbolByID("BTL_START").setValue("0x9D000000")
-
-            component.getSymbolByID("BOOTLOADER_LINKER_FILE").setOutputName("live_update.ld")
-
-            if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR"))):
-                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_ef_live_update.ld.ftl")
-            elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
-                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_da_live_update.ld.ftl")
-
-        component.getSymbolByID("INITIALIZATION_BOOTLOADER_C").setEnabled(False)
-
-        coreComponent = Database.getComponentByID("core")
-
-        coreComponent.getSymbolByID("CoreSysInitFile").setValue(True)
-    else:
-        component.getSymbolByID("BTL_SIZE").setReadOnly(False)
-
-        component.getSymbolByID("BTL_TRIGGER_ENABLE").setVisible(True)
-
-        if ("PIC32MZ" in Variables.get("__PROCESSOR")):
-            component.getSymbolByID("BTL_START").setValue(btl_start)
-
-            component.getSymbolByID("BOOTLOADER_LINKER_FILE").setOutputName("btl.ld")
-
-            if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR"))):
-                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_ef.ld.ftl")
-            elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
-                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_da.ld.ftl")
-
-        component.getSymbolByID("INITIALIZATION_BOOTLOADER_C").setEnabled(True)
-
-        coreComponent = Database.getComponentByID("core")
-
-        coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
-
-    symbol.setVisible(event["value"])
-
-def setBtlLiveUpdateReset(symbol, event):
-    if (event["value"] == True):
-        symbol.setVisible(True)
-    else:
-        symbol.setVisible(False)
-
-        # Clear User setting
-        symbol.setReadOnly(True)
-        symbol.setReadOnly(False)
-
-def setBtlLiveUpdateSize(symbol, event):
-    if (event["value"] == True):
-        symbol.setVisible(True)
-    else:
-        symbol.setVisible(False)
-
 def instantiateComponent(bootloaderComponent):
-    global flash_size
-
     configName = Variables.get("__CONFIGURATION_NAME")
 
     setupCoreComponentSymbols()
@@ -199,39 +130,7 @@ def instantiateComponent(bootloaderComponent):
     btlUdpPortNumber.setVisible(True)
     btlUdpPortNumber.setDefaultValue("6234")
 
-    btlDualBankEnable = False
-
-    if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
-        btlDualBankEnable = True
-    elif ("PIC32MZ" in Variables.get("__PROCESSOR")):
-        if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR")) or
-            re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
-            btlDualBankEnable = True
-
-    btlLiveUpdate = bootloaderComponent.createBooleanSymbol("BTL_LIVE_UPDATE", None)
-    btlLiveUpdate.setLabel("Use Dual Bank For Live Update")
-    btlLiveUpdate.setVisible(btlDualBankEnable)
-
-    length = str((flash_size / 2))
-
-    btlLiveUpdateSize = bootloaderComponent.createStringSymbol("BTL_LIVE_UPDATE_SIZE", btlLiveUpdate)
-    btlLiveUpdateSize.setLabel("Live Update Flash Bank Size (Bytes)")
-    btlLiveUpdateSize.setVisible(btlLiveUpdate.getValue())
-    btlLiveUpdateSize.setDefaultValue(length)
-    btlLiveUpdateSize.setDependencies(setBtlLiveUpdateSize, ["BTL_LIVE_UPDATE"])
-
-    btlLiveUpdateReset = bootloaderComponent.createBooleanSymbol("BTL_LIVE_UPDATE_RESET", btlLiveUpdate)
-    btlLiveUpdateReset.setLabel("Trigger Reset After Live Update")
-    btlLiveUpdateReset.setVisible(btlLiveUpdate.getValue())
-    btlLiveUpdateReset.setDependencies(setBtlLiveUpdateReset, ["BTL_LIVE_UPDATE"])
-
-    btlLiveUpdateComment = bootloaderComponent.createCommentSymbol("BTL_LIVE_UPDATE_COMMENT", None)
-    btlLiveUpdateComment.setLabel("!!! WARNING Only Half of the Flash memory will be available for Application !!!")
-    btlLiveUpdateComment.setVisible(False)
-    btlLiveUpdateComment.setDependencies(setBtlLiveUpdate, ["BTL_LIVE_UPDATE"])
-
-    # Generate RTOS specific Symbols
-    generateRTOSSymbols(bootloaderComponent, btlLiveUpdate.getValue())
+    setupLiveUpdateSymbols(bootloaderComponent)
 
     #################### Code Generation ####################
 
