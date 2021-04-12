@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------------
  * MPLAB XC Compiler -  PIC32MZ DA Live Update linker script
- * Build date : Jul 16 2019
+ * Build date : Jan 26 2021
  * 
- * Copyright (c) 2019, Microchip Technology Inc. and its subsidiaries ("Microchip")
+ * Copyright (c) 2021, Microchip Technology Inc. and its subsidiaries ("Microchip")
  * All rights reserved.
  * 
  * This software is developed by Microchip Technology Inc. and its
@@ -17,7 +17,8 @@
  * 2.      Redistributions in binary form must reproduce the above 
  *         copyright notice, this list of conditions and the following 
  *         disclaimer in the documentation and/or other materials provided 
- *         with the distribution.
+ *         with the distribution. Publication is not required when this file 
+ *         is used in an embedded application.
  * 3.      Microchip's name may not be used to endorse or promote products
  *         derived from this software without specific prior written 
  *         permission.
@@ -61,12 +62,11 @@ PROVIDE(_min_stack_size = 0x400) ;
  * The SFR definitions are now provided in a processor-specific *.S
  * assembly source file rather than the processor.o file. Use the new
  * .S file rather than this processor.o file for new projects. MPLAB XC32
- * v2.10 and later will automatically link the new .S file. When using * this linker script with an older MPLAB XC32 version, remove the
- * OPTIONAL() line below and add the pic32mx/lib/proc/<device>.S file
- * to your project.
+ * v2.10 and later will automatically link the new .S file.
  *************************************************************************/
+#if defined(__XC32_VERSION__) && (__XC32_VERSION__ < 2100)
 OPTIONAL("processor.o")
-
+#endif
 
 /*************************************************************************
  * Vector-offset initialization
@@ -96,7 +96,7 @@ PROVIDE(_ebase_vector_offsets = 0x1000);
  * _CACHE_ERR_EXCPT_ADDR          -- Cache-error Exception Vector
  * _GEN_EXCPT_ADDR                -- General Exception Vector
  *************************************************************************/
-_RESET_ADDR                    = 0x9D000000;
+_RESET_ADDR                    = 0xBD000000;
 _SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + _ebase_vector_offsets + 0;
 _CACHE_ERR_EXCPT_ADDR          = _ebase_address + _ebase_vector_offsets + 0x100;
 _GEN_EXCPT_ADDR                = _ebase_address + _ebase_vector_offsets + 0x180;
@@ -115,13 +115,8 @@ _GEN_EXCPT_ADDR                = _ebase_address + _ebase_vector_offsets + 0x180;
 <#assign btlFlashStartAddress = "${BTL_START} + 0x1000">
 <#assign btlFlashSize = "${BTL_LIVE_UPDATE_SIZE}">
 
-<#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
-    <#lt><#assign btlRamStartAddress = "${BTL_RAM_START} + ${BTL_TRIGGER_LEN}">
-    <#lt><#assign btlRamSize = "${BTL_RAM_SIZE} - ${BTL_TRIGGER_LEN}">
-<#else>
-    <#lt><#assign btlRamStartAddress = "${BTL_RAM_START}">
-    <#lt><#assign btlRamSize = "${BTL_RAM_SIZE}">
-</#if>
+<#assign btlRamStartAddress = "${BTL_RAM_START}">
+<#assign btlRamSize = "${BTL_RAM_SIZE}">
 
 MEMORY
 {
@@ -132,8 +127,8 @@ MEMORY
      * run.
     */
     kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize} - 0x1000 - 2048
-    kseg1_boot_mem              : ORIGIN = 0x9D000000, LENGTH = 0x480
-    kseg1_boot_mem_4B0          : ORIGIN = 0x9D0004B0, LENGTH = 0x1000 - 0x4B0
+    kseg1_boot_mem              : ORIGIN = 0xBD000000, LENGTH = 0x480
+    kseg1_boot_mem_4B0          : ORIGIN = 0xBD0004B0, LENGTH = 0x1000 - 0x4B0
 
     kseg0_data_mem       (w!x)  : ORIGIN = ${btlRamStartAddress}, LENGTH = ${btlRamSize}
     sfrs                        : ORIGIN = 0xBF800000, LENGTH = 0x100000
@@ -166,12 +161,10 @@ SECTIONS
   {
     KEEP(*(.simple_tlb_refill_vector))
   } > kseg0_program_mem
-
   .cache_err_excpt _CACHE_ERR_EXCPT_ADDR :
   {
     KEEP(*(.cache_err_vector))
   } > kseg0_program_mem
-
   .app_excpt _GEN_EXCPT_ADDR :
   {
     KEEP(*(.gen_handler))
