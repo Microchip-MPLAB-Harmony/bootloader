@@ -32,6 +32,9 @@ def setBtlLiveUpdate(symbol, event):
 
     component = symbol.getComponent()
 
+    # Get the (Datasheet Number) for the current Device Family
+    deviceFamily = Database.getSymbolValue("core", "DEVICE_FAMILY")
+
     if (event["value"] == True):
         component.getSymbolByID("BTL_SIZE").setReadOnly(True)
 
@@ -39,7 +42,8 @@ def setBtlLiveUpdate(symbol, event):
 
         component.getSymbolByID("BTL_APP_START_ADDR_COMMENT").setVisible(False)
 
-        if ("PIC32MZ" in Variables.get("__PROCESSOR")):
+        if (("PIC32MZ" in Variables.get("__PROCESSOR")) or
+            ("PIC32MK" in Variables.get("__PROCESSOR"))):
             component.getSymbolByID("BTL_START").setValue("0x9D000000")
 
             # Setup Linker File symbol
@@ -49,6 +53,8 @@ def setBtlLiveUpdate(symbol, event):
                 component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_ef_live_update.ld.ftl")
             elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
                 component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_da_live_update.ld.ftl")
+            elif ("PIC32MK" in Variables.get("__PROCESSOR")):
+                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mk_" + deviceFamily + "_live_update.ld.ftl")
 
         # Disable Custom initialization function from bootloader
         component.getSymbolByID("INITIALIZATION_BOOTLOADER_C").setEnabled(False)
@@ -62,7 +68,8 @@ def setBtlLiveUpdate(symbol, event):
 
         component.getSymbolByID("BTL_TRIGGER_ENABLE").setVisible(True)
 
-        if ("PIC32MZ" in Variables.get("__PROCESSOR")):
+        if (("PIC32MZ" in Variables.get("__PROCESSOR")) or
+            ("PIC32MK" in Variables.get("__PROCESSOR"))):
             component.getSymbolByID("BTL_START").setValue(btl_start)
 
             # Reset Linker File symbol
@@ -72,6 +79,8 @@ def setBtlLiveUpdate(symbol, event):
                 component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_ef.ld.ftl")
             elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
                 component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mz_da.ld.ftl")
+            elif ("PIC32MK" in Variables.get("__PROCESSOR")):
+                component.getSymbolByID("BOOTLOADER_LINKER_FILE").setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_mk_" + deviceFamily + ".ld.ftl")
 
         # Enable Custom initialization function from bootloader 
         component.getSymbolByID("INITIALIZATION_BOOTLOADER_C").setEnabled(True)
@@ -110,6 +119,12 @@ def setupLiveUpdateSymbols(bootloaderComponent):
     elif ("PIC32MZ" in Variables.get("__PROCESSOR")):
         if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR")) or
             re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+            btlLiveUpdateEnable = True
+    elif ("PIC32MK" in Variables.get("__PROCESSOR")):
+        if (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR"))):
+            btlLiveUpdateEnable = False
+        else:
             btlLiveUpdateEnable = True
 
     btlLiveUpdate = bootloaderComponent.createBooleanSymbol("BTL_LIVE_UPDATE", None)

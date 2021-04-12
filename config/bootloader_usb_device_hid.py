@@ -56,6 +56,9 @@ def getMaxBootloaderSize(arch):
 # Call bootloader core python
 execfile(Module.getPath() + "/config/" + bootloaderCore)
 
+# Call Bootloader Live Update Settings python
+execfile(Module.getPath() + "/config/bootloader_live_update.py")
+
 def getLinkerParams(btlLength, triggerLength):
     global ram_start
     global ram_size
@@ -74,7 +77,13 @@ def getLinkerParams(btlLength, triggerLength):
 def setLinkerParams(symbol, event):
     component = symbol.getComponent()
 
-    btlLength = int(component.getSymbolByID("BTL_SIZE").getValue())
+    liveUpdateEnabled = component.getSymbolByID("BTL_LIVE_UPDATE").getValue()
+
+    if (liveUpdateEnabled == True):
+        btlLength = int(component.getSymbolByID("BTL_LIVE_UPDATE_SIZE").getValue())
+    else:
+        btlLength = int(component.getSymbolByID("BTL_SIZE").getValue())
+
     triggerLength = int(component.getSymbolByID("BTL_TRIGGER_LEN").getValue())
 
     linkerParams = getLinkerParams(btlLength, triggerLength)
@@ -101,14 +110,7 @@ def instantiateComponent(bootloaderComponent):
 
     generateCommonSymbols(bootloaderComponent)
 
-    if ("PIC32M" not in Variables.get("__PROCESSOR")):
-        # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
-        xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
-        xc32LdPreprocessroMacroSym.setCategory("C32-LD")
-        xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
-        xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
-        xc32LdPreprocessroMacroSym.setAppend(True, ";")
-        xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
+    setupLiveUpdateSymbols(bootloaderComponent)
 
     #################### Code Generation ####################
 
@@ -192,6 +194,14 @@ def instantiateComponent(bootloaderComponent):
 
     if ("PIC32M" in Variables.get("__PROCESSOR")):
         generateLinkerFileSymbol(bootloaderComponent)
+    else:
+        # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
+        xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
+        xc32LdPreprocessroMacroSym.setCategory("C32-LD")
+        xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
+        xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
+        xc32LdPreprocessroMacroSym.setAppend(True, ";")
+        xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN", "BTL_LIVE_UPDATE"])
 
 def onAttachmentConnected(source, target):
     global flash_erase_size
