@@ -37,24 +37,25 @@ devices = {
             "SAMD2X"    : [256, 2048],
             "SAMDA1"    : [256, 2048],
             "SAML1X"    : [256, 2048],
-            "SAML2X"    : [256, 2048],  
+            "SAML2X"    : [256, 2048],
             "SAMHA1"    : [256, 2048],
+            "PIC32CM"   : [256, 2048],
 }
 
 def bin_hex_convert(bin_file, dest_file, erase_page_size):
 
-    if os.path.exists(bin_file):    
+    if os.path.exists(bin_file):
         count = 16
-        
+
         binfile = open(bin_file, "rb")
-        
+
         if (os.path.exists(dest_file)):
             os.remove(dest_file)
 
         sys.stdout = hexfile = open(dest_file, 'w+')
 
         fstat = os.stat(bin_file)
-        
+
         delta_size = erase_page_size - (fstat.st_size % erase_page_size)
 
         size = fstat.st_size + delta_size
@@ -95,30 +96,30 @@ def bin_hex_convert(bin_file, dest_file, erase_page_size):
 
 def main():
     parser = optparse.OptionParser(usage = 'usage: %prog [options]')
-    parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')    
+    parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')
     parser.add_option('-b', '--binfile', dest='binfile', help='binary file to convert', metavar='FILE')
-    parser.add_option('-o', '--outputHexfile', dest='hexfile', help='output hex file', metavar='FILE')    
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x)', metavar='DEV')
+    parser.add_option('-o', '--outputHexfile', dest='hexfile', help='output hex file', metavar='FILE')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x/pic32cm)', metavar='DEV')
 
-    (options, args) = parser.parse_args()    
+    (options, args) = parser.parse_args()
 
     if options.binfile is None:
         error('binfile name is required (use -b option)')
-        
+
     if options.hexfile is None:
         error('hexfile name is required (use -o option)')
 
     if options.device is None:
-        error('target device is required (use -d option)')   
+        error('target device is required (use -d option)')
 
     device = options.device.upper()
-    
-    if (device in devices):      
+
+    if (device in devices):
         ERASE_PAGE_SIZE         = devices[device][0]
         bin_hex_convert(options.binfile, options.hexfile, ERASE_PAGE_SIZE)
     else:
-        error('invalid device')                         
-    
+        error('invalid device')
+
 
 #------------------------------------------------------------------------------
 
