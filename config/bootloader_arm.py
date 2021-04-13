@@ -39,7 +39,7 @@ btl_start           = "0x0"
 
 NvmMemoryNames      = ["NVM", "NVMCTRL", "EFC", "HEFC"]
 FlashNames          = ["FLASH", "IFLASH"]
-RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM", "FlexRAM"]
+RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM", "FlexRAM", "DRAM"]
 
 addr_space          = ATDF.getNode("/avr-tools-device-file/devices/device/address-spaces/address-space")
 addr_space_children = addr_space.getChildren()
