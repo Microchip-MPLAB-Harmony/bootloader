@@ -160,6 +160,8 @@ def instantiateComponent(bootloaderComponent):
         xc32LdPreprocessroMacroSym.setAppend(True, ";=")
         xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
 
+    setOptimizationLevel(bootloaderComponent, "-O2")
+
 def onAttachmentConnected(source, target):
     global flash_erase_size
 

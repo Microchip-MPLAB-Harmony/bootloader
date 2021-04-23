@@ -172,6 +172,8 @@ def instantiateComponent(bootloaderComponent):
 
     generateXC32SettingsAndFileSymbol(bootloaderComponent)
 
+    setOptimizationLevel(bootloaderComponent, "-O2")
+
 def onAttachmentConnected(source, target):
     global flash_erase_size
 

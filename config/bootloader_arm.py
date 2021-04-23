@@ -274,9 +274,10 @@ def generateXC32SettingsAndFileSymbol(bootloaderComponent):
     xc32ClearDataSection.setKey("place-data-into-section")
     xc32ClearDataSection.setValue("false")
 
-    # Set Optimization level to -O2
+def setOptimizationLevel(bootloaderComponent, optimizationLevel):
+    # Set Optimization level based on input
     xc32Optimization = bootloaderComponent.createSettingSymbol("XC32_OPTIMIZATION", None)
     xc32Optimization.setCategory("C32")
     xc32Optimization.setKey("optimization-level")
-    xc32Optimization.setValue("-O2")
+    xc32Optimization.setValue(optimizationLevel)
 
