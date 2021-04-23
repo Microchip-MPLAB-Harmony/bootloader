@@ -80,7 +80,11 @@ OPTIONAL("vector_offset_init.o")
  *   xc32-gcc src.c -Wl,--defsym=_ebase_address=0x9D001000
  *************************************************************************/
 PROVIDE(_vector_spacing = 0x0001);
-PROVIDE(_ebase_address = 0x9FC00000);
+<#if BTL_START == "0x9D000000" >
+    <#lt>PROVIDE(_ebase_address = 0x9D000000);
+<#else>
+    <#lt>PROVIDE(_ebase_address = 0x9FC00000);
+</#if>
 
 /* Place the vector table and other exceptions after the device reset code. */
 PROVIDE(_ebase_vector_offsets = 0x1000);
