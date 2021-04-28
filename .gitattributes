@@ -10,11 +10,16 @@
 *.c text
 
 # Denote all files that are truly binary and should not be modified.
-*.jar -text
-*.a -text
-*.gif -text
-*.png -text
-*.jpg -text
-*.chm -text
-*.html -text
-*.css -text 
+*.jar binary
+*.exe binary
+*.chm binary
+*.a binary
+*.png binary
+*.svg binary
+*.ico binary
+*.elf binary
+*.bin binary
+*.jpg binary
+*.gif binary
+*.html binary
+*.css binary 
