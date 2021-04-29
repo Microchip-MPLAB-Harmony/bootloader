@@ -1,8 +1,13 @@
+---
+grand_parent: Bootloader Library Help
+parent: USB Device HID Bootloader
+title: Tools Help
+nav_order: 6
+---
+
 [![MCHP](https://www.microchip.com/ResourcePackages/Microchip/assets/dist/images/logo.png)](https://www.microchip.com)
 
-# Bootloader Unified Host Script Help
-
-This document describes the usage of Unified Host Script
+# USB Device HID Bootloader Unified Host Script Help
 
 ## Downloading the host script
 
@@ -18,46 +23,52 @@ To clone or download these host tools from Github,go to the [main page of this r
 
 ## Description
 
-- This host script should be used to communicate with the Bootloader running on the device via
-    - **USB Device HID interface**
-    - **UDP Interface**
+- This host script should be used to communicate with the USB Device HID Bootloader running on the device
+
 - It implements the Unified bootloader protocol required to communicate from host PC
+
 - It sends the **Normalized Hex File** of the application to be bootloaded
 
 ## Configuring and Using the Unified Host tool
 
 - Double click on **tools/UnifiedHost-\*/UnifiedHost-\*.jar** file to launch the Host application
+
 - Select the **Device architecture** and **Protocol** as shown below
 
-    ![unified_host_device_arch](./images/unified_host_device_arch.png)
+    <p align="center">
+        <img src = "./images/unified_host_device_arch.png"/>
+    </p>
 
-- Selecting the desired **Protocol**
-
-    - If using **USB Device HID Bootloader** then select **USB** protocol
+- Select **USB Protocol**
     - Click on configure button and select the USB Device product ID. Example **3C*
 
-        ![unified_host_usb_setting](./images/unified_host_usb_setting.png)
-
-    - If using **UDP Bootloader** then select **UDP** protocol
-    - Click on configure button to configure UDP port Number and IP Address
-
-        ![unified_host_udp_setting](./images/unified_host_udp_setting.png)
+    <p align="center">
+        <img src = "./images/unified_host_usb_setting.png"/>
+    </p>
 
 - Load the test application hex file to be programmed using below option
 
-    ![unified_host_load_hex](./images/unified_host_load_hex.png)
+    <p align="center">
+        <img src = "./images/unified_host_load_hex.png"/>
+    </p>
 
 - Open the **Console** window of the host application to view application bootloading sequence
 
-    ![unified_host_tools_console](./images/unified_host_tools_console.png)
+    <p align="center">
+        <img src = "./images/unified_host_tools_console.png"/>
+    </p>
 
 - Click on **Program Device** button to program the loaded test application hex file on to the device
 
-    ![unified_host_program_device](./images/unified_host_program_device.png)
+    <p align="center">
+        <img src = "./images/unified_host_program_device_usb.png"/>
+    </p>
 
 - Following snapshot shows output of successfully programming the test application
 
-    ![unified_host_success](./images/unified_host_success.png)
+    <p align="center">
+        <img src = "./images/unified_host_success_usb.png"/>
+    </p>
 
 ## Using Unified Host Tool in debugging mode
 
@@ -67,7 +78,7 @@ To clone or download these host tools from Github,go to the [main page of this r
 
       java -Djava.util.logging.config.file="logging.properties" -jar UnifiedHost-*.jar
 
-- Once the tool is launched refer to steps mentioned above in **Configuring and Using the Unified Host tool** to program application binary
+- Once the tool is launched refer to steps mentioned above in [Configuring and Using the Unified Host tool](#configuring-and-using-the-unified-host-tool) to program application hex
 
 - You can see the logs during programming sequence on the command prompt
 

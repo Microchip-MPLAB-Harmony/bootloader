@@ -1,14 +1,23 @@
+---
+grand_parent: Appendix
+parent: Configurations for CORTEX-M based MCUs
+title: Application Project Configurations
+has_toc: false
+nav_order: 2
+---
 
 [![MCHP](https://www.microchip.com/ResourcePackages/Microchip/assets/dist/images/logo.png)](https://www.microchip.com)
 
-# Configuring a SAM based Application to be bootloaded
+# Project configurations for the application to be bootloaded
 
-## Application Settings in MHC System Configuration
+## Application settings in MHC system configuration
 
 1. Launch MHC for the application project to be configured
 2. Select **system** component from the project graph and configure the below highlighted settings
 
-    ![application_config_mhc_setting](./images/application_config_mhc_setting.png)
+    <p align="center">
+        <img src = "./images/arm_application_config_mhc.png"/>
+    </p>
 
 3. **Disable Fuse Settings:**
     - Fuse settings needs to be disabled for the application which will be boot-loaded as the fuse settings are supposed to be programmed through programming tool from bootloader code. Also the fuse settings are not programmable through firmware
@@ -28,7 +37,9 @@
 
     - After the project is regenerated, the ROM_ORIGIN and ROM_LENGTH are the XC32 linker variables which will be overridden with value provided for **Application Start Address (Hex)** and can be verified under Options for xc32-ld in Project Properties in MPLABX IDE as shown below.
 
-    ![application_config_xc32_ld_rom](./images/application_config_xc32_ld_rom.png)
+    <p align="center">
+        <img src = "./images/arm_application_config_xc32_ld_rom.png"/>
+    </p>
 
 ## MPLAB X Settings
 
@@ -47,7 +58,9 @@
 ${MP_CC_DIR}/xc32-objcopy -I ihex -O binary ${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.hex ${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.bin
     ```
 
-    ![application_config_post_build_script](./images/application_config_post_build_script.png)
+    <p align="center">
+        <img src = "./images/arm_application_config_post_build_script.png"/>
+    </p>
 
 ### For Bootloading the application using Normalized Hex file
 
@@ -57,7 +70,9 @@ ${MP_CC_DIR}/xc32-objcopy -I ihex -O binary ${DISTDIR}/${PROJECTNAME}.${IMAGE_TY
 
 - Check the **Normalize hex file** option as shown below, as the **Unified bootloader host application** takes hex file as an input. **Normalizing the hex file will make sure the data in the hex file is arranged sequentially**
 
-    ![application_config_normalize_hex](./images/application_config_normalize_hex.png)
+    <p align="center">
+        <img src = "./images/arm_application_config_normalize_hex.png"/>
+    </p>
 
 ## Additional settings (Optional)
 
@@ -67,4 +82,7 @@ ${MP_CC_DIR}/xc32-objcopy -I ihex -O binary ${DISTDIR}/${PROJECTNAME}.${IMAGE_TY
 
 - This is optional and can be ignored if not required
 
-    ![application_config_xc32_ld_ram](./images/application_config_xc32_ld_ram.png)
+    <p align="center">
+        <img src = "./images/arm_application_config_xc32_ld_ram.png"/>
+    </p>
+

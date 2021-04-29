@@ -1,3 +1,10 @@
+﻿---
+title: Bootloader Library Help
+has_children: true
+has_toc: false
+nav_order: 1
+---
+
 ![Microchip logo](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_logo.png)
 ![Harmony logo small](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_mplab_harmony_logo_small.png)
 
@@ -14,7 +21,7 @@ and microprocessor devices. Refer to the following links for more information.
 - [Microchip MPLAB Harmony Pages](https://microchip-mplab-harmony.github.io/)
 
 This repository contains the MPLAB® Harmony 3 Bootloader. The bootloader module
-components provide framework to develop bootloaders for Microchip 32-bit SAM
+components provide framework to develop bootloaders for Microchip 32-bit PIC32 and SAM
 microcontrollers. Refer to the following links for release notes, training materials,
 and interface reference information.
 
@@ -28,20 +35,44 @@ and interface reference information.
 | Folder    | Description                                                |
 |-----------|------------------------------------------------------------|
 | config    | Bootloader module configuration scripts                    |
-| doc       | Bootloader module library help documentation               |
 | docs      | Bootloader module library HTML help documentation          |
 | templates | Bootloader and system file templates                       |
 | tools     | Bootloader Host scripts                                    |
 
+# Introduction
+
+The Bootloader Library can be used to upgrade firmware on a target device without the need for an external programmer or debugger.
+
+A Bootloader is a small application that starts the operation of the device. A Bootloader does not fully operate the device, but can perform various functions prior to starting the main application.
+
+**Such functions can include:**
+- Firmware upgrades
+- Application integrity
+- Starting the application
+
+## Supported Bootloaders
+
+| Bootloader                                                                | Description                                                 |
+|---------------------------------------------------------------------------|-------------------------------------------------------------|
+| [UART](templates/src/optimized/docs/uart/readme.md)                       | This section provides help on the Optimized UART Bootloader library |
+| [I2C](templates/src/optimized/docs/i2c/readme.md)                         | This section provides help on the Optimized I2C Bootloader library |
+| [CAN](templates/src/optimized/docs/can/readme.md)                         | This section provides help on the Optimized CAN Bootloader library |
+| [Serial Memory](templates/src/optimized/docs/serial_memory/readme.md)     | This section provides help on the Serial Memory Bootloader library |
+| [USB Device HID](templates/src/unified/docs/usb/readme.md)                | This section provides help on the USB Device HID Bootloader library |
+| [UDP](templates/src/unified/docs/udp/readme.md)                           | This section provides help on the UDP Bootloader library |
+| [File System](templates/src/fs/docs/readme.md)                            | This section provides help on the File system Bootloader library |
+
 # Bootloader Application Repositories
 
-| Repo name                                                                                         | Description                            |
-|---------------------------------------------------------------------------------------------------|----------------------------------------|
-| [bootloader_apps_uart](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_uart)           | UART Bootloader Applications           |
-| [bootloader_apps_i2c](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_i2c)             | I2C Bootloader Applications            |
-| [bootloader_apps_usb](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_usb)             | USB Bootloader Applications            |
-| [bootloader_apps_ethernet](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_ethernet)   | Ethernet Bootloader Applications       |
-| [bootloader_apps_sdcard](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_sdcard)       | SDCARD Bootloader Applications         |
+| Repo name                                                                                                 | Description                     |
+|-----------------------------------------------------------------------------------------------------------|---------------------------------|
+| [bootloader_apps_uart](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_uart)                   | UART Bootloader Applications    |
+| [bootloader_apps_i2c](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_i2c)                     | I2C Bootloader Applications     |
+| [bootloader_apps_can](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_can)                     | CAN Bootloader Applications     |
+| [bootloader_apps_usb](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_usb)                     | USB Bootloader Applications     |
+| [bootloader_apps_ethernet](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_ethernet)           | Ethernet Bootloader Applications|
+| [bootloader_apps_sdcard](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_sdcard)               | SDCARD Bootloader Applications  |
+| [bootloader_apps_serial_memory](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_serial_memory) | Serial Memory Bootloader Applications  |
 
 ____
 
