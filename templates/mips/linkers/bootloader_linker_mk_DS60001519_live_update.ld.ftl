@@ -93,7 +93,7 @@ PROVIDE(_ebase_vector_offsets = 0x1000);
  * _SIMPLE_TLB_REFILL_EXCPT_ADDR  -- Simple TLB-Refill Exception Vector
  * _GEN_EXCPT_ADDR                -- General Exception Vector
  *************************************************************************/
-_RESET_ADDR                    = 0x9D000000;
+_RESET_ADDR                    = 0xBD000000;
 _SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + _ebase_vector_offsets + 0;
 _GEN_EXCPT_ADDR                = _ebase_address + _ebase_vector_offsets + 0x180;
 
@@ -123,7 +123,7 @@ MEMORY
      * run.
     */
     kseg0_program_mem  (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize} - 0x1000 - 512
-    kseg0_boot_mem           : ORIGIN = 0x9D000000, LENGTH = 0x480
+    kseg1_boot_mem           : ORIGIN = 0xBD000000, LENGTH = 0x480
 
     kseg0_data_mem     (w!x) : ORIGIN = ${btlRamStartAddress}, LENGTH =${btlRamSize}
     sfrs                     : ORIGIN = 0xBF800000, LENGTH = 0x100000
@@ -140,7 +140,7 @@ SECTIONS
   {
     KEEP(*(.reset))
     KEEP(*(.reset.startup))
-  } > kseg0_boot_mem
+  } > kseg1_boot_mem
 
   .app_excpt _GEN_EXCPT_ADDR :
   {
