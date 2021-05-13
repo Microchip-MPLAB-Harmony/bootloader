@@ -1,0 +1,114 @@
+/*
+ *  (c) 2020 Microchip Technology Inc. and its subsidiaries.
+ *
+ *  Subject to your compliance with these terms,you may use this software and
+ *  any derivatives exclusively with Microchip products.It is your responsibility
+ *  to comply with third party license terms applicable to your use of third party
+ *  software (including open source software) that may accompany Microchip software.
+ *
+ *  THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+ *  EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED
+ *  WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A
+ *  PARTICULAR PURPOSE.
+ *
+ *  IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+ *  INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+ *  WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS
+ *  BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE
+ *  FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
+ *  ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
+ *  THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
+ */
+
+Java Simple Serial Connector (jSSC) is licensed under the GNU Lesser GPL.
+Site: https://github.com/scream3r/java-simple-serial-connector
+
+    jSSC (Java Simple Serial Connector) - serial port communication library.
+    © Alexey Sokolov (scream3r), 2010-2014.
+
+    jSSC is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    jSSC is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with jSSC.  If not, see <http://www.gnu.org/licenses/>.
+
+HID4Java is licensed under The MIT License
+Site: https://github.com/gary-rowe/hid4java
+
+    The MIT License (MIT)
+
+    Copyright (c) 2014 Gary Rowe
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+Java Native Access (JNA) is licensed under the Apache License 2.0
+Site: https://github.com/java-native-access/jna
+
+    This copy of JNA is licensed under the
+    Apache (Software) License, version 2.0 ("the License").
+    See the License for details about distribution rights, and the
+    specific rights regarding derivate works.
+
+    You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/
+
+    A copy is also included in the downloadable source code package
+    containing JNA, in file "LICENSE-AL20", under the same directory
+    as this file.
+
+hidapi is licensed under the HIDAPI license
+Site: https://github.com/signal11/hidapi/
+
+    HIDAPI - Multi-Platform library for
+    communication with HID devices.
+
+    Copyright 2009, Alan Ott, Signal 11 Software.
+    All Rights Reserved.
+
+    This software may be used by anyone for any reason so
+    long as the copyright notice in the source files
+    remains intact.
+
+Some graphic resources licensed under Creative Commons (Attribution-Share Alike 3.0)
+Site: https://www.iconfinder.com/icons/134221/arrow_refresh_reload_repeat_sync_update_icon#size=128
+Attribution: Timothy Miller
+
+PCAN-ISO-TP API is licensed under the below terms
+Site: https://www.peak-system.com/PCAN-ISO-TP-API.369.0.html?&L=1
+
+	The interface DLLs of this API, PCAN-Basic, device drivers, 
+	and further files needed for linking are property of the 
+	PEAK-System Technik GmbH and may be used only in connection 
+	with a hardware component purchased from PEAK-System or one 
+	of its partners. If a CAN hardware component of thirdparty 
+	suppliers should be compatible to one of PEAK-System, then 
+	you are not allowed to use or to pass on the APIs and driver 
+	software of PEAK-System.
+
+	If a third-party supplier develops software based on the 
+	PCAN-ISO-TP API and problems occur during the use of this 
+	software, consult the software provider. 
