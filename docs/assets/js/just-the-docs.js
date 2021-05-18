@@ -926,7 +926,7 @@ var myVariable = `
   },"154": {
     "doc": "Application Linker Configurations",
     "title": "Setting up the Application linker script",
-    "content": "The linker script file of the application project has to be modified to place the vector table and reset handlers in program flash memory. | For Quick start, Refer to pre developed application linker scripts app_XX.ld placed in projects device specific configuration folder of bootloader_apps_xxx/ repository. For example: . | Reset Address for the application to be loaded through bootloader should match the Application start address mentioned in bootloader project. | The vector address of a given interrupt is calculated using Exception Base (EBASE) CPU register and the _ebase_address should be aligned to 4KB boundary . | Note: The below sections provides overview of changes required in the applications linker scripts. The address location and size may vary based on the specific device used . | . For Bootloaders placed in Boot Flash Memory (PIC32MZ and PIC32MK Devices) . | The application start address by default will be start of program flash memory . | Refer to specific device datasheet for program flash memory start address and length | . | The Initial 4KB from Application start address are used by Reset Handler and and cache_init section . | XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs. | If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address. | Example: When _ebase_address is set to 0x9D001000 and interrupts vectors are not located withing the 4KB boundary from the ebase address (OFFx &gt; 0x1000), then the bitwise OR operator may not provide correct interrupt vector address. | . | To provide maximum flexibility in placement of interrupt vectors: . | Always place the _ebase_address at start of Program flash memory (Example : 0x9D000000) like the default linker script . | Change the offsets of exceptions and vector section to place them after the device startup code. With this the interrupt handlers can be located anywhere in the Program Flash memory. | . | Updated linker scripts as explained above is shown here as an example . | Note: Cache related sections are not applicable for PIC32MK Devices | . | . PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D000000); /* Place the vector table and other exceptions after the device reset and * cache init code. */ PROVIDE(_ebase_vector_offsets = 0x1000); _RESET_ADDR = 0xBD000000; _SIMPLE_TLB_REFILL_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0; _CACHE_ERR_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0x100; _GEN_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0x180; kseg0_program_mem (rx) : ORIGIN = 0x9D001000, LENGTH = 0x200000 - 0x1000 kseg1_boot_mem : ORIGIN = 0xBD000000, LENGTH = 0x480 kseg1_boot_mem_4B0 : ORIGIN = 0xBD0004B0, LENGTH = 0x1000 - 0x4B0 /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &gt; kseg1_boot_mem .cache_init : { *(.cache_init) *(.cache_init.*) } &gt; kseg1_boot_mem_4B0 ... /* Interrupt vector table with vector offsets */ .vectors _ebase_address + _ebase_vector_offsets + 0x200 : { /* Symbol __vector_offset_n points to .vector_n if it exists, * otherwise points to the default handler. The * vector_offset_init.o module then provides a .data section * containing values used to initialize the vector-offset SFRs * in the crt0 startup code. */ . = ALIGN(4) ; __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default); KEEP(*(.vector_0)) ..... /* Default interrupt handler */ . = ALIGN(4) ; __vector_offset_default = . - _ebase_address; KEEP(*(.vector_default)) } &gt; kseg0_program_mem . For Bootloaders placed in Program Flash Memory (PIC32MK Devices) . | The bootloader code resides from start of Program flash memory, hence the application start address has to be after the end of bootloader. | Refer to specific device datasheet for program flash memory start address and length | . | The Initial 4KB from Application start address are used by Reset Handler section . | XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs. | If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address. | Example: When _ebase_address is set to 0x9D001000 and interrupts vectors are not located withing the 4KB boundary from the ebase address (OFFx &gt; 0x1000), then the bitwise OR operator may not provide correct interrupt vector address. | . | To provide maximum flexibility in placement of interrupt vectors: . | Always place the _ebase_address at start of Program flash memory (Example : 0x9D000000) like the default linker script . | Note: As _ebase_address is only used to calculate the vector offset it can be placed at start of program flash memory even though the bootloader code is residing there . | Change the offsets of exceptions and vector section to place them after the device startup code of application. With this the interrupt handlers can be located anywhere in the Program Flash memory after bootloader space . | . | Updated linked scripts as explained above is shown here as an example. | Bootloader length &lt;bootloader_length&gt; in the below snippet needs to be replaced with size of the respective bootloader. | . | . PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D000000); /* Place the vector table and other exceptions after the device reset and * cache init code. */ PROVIDE(_ebase_vector_offsets = &lt;bootloader_length&gt; + 0x1000); _RESET_ADDR = 0xBD000000 + &lt;bootloader_length&gt;; _SIMPLE_TLB_REFILL_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0; _GEN_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0x180; kseg0_program_mem (rx) : ORIGIN = 0x9D000000 + &lt;bootloader_length&gt; + 0x1000, LENGTH = 0x200000 - &lt;bootloader_length&gt; - 0x1000 kseg1_boot_mem : ORIGIN = 0xBD000000 + &lt;bootloader_length&gt;, LENGTH = 0x1000 /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &gt; kseg1_boot_mem ... /* Interrupt vector table with vector offsets */ .vectors _ebase_address + _ebase_vector_offsets + 0x200 : { /* Symbol __vector_offset_n points to .vector_n if it exists, * otherwise points to the default handler. The * vector_offset_init.o module then provides a .data section * containing values used to initialize the vector-offset SFRs * in the crt0 startup code. */ . = ALIGN(4) ; __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default); KEEP(*(.vector_0)) ..... /* Default interrupt handler */ . = ALIGN(4) ; __vector_offset_default = . - _ebase_address; KEEP(*(.vector_default)) } &gt; kseg0_program_mem . For Bootloaders placed in Boot Flash Memory (PIC32MX Devices) . | The application start address by default will be start of program flash memory . | Refer to specific device datasheet for program flash memory start address and length | . | The Initial 4KB are used by Reset Handler section . | In PIC32MX devices the _ebase_address holds the start address of vector table and it must be placed at 4KB boundary after the Reset Handler section . | Updated linked scripts as explained above is shown here as an example. | . PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D001000); _RESET_ADDR = 0xBD000000 kseg0_program_mem (rx) : ORIGIN = 0x9D001000, LENGTH = 0x80000 - 0x1000 kseg1_boot_mem : ORIGIN = 0xBD000000, LENGTH = 0x1000 /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &gt; kseg1_boot_mem ...vector_0 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 0) : { KEEP(*(.vector_0)) } &gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &lt;= (_vector_spacing &lt;&lt; 5), \\\"function at exception vector 0 too large\\\") .vector_1 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 1) : { KEEP(*(.vector_1)) } &gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &lt;= (_vector_spacing &lt;&lt; 5), \\\"function at exception vector 1 too large\\\") ..... For Bootloaders placed in Program Flash Memory (PIC32MX Devices) . | The bootloader code resides from start of Program flash memory, hence the application start address has to be after the end of bootloader. | The Initial 4KB from Application start address are used by Reset Handler section . | Place the _ebase_address after the device startup code of application . | Updated linked scripts as explained above is shown here as an example. | Bootloader length &lt;bootloader_length&gt; in the below snippet needs to be replaced with size of the respective bootloader. | . | . PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D000000 + &lt;bootloader_length&gt; + 0x1000); _RESET_ADDR = 0xBD000000 + &lt;bootloader_length&gt;; kseg0_program_mem (rx) : ORIGIN = 0x9D000000 + &lt;bootloader_length&gt; + 0x1000, LENGTH = 0x80000 - &lt;bootloader_length&gt; - 0x1000 kseg1_boot_mem : ORIGIN = 0xBD000000 + &lt;bootloader_length&gt;, LENGTH = 0x1000 /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &gt; kseg1_boot_mem ...vector_0 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 0) : { KEEP(*(.vector_0)) } &gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &lt;= (_vector_spacing &lt;&lt; 5), \\\"function at exception vector 0 too large\\\") .vector_1 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 1) : { KEEP(*(.vector_1)) } &gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &lt;= (_vector_spacing &lt;&lt; 5), \\\"function at exception vector 1 too large\\\") ..... Note . | As the Device configuration bits should be updated by bootloader only, the application linker script should not have any device configuration settings . | Device configurations and debug exception need to discarded from final hex file for the application project. | . /DISCARD/ : { *(._debug_exception) } /DISCARD/ : { *(.config_*) } . ",
+    "content": "The linker script file of the application project has to be modified to place the vector table and reset handlers in program flash memory. | For Quick start, Refer to pre developed application linker scripts app_XX.ld placed in projects device specific configuration folder of bootloader_apps_xxx/ repository. For example: . | Reset Address for the application to be loaded through bootloader should match the Application start address mentioned in bootloader project. | The vector address of a given interrupt is calculated using Exception Base (EBASE) CPU register and the _ebase_address should be aligned to 4KB boundary . | Note: The below sections provides overview of changes required in the applications linker scripts. The address location and size may vary based on the specific device used . | . For Bootloaders placed in Boot Flash Memory (PIC32MZ and PIC32MK Devices) . | The application start address by default will be start of program flash memory . | Refer to specific device datasheet for program flash memory start address and length | . | The Initial 4KB from Application start address are used by Reset Handler and and cache_init section . | XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs. | If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address. | Example: When _ebase_address is set to 0x9D001000 and interrupts vectors are not located withing the 4KB boundary from the ebase address (OFFx &gt; 0x1000), then the bitwise OR operator may not provide correct interrupt vector address. | . | To provide maximum flexibility in placement of interrupt vectors: . | Always place the _ebase_address at start of Program flash memory (Example : 0x9D000000) like the default linker script . | Change the offsets of exceptions and vector section to place them after the device startup code. With this the interrupt handlers can be located anywhere in the Program Flash memory. | . | Updated linker scripts as explained above is shown here as an example . | Note: Cache related sections are not applicable for PIC32MK Devices | . | . PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D000000); /* Place the vector table and other exceptions after the device reset and * cache init code. */ PROVIDE(_ebase_vector_offsets = 0x1000); _RESET_ADDR = 0xBD000000; _SIMPLE_TLB_REFILL_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0; _CACHE_ERR_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0x100; _GEN_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0x180; kseg0_program_mem (rx) : ORIGIN = 0x9D001000, LENGTH = 0x200000 - 0x1000 kseg1_boot_mem : ORIGIN = 0xBD000000, LENGTH = 0x480 kseg1_boot_mem_4B0 : ORIGIN = 0xBD0004B0, LENGTH = 0x1000 - 0x4B0 /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &gt; kseg1_boot_mem .cache_init : { *(.cache_init) *(.cache_init.*) } &gt; kseg1_boot_mem_4B0 ... /* Interrupt vector table with vector offsets */ .vectors _ebase_address + _ebase_vector_offsets + 0x200 : { /* Symbol __vector_offset_n points to .vector_n if it exists, * otherwise points to the default handler. The * vector_offset_init.o module then provides a .data section * containing values used to initialize the vector-offset SFRs * in the crt0 startup code. */ . = ALIGN(4) ; __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default); KEEP(*(.vector_0)) ..... /* Default interrupt handler */ . = ALIGN(4) ; __vector_offset_default = . - _ebase_address; KEEP(*(.vector_default)) } &gt; kseg0_program_mem . For Bootloaders placed in Program Flash Memory (PIC32MK Devices) . | The bootloader code resides from start of Program flash memory, hence the application start address has to be after the end of bootloader. | Refer to specific device datasheet for program flash memory start address and length | . | The Initial 4KB from Application start address are used by Reset Handler section . | XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs. | If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address. | Example: When _ebase_address is set to 0x9D001000 and interrupts vectors are not located withing the 4KB boundary from the ebase address (OFFx &gt; 0x1000), then the bitwise OR operator may not provide correct interrupt vector address. | . | To provide maximum flexibility in placement of interrupt vectors: . | Always place the _ebase_address at start of Program flash memory (Example : 0x9D000000) like the default linker script . | Note: As _ebase_address is only used to calculate the vector offset it can be placed at start of program flash memory even though the bootloader code is residing there . | Change the offsets of exceptions and vector section to place them after the device startup code of application. With this the interrupt handlers can be located anywhere in the Program Flash memory after bootloader space . | . | Updated linked scripts as explained above is shown here as an example. | Bootloader length &lt;bootloader_length&gt; in the below snippet needs to be replaced with size of the respective bootloader. | . | . PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D000000); /* Place the vector table and other exceptions after the device reset and * cache init code. */ PROVIDE(_ebase_vector_offsets = &lt;bootloader_length&gt; + 0x1000); _RESET_ADDR = 0xBD000000 + &lt;bootloader_length&gt;; _SIMPLE_TLB_REFILL_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0; _GEN_EXCPT_ADDR = _ebase_address + _ebase_vector_offsets + 0x180; kseg0_program_mem (rx) : ORIGIN = 0x9D000000 + &lt;bootloader_length&gt; + 0x1000, LENGTH = 0x200000 - &lt;bootloader_length&gt; - 0x1000 kseg1_boot_mem : ORIGIN = 0xBD000000 + &lt;bootloader_length&gt;, LENGTH = 0x1000 /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &gt; kseg1_boot_mem ... /* Interrupt vector table with vector offsets */ .vectors _ebase_address + _ebase_vector_offsets + 0x200 : { /* Symbol __vector_offset_n points to .vector_n if it exists, * otherwise points to the default handler. The * vector_offset_init.o module then provides a .data section * containing values used to initialize the vector-offset SFRs * in the crt0 startup code. */ . = ALIGN(4) ; __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default); KEEP(*(.vector_0)) ..... /* Default interrupt handler */ . = ALIGN(4) ; __vector_offset_default = . - _ebase_address; KEEP(*(.vector_default)) } &gt; kseg0_program_mem . For Bootloaders placed in Boot Flash Memory (PIC32MX Devices) . | The application start address by default will be start of program flash memory . | Refer to specific device datasheet for program flash memory start address and length | . | The Initial 4KB are used by Reset Handler section . | In PIC32MX devices the _ebase_address holds the start address of vector table and it must be placed at 4KB boundary after the Reset Handler section . | Updated linked scripts as explained above is shown here as an example. | . PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D001000); _RESET_ADDR = 0xBD000000 kseg0_program_mem (rx) : ORIGIN = 0x9D001000, LENGTH = 0x80000 - 0x1000 kseg1_boot_mem : ORIGIN = 0xBD000000, LENGTH = 0x1000 /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &gt; kseg1_boot_mem ...vector_0 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 0) : { KEEP(*(.vector_0)) } &gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &lt;= (_vector_spacing &lt;&lt; 5), \\\"function at exception vector 0 too large\\\") .vector_1 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 1) : { KEEP(*(.vector_1)) } &gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &lt;= (_vector_spacing &lt;&lt; 5), \\\"function at exception vector 1 too large\\\") ..... For Bootloaders placed in Program Flash Memory (PIC32MX Devices) . | The bootloader code resides from start of Program flash memory, hence the application start address has to be after the end of bootloader. | The Initial 4KB from Application start address are used by Reset Handler section . | Place the _ebase_address after the device startup code of application . | Updated linked scripts as explained above is shown here as an example. | Bootloader length &lt;bootloader_length&gt; in the below snippet needs to be replaced with size of the respective bootloader. | . | . PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D000000 + &lt;bootloader_length&gt; + 0x1000); _RESET_ADDR = 0xBD000000 + &lt;bootloader_length&gt;; kseg0_program_mem (rx) : ORIGIN = 0x9D000000 + &lt;bootloader_length&gt; + 0x1000, LENGTH = 0x80000 - &lt;bootloader_length&gt; - 0x1000 kseg1_boot_mem : ORIGIN = 0xBD000000 + &lt;bootloader_length&gt;, LENGTH = 0x1000 /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &gt; kseg1_boot_mem ...vector_0 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 0) : { KEEP(*(.vector_0)) } &gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &lt;= (_vector_spacing &lt;&lt; 5), \\\"function at exception vector 0 too large\\\") .vector_1 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 1) : { KEEP(*(.vector_1)) } &gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &lt;= (_vector_spacing &lt;&lt; 5), \\\"function at exception vector 1 too large\\\") ..... Note . | The bootloader and the application must have the same device configuration bit settings. The Device configuration bit settings from the bootloader project will be updated by the programmer/debugger, Hence the application linker script should not have any device configuration bit settings. The application project will use the device configuration bit settings done by bootloader. | Device configurations and debug exception need to discarded from final hex file for the application project. | . /DISCARD/ : { *(._debug_exception) } /DISCARD/ : { *(.config_*) } . ",
     "url": "http://localhost:4000/bootloader/templates/mips/docs/mips_application_linker_config.html#setting-up-the-application-linker-script",
     "relUrl": "/templates/mips/docs/mips_application_linker_config.html#setting-up-the-application-linker-script"
   },"155": {
@@ -1064,7 +1064,7 @@ var myVariable = `
   },"177": {
     "doc": "Live Update Memory layout",
     "title": "Live Update Memory layout for MIPS based MCUs",
-    "content": ". | Supported for the devices which have a Dual Bank flash memory . | Switcher code is placed at start of the Boot flash memory (0xBFC00000) as upon reset the device runs from start of boot flash memory. | Note: The switcher code provided does not have any programming capabilities.It just performs bank swap operations as described above | . | Device always executes the application firmware from PFM bank mapped to lower memory region (0x1D00_0000 Physical address) . | Start address of Active Bank is mapped to lower region 0x9D000000 . | Start address of Inactive Bank is from mid of the PFM which can vary from device to device. Refer to respective Data sheets for details of Flash memory layout. | . | Row size number of bytes are reserved at end of each bank for storing serial number. This serial number will be used by the switcher code placed in BFM to map the appropriate PFM bank to lower memory region and run the application from there . | Volatile register SWAP bit is used to map either of bank to lower memory region by switcher . | The bootloader live update code responsible to program the inactive bank is part of the application it self. Which means the programming operation can happen while the application is running . | Live Update Application = (Bootloader Code in Live Update mode + Application code) | . | The application code is responsible to send a request to bootloader live update code to perform a bank swap and reset to run the new firmware programmed in Inactive bank . | Once this request is received the bootloader live update code performs below operation before initiating a reset to run new firmware . | Inactive Serial number = Active serial number + 1 | . | At reset switcher first maps Bank 1 to lower region and reads the serial numbers from both banks . | If Bank 2 serial number is greater than Bank 1 serial number, it maps Bank 2 to lower region by setting the Swap bit and runs the new firmware. Now Bank 2 is Active bank . | The live update start address should always fall into lower mapped region (0x9D000000 to Mid of Flash). Size of the application in the linker script should also not exceed the Mid of flash. | . ",
+    "content": ". | Supported for the devices which have a Dual Bank flash memory . | Switcher code is placed at start of the Boot flash memory (0xBFC00000) as upon reset the device runs from start of boot flash memory. | Note: The switcher code provided does not have any programming capabilities.It just performs bank swap operations | . | Device always executes the application firmware from PFM bank mapped to lower memory region (0x1D00_0000 Physical address) . | Start address of Active Bank is mapped to lower region 0x9D000000 . | Start address of Inactive Bank is from mid of the PFM which can vary from device to device. Refer to respective Data sheets for details of Flash memory layout. | . | Row size number of bytes are reserved at end of each bank for storing serial number. This serial number will be used by the switcher code placed in BFM to map the appropriate PFM bank to lower memory region and run the application from there . | Volatile register SWAP bit is used to map either of bank to lower memory region by switcher . | The bootloader live update code responsible to program the inactive bank is part of the application it self. Which means the programming operation can happen while the application is running . | Live Update Application = (Bootloader Code in Live Update mode + Application code) | . | The application code is responsible to send a request to bootloader live update code to perform a bank swap and reset to run the new firmware programmed in Inactive bank . | Once this request is received the bootloader live update code performs below operation before initiating a reset to run new firmware . | Inactive Serial number = Active serial number + 1 | . | At reset switcher first maps Bank 1 to lower region and reads the serial numbers from both banks . | If Bank 2 serial number is greater than Bank 1 serial number, it maps Bank 2 to lower region by setting the Swap bit and runs the new firmware. Now Bank 2 is Active bank . | The live update start address should always fall into lower mapped region (0x9D000000 to Mid of Flash). Size of the application in the linker script should also not exceed the Mid of flash. | . ",
     "url": "http://localhost:4000/bootloader/templates/mips/docs/mips_bootloader_memory_layout_live_update.html#live-update-memory-layout-for-mips-based-mcus",
     "relUrl": "/templates/mips/docs/mips_bootloader_memory_layout_live_update.html#live-update-memory-layout-for-mips-based-mcus"
   },"178": {
@@ -1322,7 +1322,7 @@ var myVariable = `
   },"220": {
     "doc": "Tools Help",
     "title": "Using Unified Host Tool in debugging mode",
-    "content": ". | Launch Windows Command prompt in tools/UnifiedHost-*/ directory . | Run below command to launch Unified Host Application in debugging mode . java -Djava.util.logging.config.file=\\\"logging.properties\\\" -jar UnifiedHost-*.jar . | Once the tool is launched refer to steps mentioned above in Configuring and Using the Unified Host tool to program application hex . | You can see the logs during programming sequence on the command prompt . | Once done you can open the tools/UnifiedHost-*/app.log file and check for the programming sequence logs . | . ",
+    "content": ". | On Windows: . | Launch Windows Command prompt in tools/UnifiedHost-*/ directory . | Run below command to launch Unified Host Application in debugging mode . | . java -Djava.util.logging.config.file=\\\"logging.properties\\\" -jar UnifiedHost-*.jar . | On Linux . | For running Unified Host tool in debug mode on linux make use of MPLAB X’s Java JRE . | Launch Linux Command prompt in tools/UnifiedHost-*/ directory . | Run below command to launch Unified Host Application in debugging mode . | . /opt/microchip/mplabx/&lt;MPLAB X Version&gt;/sys/java/zulu8.40.0.25-ca-fx-jre8.0.222-linux_x64/bin/java -Djava.util.logging.config.file=\\\"logging.properties\\\" -jar UnifiedHost-*.jar . | Once the tool is launched refer to steps mentioned above in Configuring and Using the Unified Host tool to program application hex . | You can see the logs during programming sequence on the command prompt . | Once done you can open the tools/UnifiedHost-*/app.log file and check for the programming sequence logs . | . ",
     "url": "http://localhost:4000/bootloader/tools/docs/readme_UnifiedHost_udp.html#using-unified-host-tool-in-debugging-mode",
     "relUrl": "/tools/docs/readme_UnifiedHost_udp.html#using-unified-host-tool-in-debugging-mode"
   },"221": {
@@ -1358,7 +1358,7 @@ var myVariable = `
   },"226": {
     "doc": "Tools Help",
     "title": "Using Unified Host Tool in debugging mode",
-    "content": ". | Launch Windows Command prompt in tools/UnifiedHost-*/ directory . | Run below command to launch Unified Host Application in debugging mode . java -Djava.util.logging.config.file=\\\"logging.properties\\\" -jar UnifiedHost-*.jar . | Once the tool is launched refer to steps mentioned above in Configuring and Using the Unified Host tool to program application hex . | You can see the logs during programming sequence on the command prompt . | Once done you can open the tools/UnifiedHost-*/app.log file and check for the programming sequence logs . | . ",
+    "content": ". | On Windows: . | Launch Windows Command prompt in tools/UnifiedHost-*/ directory . | Run below command to launch Unified Host Application in debugging mode . | . java -Djava.util.logging.config.file=\\\"logging.properties\\\" -jar UnifiedHost-*.jar . | On Linux . | For running Unified Host tool in debug mode on linux make use of MPLAB X’s Java JRE . | Launch Linux Command prompt in tools/UnifiedHost-*/ directory . | Run below command to launch Unified Host Application in debugging mode . | . /opt/microchip/mplabx/&lt;MPLAB X Version&gt;/sys/java/zulu8.40.0.25-ca-fx-jre8.0.222-linux_x64/bin/java -Djava.util.logging.config.file=\\\"logging.properties\\\" -jar UnifiedHost-*.jar . | Once the tool is launched refer to steps mentioned above in Configuring and Using the Unified Host tool to program application hex . | You can see the logs during programming sequence on the command prompt . | Once done you can open the tools/UnifiedHost-*/app.log file and check for the programming sequence logs . | . ",
     "url": "http://localhost:4000/bootloader/tools/docs/readme_UnifiedHost_usb_device_hid.html#using-unified-host-tool-in-debugging-mode",
     "relUrl": "/tools/docs/readme_UnifiedHost_usb_device_hid.html#using-unified-host-tool-in-debugging-mode"
   },"227": {
@@ -1489,881 +1489,887 @@ var myVariable = `
     "relUrl": "/release_notes.html#microchip-mplab-harmony-3-release-notes"
   },"248": {
     "doc": "Release notes",
+    "title": "Bootloader Release v3.5.0",
+    "content": "New Features . | This release includes support for . | Serial Memory Bootloader for SAM, PIC32M and PIC32C family of 32-bit microcontrollers. | I2C EEPROM | SPI EEPROM | SPI Flash | QSPI Flash | . | USB Live Update for SAM and PIC32M family of 32-bit microcontrollers. | Ethernet UDP Live Update for SAM and PIC32M family of 32-bit microcontrollers. | CAN Bootloader for SAM family of 32-bit microcontrollers. | PIC32CM MC family of 32-bit microcontrollers . | UART Bootloader | I2C Bootloader | SD Card Bootloader | . | PIC32MZ W1 family of 32-bit microcontrollers . | UART Bootloader Bootloader | USB Device HID Bootloader | USB Host MSD Bootloader | Ethernet UDP Bootloader | SD Card Bootloader | . | . | Added new File System Bootloader component supporting below medias . | SD Card | USB Host MSD | Serial Memory | . | Updated default optimization level for all bootloaders to -O2 . | Added markdown based documentation for Bootloader Library . | Below are new bootloader application repos added . | bootloader_apps_can | bootloader_apps_serial_memory | . | . Bootloaders Supported on different product families . | The following table provides supported bootloders for different product families . | . Known Issues . The current known issues are as follows: . | Any existing USB Host MSD bootloader and SD Card bootloader projects have to be reconfigured to use the new File System Bootloader component in MHC . | Initialized global variables will not be initialized at startup for UART, I2C and CAN bootloaders. | Unified Host application when configured to use USB protocol has to be closed before programming any PIC32M based application using MPLAB X IDE . | . Development Tools . | MPLAB® X IDE v5.50 | MPLAB® XC32 C/C++ Compiler v3.00 | MPLAB® X IDE plug-ins: . | MPLAB® Harmony 3 Launcher v3.6.4 and above. | . | . ",
+    "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v350",
+    "relUrl": "/release_notes.html#bootloader-release-v350"
+  },"249": {
+    "doc": "Release notes",
     "title": "Bootloader Release v3.4.1",
     "content": ". | Updated Bootloader component to disable default linker file generation added in csp v3.8.0 as it requires custom linker file | . Known Issues . | No changes from v3.4.0 | . Development Tools . | No changes from v3.4.0 | . ",
     "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v341",
     "relUrl": "/release_notes.html#bootloader-release-v341"
-  },"249": {
+  },"250": {
     "doc": "Release notes",
     "title": "Bootloader Release v3.4.0",
-    "content": "New Features . | This release introduces support for . | USB Device HID Bootloader for SAM and PIC32M family of 32-bit microcontrollers. | USB Host MSD Bootloader for SAM and PIC32M family of 32-bit microcontrollers. | Ethernet UDP Bootloader for SAM and PIC32M family of 32-bit microcontrollers. | SD Card Bootloader for SAM and PIC32M family of 32-bit microcontrollers. | . | Bootloader demo application are placed in below repositories . | bootloader_apps_uart | bootloader_apps_i2c | bootloader_apps_usb | bootloader_apps_ethernet | bootloader_apps_sdcard | . | . Bootloaders Supported on different product families . | The following table provides supported bootloders for different product families . | Product Family | UART | I2C | USB Device HID | USB Host MSD | UDP | SDCARD | UART Fail Safe | I2C Fail Safe | . | SAM D09/D10/D11 | Yes | Yes | No | No | NA | No | NA | NA | . | SAM D20 | Yes | Yes | NA | NA | NA | Yes | NA | NA | . | SAM D21/DA1 | Yes | Yes | Yes | Yes | NA | Yes | NA | NA | . | SAM HA1 | Yes | Yes | NA | NA | NA | No | NA | NA | . | SAM C20/C21 | Yes | Yes | NA | NA | NA | Yes | NA | NA | . | SAM L21 | Yes | Yes | Yes | Yes | NA | Yes | NA | NA | . | SAM L22 | Yes | Yes | Yes | Yes | NA | Yes | NA | NA | . | SAM L10/L11 | Yes | Yes | NA | NA | NA | Yes | NA | NA | . | SAM D5x/E5x | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | . | SAM G5x | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | SAM E70/S70/V70/V71 | Yes | No | Yes | Yes | Yes | Yes | NA | NA | . | PIC32MX5XX/6XX/7XX | Yes | No | Yes | Yes | Yes | Yes | NA | NA | . | PIC32MX330/350/370/430/450/470 | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | PIC32MX1XX/2XX/5XX | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | PIC32MX1XX/2XX | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | PIC32MX1XX/2XX XLP | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | PIC32MK GPD/GPE/MCF | Yes | NA | Yes | Yes | NA | Yes | Yes | NA | . | PIC32MK GPG/MCJ | Yes | No | NA | NA | NA | Yes | NA | NA | . | PIC32MK GPK/MCM | Yes | No | Yes | Yes | NA | Yes | Yes | No | . | PIC32MZ EF | Yes | No | Yes | Yes | Yes | Yes | Yes | No | . | PIC32MZ DA | Yes | No | Yes | Yes | Yes | Yes | Yes | No | . | . Known Issues . The current known issues are as follows: . | Initialized global variables will not be initialized at startup for UART and I2C bootloaders. | Unified Host application when configured to use USB protocol has to be closed before programming any PIC32M based application using MPLAB X IDE . | . Development Tools . | MPLAB® X IDE v5.40 | MPLAB® XC32 C/C++ Compiler v2.41 | MPLAB® X IDE plug-ins: . | MPLAB® Harmony Configurator (MHC) v3.5.0 and above. | . | . ",
+    "content": "New Features . | This release includes support for . | USB Device HID Bootloader for SAM and PIC32M family of 32-bit microcontrollers. | USB Host MSD Bootloader for SAM and PIC32M family of 32-bit microcontrollers. | Ethernet UDP Bootloader for SAM and PIC32M family of 32-bit microcontrollers. | SD Card Bootloader for SAM and PIC32M family of 32-bit microcontrollers. | . | Bootloader demo application are placed in below repositories . | bootloader_apps_uart | bootloader_apps_i2c | bootloader_apps_usb | bootloader_apps_ethernet | bootloader_apps_sdcard | . | . Bootloaders Supported on different product families . | The following table provides supported bootloders for different product families . | Product Family | UART | I2C | USB Device HID | USB Host MSD | UDP | SDCARD | UART Fail Safe | I2C Fail Safe | . | SAM D09/D10/D11 | Yes | Yes | No | No | NA | No | NA | NA | . | SAM D20 | Yes | Yes | NA | NA | NA | Yes | NA | NA | . | SAM D21/DA1 | Yes | Yes | Yes | Yes | NA | Yes | NA | NA | . | SAM HA1 | Yes | Yes | NA | NA | NA | No | NA | NA | . | SAM C20/C21 | Yes | Yes | NA | NA | NA | Yes | NA | NA | . | SAM L21 | Yes | Yes | Yes | Yes | NA | Yes | NA | NA | . | SAM L22 | Yes | Yes | Yes | Yes | NA | Yes | NA | NA | . | SAM L10/L11 | Yes | Yes | NA | NA | NA | Yes | NA | NA | . | SAM D5x/E5x | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | . | SAM G5x | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | SAM E70/S70/V70/V71 | Yes | No | Yes | Yes | Yes | Yes | NA | NA | . | PIC32MX5XX/6XX/7XX | Yes | No | Yes | Yes | Yes | Yes | NA | NA | . | PIC32MX330/350/370/430/450/470 | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | PIC32MX1XX/2XX/5XX | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | PIC32MX1XX/2XX | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | PIC32MX1XX/2XX XLP | Yes | No | Yes | Yes | NA | Yes | NA | NA | . | PIC32MK GPD/GPE/MCF | Yes | NA | Yes | Yes | NA | Yes | Yes | NA | . | PIC32MK GPG/MCJ | Yes | No | NA | NA | NA | Yes | NA | NA | . | PIC32MK GPK/MCM | Yes | No | Yes | Yes | NA | Yes | Yes | No | . | PIC32MZ EF | Yes | No | Yes | Yes | Yes | Yes | Yes | No | . | PIC32MZ DA | Yes | No | Yes | Yes | Yes | Yes | Yes | No | . | . Known Issues . The current known issues are as follows: . | Initialized global variables will not be initialized at startup for UART and I2C bootloaders. | Unified Host application when configured to use USB protocol has to be closed before programming any PIC32M based application using MPLAB X IDE . | . Development Tools . | MPLAB® X IDE v5.40 | MPLAB® XC32 C/C++ Compiler v2.41 | MPLAB® X IDE plug-ins: . | MPLAB® Harmony Configurator (MHC) v3.5.0 and above. | . | . ",
     "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v340",
     "relUrl": "/release_notes.html#bootloader-release-v340"
-  },"250": {
+  },"251": {
     "doc": "Release notes",
     "title": "Bootloader Release v3.3.0",
     "content": "New Features . | This Release adds I2C Bootloader WLCSP applications for SAMD20 family of 32-bit microcontrollers . | The following WLCSP devices are shipped with preprogrammed bootloader | . | Device Part Number | . | SAMD20 (ATSAMD20E15BU) | . | SAMD20 (ATSAMD20E16BU) | . | . Known Issues . | N/A | . Development Tools . | MPLAB® X IDE v5.40 | MPLAB® XC32 C/C++ Compiler v2.41 | MPLAB® X IDE plug-ins: . | MPLAB® Harmony Configurator (MHC) v3.5.0 and above | . | . ",
     "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v330",
     "relUrl": "/release_notes.html#bootloader-release-v330"
-  },"251": {
+  },"252": {
     "doc": "Release notes",
     "title": "Bootloader Release v3.2.0",
     "content": "New Features . | New part support - This release introduces support of . UART Bootloader for SAM HA1 family of 32-bit microcontrollers. UART Fail Safe Bootloader for PIC32MZ EF, PIC32MZ DA, PIC32MK, PIC32MK GPK/GPL/MCM family of 32-bit microcontrollers. I2C Bootloader for SAM C20/C21, SAM D09/D10/D11 SAM D20/D21, SAM DA1, SAME5x, SAMD5x, SAML10, SAML21, SAML22 family of 32-bit microcontrollers. | Development kit and demo application support - The following table provides demo application available for different development kits. | Development kits | UART Bootloader | I2C Bootloader | UART Fail Safe Bootloader | I2C Fail Safe Bootloader | . | PIC32MK GP Development Kit | Yes | No | Yes | No | . | PIC32MK MCJ Curiosity Pro | Yes | No | No | No | . | PIC32MK MCM Curiosity Pro | Yes | No | Yes | No | . | PIC32MX1/2/5 Starter Kit | Yes | No | NA | NA | . | Curiosity PIC32MX470 Development Board | Yes | No | NA | NA | . | PIC32MZ Embedded Graphics with Stacked DRAM (DA) Starter Kit (Crypto) | Yes | No | Yes | No | . | PIC32MZ Embedded Connectivity with FPU (EF) Starter Kit | Yes | No | Yes | No | . | SAM C21N Xplained Pro Evaluation Kit | Yes | Yes | NA | NA | . | SAM D11 Xplained Pro Evaluation Kit | Yes | Yes | NA | NA | . | SAM D20 Xplained Pro Evaluation Kit | Yes | Yes | NA | NA | . | SAM D21 Xplained Pro Evaluation Kit | Yes | Yes | NA | NA | . | SAM DA1 Xplained Pro Evaluation Kit | Yes | Yes | NA | NA | . | SAM E54 Xplained Pro Evaluation Kit | Yes | Yes | Yes | Yes | . | SAM E70 Xplained Ultra Evaluation Kit | Yes | No | NA | NA | . | SAM G55 Xplained Pro Evaluation Kit | Yes | No | NA | NA | . | SAM L10 Xplained Pro Evaluation Kit | Yes | Yes | NA | NA | . | SAM L21 Xplained Pro Evaluation Kit | Yes | Yes | NA | NA | . | SAM L22 Xplained Pro Evaluation Kit | Yes | Yes | NA | NA | . | . Known Issues . The current known issues are as follows: . | Use MPLAB X IDE V5.25 with SAM DA1 Xplained Pro. | SAM HA1 will be supported in the next version of MPLAB X IDE release. | The I2C bootloader for SAM E54 may not work with clock stretching for bootloader commands disabled. | . Development Tools . | MPLAB® X IDE v5.30 | MPLAB® XC32 C/C++ Compiler v2.30 | MPLAB® X IDE plug-ins: . | MPLAB® Harmony Configurator (MHC) v3.3.5 and above. | . | . ",
     "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v320",
     "relUrl": "/release_notes.html#bootloader-release-v320"
-  },"252": {
+  },"253": {
     "doc": "Release notes",
     "title": "Bootloader Release v3.1.2",
     "content": "New Features . | New part support - This release introduces initial support of UART bootloader for SAM DA1, SAM D09/D10/D11, PIC32MX 1XX/2XX, PIC32MX 1XX/2XX XLP, PIC32MX 1XX/2XX/5XX, PIC32MX 3XX/4XX, PIC32MX5XX/6XX/7XX, PIC32MZ EF, PIC32MZ DA, PIC32MK, PIC32MK GPH/GPG/MCJ, PIC32MK GPK/GPL/MCM, family of 32-bit microcontrollers. | Development kit and demo application support - The following table provides number of demo application available for different development kits newly added in this release. | Development kits | Bootloader applications | . | PIC32MK GPL Curiosity Pro | 2 | . | PIC32MK MCJ Curiosity Pro | 2 | . | PIC32MX1/2/5 Starter Kit | 2 | . | Curiosity PIC32MX470 Development Board | 2 | . | PIC32MZ Embedded Graphics with Stacked DRAM (DA) Starter Kit (Crypto) | 2 | . | PIC32MZ Embedded Connectivity with FPU (EF) Starter Kit | 2 | . | SAM C21N Xplained Pro Evaluation Kit | 2 | . | SAM D11 Xplained Pro Evaluation Kit | 2 | . | SAM D20 Xplained Pro Evaluation Kit | 2 | . | SAM D21 Xplained Pro Evaluation Kit | 2 | . | SAM DA1 Xplained Pro Evaluation Kit | 2 | . | SAM E54 Xplained Pro Evaluation Kit | 4 | . | SAM E70 Xplained Ultra Evaluation Kit | 2 | . | SAM G55 Xplained Pro Evaluation Kit | 2 | . | SAM L10 Xplained Pro Evaluation Kit | 2 | . | SAM L21 Xplained Pro Evaluation Kit | 2 | . | SAM L22 Xplained Pro Evaluation Kit | 2 | . | Updated the Bootloader host scripts in bootloader/tools to be compatible with Python 3.x . | Moved the Bootloader host scripts compatible with Python 2.7.x to bootloader/tools_archive folder. These scripts may be removed in future. | . Known Issues . The current known issues are as follows: . | Configuration fuse macros are not generated for SAM D09/D10/D11 devices. | PIC32MK GPK/GPL/MCM will be supported in the next version of MPLAB X IDE release. | SAME70 Bootloader application may not work on lower system frequency with high UART Baud-Rate. | Interactive help using the Show User Manual Entry in the Right-click menu for configuration options provided by this module is not yet available from within the MPLAB Harmony Configurator (MHC). Please see the Configuring the Library section in the help documentation in the doc folder for this Harmony 3 module instead. Help is available in CHM format. | . Development Tools . | MPLAB® X IDE v5.25 | MPLAB® XC32 C/C++ Compiler v2.30 | MPLAB® X IDE plug-ins: | MPLAB® Harmony Configurator (MHC) v3.3.0.1 and above. | . ",
     "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v312",
     "relUrl": "/release_notes.html#bootloader-release-v312"
-  },"253": {
+  },"254": {
     "doc": "Release notes",
     "title": "Bootloader Release v3.1.1",
     "content": ". | Added MPLAB® Harmony License File | . ",
     "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v311",
     "relUrl": "/release_notes.html#bootloader-release-v311"
-  },"254": {
+  },"255": {
     "doc": "Release notes",
     "title": "Bootloader Release v3.1.0",
     "content": "New Features . | New part support - This release introduces initial support of UART bootloader for SAML10 and SAMG55 family of 32-bit microcontrollers. | Development kit and demo application support - The following table provides number of demo application available for different development kits newly added in this release. | Development kits | Bootloader applications | . | SAM C21N Xplained Pro Evaluation Kit | 2 | . | SAM D20 Xplained Pro Evaluation Kit | 2 | . | SAM D21 Xplained Pro Evaluation Kit | 2 | . | SAM E54 Xplained Pro Evaluation Kit | 4 | . | SAM E70 Xplained Ultra Evaluation Kit | 2 | . | SAM G55 Xplained Pro Evaluation Kit | 2 | . | SAM L10 Xplained Pro Evaluation Kit | 2 | . | SAM L21 Xplained Pro Evaluation Kit | 2 | . | SAM L22 Xplained Pro Evaluation Kit | 2 | . | . Known Issues . The current known issues are as follows: . | SAME70 Bootloader application may not work on lower system frequency with high UART Baud-Rate. | . Development Tools . | MPLAB® X IDE v5.20 | MPLAB® XC32 C/C++ Compiler v2.20 | MPLAB® X IDE plug-ins: . | MPLAB® Harmony Configurator (MHC) v3.3.0.1 and above. | . | . ",
     "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v310",
     "relUrl": "/release_notes.html#bootloader-release-v310"
-  },"255": {
+  },"256": {
     "doc": "Release notes",
     "title": "Bootloader Release v3.0.0",
     "content": "New Features . | New part support - This release introduces initial support for SAM C20/C21, SAM D20/D21, SAM S70, SAM E70, SAM V70/V71, SAME5x, SAMD5x, SAML21, SAML22 family of 32-bit microcontrollers. | Added support for UART bootloader. | Development kit and demo application support - The following table provides number of demo application available for different development kits newly added in this release. | Development kits | Bootloader applications | . | SAM C21N Xplained Pro Evaluation Kit | 2 | . | SAM D20 Xplained Pro Evaluation Kit | 2 | . | SAM D21 Xplained Pro Evaluation Kit | 2 | . | SAM E54 Xplained Pro Evaluation Kit | 4 | . | SAM E70 Xplained Ultra Evaluation Kit | 2 | . | SAM L21 Xplained Pro Evaluation Kit | 2 | . | SAM L22 Xplained Pro Evaluation Kit | 2 | . | . Known Issues . The current known issues are as follows: . | SAME70 Bootloader application may not work on lower system frequency with high UART Baud-Rate. | . Development Tools . | MPLAB® X IDE v5.20 | MPLAB® XC32 C/C++ Compiler v2.20 | MPLAB® X IDE plug-ins: . | MPLAB® Harmony Configurator (MHC) v3.3.0.1 and above. | . | . ",
     "url": "http://localhost:4000/bootloader/release_notes.html#bootloader-release-v300",
     "relUrl": "/release_notes.html#bootloader-release-v300"
-  },"256": {
+  },"257": {
     "doc": "Release notes",
     "title": "Release notes",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/release_notes.html",
     "relUrl": "/release_notes.html"
-  },"257": {
+  },"258": {
     "doc": "Application Configurations",
     "title": "Configurations for the application to be bootloaded",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_application_configurations.html#configurations-for-the-application-to-be-bootloaded",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_application_configurations.html#configurations-for-the-application-to-be-bootloaded"
-  },"258": {
+  },"259": {
     "doc": "Application Configurations",
     "title": "For CORTEX-M based MCUs",
     "content": ". | Refer to Application project Configurations for information on how to configure an application to be bootloaded for CORTEX-M based MCus | . For MIPS based MCUs . | Refer to Application Linker Script Configurations for information on how to setup a linker script for the application to be bootloaded for MIPS based MCus . | Refer to Application project Configurations for information on how to configure an application to be bootloaded for MIPS based MCus . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_application_configurations.html#for-cortex-m-based-mcus",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_application_configurations.html#for-cortex-m-based-mcus"
-  },"259": {
+  },"260": {
     "doc": "Application Configurations",
     "title": "Application Configurations",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_application_configurations.html",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_application_configurations.html"
-  },"260": {
+  },"261": {
     "doc": "Bootloader Configurations",
     "title": "Serial Memory Bootloader Configurations",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#serial-memory-bootloader-configurations",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#serial-memory-bootloader-configurations"
-  },"261": {
+  },"262": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Specific User Configurations",
     "content": ". | Bootloader Serial Memory Used: . | Specifies the Serial memory driver used by bootloader to receive the application | The name of the serial memory will vary based on the driver connected to bootloader | . | Bootloader NVM Memory Used: . | Specifies the memory peripheral used by bootloader to perform flash operations | The name of the peripheral will vary from device to device | . | Bootloader Size (Bytes): . | Specifies the maximum size of flash required by the bootloader | This size is calculated based on Bootloader type and Memory used | This size will vary from device to device and should always be aligned to device erase unit size | . | Enable Bootloader Trigger From Firmware: . | This Option can be used to Force Trigger bootloader from application firmware after a soft reset. It does so by reserving the specified number of bytes in SRAM from the start of the RAM. The reserved memory is updated by the application with a pre-defined pattern. The bootloader firmware in the bootloader_Trigger() routine, can check the reserved memory for the pre-defined pattern and enter bootloader mode if the pattern matches. | Number Of Bytes To Reserve From Start Of RAM: . | This option adds the provided offset to RAM Start address in bootloader linker script. | Application firmware can store some pattern in the reserved bytes region from RAM start for bootloader to check at reset in bootloader_Trigger() function | . | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#bootloader-specific-user-configurations",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#bootloader-specific-user-configurations"
-  },"262": {
+  },"263": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader System Configurations",
     "content": ". | Application Start Address (Hex): . | Start address of the application which will programmed by bootloader | This value is filled by bootloader when its loaded which is equal to the bootloader size. It can be modified as per user need | This value will be used by bootloader to Jump to application at device reset | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#bootloader-system-configurations",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#bootloader-system-configurations"
-  },"263": {
+  },"264": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader MPLAB X Settings",
     "content": ". | As the Serial memory may not have any valid binary required by bootloader for the first time, Adding the application to be bootloaded as loadable allows MPLAB X to create a unified hex file and program both these applications in their respective memory locations . | By doing this, At first bootup bootloader directly jumps to application as the serial memory does not have any valid binary | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#bootloader-mplab-x-settings",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#bootloader-mplab-x-settings"
-  },"264": {
+  },"265": {
     "doc": "Bootloader Configurations",
     "title": "Additional Information",
     "content": ". | Refer to MIPS Bootloader Linker Script Configurations for information on bootloader linker script generated by MHC for MIPS based MCus . | Refer to Bootloader Sizing And Considerations for information on bootloader size change considerations . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#additional-information",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html#additional-information"
-  },"265": {
+  },"266": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Configurations",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_configurations.html"
-  },"266": {
+  },"267": {
     "doc": "Bootloader Execution Flow",
     "title": "Serial Memory Bootloader execution flow",
     "content": ". | On device reset after systme initialize, The Bootloader task starts executing from the SYS_Tasks() . | Once the Serial Memory driver is ready, it retrieves the Meta Data from serial memory . | If any error in reading the Meta-Data it directly jumps Run application | . | It checks if the Meta Data read is valid using the Prologue and Epilogue. | If valid . | It stores the application start address and application size from meta data which will be used during programming operation . | Checks if the Update Required flag is set. If set it jumps to Programming step Or continues to Trigger Check . | . | If Invalid . | It continues to Trigger Check | . | . | . Trigger Check . | If there are no conditions to enter the firmware upgrade mode, the Bootloader jumps to Run application . | Refer to Bootloader Trigger Methods for different conditions to enter firmware upgrade mode | . | . Programming . | Starts reading the application binary from serial memory and perform erase/program operations on internal flash . | Once programming is completed, it generates CRC32 on programmed space of internal flash and verifies it against the CRC32 value stored in Meta data . | Once verification is complete it clears the update required flag in meta data and triggers reset to Run application . | . Run Application . | The application start address used to jump to application space can be . | Application start address generated during compile time Or . | Application start address retrieved from valid Meta Data . | . | Calls SYS_DeInitialize() function to release resources used . | Jumps to application space to run the updated application | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_execution_flow.html#serial-memory-bootloader-execution-flow",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_execution_flow.html#serial-memory-bootloader-execution-flow"
-  },"267": {
+  },"268": {
     "doc": "Bootloader Execution Flow",
     "title": "Bootloader Execution Flow",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_execution_flow.html",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_execution_flow.html"
-  },"268": {
+  },"269": {
     "doc": "How The Library Works",
     "title": "How the Serial Memory Bootloader library works",
     "content": "The Serial Memory Bootloader firmware communicates with the serial memory to receive application firmware . | Resides from . | The starting location of the flash memory region for CORTEX-M based MCUs . | The starting location of the Boot flash memory region or Program Flash memory region for MIPS based MCUs devices . | . | The Bootloader performs flash erase/program/verify operations with the binary read from serial memory while in the firmware upgrade mode . | The binary received is only of the application to be programmed | Bootloader always performs flash operation from the address for application binary being received | The application can use the entire flash memory region starting from the end of bootloader space | . | Calls SYS_DeInitialize() before jumping to the application space . | Note: At first bootup either the serial memory should already have the application to be bootloaded or the application to be bootloaded has to be programmed along with bootloader using the external programmer or debugger. | . Memory layout . | Basic memory layout for CORTEX-M based MCUs . | Basic memory layout for MIPS based MCUs . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_how_library_works.html#how-the-serial-memory-bootloader-library-works",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_how_library_works.html#how-the-serial-memory-bootloader-library-works"
-  },"269": {
+  },"270": {
     "doc": "How The Library Works",
     "title": "Bootloader and Serial Memory Meta Data",
     "content": "/* Structure to store the Meta Data of the application binary for bootloader * Note: The order of the members should not be changed */ typedef struct { /* Used to Validate the Meta Data itself*/ uint32_t prologue; /* Flag to indicate if a firmware update is required * 0xFFFFFFFF --&gt; Update Required. Set by Serial Memory programmer after programming * the image in Serial memory * 0x00000000 --&gt; Update Completed. Changed by bootloader after programming * the image from Serial memory to internal flash */ uint32_t isAppUpdateRequired; /* Application Start address */ uint32_t appStartAddress; /* Size of the application binary */ uint32_t appSize; /* CRC32 value for the application binary */ uint32_t appCRC32; /* Used to Validate the Meta Data itself*/ uint32_t epilogue; } APP_META_DATA; . | The above meta data for application has to be stored in last page of serial memory required by bootloader . | Bootloader reads this meta data to get details of the application binary being received and then performs the programming operation accordingly . | Once programming is completed, it generates CRC32 on programmed space of internal flash and verifies it against the appCRC32 stored in Meta data . | Once verification is completed it clears the isAppUpdateRequired flag and then performs reset to jump to application . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_how_library_works.html#bootloader-and-serial-memory-meta-data",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_how_library_works.html#bootloader-and-serial-memory-meta-data"
-  },"270": {
+  },"271": {
     "doc": "How The Library Works",
     "title": "How The Library Works",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_how_library_works.html",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_how_library_works.html"
-  },"271": {
+  },"272": {
     "doc": "Library Interface",
     "title": "Serial Memory Bootloader Library Interface",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_library_interface.html#serial-memory-bootloader-library-interface",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_library_interface.html#serial-memory-bootloader-library-interface"
-  },"272": {
+  },"273": {
     "doc": "Library Interface",
     "title": "Table of contents",
     "content": ". | System functions . | bootloader_Tasks | bootloader_Trigger | run_Application | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_library_interface.html#table-of-contents",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_library_interface.html#table-of-contents"
-  },"273": {
+  },"274": {
     "doc": "Library Interface",
     "title": "System functions",
     "content": "bootloader_Tasks . void bootloader_Tasks(void) . Summary . Starts bootloader execution. Description . This function can be used to start bootloader execution. The function reads the application firmware from the HOST-PC via Serial Memory and perfroms Erase/Program/Verify operations on internal flash memory . Once the complete application is received, programmed and verified successfully, it resets the device to jump into programmed application. Precondition . None . Parameters . None . Returns . None . Example . bootloader_Tasks(); . bootloader_Trigger . bool bootloader_Trigger(void); . Summary . Checks if Bootloader has to be executed at startup. Description . This function can be used to check for a External HW trigger or Internal firmware trigger to execute bootloader at startup. This function has to be implemented by the bootloader application to override the WEAK implementation in bootloader.c . | External Trigger: . | Can be achieved by triggering a GPIO_PIN at startup. | . | Firmware Trigger: . | Application firmware which wants to execute bootloader at startup needs to fill first n bytes of ram location with a request pattern. The Number of bytes to be reserved for storing the pattern has to be configured in bootloader component configuration in MHC. | . | . uint32_t *sram = (uint32_t *)BTL_TRIGGER_RAM_START; sram[0] = 0x5048434D; sram[1] = 0x5048434D; sram[2] = 0x5048434D; sram[3] = 0x5048434D; . Precondition . PORT/PIO Initialize must have been called. Parameters . None . Returns . | True : If any of trigger is detected. | False : If no trigger is detected.. | . Example . #define BTL_TRIGGER_PATTERN 0x5048434D static uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START; bool bootloader_Trigger(void) { // Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter Bootloader. if (BTL_TRIGGER_PATTERN == ramStart[0] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[1] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[2] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[3]) { ramStart[0] = 0; return true; } // Check for Switch press to enter Bootloader if (SWITCH_Get() == 0) { return true; } return false; } void bootloader_Tasks() { case BOOTLOADER_STATE_CHECK_TRIGGER: { if (bootloader_Trigger() == true) { btlData.state = BOOTLOADER_STATE_READ_APP_BINARY; } else { btlData.state = BOOTLOADER_STATE_RUN_APPLICATION; } break; } case BOOTLOADER_STATE_RUN_APPLICATION: { BOOTLOADER_ReleaseResources(); run_Application(); break; } } . run_Application . void run_Application(void); . Summary . Runs the programmed application at startup. Description . This function can be used to run programmed application though bootloader at startup. If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to the application start address to run the application programmed through bootloader and never returns. If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function and executes bootloader for accepting a new application firmware. Precondition . bootloader_Trigger() must be called to check for bootloader triggers. Parameters . None . Returns . None . Example . void bootloader_Tasks() { case BOOTLOADER_STATE_CHECK_TRIGGER: { if (bootloader_Trigger() == true) { btlData.state = BOOTLOADER_STATE_READ_APP_BINARY; } else { btlData.state = BOOTLOADER_STATE_RUN_APPLICATION; } break; } case BOOTLOADER_STATE_RUN_APPLICATION: { BOOTLOADER_ReleaseResources(); run_Application(); break; } } . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_library_interface.html#system-functions",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_library_interface.html#system-functions"
-  },"274": {
+  },"275": {
     "doc": "Library Interface",
     "title": "Library Interface",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_bootloader_library_interface.html",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_bootloader_library_interface.html"
-  },"275": {
+  },"276": {
     "doc": "Debugging Help",
     "title": "Debugging Serial Memory Bootloader and Application to be bootloaded",
     "content": ". | Refer to Debugging Bootloader And Application | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_debugging.html#debugging-serial-memory-bootloader-and-application-to-be-bootloaded",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_debugging.html#debugging-serial-memory-bootloader-and-application-to-be-bootloaded"
-  },"276": {
+  },"277": {
     "doc": "Debugging Help",
     "title": "Debugging Help",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/serial_memory/serial_debugging.html",
     "relUrl": "/templates/src/optimized/docs/serial_memory/serial_debugging.html"
-  },"277": {
+  },"278": {
     "doc": "Application Configurations",
     "title": "Configurations for the application to be bootloaded",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_application_configurations.html#configurations-for-the-application-to-be-bootloaded",
     "relUrl": "/templates/src/optimized/docs/uart/uart_application_configurations.html#configurations-for-the-application-to-be-bootloaded"
-  },"278": {
+  },"279": {
     "doc": "Application Configurations",
     "title": "For CORTEX-M based MCUs",
     "content": ". | Refer to Application project Configurations for information on how to configure an application to be bootloaded for CORTEX-M based MCus | . For MIPS based MCUs . | Refer to Application Linker Script Configurations for information on how to setup a linker script for the application to be bootloaded for MIPS based MCus . | Refer to Application project Configurations for information on how to configure an application to be bootloaded for MIPS based MCus . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_application_configurations.html#for-cortex-m-based-mcus",
     "relUrl": "/templates/src/optimized/docs/uart/uart_application_configurations.html#for-cortex-m-based-mcus"
-  },"279": {
+  },"280": {
     "doc": "Application Configurations",
     "title": "Application Configurations",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_application_configurations.html",
     "relUrl": "/templates/src/optimized/docs/uart/uart_application_configurations.html"
-  },"280": {
+  },"281": {
     "doc": "Bootloader Configurations",
     "title": "UART Bootloader Configurations",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_configurations.html#uart-bootloader-configurations",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_configurations.html#uart-bootloader-configurations"
-  },"281": {
+  },"282": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Specific User Configurations",
     "content": "For CORTEX-M based MCUs . For MIPS based MCUs . | Bootloader Peripheral Used: . | Specifies the communication peripheral used by bootloader to receive the application | The name of the peripheral will vary from device to device | . | Bootloader NVM Memory Used: . | Specifies the memory peripheral used by bootloader to perform flash operations | The name of the peripheral will vary from device to device | . | Bootloader Size (Bytes): . | Specifies the maximum size of flash required by the bootloader | This size is calculated based on Bootloader type and Memory used | This size will vary from device to device and should always be aligned to device erase unit size | . | Enable Bootloader Trigger From Firmware: . | This Option can be used to Force Trigger bootloader from application firmware after a soft reset. It does so by reserving the specified number of bytes in SRAM from the start of the RAM. The reserved memory is updated by the application with a pre-defined pattern. The bootloader firmware in the bootloader_Trigger() routine, can check the reserved memory for the pre-defined pattern and enter bootloader mode if the pattern matches. | Number Of Bytes To Reserve From Start Of RAM: . | This option adds the provided offset to RAM Start address in bootloader linker script. | Application firmware can store some pattern in the reserved bytes region from RAM start for bootloader to check at reset in bootloader_Trigger() function | . | . | Use Dual Bank For Safe Flash Update: . | Used to configure bootloader to use Dual banks of device to upload the application | This option is visible only for devices supporting Dual flash banks | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_configurations.html#bootloader-specific-user-configurations",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_configurations.html#bootloader-specific-user-configurations"
-  },"282": {
+  },"283": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader System Configurations",
     "content": ". | Application Start Address (Hex): . | Start address of the application which will programmed by bootloader | This value is filled by bootloader when its loaded which is equal to the bootloader size. It can be modified as per user need | This value will be used by bootloader to Jump to application at device reset | . | . Note . | For optimizing the code Bootloader component disables generation of default interrupt and exception files as shown below . | Enabling these interrupts explicitly may still not work as bootloader uses custom startup file which has its own Interrupt table populating only the reset handler . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_configurations.html#bootloader-system-configurations",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_configurations.html#bootloader-system-configurations"
-  },"283": {
+  },"284": {
     "doc": "Bootloader Configurations",
     "title": "Additional Information",
     "content": ". | Refer to MIPS Bootloader Linker Script Configurations for information on bootloader linker script generated by MHC for MIPS based MCus . | Refer to CORTEX-M Bootloader Linker Script Configurations for information on bootloader linker script generated by MHC for CORTEX-M based MCUs . | Refer to Bootloader Sizing And Considerations for information on bootloader size change considerations . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_configurations.html#additional-information",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_configurations.html#additional-information"
-  },"284": {
+  },"285": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Configurations",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_configurations.html",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_configurations.html"
-  },"285": {
+  },"286": {
     "doc": "UART Bootloader Firmware Update Execution Flow",
     "title": "UART Bootloader Firmware Update mode execution flow",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#uart-bootloader-firmware-update-mode-execution-flow",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#uart-bootloader-firmware-update-mode-execution-flow"
-  },"286": {
+  },"287": {
     "doc": "UART Bootloader Firmware Update Execution Flow",
     "title": "Bootloader Task Flow",
     "content": ". | Bootloader task is the main task which calls the 3 sub-tasks in a forever loop. | It always calls the Input task to poll for command packets from host . | Once complete packet is received it calls Command task to process the received command . | If the command received was a data command it calls programming task to flash the application . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#bootloader-task-flow",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#bootloader-task-flow"
-  },"287": {
+  },"288": {
     "doc": "UART Bootloader Firmware Update Execution Flow",
     "title": "Input Task Flow",
     "content": ". | This task is used to receive the data bytes from host PC . | If there are valid GUARD bytes received at start of packet it proceeds further to receive the whole packet or else reports error and waits for next command . | All bytes of the command frame must be sent within 100 ms of each other. After 100 ms of idle time, incomplete command is discarded and bootloader goes back to waiting for a new Command. | This behavior allows host to re-synchronize in the case of synchronization loss. | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#input-task-flow",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#input-task-flow"
-  },"288": {
+  },"289": {
     "doc": "UART Bootloader Firmware Update Execution Flow",
     "title": "Command Task Flow",
     "content": ". | This task processes the packet received for supported commands . | If the received command is a DATA command, it sets ready_to_flash flag so that the bootloader task can call Flash task . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#command-task-flow",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#command-task-flow"
-  },"289": {
+  },"290": {
     "doc": "UART Bootloader Firmware Update Execution Flow",
     "title": "Flash Task Flow",
     "content": ". | This task performs flash operations on the received data | . For CORTEX-M based MCUs . | As the bootloader is running from RAM, While waiting for flash operations to complete it calls Input task to receive the next command in parallel . | . For MIPS based MCUs . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#flash-task-flow",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html#flash-task-flow"
-  },"290": {
+  },"291": {
     "doc": "UART Bootloader Firmware Update Execution Flow",
     "title": "UART Bootloader Firmware Update Execution Flow",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_firmware_update_execution_flow.html"
-  },"291": {
+  },"292": {
     "doc": "How The Library Works",
     "title": "How the UART Bootloader library works",
     "content": "The UART Bootloader firmware communicates with the personal computer host application by using a predefined communication protocol. The UART Bootloader works in two different modes . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html#how-the-uart-bootloader-library-works",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html#how-the-uart-bootloader-library-works"
-  },"292": {
+  },"293": {
     "doc": "How The Library Works",
     "title": "Basic Mode",
     "content": ". | This mode is supported for all the devices . | Resides from . | The starting location of the flash memory region for CORTEX-M based MCUs . | The starting location of the Boot flash memory region for MIPS based MCUs devices . | . | The Bootloader performs flash erase/program/verify operations with the binary sent from host while in the firmware upgrade mode . | The binary sent is only of the application to be programmed | Bootloader always performs flash operation from the address for (bootloader or application) binary sent from host | The application can use the entire flash memory region starting from the end of bootloader space | . | Jumps to the application once verification is completed | . Memory layout . | Basic memory layout for CORTEX-M based MCUs . | Basic memory layout for MIPS based MCUs . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html#basic-mode",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html#basic-mode"
-  },"293": {
+  },"294": {
     "doc": "How The Library Works",
     "title": "Fail Safe Update Mode",
     "content": ". | This mode is supported for the devices which have a Dual Bank flash memory . | Resides from the starting location of the flash memory region of both the banks on CORTEX-M based MCUs . | The Bootloader performs flash erase/program/verify operations with the binary sent from host while in the firmware upgrade mode . | Bootloader can perform flash operation in either of the banks based on the address sent by the host application . | The application can use only the flash memory region of one bank. | . | Performs a bank swap and reset to run the application programmed in inactive bank once verification is completed or a normal reset to run the application in current bank based on command sent from host | . Memory layout . | Fail Safe Update memory layout for CORTEX-M based MCUs . | Fail Safe Update memory layout for MIPS based MCUs . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html#fail-safe-update-mode",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html#fail-safe-update-mode"
-  },"294": {
+  },"295": {
     "doc": "How The Library Works",
     "title": "Additional Information",
     "content": ". | For information on protocol used refer to UART Bootloader Protocol | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html#additional-information",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html#additional-information"
-  },"295": {
+  },"296": {
     "doc": "How The Library Works",
     "title": "How The Library Works",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_how_library_works.html"
-  },"296": {
+  },"297": {
     "doc": "Library Interface",
     "title": "UART Bootloader Library Interface",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_library_interface.html#uart-bootloader-library-interface",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_library_interface.html#uart-bootloader-library-interface"
-  },"297": {
+  },"298": {
     "doc": "Library Interface",
     "title": "Table of contents",
     "content": ". | System functions . | bootloader_Tasks | bootloader_Trigger | run_Application | bootloader_ProgramFlashBankSelect | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_library_interface.html#table-of-contents",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_library_interface.html#table-of-contents"
-  },"298": {
+  },"299": {
     "doc": "Library Interface",
     "title": "System functions",
     "content": "bootloader_Tasks . void bootloader_Tasks(void) . Summary . Starts bootloader execution. Description . This function can be used to start bootloader execution. The function continuously waits for application firmware from the HOST-PC via UART and perfroms Erase/Program/Verify operations on internal flash memory . Once the complete application is received, programmed and verified successfully, it resets the device to jump into programmed application. | Note: As this function runs a infinite loop it never returns | . Precondition . bootloader_Trigger() must be called to check for bootloader triggers at startup. Parameters . None . Returns . None . Example . bootloader_Tasks(); . bootloader_Trigger . bool bootloader_Trigger(void); . Summary . Checks if Bootloader has to be executed at startup. Description . This function can be used to check for a External HW trigger or Internal firmware trigger to execute bootloader at startup. This function has to be implemented by the bootloader application to override the WEAK implementation in bootloader.c . The checks in trigger function should happen before any system resources are initialized apart for PORT, As the same system resource can be Re-initialized by the application if bootloader jumps to it and may cause issues. | External Trigger: . | Can be achieved by triggering a GPIO_PIN at startup. | . | Firmware Trigger: . | Application firmware which wants to execute bootloader at startup needs to fill first n bytes of ram location with a request pattern. The Number of bytes to be reserved for storing the pattern has to be configured in bootloader component configuration in MHC. | . | . uint32_t *sram = (uint32_t *)BTL_TRIGGER_RAM_START; sram[0] = 0x5048434D; sram[1] = 0x5048434D; sram[2] = 0x5048434D; sram[3] = 0x5048434D; . Precondition . PORT/PIO Initialize must have been called. Parameters . None . Returns . | True : If any of trigger is detected. | False : If no trigger is detected.. | . Example . #define BTL_TRIGGER_PATTERN 0x5048434D static uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START; bool bootloader_Trigger(void) { // Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter Bootloader. if (BTL_TRIGGER_PATTERN == ramStart[0] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[1] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[2] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[3]) { ramStart[0] = 0; return true; } // Check for Switch press to enter Bootloader if (SWITCH_Get() == 0) { return true; } return false; } void SYS_Initialize() { NVMCTRL_Initialize(); PORT_Initialize(); if (bootloader_Trigger() == false) { run_Application(); } CLOCK_Initialize(); } . run_Application . void run_Application(void); . Summary . Runs the programmed application at startup. Description . This function can be used to run programmed application though bootloader at startup. If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to the application start address to run the application programmed through bootloader and never returns. If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function and executes bootloader for accepting a new application firmware. Precondition . bootloader_Trigger() must be called to check for bootloader triggers at startup. Parameters . None . Returns . None . Example . void SYS_Initialize() { NVMCTRL_Initialize(); PORT_Initialize(); if (bootloader_Trigger() == false) { run_Application(); } CLOCK_Initialize(); } . bootloader_ProgramFlashBankSelect . void bootloader_ProgramFlashBankSelect( void ); . Summary . Selects Appropriate Program Flash Bank after reset. Description . This function can be used to select the appropriate Program flash bank based on the serial number stored at fixed location in each of the bank after reset. Bootloader should know the address at compile time where the serial number is stored in each bank. It reads the serial number from both banks, Compares the values and maps the bank with highest serial number to lower region. | Note: This Function will be generated only for MIPS based MCUs with dual flash bank support and when the dual bank support option is selected in MHC bootloader component settings . | Refer to Bootloader Configurations section for more details | . | . Precondition . | PORT/PIO Initialize must have been called. | This Function should be called before calling bootloader_Trigger() function . | . Parameters . None . Returns . None . Example . bootloader_ProgramFlashBankSelect( void ); if (bootloader_Trigger() == false) { run_Application(); } . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_library_interface.html#system-functions",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_library_interface.html#system-functions"
-  },"299": {
+  },"300": {
     "doc": "Library Interface",
     "title": "Library Interface",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_library_interface.html",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_library_interface.html"
-  },"300": {
+  },"301": {
     "doc": "UART Bootloader Protocol",
     "title": "UART Bootloader Protocol",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_protocol.html#uart-bootloader-protocol",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_protocol.html#uart-bootloader-protocol"
-  },"301": {
+  },"302": {
     "doc": "UART Bootloader Protocol",
     "title": "Request Packet",
     "content": "The uart bootloader protocol as shown in below figure is common for all the supported commands. GUARD . | The Guard value must be a constant value of 0x5048434D . | This value provides protection against spurious commands . | Bootloader always checks for the Guard value at start of packet reception and proceeds further accordingly . | . Data Size . | This field indicates the number of data bytes to be received . | This value varies for different commands . | . Command . | Indicates the command to be processed. Each command is of 1 Byte width . | Below are the supported commands . | . | Command Type | Command Code | Description | . | Unlock | 0xA0 | Used to calculate application start address and end address | . | Data | 0xA1 | Used to send the image data | . | Verify | 0xA2 | Used to verify the image data sent and programmed | . | Reset | 0xA3 | Used to trigger a reset to run the application | . | Bank Swap and reset | 0xA4 | Used to Swap the bank and trigger a reset to run the application | . Data . | Contains the actual Data to be processed based on the command . | Length of the data to be received is indicated by Data Size field . | Bootloader receives data in size of words . | All data words must be sent in a little-endian (LSB first) format . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_protocol.html#request-packet",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_protocol.html#request-packet"
-  },"302": {
+  },"303": {
     "doc": "UART Bootloader Protocol",
     "title": "Response Codes",
     "content": "Bootloader will send a single character response code in response to each command. Sequential commands can only be sent after the response code is received for a previous command, or after 100 ms timeout without a response. | Response Type | Response Code | Description | . | OK | 0x50 | Command was received and processed successfully | . | Error | 0x51 | There were errors during the processing of the command | . | Invalid | 0x52 | Invalid command is received | . | CRC OK | 0x53 | CRC verification was successful | . | CRC Fail | 0x54 | CRC verification failed | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_protocol.html#response-codes",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_protocol.html#response-codes"
-  },"303": {
+  },"304": {
     "doc": "UART Bootloader Protocol",
     "title": "Command Description",
     "content": "Unlock Command . The Unlock Command sequence is as shown in below figure with corresponding responses. | Unlock command must be issued before the first Data command . | It is used to calculate application start address and end address . | This information will be used to validate if the addresses sent are within the range of flash memory . | It will also be used to validate the address coming with data packet to be programmed are within the region for which the unlock command is invoked . | . | Number of bytes of data to be received is 8 Bytes (Start Address + Image Size) . | Start Address . | It is the application Start Address of the flash memory | It is device dependent and should be always greater than or equal to the bootloader end address | It must be aligned at an Erase Unit Size boundary, which is also device dependent | To upgrade the bootloader itself this value must be set to 0 (For CORTEX-M based MCUs) | . | Image size must be in increments of Erase Unit bytes which is also device dependent | . Data Command . The Data Command sequence is as shown in below figure with corresponding responses. | Data command is used to send the image data . | Data size is equal to sum of block start address (4 Bytes) and Erase Unit Size which is device dependent . | Block start address must be located inside the region previously unlocked via the Unlock command . | Attempts to request the write outside of the unlocked region will result in error and supplied data will be discarded . | . Verify Command . The Verify Command sequence is as shown in below figure with corresponding responses. | Verify command is used to verify the image data sent and programmed . | Image CRC is a standard IEEE CRC32 with a polynomial of 0xEDB88320 . | Internal CRC is calculated based on the values actually read from the Flash memory after programming, so it verifies the whole chain. | Image CRC is calculated over the previously unlocked region. | . Reset Command . The Reset Command sequence is as shown in below figure with corresponding responses. | Reset command is used to exit the bootloader and run the application . | It is necessary if the host has no control over the reset pin. It can also be useful even if host has control over the Reset . | . Bank Swap and Reset Command . The Bank Swap and Reset Command sequence is as shown in below figure with corresponding responses . | This command is enabled only when Fail safe update feature is selected for bootloader and the device has support for Dual Bank update . | Bank Swap and Reset command is used to Swap the inactive bank to active bank and trigger a reset to exit the bootloader and run the new application programmed in the inactive bank . | . Note . As this bootloader supports simultaneous Flash memory write and reception of the next block of data, The next block of data may be transmitted as soon as the status code is returned for the first one. Because of this behavior, the status code for the last block will be sent before this block is written into the Flash memory. To ensure that this block is written, host must send another command and wait for the response. So either Verify or Reset command must be sent after the last block of data. ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_protocol.html#command-description",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_protocol.html#command-description"
-  },"304": {
+  },"305": {
     "doc": "UART Bootloader Protocol",
     "title": "UART Bootloader Protocol",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_protocol.html",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_protocol.html"
-  },"305": {
+  },"306": {
     "doc": "Bootloader System Execution Flow",
     "title": "UART Bootloader system level execution flow",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html#uart-bootloader-system-level-execution-flow",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html#uart-bootloader-system-level-execution-flow"
-  },"306": {
+  },"307": {
     "doc": "Bootloader System Execution Flow",
     "title": "Basic Bootloader system level execution flow",
     "content": ". | The Bootloader code starts executing on a device Reset . | If there are no conditions to enter the firmware upgrade mode, the Bootloader starts executing the user application . | Refer to Bootloader Trigger Methods for different conditions to enter firmware upgrade mode | . | The Bootloader performs Flash erase/program operations while in the firmware upgrade mode . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html#basic-bootloader-system-level-execution-flow",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html#basic-bootloader-system-level-execution-flow"
-  },"307": {
+  },"308": {
     "doc": "Bootloader System Execution Flow",
     "title": "Fail Safe Update Bootloader system level execution flow (MIPS Based MCUs)",
     "content": ". | Bootloader always maps Bank 1 to lower region at boot up irrespective of cause for reset (Hard/Soft). | This is required because if Swap bit was set and a soft reset was triggered the value is retained but if Swap bit was set and Hard reset was triggered the value is cleared | . | Once Swap bit is cleared and Bank 1 is mapped to lower region it performs below operation . | If Bank 1 serial number is greater than Bank 2 serial number it just continues for trigger check or runs application from Bank 1, As Bank 1 is already mapped to lower region in above step (Bank 1 is Active Bank) . | If Bank 2 serial number is greater than Bank 1 serial number it maps Bank 2 to lower region by setting the Swap bit and proceeds to trigger check or runs application from Bank 2 (Bank 2 is Active Bank) . | . | Whenever Bootlader programs new application in the Inactive bank and swap bank command is received it reads the serial number from Active bank, increments by 1 and then writes to Inactive Bank serial . | Inactive Bank Serial number = Active Bank serial number + 1 . | Start address of inactive bank is equal start of mid of flash . | . | If the Host application requests to update the Active Bank and the address falls into the active bank serial sector it sends an error response and aborts the programming operation . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html#fail-safe-update-bootloader-system-level-execution-flow-mips-based-mcus",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html#fail-safe-update-bootloader-system-level-execution-flow-mips-based-mcus"
-  },"308": {
+  },"309": {
     "doc": "Bootloader System Execution Flow",
     "title": "Additional Information",
     "content": ". | Refer to Firmware Update Mode execution flow to understand how the firmware update takes place in bootloader | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html#additional-information",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html#additional-information"
-  },"309": {
+  },"310": {
     "doc": "Bootloader System Execution Flow",
     "title": "Bootloader System Execution Flow",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html",
     "relUrl": "/templates/src/optimized/docs/uart/uart_bootloader_system_execution_flow.html"
-  },"310": {
+  },"311": {
     "doc": "Debugging Help",
     "title": "Debugging UART Bootloader and Application to be bootloaded",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_debugging.html#debugging-uart-bootloader-and-application-to-be-bootloaded",
     "relUrl": "/templates/src/optimized/docs/uart/uart_debugging.html#debugging-uart-bootloader-and-application-to-be-bootloaded"
-  },"311": {
+  },"312": {
     "doc": "Debugging Help",
     "title": "Debugging Bootloader",
     "content": "For CORTEX-M based MCUs . | Refer to Debugging Bootloaders For CORTEX-M based MCUs for information on how to debug UART bootloader | . For MIPS based MCUs . | Can be debugged as any other MPLAB project. No additional setup is required. | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_debugging.html#debugging-bootloader",
     "relUrl": "/templates/src/optimized/docs/uart/uart_debugging.html#debugging-bootloader"
-  },"312": {
+  },"313": {
     "doc": "Debugging Help",
     "title": "Debugging application to be bootloaded along with bootloader",
     "content": ". | Refer to Debugging Bootloader And Application | . ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_debugging.html#debugging-application-to-be-bootloaded-along-with-bootloader",
     "relUrl": "/templates/src/optimized/docs/uart/uart_debugging.html#debugging-application-to-be-bootloaded-along-with-bootloader"
-  },"313": {
+  },"314": {
     "doc": "Debugging Help",
     "title": "Debugging Help",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/optimized/docs/uart/uart_debugging.html",
     "relUrl": "/templates/src/optimized/docs/uart/uart_debugging.html"
-  },"314": {
+  },"315": {
     "doc": "Application Configurations",
     "title": "Configurations for the application to be bootloaded",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_application_configurations.html#configurations-for-the-application-to-be-bootloaded",
     "relUrl": "/templates/src/unified/docs/udp/udp_application_configurations.html#configurations-for-the-application-to-be-bootloaded"
-  },"315": {
+  },"316": {
     "doc": "Application Configurations",
     "title": "For CORTEX-M based MCUs",
     "content": ". | Refer to Application project Configurations for information on how to configure an application to be bootloaded for CORTEX-M based MCus | . For MIPS based MCUs . | Refer to Application Linker Script Configurations for information on how to setup a linker script for the application to be bootloaded for MIPS based MCus . | Refer to Application project Configurations for information on how to configure an application to be bootloaded for MIPS based MCus . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_application_configurations.html#for-cortex-m-based-mcus",
     "relUrl": "/templates/src/unified/docs/udp/udp_application_configurations.html#for-cortex-m-based-mcus"
-  },"316": {
+  },"317": {
     "doc": "Application Configurations",
     "title": "Application Configurations",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_application_configurations.html",
     "relUrl": "/templates/src/unified/docs/udp/udp_application_configurations.html"
-  },"317": {
+  },"318": {
     "doc": "Bootloader Configurations",
     "title": "UDP Bootloader Configurations",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_configurations.html#udp-bootloader-configurations",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_configurations.html#udp-bootloader-configurations"
-  },"318": {
+  },"319": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Specific User Configurations",
     "content": "For Basic Bootloader . For Live Update Bootloader . | Bootloader NVM Memory Used: . | Specifies the memory peripheral used by bootloader to perform flash operations | The name of the peripheral will vary from device to device | . | Bootloader Size (Bytes): . | Specifies the maximum size of flash required by the bootloader | This size is calculated based on Bootloader type and Memory used | This size will vary from device to device and should always be aligned to device erase unit size | . | Enable Bootloader Trigger From Firmware: (Basic Mode Only) . | This Option can be used to Force Trigger bootloader from application firmware after a soft reset. It does so by reserving the specified number of bytes in SRAM from the start of the RAM. The reserved memory is updated by the application with a pre-defined pattern. The bootloader firmware in the bootloader_Trigger() routine, can check the reserved memory for the pre-defined pattern and enter bootloader mode if the pattern matches. | Number Of Bytes To Reserve From Start Of RAM: . | This option adds the provided offset to RAM Start address in bootloader linker script. | Application firmware can store some pattern in the reserved bytes region from RAM start for bootloader to check at reset in bootloader_Trigger() function | . | . | Bootloader UDP Port Number: . | Port number to be used to communicate via Unified Host Application | . | Use Dual Bank For Live Update: . | Used to configure bootloader library to use Inactive bank of the device to upload the new application | This option is visible only for devices supporting Dual flash banks . | Live Update Flash Bank Size (Bytes): . | Specifies the size of bank in which both the bootloader and application code reside. Thisvalue by default will be half of the available Flash memory | . | Trigger Reset After Update: . | This option can be used to trigger a Swap bank and reset immediatly after programming the application in inactive bank. | If not enabled, then the application code should call the bootloader_SwapAndReset() function to trigger Swap bank and reset | . | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_configurations.html#bootloader-specific-user-configurations",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_configurations.html#bootloader-specific-user-configurations"
-  },"319": {
+  },"320": {
     "doc": "Bootloader Configurations",
     "title": "UDP Configurations",
     "content": ". | IPv4 Static Address: 102.168.1.11 . | To be used to configure Unified Host Application | . | IPv4 SubNet Mask: 255.255.255.0 | IPv4 Default Gateway Address: 102.168.1.11 | IPv4 Primary DNS: 102.168.1.11 | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_configurations.html#udp-configurations",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_configurations.html#udp-configurations"
-  },"320": {
+  },"321": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader System Configurations (Basic Mode Only)",
     "content": ". | Application Start Address (Hex): . | Start address of the application which will programmed by bootloader | This value is filled by bootloader when its loaded which is equal to the bootloader size. It can be modified as per user need | This value will be used by bootloader to Jump to application at device reset | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_configurations.html#bootloader-system-configurations-basic-mode-only",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_configurations.html#bootloader-system-configurations-basic-mode-only"
-  },"321": {
+  },"322": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Linker Pre Processor Macros for CORTEX-M based MCUs",
     "content": ". | Based on the configurations the above linker pre processor macros will be generated in MPLAB X xc32-ld settings . | ROM_LENGTH specifies the size of the bootloader | . | . Basic Mode . Live Update Mode . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_configurations.html#bootloader-linker-pre-processor-macros-for-cortex-m-based-mcus",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_configurations.html#bootloader-linker-pre-processor-macros-for-cortex-m-based-mcus"
-  },"322": {
+  },"323": {
     "doc": "Bootloader Configurations",
     "title": "Additional Information",
     "content": ". | Refer to MIPS Bootloader Linker Script Configurations for information on bootloader linker script generated by MHC for MIPS based MCUs . | Refer to Bootloader Sizing And Considerations for information on bootloader size change considerations . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_configurations.html#additional-information",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_configurations.html#additional-information"
-  },"323": {
+  },"324": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Configurations",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_configurations.html",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_configurations.html"
-  },"324": {
+  },"325": {
     "doc": "UDP Bootloader Firmware Update Execution Flow",
     "title": "UDP Bootloader Firmware Update mode execution flow",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_firmware_update_execution_flow.html#udp-bootloader-firmware-update-mode-execution-flow",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_firmware_update_execution_flow.html#udp-bootloader-firmware-update-mode-execution-flow"
-  },"325": {
+  },"326": {
     "doc": "UDP Bootloader Firmware Update Execution Flow",
     "title": "Bootloader Task Flow",
     "content": ". | Erases the Flash memory . | Programs the hex file records into Flash memory . | Jumps to the Application . | Calls the DataStream Task at end of its every state machine execution to receive any packet from the Host PC . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_firmware_update_execution_flow.html#bootloader-task-flow",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_firmware_update_execution_flow.html#bootloader-task-flow"
-  },"326": {
+  },"327": {
     "doc": "UDP Bootloader Firmware Update Execution Flow",
     "title": "DataStream Task Flow",
     "content": ". | This task is used to receive data bytes from host PC and to send response to host PC . | It notifies the Bootloader task on completion of Data Reception or data transmit through callback . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_firmware_update_execution_flow.html#datastream-task-flow",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_firmware_update_execution_flow.html#datastream-task-flow"
-  },"327": {
+  },"328": {
     "doc": "UDP Bootloader Firmware Update Execution Flow",
     "title": "UDP Bootloader Firmware Update Execution Flow",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_firmware_update_execution_flow.html",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_firmware_update_execution_flow.html"
-  },"328": {
+  },"329": {
     "doc": "How The Library Works",
     "title": "How the UDP Bootloader library works",
     "content": "The UDP Bootloader firmware communicates with the Unified Host application running on Host PC by using a predefined communication protocol. The UDP Bootloader works in two different modes . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html#how-the-udp-bootloader-library-works",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html#how-the-udp-bootloader-library-works"
-  },"329": {
+  },"330": {
     "doc": "How The Library Works",
     "title": "Basic Mode",
     "content": ". | This mode is supported for all the devices . | Resides from . | The starting location of the flash memory region for CORTEX-M based MCUs . | The starting location of the Boot flash memory region or Program flash memory region for MIPS based MCUs devices . | . | The Bootloader performs flash erase/program/verify operations with the application hex sent from host PC using the Unified Bootloader Host Application while in the firmware upgrade mode . | Bootloader always performs flash operation from the address received via hex record . | The application can use the entire flash memory region starting from the end of bootloader space . | . | Jumps to the application once programming is completed | . Memory layout . | Basic memory layout for CORTEX-M based MCUs . | Basic memory layout for MIPS based MCUs . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html#basic-mode",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html#basic-mode"
-  },"330": {
+  },"331": {
     "doc": "How The Library Works",
     "title": "Live Update Mode",
     "content": ". | This mode is supported for the devices which have a Dual Bank flash memory . | Resides from . | The starting location of the flash memory region of both the banks on CORTEX-M based MCUs along with application code . | The starting location of the Program flash memory region of both the banks for MIPS based MCUs devices along with application code . | . | The Bootloader task performs flash erase/program/verify operations with the application hex sent from host PC using the Unified Bootloader Host Application in the Inactive bank . | Performs a bank swap and reset to run the application programmed in inactive bank on application task request . | For more information refer to below memory layouts | . Memory layout . | Live Update memory layout for CORTEX-M based MCUs . | Live Update memory layout for MIPS based MCUs . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html#live-update-mode",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html#live-update-mode"
-  },"331": {
+  },"332": {
     "doc": "How The Library Works",
     "title": "Additional Information",
     "content": ". | For information on protocol used refer to UDP Bootloader Protocol | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html#additional-information",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html#additional-information"
-  },"332": {
+  },"333": {
     "doc": "How The Library Works",
     "title": "How The Library Works",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_how_library_works.html"
-  },"333": {
+  },"334": {
     "doc": "Library Interface",
     "title": "UDP Bootloader Library Interface",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_library_interface.html#udp-bootloader-library-interface",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_library_interface.html#udp-bootloader-library-interface"
-  },"334": {
+  },"335": {
     "doc": "Library Interface",
     "title": "Table of contents",
     "content": ". | System functions . | bootloader_Tasks | bootloader_Trigger | run_Application | bootloader_SwapAndReset | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_library_interface.html#table-of-contents",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_library_interface.html#table-of-contents"
-  },"335": {
+  },"336": {
     "doc": "Library Interface",
     "title": "System functions",
     "content": "bootloader_Tasks . void bootloader_Tasks(void) . Summary . Starts bootloader execution. Description . This function can be used to start bootloader execution. The function waits for application firmware from the HOST-PC via UDP communication protocol to program into internal flash memory. Once the complete application is received, programmed and verified successfully, it resets the device to jump into programmed application. Precondition . bootloader_Trigger() must be called to check for bootloader triggers at startup. Parameters . None . Returns . None . Example . bootloader_Tasks(); . bootloader_Trigger . bool bootloader_Trigger(void); . Summary . Checks if Bootloader has to be executed at startup. Description . This function can be used to check for a External HW trigger or Internal firmware trigger to execute bootloader at startup. This function has to be implemented by the bootloader application to override the WEAK implementation in bootloader.c . The checks in trigger function should happen before any system resources are initialized apart for PORT, As the same system resource can be Re-initialized by the application if bootloader jumps to it and may cause issues. | External Trigger: . | Can be achieved by triggering a GPIO_PIN at startup. | . | Firmware Trigger: . | Application firmware which wants to execute bootloader at startup needs to fill first n bytes of ram location with a request pattern. The Number of bytes to be reserved for storing the pattern has to be configured in bootloader component configuration in MHC. | . | . uint32_t *sram = (uint32_t *)BTL_TRIGGER_RAM_START; sram[0] = 0x5048434D; sram[1] = 0x5048434D; sram[2] = 0x5048434D; sram[3] = 0x5048434D; . | Note: This API will not be generated when Live Update Support is enabled | . Precondition . PORT/PIO Initialize must have been called. Parameters . None . Returns . | True : If any of trigger is detected. | False : If no trigger is detected.. | . Example . #define BTL_TRIGGER_PATTERN 0x5048434D static uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START; bool bootloader_Trigger(void) { // Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter Bootloader. if (BTL_TRIGGER_PATTERN == ramStart[0] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[1] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[2] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[3]) { ramStart[0] = 0; return true; } // Check for Switch press to enter Bootloader if (SWITCH_Get() == 0) { return true; } return false; } void SYS_Initialize() { NVMCTRL_Initialize(); PORT_Initialize(); if (bootloader_Trigger() == false) { run_Application(); } CLOCK_Initialize(); } . run_Application . void run_Application(void); . Summary . Runs the programmed application at startup. Description . This function can be used to run programmed application though bootloader at startup. If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to the application start address to run the application programmed through bootloader and never returns. If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function and executes bootloader for accepting a new application firmware. | Note: This API will not be generated when Live Update Support is enabled | . Precondition . bootloader_Trigger() must be called to check for bootloader triggers at startup. Parameters . None . Returns . None . Example . void SYS_Initialize() { NVMCTRL_Initialize(); PORT_Initialize(); if (bootloader_Trigger() == false) { run_Application(); } CLOCK_Initialize(); } . bootloader_SwapAndReset . void bootloader_SwapAndReset( void ); . Summary . Updates the Serial number in Inactive Bank and triggers Reset. Description . This function can be used by the application to update the serial number in inactive bank and trigger reset after Live Update is Completed. Switcher in Boot Flash Memory should know the address at compile time where the serial number is stored in each bank. It reads the serial number from both banks, Compares the values and maps the bank with highest serial number to lower region. | Note: This Function will be generated only for MIPS based MCUs with dual flash bank support and when the dual bank for live update option is selected in MHC bootloader component settings . | Refer to Bootloader Configurations section for more details | . | . Precondition . | Live Update has to be completed before calling this function | . Parameters . None . Returns . None . Example . bootloader_SwapAndReset(); . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_library_interface.html#system-functions",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_library_interface.html#system-functions"
-  },"336": {
+  },"337": {
     "doc": "Library Interface",
     "title": "Library Interface",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_library_interface.html",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_library_interface.html"
-  },"337": {
+  },"338": {
     "doc": "UDP Bootloader Protocol",
     "title": "UDP Bootloader Protocol",
     "content": "The Unified host application running on Host-PC uses below communication protocol to interact with the Bootloader firmware. The Unified host application acts as a master and issues commands to the Bootloader firmware to perform specific operations. ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#udp-bootloader-protocol",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#udp-bootloader-protocol"
-  },"338": {
+  },"339": {
     "doc": "UDP Bootloader Protocol",
     "title": "Frame Format",
     "content": "The communication protocol follows the frame format, as shown below . [&lt;SOH&gt;…]&lt;SOH&gt;[&lt;DATA&gt;…]&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; . Where: . &lt;…&gt; Represents a byte . […] Represents an optional or variable number of bytes . | The frame format remains the same in both directions, that is, from the host application to the Bootloader, and from the Bootloader to the host application. | The frame starts with a control character, Start of Header (SOH), and ends with another control character, End of Transmission (EOT) . | The integrity of the frame is protected by two bytes of Cyclic Redundancy Check (CRC)-16, represented by CRCL (low-byte) and CRCH (high-byte) . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#frame-format",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#frame-format"
-  },"339": {
+  },"340": {
     "doc": "UDP Bootloader Protocol",
     "title": "Control Characters",
     "content": "Some bytes in the Data field may imitate the control characters, SOH and EOT. The Data Link Escape (DLE) character is used to escape such bytes that could be interpreted as control characters. The Bootloader always accepts the byte following a &lt;DLE&gt; as data, and always sends a &lt;DLE&gt; before any of the control characters. | Control | Hex Value | Description | . | &lt;SOH&gt; | 0x01 | Marks the beginning of a frame | . | &lt;EOT&gt; | 0x04 | Marks the end of a frame | . | &lt;DLE&gt; | 0x10 | Data link escape | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#control-characters",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#control-characters"
-  },"340": {
+  },"341": {
     "doc": "UDP Bootloader Protocol",
     "title": "Commands",
     "content": "The PC host application can issue the commands listed in below to the Bootloader. The first byte in the data field carries the command. | Command Value in Hexadecimal | Description | . | 0x01 | Read the Bootloader version information. | . | 0x02 | Erase the Flash. | . | 0x03 | Program the Flash. | . | 0x04 | Read the CRC. | . | 0x05 | Jump to the application. | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#commands",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#commands"
-  },"341": {
+  },"342": {
     "doc": "UDP Bootloader Protocol",
     "title": "Read Bootloader Version Information",
     "content": "The Read Version command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;[&lt;0x01&gt;]&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x01&gt;&lt;MAJOR_VER&gt;&lt;MINOR_VER&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | The Bootloader responds to the PC request for version information in two bytes as shown above . | MAJOR_VER = Major version of the Bootloader | MINOR_VER = Minor version of the Bootloader | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#read-bootloader-version-information",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#read-bootloader-version-information"
-  },"342": {
+  },"343": {
     "doc": "UDP Bootloader Protocol",
     "title": "Erase Flash",
     "content": "The Erase Flash command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x02&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x02&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | On receiving the erase Flash command from the PC host application, the Bootloader erases that entire application program space starting from the application start address configured . | The Bootloader Task routine returns only after entire application space is erased . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#erase-flash",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#erase-flash"
-  },"343": {
+  },"344": {
     "doc": "UDP Bootloader Protocol",
     "title": "Program Flash",
     "content": "The Program Flash command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x03&gt;[&lt;HEX_RECORD&gt;…]&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x03&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | HEX_RECORD is the Intel Hex record in hexadecimal format . | The PC host application sends one or multiple hex records in Intel Hex format along with the program Flash command . | The MPLAB XC32 C/C++ Compiler generates the image in the Intel Hex format. Each line in the Intel hexadecimal file represents a hexadecimal record . | Each hexadecimal record starts with a colon (:) and is in ASCII format. The PC host application discards the colon and converts the remaining data from ASCII to hexadecimal, and then sends the data to the Bootloader . | The Bootloader extracts the destination address and data from the hex record, and writes the data into program Flash . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#program-flash",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#program-flash"
-  },"344": {
+  },"345": {
     "doc": "UDP Bootloader Protocol",
     "title": "Read CRC (Currently Not Supported)",
     "content": "The Read CRC command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x04&gt;&lt;ADRS_LB&gt;&lt;ADRS_HB&gt;&lt;ADRS_UB&gt;&lt;ADRS_MB&gt;&lt;NUMBYTES_LB&gt;&lt;NUMBYTES_HB&gt;&lt;NUMBYTES_UB&gt;&lt;NUMBYTES_MB&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x04&gt;&lt;FLASH_CRCL&gt;&lt;FLASH_CRCH&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | The read CRC command is used to verify the content of the program Flash after programming . | ADRS_LB, ADRS_HB, ADRS_UB and ADRS_MB represent the 32-bit Flash addresses from where the CRC calculation begins . | NUMBYTES_LB, NUMBYTES_HB, NUMBYTES_UB and NUMBYTES_MB represent the total number of bytes in 32-bit format for which the CRC is to be calculated . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#read-crc-currently-not-supported",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#read-crc-currently-not-supported"
-  },"345": {
+  },"346": {
     "doc": "UDP Bootloader Protocol",
     "title": "Jump to Application",
     "content": "The Jump To Application command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x05&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x05&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | The Jump to Application command from the PC host application commands the Bootloader to execute the application . | Once response is sent it exits the firmware upgrade mode and begins executing the application . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html#jump-to-application",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html#jump-to-application"
-  },"346": {
+  },"347": {
     "doc": "UDP Bootloader Protocol",
     "title": "UDP Bootloader Protocol",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_protocol.html",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_protocol.html"
-  },"347": {
+  },"348": {
     "doc": "Bootloader System Execution Flow",
     "title": "UDP Bootloader system level execution flow",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html#udp-bootloader-system-level-execution-flow",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html#udp-bootloader-system-level-execution-flow"
-  },"348": {
+  },"349": {
     "doc": "Bootloader System Execution Flow",
     "title": "Basic Bootloader system level execution flow",
     "content": ". | The Bootloader code starts executing on a device Reset . | If there are no conditions to enter the firmware upgrade mode, the Bootloader starts executing the user application . | Refer to Bootloader Trigger Methods for different conditions to enter firmware upgrade mode | . | The Bootloader performs Flash erase/program operations while in the firmware upgrade mode . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html#basic-bootloader-system-level-execution-flow",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html#basic-bootloader-system-level-execution-flow"
-  },"349": {
+  },"350": {
     "doc": "Bootloader System Execution Flow",
     "title": "Live Update Bootloader system level execution flow",
     "content": ". | Supported for the devices which have a Dual Bank flash memory | . Cortex-M Based MCUs . | Special NVM Fuse setting (AFIRST) is used to identify which bank is mapped to NVM main address space after reset . | The bootloader live update code responsible to program the inactive bank is part of the application it self. Which means the programming operation can happen while the application is running . | Live Update Application = (Bootloader Code in Live Update mode + Application code) | . | The application code is responsible to send a request to bootloader live update code to perform a bank swap and reset to run the new firmware programmed in Inactive bank | . MIPS Based MCUs . | Switcher Application in Boot flash memory is required to select the bank with latest firmware . | At reset switcher first maps Bank 1 to lower region and reads the serial numbers from both banks . | If Bank 2 serial number is greater than Bank 1 serial number, it maps Bank 2 to lower region by setting the Swap bit and runs the new firmware from BANK 2 else continues to run firmware from BANK 1 . | . | The bootloader live update code responsible to program the inactive bank is part of the application it self. Which means the programming operation can happen while the application is running . | Live Update Application = (Bootloader Code in Live Update mode + Application code) | . | The bootloader live update code will always program the new image in the inactive bank . | The application code is responsible to send a request to bootloader live update code to perform a bank swap and reset to run the new firmware programmed in Inactive bank . | Once this request is received the bootloader live update code performs below operation before initiating a reset to run new firmware . | Inactive Serial number = Active serial number + 1 | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html#live-update-bootloader-system-level-execution-flow",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html#live-update-bootloader-system-level-execution-flow"
-  },"350": {
+  },"351": {
     "doc": "Bootloader System Execution Flow",
     "title": "Additional Information",
     "content": ". | Refer to Firmware Update Mode execution flow to understand how the firmware update takes place in bootloader | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html#additional-information",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html#additional-information"
-  },"351": {
+  },"352": {
     "doc": "Bootloader System Execution Flow",
     "title": "Bootloader System Execution Flow",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html",
     "relUrl": "/templates/src/unified/docs/udp/udp_bootloader_system_execution_flow.html"
-  },"352": {
+  },"353": {
     "doc": "Debugging Help",
     "title": "Debugging UDP Bootloader and Application to be bootloaded",
     "content": ". | Refer to Debugging Bootloader And Application | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_debugging.html#debugging-udp-bootloader-and-application-to-be-bootloaded",
     "relUrl": "/templates/src/unified/docs/udp/udp_debugging.html#debugging-udp-bootloader-and-application-to-be-bootloaded"
-  },"353": {
+  },"354": {
     "doc": "Debugging Help",
     "title": "Debugging Help",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/udp/udp_debugging.html",
     "relUrl": "/templates/src/unified/docs/udp/udp_debugging.html"
-  },"354": {
+  },"355": {
     "doc": "Application Configurations",
     "title": "Configurations for the application to be bootloaded",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_application_configurations.html#configurations-for-the-application-to-be-bootloaded",
     "relUrl": "/templates/src/unified/docs/usb/usb_application_configurations.html#configurations-for-the-application-to-be-bootloaded"
-  },"355": {
+  },"356": {
     "doc": "Application Configurations",
     "title": "For CORTEX-M based MCUs",
     "content": ". | Refer to Application project Configurations for information on how to configure an application to be bootloaded for CORTEX-M based MCus | . For MIPS based MCUs . | Refer to Application Linker Script Configurations for information on how to setup a linker script for the application to be bootloaded for MIPS based MCus . | Refer to Application project Configurations for information on how to configure an application to be bootloaded for MIPS based MCus . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_application_configurations.html#for-cortex-m-based-mcus",
     "relUrl": "/templates/src/unified/docs/usb/usb_application_configurations.html#for-cortex-m-based-mcus"
-  },"356": {
+  },"357": {
     "doc": "Application Configurations",
     "title": "Application Configurations",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_application_configurations.html",
     "relUrl": "/templates/src/unified/docs/usb/usb_application_configurations.html"
-  },"357": {
+  },"358": {
     "doc": "Bootloader Configurations",
     "title": "USB Device HID Bootloader Configurations",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_configurations.html#usb-device-hid-bootloader-configurations",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_configurations.html#usb-device-hid-bootloader-configurations"
-  },"358": {
+  },"359": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Specific User Configurations",
     "content": "For Basic Bootloader . For Live Update Bootloader . | Bootloader NVM Memory Used: . | Specifies the memory peripheral used by bootloader to perform flash operations | The name of the peripheral will vary from device to device | . | Bootloader Size (Bytes): . | Specifies the maximum size of flash required by the bootloader | This size is calculated based on Bootloader type and Memory used | This size will vary from device to device and should always be aligned to device erase unit size | . | Enable Bootloader Trigger From Firmware: (Basic Mode Only) . | This Option can be used to Force Trigger bootloader from application firmware after a soft reset. It does so by reserving the specified number of bytes in SRAM from the start of the RAM. The reserved memory is updated by the application with a pre-defined pattern. The bootloader firmware in the bootloader_Trigger() routine, can check the reserved memory for the pre-defined pattern and enter bootloader mode if the pattern matches. | Number Of Bytes To Reserve From Start Of RAM: . | This option adds the provided offset to RAM Start address in bootloader linker script. | Application firmware can store some pattern in the reserved bytes region from RAM start for bootloader to check at reset in bootloader_Trigger() function | . | . | Use Dual Bank For Live Update: . | Used to configure bootloader library to use Inactive bank of the device to upload the new application | This option is visible only for devices supporting Dual flash banks . | Live Update Flash Bank Size (Bytes): . | Specifies the size of bank in which both the bootloader and application code reside. Thisvalue by default will be half of the available Flash memory | . | Trigger Reset After Update: . | This option can be used to trigger a Swap bank and reset immediatly after programming the application in inactive bank. | If not enabled, then the application code should call the bootloader_SwapAndReset() function to trigger Swap bank and reset | . | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_configurations.html#bootloader-specific-user-configurations",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_configurations.html#bootloader-specific-user-configurations"
-  },"359": {
+  },"360": {
     "doc": "Bootloader Configurations",
     "title": "USB Device HID Driver Configurations",
     "content": ". | Vendor ID: 0x04D8 | Product Id Selection: usb_device_hid_bootloader | Product ID: 0x003C . | To be used to configure Unified Host Application | . | Product String Selection: USB HID Bootloader | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_configurations.html#usb-device-hid-driver-configurations",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_configurations.html#usb-device-hid-driver-configurations"
-  },"360": {
+  },"361": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader System Configurations (Basic Mode Only)",
     "content": ". | Application Start Address (Hex): . | Start address of the application which will programmed by bootloader | This value is filled by bootloader when its loaded which is equal to the bootloader size. It can be modified as per user need | This value will be used by bootloader to Jump to application at device reset | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_configurations.html#bootloader-system-configurations-basic-mode-only",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_configurations.html#bootloader-system-configurations-basic-mode-only"
-  },"361": {
+  },"362": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Linker Pre Processor Macros for CORTEX-M based MCUs",
     "content": ". | Based on the configurations the above linker pre processor macros will be generated in MPLAB X xc32-ld settings . | ROM_LENGTH specifies the size of the bootloader | . | . Basic Mode . Live Update Mode . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_configurations.html#bootloader-linker-pre-processor-macros-for-cortex-m-based-mcus",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_configurations.html#bootloader-linker-pre-processor-macros-for-cortex-m-based-mcus"
-  },"362": {
+  },"363": {
     "doc": "Bootloader Configurations",
     "title": "Additional Information",
     "content": ". | Refer to MIPS Bootloader Linker Script Configurations for information on bootloader linker script generated by MHC for MIPS based MCUs . | Refer to Bootloader Sizing And Considerations for information on bootloader size change considerations . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_configurations.html#additional-information",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_configurations.html#additional-information"
-  },"363": {
+  },"364": {
     "doc": "Bootloader Configurations",
     "title": "Bootloader Configurations",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_configurations.html",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_configurations.html"
-  },"364": {
+  },"365": {
     "doc": "USB Device HID Bootloader Firmware Update Execution Flow",
     "title": "USB Device HID Bootloader Firmware Update mode execution flow",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_firmware_update_execution_flow.html#usb-device-hid-bootloader-firmware-update-mode-execution-flow",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_firmware_update_execution_flow.html#usb-device-hid-bootloader-firmware-update-mode-execution-flow"
-  },"365": {
+  },"366": {
     "doc": "USB Device HID Bootloader Firmware Update Execution Flow",
     "title": "Bootloader Task Flow",
     "content": ". | Erases the Flash memory . | Programs the hex file records into Flash memory . | Jumps to the Application . | Calls the DataStream Task at end of its every state machine execution to receive any packet from the Host PC . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_firmware_update_execution_flow.html#bootloader-task-flow",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_firmware_update_execution_flow.html#bootloader-task-flow"
-  },"366": {
+  },"367": {
     "doc": "USB Device HID Bootloader Firmware Update Execution Flow",
     "title": "DataStream Task Flow",
     "content": ". | This task is used to receive data bytes from host PC and to send response to host PC . | It notifies the Bootloader task on completion of Data Reception or data transmit through callback . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_firmware_update_execution_flow.html#datastream-task-flow",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_firmware_update_execution_flow.html#datastream-task-flow"
-  },"367": {
+  },"368": {
     "doc": "USB Device HID Bootloader Firmware Update Execution Flow",
     "title": "USB Device HID Bootloader Firmware Update Execution Flow",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_firmware_update_execution_flow.html",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_firmware_update_execution_flow.html"
-  },"368": {
+  },"369": {
     "doc": "How The Library Works",
     "title": "How the USB Device HID Bootloader library works",
     "content": "The USB Device HID Bootloader firmware communicates with the Unified Host application running on Host PC by using a predefined communication protocol. The USB Device HID Bootloader works in two different modes . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html#how-the-usb-device-hid-bootloader-library-works",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html#how-the-usb-device-hid-bootloader-library-works"
-  },"369": {
+  },"370": {
     "doc": "How The Library Works",
     "title": "Basic Mode",
     "content": ". | This mode is supported for all the devices . | Resides from . | The starting location of the flash memory region for CORTEX-M based MCUs . | The starting location of the Boot flash memory region or Program flash memory region for MIPS based MCUs devices . | . | The Bootloader performs flash erase/program/verify operations with the application hex sent from host PC using the Unified Bootloader Host Application while in the firmware upgrade mode . | Bootloader always performs flash operation from the address received via hex record . | The application can use the entire flash memory region starting from the end of bootloader space . | . | Jumps to the application once programming is completed | . Memory layout . | Basic memory layout for CORTEX-M based MCUs . | Basic memory layout for MIPS based MCUs . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html#basic-mode",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html#basic-mode"
-  },"370": {
+  },"371": {
     "doc": "How The Library Works",
     "title": "Live Update Mode",
     "content": ". | This mode is supported for the devices which have a Dual Bank flash memory . | Resides from . | The starting location of the flash memory region of both the banks on CORTEX-M based MCUs along with application code . | The starting location of the Program flash memory region of both the banks for MIPS based MCUs devices along with application code . | . | The Bootloader task performs flash erase/program/verify operations with the application hex sent from host PC using the Unified Bootloader Host Application in the Inactive bank . | Performs a bank swap and reset to run the application programmed in inactive bank on application task request . | For more information refer to below memory layouts | . Memory layout . | Live Update memory layout for CORTEX-M based MCUs . | Live Update memory layout for MIPS based MCUs . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html#live-update-mode",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html#live-update-mode"
-  },"371": {
+  },"372": {
     "doc": "How The Library Works",
     "title": "Additional Information",
     "content": ". | For information on protocol used refer to USB Device HID Bootloader Protocol | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html#additional-information",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html#additional-information"
-  },"372": {
+  },"373": {
     "doc": "How The Library Works",
     "title": "How The Library Works",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_how_library_works.html"
-  },"373": {
+  },"374": {
     "doc": "Library Interface",
     "title": "USB Device HID Bootloader Library Interface",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_library_interface.html#usb-device-hid-bootloader-library-interface",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_library_interface.html#usb-device-hid-bootloader-library-interface"
-  },"374": {
+  },"375": {
     "doc": "Library Interface",
     "title": "Table of contents",
     "content": ". | System functions . | bootloader_Tasks | bootloader_Trigger | run_Application | bootloader_SwapAndReset | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_library_interface.html#table-of-contents",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_library_interface.html#table-of-contents"
-  },"375": {
+  },"376": {
     "doc": "Library Interface",
     "title": "System functions",
     "content": "bootloader_Tasks . void bootloader_Tasks(void) . Summary . Starts bootloader execution. Description . This function can be used to start bootloader execution. The function waits for application firmware from the HOST-PC via USB Device HID communication protocol to program into internal flash memory. Once the complete application is received, programmed and verified successfully, it resets the device to jump into programmed application. Precondition . bootloader_Trigger() must be called to check for bootloader triggers at startup. Parameters . None . Returns . None . Example . bootloader_Tasks(); . bootloader_Trigger . bool bootloader_Trigger(void); . Summary . Checks if Bootloader has to be executed at startup. Description . This function can be used to check for a External HW trigger or Internal firmware trigger to execute bootloader at startup. This function has to be implemented by the bootloader application to override the WEAK implementation in bootloader.c . The checks in trigger function should happen before any system resources are initialized apart for PORT, As the same system resource can be Re-initialized by the application if bootloader jumps to it and may cause issues. | External Trigger: . | Can be achieved by triggering a GPIO_PIN at startup. | . | Firmware Trigger: . | Application firmware which wants to execute bootloader at startup needs to fill first n bytes of ram location with a request pattern. The Number of bytes to be reserved for storing the pattern has to be configured in bootloader component configuration in MHC. | . | . uint32_t *sram = (uint32_t *)BTL_TRIGGER_RAM_START; sram[0] = 0x5048434D; sram[1] = 0x5048434D; sram[2] = 0x5048434D; sram[3] = 0x5048434D; . | Note: This API will not be generated when Live Update Support is enabled | . Precondition . PORT/PIO Initialize must have been called. Parameters . None . Returns . | True : If any of trigger is detected. | False : If no trigger is detected.. | . Example . #define BTL_TRIGGER_PATTERN 0x5048434D static uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START; bool bootloader_Trigger(void) { // Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter Bootloader. if (BTL_TRIGGER_PATTERN == ramStart[0] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[1] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[2] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[3]) { ramStart[0] = 0; return true; } // Check for Switch press to enter Bootloader if (SWITCH_Get() == 0) { return true; } return false; } void SYS_Initialize() { NVMCTRL_Initialize(); PORT_Initialize(); if (bootloader_Trigger() == false) { run_Application(); } CLOCK_Initialize(); } . run_Application . void run_Application(void); . Summary . Runs the programmed application at startup. Description . This function can be used to run programmed application though bootloader at startup. If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to the application start address to run the application programmed through bootloader and never returns. If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function and executes bootloader for accepting a new application firmware. | Note: This API will not be generated when Live Update Support is enabled | . Precondition . bootloader_Trigger() must be called to check for bootloader triggers at startup. Parameters . None . Returns . None . Example . void SYS_Initialize() { NVMCTRL_Initialize(); PORT_Initialize(); if (bootloader_Trigger() == false) { run_Application(); } CLOCK_Initialize(); } . bootloader_SwapAndReset . void bootloader_SwapAndReset( void ); . Summary . Updates the Serial number in Inactive Bank and triggers Reset. Description . This function can be used by the application to update the serial number in inactive bank and trigger reset after Live Update is Completed. Switcher in Boot Flash Memory should know the address at compile time where the serial number is stored in each bank. It reads the serial number from both banks, Compares the values and maps the bank with highest serial number to lower region. | Note: This Function will be generated only for MIPS based MCUs with dual flash bank support and when the dual bank for live update option is selected in MHC bootloader component settings . | Refer to Bootloader Configurations section for more details | . | . Precondition . | Live Update has to be completed before calling this function | . Parameters . None . Returns . None . Example . bootloader_SwapAndReset(); . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_library_interface.html#system-functions",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_library_interface.html#system-functions"
-  },"376": {
+  },"377": {
     "doc": "Library Interface",
     "title": "Library Interface",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_library_interface.html",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_library_interface.html"
-  },"377": {
+  },"378": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "USB Device HID Bootloader Protocol",
     "content": "The Unified host application running on Host-PC uses below communication protocol to interact with the Bootloader firmware. The Unified host application acts as a master and issues commands to the Bootloader firmware to perform specific operations. ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#usb-device-hid-bootloader-protocol",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#usb-device-hid-bootloader-protocol"
-  },"378": {
+  },"379": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "Frame Format",
     "content": "The communication protocol follows the frame format, as shown below . [&lt;SOH&gt;…]&lt;SOH&gt;[&lt;DATA&gt;…]&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; . Where: . &lt;…&gt; Represents a byte . […] Represents an optional or variable number of bytes . | The frame format remains the same in both directions, that is, from the host application to the Bootloader, and from the Bootloader to the host application. | The frame starts with a control character, Start of Header (SOH), and ends with another control character, End of Transmission (EOT) . | The integrity of the frame is protected by two bytes of Cyclic Redundancy Check (CRC)-16, represented by CRCL (low-byte) and CRCH (high-byte) . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#frame-format",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#frame-format"
-  },"379": {
+  },"380": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "Control Characters",
     "content": "Some bytes in the Data field may imitate the control characters, SOH and EOT. The Data Link Escape (DLE) character is used to escape such bytes that could be interpreted as control characters. The Bootloader always accepts the byte following a &lt;DLE&gt; as data, and always sends a &lt;DLE&gt; before any of the control characters. | Control | Hex Value | Description | . | &lt;SOH&gt; | 0x01 | Marks the beginning of a frame | . | &lt;EOT&gt; | 0x04 | Marks the end of a frame | . | &lt;DLE&gt; | 0x10 | Data link escape | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#control-characters",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#control-characters"
-  },"380": {
+  },"381": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "Commands",
     "content": "The PC host application can issue the commands listed in below to the Bootloader. The first byte in the data field carries the command. | Command Value in Hexadecimal | Description | . | 0x01 | Read the Bootloader version information. | . | 0x02 | Erase the Flash. | . | 0x03 | Program the Flash. | . | 0x04 | Read the CRC. | . | 0x05 | Jump to the application. | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#commands",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#commands"
-  },"381": {
+  },"382": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "Read Bootloader Version Information",
     "content": "The Read Version command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;[&lt;0x01&gt;]&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x01&gt;&lt;MAJOR_VER&gt;&lt;MINOR_VER&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | The Bootloader responds to the PC request for version information in two bytes as shown above . | MAJOR_VER = Major version of the Bootloader | MINOR_VER = Minor version of the Bootloader | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#read-bootloader-version-information",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#read-bootloader-version-information"
-  },"382": {
+  },"383": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "Erase Flash",
     "content": "The Erase Flash command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x02&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x02&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | On receiving the erase Flash command from the PC host application, the Bootloader erases that entire application program space starting from the application start address configured . | The Bootloader Task routine returns only after entire application space is erased . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#erase-flash",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#erase-flash"
-  },"383": {
+  },"384": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "Program Flash",
     "content": "The Program Flash command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x03&gt;[&lt;HEX_RECORD&gt;…]&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x03&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | HEX_RECORD is the Intel Hex record in hexadecimal format . | The PC host application sends one or multiple hex records in Intel Hex format along with the program Flash command . | The MPLAB XC32 C/C++ Compiler generates the image in the Intel Hex format. Each line in the Intel hexadecimal file represents a hexadecimal record . | Each hexadecimal record starts with a colon (:) and is in ASCII format. The PC host application discards the colon and converts the remaining data from ASCII to hexadecimal, and then sends the data to the Bootloader . | The Bootloader extracts the destination address and data from the hex record, and writes the data into program Flash . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#program-flash",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#program-flash"
-  },"384": {
+  },"385": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "Read CRC (Currently Not Supported)",
     "content": "The Read CRC command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x04&gt;&lt;ADRS_LB&gt;&lt;ADRS_HB&gt;&lt;ADRS_UB&gt;&lt;ADRS_MB&gt;&lt;NUMBYTES_LB&gt;&lt;NUMBYTES_HB&gt;&lt;NUMBYTES_UB&gt;&lt;NUMBYTES_MB&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x04&gt;&lt;FLASH_CRCL&gt;&lt;FLASH_CRCH&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | The read CRC command is used to verify the content of the program Flash after programming . | ADRS_LB, ADRS_HB, ADRS_UB and ADRS_MB represent the 32-bit Flash addresses from where the CRC calculation begins . | NUMBYTES_LB, NUMBYTES_HB, NUMBYTES_UB and NUMBYTES_MB represent the total number of bytes in 32-bit format for which the CRC is to be calculated . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#read-crc-currently-not-supported",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#read-crc-currently-not-supported"
-  },"385": {
+  },"386": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "Jump to Application",
     "content": "The Jump To Application command sequence is as shown in below table with corresponding response . | Request | Response | . | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x05&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | [&lt;SOH&gt;…]&lt;SOH&gt;&lt;0x05&gt;&lt;CRCL&gt;&lt;CRCH&gt;&lt;EOT&gt; | . | The Jump to Application command from the PC host application commands the Bootloader to execute the application . | Once response is sent it exits the firmware upgrade mode and begins executing the application . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html#jump-to-application",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html#jump-to-application"
-  },"386": {
+  },"387": {
     "doc": "USB Device HID Bootloader Protocol",
     "title": "USB Device HID Bootloader Protocol",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_protocol.html",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_protocol.html"
-  },"387": {
+  },"388": {
     "doc": "Bootloader System Execution Flow",
     "title": "USB Device HID Bootloader system level execution flow",
     "content": " ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html#usb-device-hid-bootloader-system-level-execution-flow",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html#usb-device-hid-bootloader-system-level-execution-flow"
-  },"388": {
+  },"389": {
     "doc": "Bootloader System Execution Flow",
     "title": "Basic Bootloader system level execution flow",
     "content": ". | The Bootloader code starts executing on a device Reset . | If there are no conditions to enter the firmware upgrade mode, the Bootloader starts executing the user application . | Refer to Bootloader Trigger Methods for different conditions to enter firmware upgrade mode | . | The Bootloader performs Flash erase/program operations while in the firmware upgrade mode . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html#basic-bootloader-system-level-execution-flow",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html#basic-bootloader-system-level-execution-flow"
-  },"389": {
+  },"390": {
     "doc": "Bootloader System Execution Flow",
     "title": "Live Update Bootloader system level execution flow",
     "content": ". | Supported for the devices which have a Dual Bank flash memory | . Cortex-M Based MCUs . | Special NVM Fuse setting (AFIRST) is used to identify which bank is mapped to NVM main address space after reset . | The bootloader live update code responsible to program the inactive bank is part of the application it self. Which means the programming operation can happen while the application is running . | Live Update Application = (Bootloader Code in Live Update mode + Application code) | . | The application code is responsible to send a request to bootloader live update code to perform a bank swap and reset to run the new firmware programmed in Inactive bank | . MIPS Based MCUs . | Switcher Application in Boot flash memory is required to select the bank with latest firmware . | At reset switcher first maps Bank 1 to lower region and reads the serial numbers from both banks . | If Bank 2 serial number is greater than Bank 1 serial number, it maps Bank 2 to lower region by setting the Swap bit and runs the new firmware from BANK 2 else continues to run firmware from BANK 1 . | . | The bootloader live update code responsible to program the inactive bank is part of the application it self. Which means the programming operation can happen while the application is running . | Live Update Application = (Bootloader Code in Live Update mode + Application code) | . | The bootloader live update code will always program the new image in the inactive bank . | The application code is responsible to send a request to bootloader live update code to perform a bank swap and reset to run the new firmware programmed in Inactive bank . | Once this request is received the bootloader live update code performs below operation before initiating a reset to run new firmware . | Inactive Serial number = Active serial number + 1 | . | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html#live-update-bootloader-system-level-execution-flow",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html#live-update-bootloader-system-level-execution-flow"
-  },"390": {
+  },"391": {
     "doc": "Bootloader System Execution Flow",
     "title": "Additional Information",
     "content": ". | Refer to Firmware Update Mode execution flow to understand how the firmware update takes place in bootloader | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html#additional-information",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html#additional-information"
-  },"391": {
+  },"392": {
     "doc": "Bootloader System Execution Flow",
     "title": "Bootloader System Execution Flow",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html",
     "relUrl": "/templates/src/unified/docs/usb/usb_bootloader_system_execution_flow.html"
-  },"392": {
+  },"393": {
     "doc": "Debugging Help",
     "title": "Debugging USB Device HID Bootloader and Application to be bootloaded",
     "content": ". | Refer to Debugging Bootloader And Application | . ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_debugging.html#debugging-usb-device-hid-bootloader-and-application-to-be-bootloaded",
     "relUrl": "/templates/src/unified/docs/usb/usb_debugging.html#debugging-usb-device-hid-bootloader-and-application-to-be-bootloaded"
-  },"393": {
+  },"394": {
     "doc": "Debugging Help",
     "title": "Debugging Help",
     "content": ". ",
     "url": "http://localhost:4000/bootloader/templates/src/unified/docs/usb/usb_debugging.html",
     "relUrl": "/templates/src/unified/docs/usb/usb_debugging.html"
-  },"394": {
+  },"395": {
     "doc": "Bootloader Library Help",
     "title": "Bootloader Library Help",
     "content": "![Microchip logo](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_logo.png) ![Harmony logo small](https://raw.githubusercontent.com/wiki/Microchip-MPLAB-Harmony/Microchip-MPLAB-Harmony.github.io/images/microchip_mplab_harmony_logo_small.png) # MPLAB® Harmony 3 Bootloader Module MPLAB® Harmony 3 is an extension of the MPLAB® ecosystem for creating embedded firmware solutions for Microchip 32-bit SAM and PIC® microcontroller and microprocessor devices. Refer to the following links for more information. - [Microchip 32-bit MCUs](https://www.microchip.com/design-centers/32-bit) - [Microchip 32-bit MPUs](https://www.microchip.com/design-centers/32-bit-mpus) - [Microchip MPLAB X IDE](https://www.microchip.com/mplab/mplab-x-ide) - [Microchip MPLAB Harmony](https://www.microchip.com/mplab/mplab-harmony) - [Microchip MPLAB Harmony Pages](https://microchip-mplab-harmony.github.io/) This repository contains the MPLAB® Harmony 3 Bootloader. The bootloader module components provide framework to develop bootloaders for Microchip 32-bit PIC32 and SAM microcontrollers. Refer to the following links for release notes, training materials, and interface reference information. - [Release Notes](/bootloader/release_notes.html) - [MPLAB® Harmony License](/bootloader/mplab_harmony_license.html) - [MPLAB® Harmony 3 Bootloader Wiki](https://github.com/Microchip-MPLAB-Harmony/bootloader/wiki) - [MPLAB® Harmony 3 Bootloader API Help](https://microchip-mplab-harmony.github.io/bootloader) # Contents Summary | Folder | Description |-----------|------------------------------------------------------------| config | Bootloader module configuration scripts | docs | Bootloader module library HTML help documentation | templates | Bootloader and system file templates | tools | Bootloader Host scripts | # Introduction The Bootloader Library can be used to upgrade firmware on a target device without the need for an external programmer or debugger. A Bootloader is a small application that starts the operation of the device. A Bootloader does not fully operate the device, but can perform various functions prior to starting the main application. **Such functions can include:** - Firmware upgrades - Application integrity - Starting the application ## Supported Bootloaders | Bootloader | Description |---------------------------------------------------------------------------|-------------------------------------------------------------| [UART](/bootloader/templates/src/optimized/docs/uart/readme.html) | This section provides help on the Optimized UART Bootloader library | [I2C](/bootloader/templates/src/optimized/docs/i2c/readme.html) | This section provides help on the Optimized I2C Bootloader library | [CAN](/bootloader/templates/src/optimized/docs/can/readme.html) | This section provides help on the Optimized CAN Bootloader library | [Serial Memory](/bootloader/templates/src/optimized/docs/serial_memory/readme.html) | This section provides help on the Serial Memory Bootloader library | [USB Device HID](/bootloader/templates/src/unified/docs/usb/readme.html) | This section provides help on the USB Device HID Bootloader library | [UDP](/bootloader/templates/src/unified/docs/udp/readme.html) | This section provides help on the UDP Bootloader library | [File System](/bootloader/templates/src/fs/docs/readme.html) | This section provides help on the File system Bootloader library | # Bootloader Application Repositories | Repo name | Description |-----------------------------------------------------------------------------------------------------------|---------------------------------| [bootloader_apps_uart](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_uart) | UART Bootloader Applications | [bootloader_apps_i2c](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_i2c) | I2C Bootloader Applications | [bootloader_apps_can](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_can) | CAN Bootloader Applications | [bootloader_apps_usb](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_usb) | USB Bootloader Applications | [bootloader_apps_ethernet](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_ethernet) | Ethernet Bootloader Applications| [bootloader_apps_sdcard](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_sdcard) | SDCARD Bootloader Applications | [bootloader_apps_serial_memory](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_serial_memory) | Serial Memory Bootloader Applications | ____ [![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/blob/master/mplab_harmony_license.md) [![Latest release](https://img.shields.io/github/release/Microchip-MPLAB-Harmony/bootloader.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/releases/latest) [![Latest release date](https://img.shields.io/github/release-date/Microchip-MPLAB-Harmony/bootloader.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/releases/latest) [![Commit activity](https://img.shields.io/github/commit-activity/y/Microchip-MPLAB-Harmony/bootloader.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/graphs/commit-activity) [![Contributors](https://img.shields.io/github/contributors-anon/Microchip-MPLAB-Harmony/bootloader.svg)]() ____ [![Follow us on Youtube](https://img.shields.io/badge/Youtube-Follow%20us%20on%20Youtube-red.svg)](https://www.youtube.com/user/MicrochipTechnology) [![Follow us on LinkedIn](https://img.shields.io/badge/LinkedIn-Follow%20us%20on%20LinkedIn-blue.svg)](https://www.linkedin.com/company/microchip-technology) [![Follow us on Facebook](https://img.shields.io/badge/Facebook-Follow%20us%20on%20Facebook-blue.svg)](https://www.facebook.com/microchiptechnology/) [![Follow us on Twitter](https://img.shields.io/twitter/follow/MicrochipTech.svg?style=social)](https://twitter.com/MicrochipTech) [![](https://img.shields.io/github/stars/Microchip-MPLAB-Harmony/core.svg?style=social)]() [![](https://img.shields.io/github/watchers/Microchip-MPLAB-Harmony/core.svg?style=social)]() ",

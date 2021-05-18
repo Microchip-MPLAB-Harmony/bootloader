@@ -87,6 +87,7 @@ exclude:
   - "*.group"
   - "*.link"
   - "*.properties"
+  - "*.dll"
   - "*.txt"
   - "Gem*"
 
