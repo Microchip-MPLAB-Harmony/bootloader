@@ -13,7 +13,7 @@ nav_order: 3
 - Supported for the devices which have a Dual Bank flash memory
 
 - **Switcher code** is placed at start of the Boot flash memory (0xBFC00000) as upon reset the device runs from start of boot flash memory.
-    - **Note: The switcher code provided does not have any programming capabilities.It just performs bank swap operations as described above**
+    - **Note: The switcher code provided does not have any programming capabilities.It just performs bank swap operations**
 
 - Device always executes the application firmware from PFM bank mapped to lower memory region **(0x1D00_0000 Physical address)**
     - Start address of Active Bank is mapped to lower region **0x9D000000**

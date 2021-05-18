@@ -276,7 +276,7 @@ ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) <= (_vector_spacing << 5), "fu
 
 ### Note
 
-- **As the Device configuration bits should be updated by bootloader only, the application linker script should not have any device configuration settings**
+- **The bootloader and the application must have the same device configuration bit settings. The Device configuration bit settings from the bootloader project will be updated by the programmer/debugger, Hence the application linker script should not have any device configuration bit settings. The application project will use the device configuration bit settings done by bootloader.**
 
 - **Device configurations and debug exception need to discarded from final hex file for the application project.**
 

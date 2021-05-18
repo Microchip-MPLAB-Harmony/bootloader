@@ -32,9 +32,9 @@ To clone or download these host tools from Github,go to the [main page of this r
 
 - The merged binary will be created in the directory from where the script was called
 
-<p align="center">
-    <img src = "./images/btl_app_merge_bin.png"/>
-</p>
+    <p align="center">
+        <img src = "./images/btl_app_merge_bin.png"/>
+    </p>
 
 ## Usage Examples
 
