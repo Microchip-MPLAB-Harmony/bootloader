@@ -8,6 +8,73 @@ nav_order: 99
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Bootloader Release v3.5.0
+
+### New Features
+
+- This release includes support for
+    - **Serial Memory Bootloader** for SAM, PIC32M and PIC32C family of 32-bit microcontrollers.
+        - I2C EEPROM
+        - SPI EEPROM
+        - SPI Flash
+        - QSPI Flash
+
+    - **USB Live Update** for SAM and PIC32M family of 32-bit microcontrollers.
+
+    - **Ethernet UDP Live Update** for SAM and PIC32M family of 32-bit microcontrollers.
+
+    - **CAN Bootloader** for SAM family of 32-bit microcontrollers.
+
+    - **PIC32CM MC family** of 32-bit microcontrollers
+        - UART Bootloader
+        - I2C Bootloader
+        - SD Card Bootloader
+
+    - **PIC32MZ W1 family** of 32-bit microcontrollers
+        - UART Bootloader Bootloader
+        - USB Device HID Bootloader
+        - USB Host MSD Bootloader
+        - Ethernet UDP Bootloader
+        - SD Card Bootloader
+
+- Added new **File System Bootloader** component supporting below medias
+    - SD Card
+    - USB Host MSD
+    - Serial Memory
+
+- Updated default optimization level for all bootloaders to **-O2**
+
+- Added markdown based documentation for Bootloader Library
+
+- Below are new bootloader application repos added
+    - [bootloader_apps_can](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_can)
+    - [bootloader_apps_serial_memory](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_serial_memory)
+
+### Bootloaders Supported on different product families
+
+- The following table provides supported bootloders for different product families
+
+    <p align="center">
+        <img src = "./templates/docs/images/bootloader_support_v350.png"/>
+    </p>
+
+### Known Issues
+
+The current known issues are as follows:
+
+- Any existing **USB Host MSD** bootloader and **SD Card** bootloader projects have to be reconfigured to use the new **File System Bootloader** component in MHC
+
+- Initialized global variables will not be initialized at startup for UART, I2C and CAN bootloaders.
+
+- Unified Host application when configured to use USB protocol has to be closed before programming any PIC32M based application using MPLAB X IDE
+
+### Development Tools
+
+* [MPLAB® X IDE v5.50](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v3.00](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * MPLAB® Harmony 3 Launcher v3.6.4 and above.
+
 ## Bootloader Release v3.4.1
 
 - Updated Bootloader component to disable default linker file generation added in csp v3.8.0 as it requires custom linker file
@@ -21,7 +88,7 @@ nav_order: 99
 ## Bootloader Release v3.4.0
 ### New Features
 
-- This release introduces support for
+- This release includes support for
     - USB Device HID Bootloader for SAM and PIC32M family of 32-bit microcontrollers.
     - USB Host MSD Bootloader for SAM and PIC32M family of 32-bit microcontrollers.
     - Ethernet UDP Bootloader for SAM and PIC32M family of 32-bit microcontrollers.
