@@ -72,11 +72,27 @@ To clone or download these host tools from Github,go to the [main page of this r
 
 ## Using Unified Host Tool in debugging mode
 
-- Launch Windows Command prompt in **tools/UnifiedHost-\*/** directory
+- **On Windows:**
 
-- Run below command to launch Unified Host Application in debugging mode
+    - Launch Windows Command prompt in **tools/UnifiedHost-\*/** directory
 
-      java -Djava.util.logging.config.file="logging.properties" -jar UnifiedHost-*.jar
+    - Run below command to launch Unified Host Application in debugging mode
+
+    ```java
+java -Djava.util.logging.config.file="logging.properties" -jar UnifiedHost-*.jar
+    ```
+
+- **On Linux**
+
+    - For running Unified Host tool in debug mode on linux make use of MPLAB X's Java JRE
+
+    - Launch Linux Command prompt in **tools/UnifiedHost-\*/** directory
+
+    - Run below command to launch Unified Host Application in debugging mode
+
+    ```java
+/opt/microchip/mplabx/<MPLAB X Version>/sys/java/zulu8.40.0.25-ca-fx-jre8.0.222-linux_x64/bin/java -Djava.util.logging.config.file="logging.properties" -jar UnifiedHost-*.jar
+    ```
 
 - Once the tool is launched refer to steps mentioned above in [Configuring and Using the Unified Host tool](#configuring-and-using-the-unified-host-tool) to program application hex
 

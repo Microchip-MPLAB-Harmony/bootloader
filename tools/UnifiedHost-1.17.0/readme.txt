@@ -59,10 +59,22 @@ a version of java at or below version 1.8.0_251.
 # Debug Log
 The UBHA supports the ability to view Debug Logger message through use of the packaged logging.properties file.
 i.e.: To Launch from Command Prompt
->java -Djava.util.logging.config.file="<Drive: e.g. C>:\<MyDirectory>\<UnifiedHost-version>\logging.properties" -jar UnifiedHost-<version>.jar
 
 # INSTALL	Installation instructions
-Installation of Java JRE
+Requires Installation of Java JRE (with JavaFX) or the Java JRE provided with MPLAB X v5.40(or Later)
+
+# Usage:
+To Launch from Command Prompt using your system's Java JRE:
+
+> cd \<Harmony3_Path>\bootloader\tools\UnifiedHost-<version>\
+
+> java -Djava.util.logging.config.file="logging.properties" -jar UnifiedHost-<version>.jar
+
+To Launch from Command Prompt using MPLAB X's Java JRE (Recommended for Linux):
+
+> cd /<Harmony3_Path>/bootloader/tools/UnifiedHost-<version>/
+
+> /opt/microchip/mplabx/<MPLAB X Version>/sys/java/zulu8.40.0.25-ca-fx-jre8.0.222-linux_x64/bin/java -Djava.util.logging.config.file="logging.properties" -jar UnifiedHost-<version>.jar
 
 # COPYING / LICENSE	Copyright and licensing information
 See LICENSE.txt for licensing information.
