@@ -24,6 +24,7 @@
 unSupportedFamilies = ["SAM9", "SAMA5"]
 
 I2CNames        = ["SERCOM"]
+SPINames        = ["SPI"]
 USBNames        = ["USB", "USBHS"]
 EthernetNames   = ["ETH", "GMAC"]
 CANNames        = ["CAN", "MCAN"]
@@ -48,6 +49,7 @@ def hasPeripheralAndCoreArchitecture(peripheralList, coreArchitecture):
 bootloaderComponents = [
     {"name":"uart", "label": "UART", "dependency":["MEMORY", "UART", "TMR"], "condition":"True"},
     {"name":"i2c", "label": "I2C", "dependency":["MEMORY", "I2C"], "condition":'hasPeripheral(I2CNames)'},
+    {"name":"spi", "label": "SPI", "dependency":["MEMORY", "SPI"], "condition":'hasPeripheral(SPINames)'},
     {"name":"usb_device_hid", "label": "USB Device HID", "dependency":["MEMORY", "USB_DEVICE_HID"], "condition":'hasPeripheral(USBNames)'},
     {"name":"udp", "label": "UDP", "dependency":["MEMORY"], "condition":'hasPeripheral(EthernetNames)'},
     {"name":"can", "label": "CAN", "dependency":["MEMORY", "CAN"], "condition":'hasPeripheralAndCoreArchitecture(CANNames, "CORTEX-M")'},
