@@ -28,13 +28,23 @@ btl_type = "I2C"
 btl_helpkeyword = "mcc_h3_i2c_bootloader_configurations"
 
 # Maximum Size for Bootloader [BYTES]
-bootloaderCore = "bootloader_arm.py"
-btlSizes = {
-            "CORTEX-M0PLUS"     : [2048],
-            "CORTEX-M23"        : [2048],
-            "CORTEX-M4"         : [2048],
-            "CORTEX-M7"         : [2048],
-}
+if ("PIC32M" in Variables.get("__PROCESSOR")):
+    bootloaderCore = "bootloader_mips.py"
+    btlSizes = {
+                "PIC32MX"     : [4096],
+                "PIC32MK"     : [8192],
+                "PIC32MZDA"   : [8192],
+                "PIC32MZEF"   : [8192],
+                "PIC32MZW"    : [8192],
+    }
+else:
+    bootloaderCore = "bootloader_arm.py"
+    btlSizes = {
+                "CORTEX-M0PLUS"     : [2048],
+                "CORTEX-M23"        : [2048],
+                "CORTEX-M4"         : [2048],
+                "CORTEX-M7"         : [2048],
+    }
 
 def getMaxBootloaderSize(arch):
 
@@ -53,8 +63,11 @@ def handleMessage(messageID, args):
     if (messageID == "REQUEST_CONFIG_PARAMS"):
         if args.get("localComponentID") != None:
             result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_MODE", {"isEnabled":True, "isReadOnly":True})
-            result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_INTERRUPT_MODE", {"isEnabled":False, "isReadOnly":True})
-            result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_SMART_MODE", {"isEnabled":False, "isReadOnly":True})
+            if ("PIC32M" in Variables.get("__PROCESSOR")):
+                result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_INTERRUPT_MODE", {"isEnabled":True, "isReadOnly":True})
+            else:
+                result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_INTERRUPT_MODE", {"isEnabled":False, "isReadOnly":True})
+                result_dict = Database.sendMessage(args["localComponentID"], "I2C_SLAVE_SMART_MODE", {"isEnabled":False, "isReadOnly":True})
 
     return result_dict
 
@@ -73,8 +86,11 @@ def setupCoreComponentSymbols():
     coreComponent.getSymbolByID("CoreSysStartupFile").setValue(False)
 
     coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
-
-    coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
+    
+    if ("PIC32M" in Variables.get("__PROCESSOR")):
+        coreComponent.getSymbolByID("CoreSysIntFile").setValue(True)
+    else:
+        coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
 
     coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
@@ -110,12 +126,23 @@ def instantiateComponent(bootloaderComponent):
     btlCommandStretchClkEnable.setLabel("Bootloader Commands Stretch I2C Clock")
     btlCommandStretchClkEnable.setDescription(btlCommandStretchClkDesc)
     btlCommandStretchClkEnable.setDefaultValue(False)
-    btlCommandStretchClkEnable.setVisible(True)
+    btlCommandStretchClkEnable.setVisible(not ("PIC32M" in Variables.get("__PROCESSOR")))
+
+    btlDualBankEnable = False
 
     if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
         btlDualBankEnable = True
-    else:
-        btlDualBankEnable = False
+    elif ("PIC32MZ" in Variables.get("__PROCESSOR")):
+        if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+            btlDualBankEnable = True
+    elif ("PIC32MK" in Variables.get("__PROCESSOR")):
+        if (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR"))):
+            btlDualBankEnable = False
+        else:
+            btlDualBankEnable = True
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
     btlDualBank.setHelp("mcc_h3_i2c_bootloader_configurations")
@@ -131,7 +158,10 @@ def instantiateComponent(bootloaderComponent):
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
-    btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_i2c_arm.c.ftl")
+    if ("PIC32M" in Variables.get("__PROCESSOR")):
+        btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_i2c_mips.c.ftl")
+    else:
+        btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_i2c_arm.c.ftl")
     btlSourceFile.setOutputName("bootloader.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
@@ -160,7 +190,10 @@ def instantiateComponent(bootloaderComponent):
 
     # Generate Initialization File
     btlInitFile = bootloaderComponent.createFileSymbol("INITIALIZATION_BOOTLOADER_C", None)
-    btlInitFile.setSourcePath("../bootloader/templates/arm/initialization.c.ftl")
+    if ("PIC32M" in Variables.get("__PROCESSOR")):
+        btlInitFile.setSourcePath("../bootloader/templates/mips/initialization.c.ftl")
+    else:
+        btlInitFile.setSourcePath("../bootloader/templates/arm/initialization.c.ftl")
     btlInitFile.setOutputName("initialization.c")
     btlInitFile.setMarkup(True)
     btlInitFile.setOverwrite(True)
