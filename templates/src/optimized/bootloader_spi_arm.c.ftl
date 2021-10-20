@@ -64,7 +64,7 @@
 #define ERASE_BLOCK_SIZE        				(${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
 #define PAGES_IN_ERASE_BLOCK    				(ERASE_BLOCK_SIZE / PAGE_SIZE)
 #define BOOTLOADER_SIZE         				${BTL_SIZE}
-#define APP_START_ADDRESS       				(PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
+#define APP_START_ADDRESS       				(0x${core.APP_START_ADDRESS}UL)
 #define BL_BUFFER_SIZE                          ERASE_BLOCK_SIZE + sizeof(uint32_t)
 
 #define BL_STATUS_BIT_BUSY                      (0x01 << 0)
@@ -72,8 +72,9 @@
 #define BL_STATUS_BIT_INVALID_MEM_ADDR          (0x01 << 2)
 #define BL_STATUS_BIT_COMMAND_EXECUTION_ERROR   (0x01 << 3)      //Valid only when BL_STATUS_BIT_BUSY is 0
 #define BL_STATUS_BIT_CRC_ERROR                 (0x01 << 4)
+#define BL_STATUS_BIT_COMM_ERROR				(0x01 << 5)
 #define BL_STATUS_BIT_ALL                       (BL_STATUS_BIT_BUSY | BL_STATUS_BIT_INVALID_COMMAND | BL_STATUS_BIT_INVALID_MEM_ADDR | \
-                                                 BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR)
+                                                 BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR | BL_STATUS_BIT_COMM_ERROR)
 
 typedef enum
 {
@@ -167,52 +168,62 @@ static SPI_BL_DATA                          spiBLData;
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
-/* Trigger a reset */
-static void BL_TriggerReset(void)
-{    
-    /* Perform system unlock sequence */ 
-    SYSKEY = 0x00000000;
-    SYSKEY = 0xAA996655;
-    SYSKEY = 0x556699AA;
 
-    RSWRSTSET = _RSWRST_SWRST_MASK;
-    (void)RSWRST;
-}
+<#if BTL_HW_CRC_GEN == true>
+    <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
+    <#lt>static uint32_t BL_CRCGenerate(uint32_t start_addr, uint32_t size)
+    <#lt>{
+    <#lt>    uint32_t crc  = 0;
 
-/* Function to Generate CRC by reading the firmware programmed into internal flash */
-static uint32_t BL_CRCGenerate(uint32_t start_addr, uint32_t size)
-{
-    uint32_t   i, j, value;
-    uint32_t   crc_tab[256];
-    uint32_t   crc     = 0xffffffff;
-    uint8_t    data;
+    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
 
-    for (i = 0; i < 256; i++)
-    {
-        value = i;
+    <#lt>    DSU_CRCCalculate (
+    <#lt>       start_addr,
+    <#lt>       size,
+    <#lt>       0xffffffff,
+    <#lt>       &crc
+    <#lt>   );
 
-        for (j = 0; j < 8; j++)
-        {
-            if (value & 1)
-            {
-                value = (value >> 1) ^ 0xEDB88320;
-            }
-            else
-            {
-                value >>= 1;
-            }
-        }
-        crc_tab[i] = value;
-    }
+    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
 
-    for (i = 0; i < size; i++)
-    {
-        data = *(uint8_t *)KVA0_TO_KVA1((start_addr + i));
+    <#lt>    return crc;
+    <#lt>}
+<#else>
+    <#lt>/* Function to Generate CRC by reading the firmware programmed into internal flash */
+    <#lt>static uint32_t BL_CRCGenerate(uint32_t start_addr, uint32_t size)
+    <#lt>{
+    <#lt>    uint32_t   i, j, value;
+    <#lt>    uint32_t   crc_tab[256];
+    <#lt>    uint32_t   crc = 0xffffffff;
+    <#lt>    uint8_t    data;
 
-        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    }
-    return crc;
-}
+    <#lt>    for (i = 0; i < 256; i++)
+    <#lt>    {
+    <#lt>        value = i;
+
+    <#lt>        for (j = 0; j < 8; j++)
+    <#lt>        {
+    <#lt>            if (value & 1)
+    <#lt>            {
+    <#lt>                value = (value >> 1) ^ 0xEDB88320;
+    <#lt>            }
+    <#lt>            else
+    <#lt>            {
+    <#lt>                value >>= 1;
+    <#lt>            }
+    <#lt>        }
+    <#lt>        crc_tab[i] = value;
+    <#lt>    }
+
+    <#lt>    for (i = 0; i < size; i++)
+    <#lt>    {
+    <#lt>        data = *(uint8_t *)(start_addr + i);
+    <#lt>
+    <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
+    <#lt>    }
+    <#lt>    return crc;
+    <#lt>}
+</#if>
 
 static void SPI_BL_CommandParser(void)
 {
@@ -311,28 +322,33 @@ static void SPI_BL_FlashSM(void)
     switch(spiBLData.flashState)
     {
         case BL_FLASH_STATE_ERASE:
-           /* Erase the Current sector */
-            NVM_PageErase(spiBLData.cmd.eraseCommand.memAddr);
-            spiBLData.flashState = BL_FLASH_STATE_ERASE_BUSY_POLL;
+			// Lock region size is always bigger than the row size
+            ${MEM_USED}_RegionUnlock(spiBLData.cmd.eraseCommand.memAddr);
+
+            while(${MEM_USED}_IsBusy() == true);
+
+            spiBLData.flashState = BL_FLASH_STATE_ERASE_BUSY_POLL;			
             break;
 
         case BL_FLASH_STATE_WRITE:
-            NVM_RowWrite((uint32_t*)&spiBLData.cmd.programCommand.data[spiBLData.dataBufferAlignOffset + spiBLData.nFlashBytesWritten], (spiBLData.cmd.programCommand.memAddr + spiBLData.nFlashBytesWritten));
+			${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&spiBLData.cmd.programCommand.data[spiBLData.dataBufferAlignOffset + spiBLData.nFlashBytesWritten], (spiBLData.cmd.programCommand.memAddr + spiBLData.nFlashBytesWritten));
             spiBLData.flashState = BL_FLASH_STATE_WRITE_BUSY_POLL;
+			
             break;
 
         case BL_FLASH_STATE_VERIFY:
-            if (BL_CRCGenerate(spiBLData.appImageStartAddr, (spiBLData.appImageEndAddr - spiBLData.appImageStartAddr)) != spiBLData.cmd.verifyCommand.crc)
+			if (BL_CRCGenerate(spiBLData.appImageStartAddr, (spiBLData.appImageEndAddr - spiBLData.appImageStartAddr)) != spiBLData.cmd.verifyCommand.crc)
             {
                 SET_BIT(spiBLData.status, BL_STATUS_BIT_CRC_ERROR);
             }
             CLR_BIT(spiBLData.status, BL_STATUS_BIT_BUSY);
             ${PERIPH_USED}_Ready();
             spiBLData.flashState = BL_FLASH_STATE_IDLE;
+			
             break;
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
-            if(NVM_IsBusy() == false)
+            if(${MEM_USED}_IsBusy() == false)
             {
                 CLR_BIT(spiBLData.status, BL_STATUS_BIT_BUSY);
                 ${PERIPH_USED}_Ready();
@@ -341,7 +357,7 @@ static void SPI_BL_FlashSM(void)
             break;
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
-            if(NVM_IsBusy() == false)
+            if(${MEM_USED}_IsBusy() == false)
             {
                 spiBLData.nFlashBytesWritten += PAGE_SIZE;
 
@@ -359,8 +375,7 @@ static void SPI_BL_FlashSM(void)
             break;
 
         case BL_FLASH_STATE_RESET:
-            /* Wait for the I2C transfer to complete */
-            BL_TriggerReset();
+            NVIC_SystemReset();
             break;
 
 
@@ -373,12 +388,17 @@ static void SPI_BL_FlashSM(void)
     }
 }
 
-void SPIEventHandler(uintptr_t context )
+static void SPIEventHandler(uintptr_t context )
 {
     if (${PERIPH_USED}_ErrorGet() == SPI_SLAVE_ERROR_NONE)
     {
         spiBLData.nReadBytes = ${PERIPH_USED}_Read((void*)spiBLData.cmd.readBuffer, ${PERIPH_USED}_ReadCountGet());         
     }       
+	else
+	{
+		SET_BIT(spiBLData.status, BL_STATUS_BIT_COMM_ERROR);
+		${PERIPH_USED}_Ready(); 
+	}
 }
 
 // *****************************************************************************
@@ -387,23 +407,19 @@ void SPIEventHandler(uintptr_t context )
 // *****************************************************************************
 // *****************************************************************************
 
-
-
 void run_Application(void)
 {
     uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-
-    void (*fptr)(void);
-
-    /* Set default to APP_RESET_ADDRESS */
-    fptr = (void (*)(void))APP_START_ADDRESS;
+    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
 
     if (msp == 0xffffffff)
     {
         return;
     }
 
-    fptr();
+    __set_MSP(msp);
+
+    asm("bx %0"::"r" (reset_vector));
 }
 
 bool __WEAK bootloader_Trigger(void)

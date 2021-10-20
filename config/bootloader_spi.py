@@ -40,10 +40,10 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
 else:
     bootloaderCore = "bootloader_arm.py"
     btlSizes = {
-                "CORTEX-M0PLUS"     : [2048],
-                "CORTEX-M23"        : [2048],
-                "CORTEX-M4"         : [2048],
-                "CORTEX-M7"         : [2048],
+                "CORTEX-M0PLUS"     : [4096],
+                "CORTEX-M23"        : [4096],
+                "CORTEX-M4"         : [4096],
+                "CORTEX-M7"         : [4096],
     }
 
 def getMaxBootloaderSize(arch):
@@ -82,9 +82,12 @@ def setupCoreComponentSymbols():
 
     coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
 
-    #coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
+    coreComponent.getSymbolByID("CoreSysIntFile").setValue(True)
 
-    coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
+    if (not ("PIC32M" in Variables.get("__PROCESSOR"))):
+        coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(True)
+    else:
+        coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
     coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 
@@ -104,10 +107,21 @@ def instantiateComponent(bootloaderComponent):
 
     generateHwCRCGeneratorSymbol(bootloaderComponent)    
     
+    btlDualBankEnable = False
+
     if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
         btlDualBankEnable = True
-    else:
-        btlDualBankEnable = False
+    elif ("PIC32MZ" in Variables.get("__PROCESSOR")):
+        if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+            btlDualBankEnable = True
+    elif ("PIC32MK" in Variables.get("__PROCESSOR")):
+        if (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR"))):
+            btlDualBankEnable = False
+        else:
+            btlDualBankEnable = True
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
     btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")
@@ -121,7 +135,10 @@ def instantiateComponent(bootloaderComponent):
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
-    btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_spi_mips.c.ftl")
+    if ("PIC32M" in Variables.get("__PROCESSOR")):
+        btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_spi_mips.c.ftl")
+    else:
+        btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_spi_arm.c.ftl")
     btlSourceFile.setOutputName("bootloader.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)

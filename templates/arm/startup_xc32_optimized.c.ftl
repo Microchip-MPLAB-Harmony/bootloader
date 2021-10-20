@@ -24,6 +24,9 @@
 // DOM-IGNORE-END
 
 #include "definitions.h" /* for potential custom handler names */
+<#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
+#include "device_vectors.h"
+</#if>
 #include <libpic32c.h>
 #include <sys/cdefs.h>
 #include <stdbool.h>
@@ -33,6 +36,8 @@ extern uint32_t _sfixed;
 extern void _ram_end_(void);
 
 extern int main(void);
+
+<#if core.CoreSysIntFile?? && core.CoreSysIntFile == false >
 
 /* Declaration of Reset handler (may be custom) */
 void __attribute__((noinline)) Reset_Handler(void);
@@ -44,6 +49,8 @@ void (* const vectors[])(void) =
   Reset_Handler,
 };
 
+</#if>
+
 /**
  * \brief This is the code that gets called on processor reset.
  * To initialize the device, and call the main() routine.
@@ -52,13 +59,26 @@ void (* const vectors[])(void) =
 /* Linker-defined symbols for data initialization. */
 extern uint32_t _sdata, _edata, _etext;
 extern uint32_t _sbss, _ebss;
+extern uint32_t _vectors_loadaddr;
 
 void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
 {
-    uint32_t *pSrc, *pDst;;
+    uint32_t *pSrc, *pDst;
+	
+<#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
+	uint32_t i;
+	pSrc = (uint32_t *) &_vectors_loadaddr;
+    pDst = (uint32_t *) &_sfixed;
+    
+    /* Copy .vectors section from flash to RAM */    
+    for (i = 0; i < sizeof(H3DeviceVectors)/4; i++)
+    {
+        *pDst++ = *pSrc++;
+    }
+</#if>
 
     pSrc = (uint32_t *) &_etext; /* flash functions start after .text */
-    pDst = (uint32_t *) &_sdata;  /* boundaries of .data area to init */
+    pDst = (uint32_t *) &_sdata;  /* boundaries of .data area to init */	
 
     /* Init .data */
     while (pDst < &_edata)
@@ -70,7 +90,7 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
       *pDst++ = 0;
 
 #  ifdef SCB_VTOR_TBLOFF_Msk
-    /*  Set the vector-table base address in FLASH */
+    /*  Set the vector-table base address in RAM */
     pSrc = (uint32_t *) & _sfixed;
     SCB->VTOR = ((uint32_t) pSrc & SCB_VTOR_TBLOFF_Msk);
 #  endif /* SCB_VTOR_TBLOFF_Msk */

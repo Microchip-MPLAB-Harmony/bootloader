@@ -24,7 +24,7 @@
 unSupportedFamilies = ["SAM9", "SAMA5"]
 
 I2CNames        = ["SERCOM", "I2C"]
-SPINames        = ["SPI"]
+SPINames        = ["SERCOM", "SPI"]
 USBNames        = ["USB", "USBHS"]
 EthernetNames   = ["ETH", "GMAC"]
 CANNames        = ["CAN", "MCAN"]
