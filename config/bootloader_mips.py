@@ -251,6 +251,27 @@ def generateCommonSymbols(bootloaderComponent):
 
     result_dict = Database.sendMessage("core", "CONTROL_REGISTER_LOCK", {"isEnabled":False})
 
+def generateCommonFiles(bootloaderComponent):
+    configName = Variables.get("__CONFIGURATION_NAME")
+
+    btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_SOURCE", None)
+    btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.c.ftl")
+    btlHeaderFile.setOutputName("bootloader_common.c")
+    btlHeaderFile.setMarkup(True)
+    btlHeaderFile.setOverwrite(True)
+    btlHeaderFile.setDestPath("/bootloader/")
+    btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlHeaderFile.setType("SOURCE")
+
+    btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_HEADER", None)
+    btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.h.ftl")
+    btlHeaderFile.setOutputName("bootloader_common.h")
+    btlHeaderFile.setMarkup(True)
+    btlHeaderFile.setOverwrite(True)
+    btlHeaderFile.setDestPath("/bootloader/")
+    btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlHeaderFile.setType("HEADER")
+
 def generateHwCRCGeneratorSymbol(bootloaderComponent):
     return
 

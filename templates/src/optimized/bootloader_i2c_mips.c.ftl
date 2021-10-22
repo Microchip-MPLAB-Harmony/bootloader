@@ -1,16 +1,16 @@
 /*******************************************************************************
-  UART Bootloader Source File
+  I2C Bootloader Source File
 
   File Name:
     bootloader_i2c.c
 
   Summary:
-    This file contains source code necessary to execute UART bootloader.
+    This file contains source code necessary to execute I2C bootloader.
 
   Description:
-    This file contains source code necessary to execute UART bootloader.
-    It implements bootloader protocol which uses UART peripheral to download
-    application firmware into internal flash from HOST-PC.
+    This file contains source code necessary to execute I2C bootloader.
+    It implements bootloader protocol which uses I2C peripheral to download
+    application firmware into internal flash.
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
@@ -45,6 +45,7 @@
 // *****************************************************************************
 
 #include "definitions.h"
+#include "bootloader_common.h"
 #include <device.h>
 
 // *****************************************************************************
@@ -57,13 +58,6 @@
 #define CLR_BIT(reg, bits)                      (reg &= ~(bits))
 #define IS_BIT_SET(reg, bit)                    ((reg & bit)? true:false)
 
-#define FLASH_START             				(${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH            				(${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE               				(${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE        				(${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-#define PAGES_IN_ERASE_BLOCK    				(ERASE_BLOCK_SIZE / PAGE_SIZE)
-#define BOOTLOADER_SIZE         				${BTL_SIZE}
-#define APP_START_ADDRESS       				(PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
 #define BL_BUFFER_SIZE                          ERASE_BLOCK_SIZE
 
 #define BL_STATUS_BIT_BUSY                      (0x01 << 0)
@@ -71,8 +65,9 @@
 #define BL_STATUS_BIT_INVALID_MEM_ADDR          (0x01 << 2)
 #define BL_STATUS_BIT_COMMAND_EXECUTION_ERROR   (0x01 << 3)      //Valid only when BL_STATUS_BIT_BUSY is 0
 #define BL_STATUS_BIT_CRC_ERROR                 (0x01 << 4)
+#define BL_STATUS_BIT_COMM_ERROR                (0x01 << 5)
 #define BL_STATUS_BIT_ALL                       (BL_STATUS_BIT_BUSY | BL_STATUS_BIT_INVALID_COMMAND | BL_STATUS_BIT_INVALID_MEM_ADDR | \
-                                                 BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR)
+                                                 BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR | BL_STATUS_BIT_COMM_ERROR)
 
 typedef enum
 {
@@ -164,54 +159,8 @@ static volatile BL_PROTOCOL                 i2cBLData;
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
-/* Trigger a reset */
-static void BL_TriggerReset(void)
-{    
-    /* Perform system unlock sequence */ 
-    SYSKEY = 0x00000000;
-    SYSKEY = 0xAA996655;
-    SYSKEY = 0x556699AA;
 
-    RSWRSTSET = _RSWRST_SWRST_MASK;
-    (void)RSWRST;
-}
-
-/* Function to Generate CRC by reading the firmware programmed into internal flash */
-static uint32_t BL_CRCGenerate(uint32_t start_addr, uint32_t size)
-{
-    uint32_t   i, j, value;
-    uint32_t   crc_tab[256];
-    uint32_t   crc     = 0xffffffff;
-    uint8_t    data;
-
-    for (i = 0; i < 256; i++)
-    {
-        value = i;
-
-        for (j = 0; j < 8; j++)
-        {
-            if (value & 1)
-            {
-                value = (value >> 1) ^ 0xEDB88320;
-            }
-            else
-            {
-                value >>= 1;
-            }
-        }
-        crc_tab[i] = value;
-    }
-
-    for (i = 0; i < size; i++)
-    {
-        data = *(uint8_t *)KVA0_TO_KVA1((start_addr + i));
-
-        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    }
-    return crc;
-}
-
-static bool I2C_BL_CommandParser(uint8_t rdByte)
+static bool BL_I2C_CommandParser(uint8_t rdByte)
 {
     switch(i2cBLData.rdState)
     {
@@ -319,7 +268,7 @@ static bool I2C_BL_CommandParser(uint8_t rdByte)
                 SET_BIT(i2cBLData.status, BL_STATUS_BIT_BUSY);
                 i2cBLData.nFlashBytesWritten = 0;
                 i2cBLData.flashState = BL_FLASH_STATE_WRITE;
-				i2cBLData.rdState = BL_I2C_READ_COMMAND;
+                i2cBLData.rdState = BL_I2C_READ_COMMAND;
             }
             break;
         default:
@@ -328,64 +277,68 @@ static bool I2C_BL_CommandParser(uint8_t rdByte)
     return true;
 }
 
-static bool I2CEventHandler( I2C_SLAVE_TRANSFER_EVENT event, uintptr_t contextHandle )
+static bool BL_I2C_EventHandler( I2C_SLAVE_TRANSFER_EVENT event, uintptr_t contextHandle )
 {
-	bool isSendACK = true;
-	
-	switch(event)
+    bool isSendACK = true;
+
+    switch(event)
     {
         case I2C_SLAVE_TRANSFER_EVENT_ADDR_MATCH:
 
-			/* Reset the I2C read state machine */
-			i2cBLData.rdState = BL_I2C_READ_COMMAND;
+            /* Reset the I2C read state machine */
+            i2cBLData.rdState = BL_I2C_READ_COMMAND;
 
-			if (IS_BIT_SET(i2cBLData.status, BL_STATUS_BIT_BUSY))
-			{
-				isSendACK = false;
-			}			
+            if (IS_BIT_SET(i2cBLData.status, BL_STATUS_BIT_BUSY))
+            {
+                isSendACK = false;
+            }
             break;
 
         case I2C_SLAVE_TRANSFER_EVENT_RX_READY:
-		
-			if (I2C_BL_CommandParser(${PERIPH_USED}_ReadByte()) == false)
+
+            if (BL_I2C_CommandParser(${PERIPH_USED}_ReadByte()) == false)
             {
                 isSendACK = false;
-			}	
-		            
+            }
+
             break;
 
         case I2C_SLAVE_TRANSFER_EVENT_TX_READY:
-			${PERIPH_USED}_WriteByte(i2cBLData.status);
+            ${PERIPH_USED}_WriteByte(i2cBLData.status);
 
-			/* Clear all status bits except the busy bit */
-			CLR_BIT(i2cBLData.status, (BL_STATUS_BIT_ALL & ~(BL_STATUS_BIT_BUSY)));
-            			
+            /* Clear all status bits except the busy bit */
+            CLR_BIT(i2cBLData.status, (BL_STATUS_BIT_ALL & ~(BL_STATUS_BIT_BUSY)));
+
             break;
-        
+
+        case I2C_SLAVE_TRANSFER_EVENT_ERROR:
+            SET_BIT(i2cBLData.status, BL_STATUS_BIT_COMM_ERROR);
+            break;
+
         default:
             break;
-    }      
-	
-	return isSendACK;
+    }
+
+    return isSendACK;
 }
 
-static void I2C_BL_FlashSM(void)
+static void BL_I2C_FlashTask(void)
 {
     switch(i2cBLData.flashState)
     {
-        case BL_FLASH_STATE_ERASE:            
+        case BL_FLASH_STATE_ERASE:
             NVM_PageErase(i2cBLData.cmdProtocol.eraseCommand.memAddr);
             i2cBLData.flashState = BL_FLASH_STATE_ERASE_BUSY_POLL;
-			
+
             break;
 
         case BL_FLASH_STATE_WRITE:
-			NVM_RowWrite((uint32_t*)&i2cBLData.cmdProtocol.programCommand.data[i2cBLData.nFlashBytesWritten], (i2cBLData.cmdProtocol.programCommand.memAddr + i2cBLData.nFlashBytesWritten));
+            NVM_RowWrite((uint32_t*)&i2cBLData.cmdProtocol.programCommand.data[i2cBLData.nFlashBytesWritten], (i2cBLData.cmdProtocol.programCommand.memAddr + i2cBLData.nFlashBytesWritten));
             i2cBLData.flashState = BL_FLASH_STATE_WRITE_BUSY_POLL;
             break;
 
-        case BL_FLASH_STATE_VERIFY:			
-			if (BL_CRCGenerate(i2cBLData.appImageStartAddr, (i2cBLData.appImageEndAddr - i2cBLData.appImageStartAddr)) != i2cBLData.cmdProtocol.verifyCommand.crc)
+        case BL_FLASH_STATE_VERIFY:
+            if (bootloader_CRCGenerate(i2cBLData.appImageStartAddr, (i2cBLData.appImageEndAddr - i2cBLData.appImageStartAddr)) != i2cBLData.cmdProtocol.verifyCommand.crc)
             {
                 SET_BIT(i2cBLData.status, BL_STATUS_BIT_CRC_ERROR);
             }
@@ -394,7 +347,7 @@ static void I2C_BL_FlashSM(void)
             break;
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
-			if(NVM_IsBusy() == false)
+            if(NVM_IsBusy() == false)
             {
                 CLR_BIT(i2cBLData.status, BL_STATUS_BIT_BUSY);
                 i2cBLData.flashState = BL_FLASH_STATE_IDLE;
@@ -402,7 +355,7 @@ static void I2C_BL_FlashSM(void)
             break;
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
-			if(NVM_IsBusy() == false)
+            if(NVM_IsBusy() == false)
             {
                 i2cBLData.nFlashBytesWritten += PAGE_SIZE;
 
@@ -421,7 +374,7 @@ static void I2C_BL_FlashSM(void)
         case BL_FLASH_STATE_RESET:
             /* Wait for the I2C transfer to complete */
             while (${PERIPH_USED}_IsBusy());
-            BL_TriggerReset();
+            bootloader_TriggerReset();
             break;
 
         case BL_FLASH_STATE_IDLE:
@@ -439,37 +392,15 @@ static void I2C_BL_FlashSM(void)
 // *****************************************************************************
 // *****************************************************************************
 
-void run_Application(void)
-{
-    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
 
-    void (*fptr)(void);
-
-    /* Set default to APP_RESET_ADDRESS */
-    fptr = (void (*)(void))APP_START_ADDRESS;
-
-    if (msp == 0xffffffff)
-    {
-        return;
-    }
-
-    fptr();
-}
-
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
-
-void bootloader_Tasks(void)
+void bootloader_${BTL_TYPE}_Tasks(void)
 {
     i2cBLData.flashState = BL_FLASH_STATE_IDLE;
-	
-	${PERIPH_USED}_CallbackRegister(I2CEventHandler, (uintptr_t)0);
+
+    ${PERIPH_USED}_CallbackRegister(BL_I2C_EventHandler, (uintptr_t)0);
 
     while (1)
-    {        
-        I2C_BL_FlashSM();
+    {
+        BL_I2C_FlashTask();
     }
 }

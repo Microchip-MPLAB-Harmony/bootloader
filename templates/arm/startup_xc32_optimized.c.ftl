@@ -64,13 +64,13 @@ extern uint32_t _vectors_loadaddr;
 void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
 {
     uint32_t *pSrc, *pDst;
-	
+
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
-	uint32_t i;
-	pSrc = (uint32_t *) &_vectors_loadaddr;
+    uint32_t i;
+    pSrc = (uint32_t *) &_vectors_loadaddr; /* flash address */
     pDst = (uint32_t *) &_sfixed;
-    
-    /* Copy .vectors section from flash to RAM */    
+
+    /* Copy .vectors section from flash to RAM */
     for (i = 0; i < sizeof(H3DeviceVectors)/4; i++)
     {
         *pDst++ = *pSrc++;
@@ -78,12 +78,12 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
 </#if>
 
     pSrc = (uint32_t *) &_etext; /* flash functions start after .text */
-    pDst = (uint32_t *) &_sdata;  /* boundaries of .data area to init */	
+    pDst = (uint32_t *) &_sdata;  /* boundaries of .data area to init */
 
     /* Init .data */
     while (pDst < &_edata)
         *pDst++ = *pSrc++;
-    
+
     /* Init .bss */
     pDst = &_sbss;
     while (pDst < &_ebss)

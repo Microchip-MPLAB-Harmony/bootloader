@@ -39,17 +39,8 @@
 // DOM-IGNORE-END
 
 #include "definitions.h"
+#include "bootloader_common.h"
 #include <device.h>
-
-#define FLASH_START             (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH            (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE               (${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-#define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
-
-#define BOOTLOADER_SIZE         ${BTL_SIZE}
-
-#define APP_START_ADDRESS       (PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
 
 #define GUARD_OFFSET            0
 #define CMD_OFFSET              2
@@ -197,7 +188,7 @@ static bool     flash_data_ready    = false;
     <#lt>}
 
     <#lt>/* Function to swap the banks.
-    <#lt> * This function has to be removed once NVM PLIB has the support 
+    <#lt> * This function has to be removed once NVM PLIB has the support
     <#lt> */
     <#lt>static void bootloader_ProgramFlashSwapBank( T_FLASH_BANK flash_bank )
     <#lt>{
@@ -270,58 +261,6 @@ static bool     flash_data_ready    = false;
     <#lt>    }
     <#lt>}
 </#if>
-
-/* Function to Send the final response for reset command and trigger a reset */
-static void trigger_Reset(void)
-{
-    ${PERIPH_USED}_WriteByte(BL_RESP_OK);
-
-    while(${PERIPH_USED}_TransmitComplete() == false);
-
-    /* Perform system unlock sequence */ 
-    SYSKEY = 0x00000000;
-    SYSKEY = 0xAA996655;
-    SYSKEY = 0x556699AA;
-
-    RSWRSTSET = _RSWRST_SWRST_MASK;
-    (void)RSWRST;
-}
-
-/* Function to Generate CRC by reading the firmware programmed into internal flash */
-static uint32_t crc_generate(void)
-{
-    uint32_t   i, j, value;
-    uint32_t   crc_tab[256];
-    uint32_t   size    = unlock_end - unlock_begin;
-    uint32_t   crc     = 0xffffffff;
-    uint8_t    data;
-
-    for (i = 0; i < 256; i++)
-    {
-        value = i;
-
-        for (j = 0; j < 8; j++)
-        {
-            if (value & 1)
-            {
-                value = (value >> 1) ^ 0xEDB88320;
-            }
-            else
-            {
-                value >>= 1;
-            }
-        }
-        crc_tab[i] = value;
-    }
-
-    for (i = 0; i < size; i++)
-    {
-        data = *(uint8_t *)KVA0_TO_KVA1((unlock_begin + i));
-
-        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    }
-    return crc;
-}
 
 /* Function to receive application firmware via UART/USART */
 static void input_task(void)
@@ -434,7 +373,7 @@ static void command_task(void)
         uint32_t crc        = input_buffer[CRC_OFFSET];
         uint32_t crc_gen    = 0;
 
-        crc_gen = crc_generate();
+        crc_gen = bootloader_CRCGenerate(unlock_begin, unlock_end - unlock_begin);
 
         if (crc == crc_gen)
             ${PERIPH_USED}_WriteByte(BL_RESP_CRC_OK);
@@ -443,14 +382,22 @@ static void command_task(void)
     }
     else if (BL_CMD_RESET == input_command)
     {
-        trigger_Reset();
+        ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+
+        while(${PERIPH_USED}_TransmitComplete() == false);
+
+        bootloader_TriggerReset();
     }
 <#if BTL_DUAL_BANK == true>
     else if (BL_CMD_BKSWAP_RESET == input_command)
     {
         update_UpperFlashSerial();
 
-        trigger_Reset();
+        ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+
+        while(${PERIPH_USED}_TransmitComplete() == false);
+
+        bootloader_TriggerReset();
     }
 </#if>
     else
@@ -477,7 +424,7 @@ static void flash_task(void)
         flash_data_ready = false;
 
         ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
-        
+
         return;
     }
     else if (addr == UPPER_FLASH_SERIAL_SECTOR)
@@ -507,30 +454,7 @@ static void flash_task(void)
     ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 }
 
-void run_Application(void)
-{
-    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-
-    void (*fptr)(void);
-
-    /* Set default to APP_RESET_ADDRESS */
-    fptr = (void (*)(void))APP_START_ADDRESS;
-
-    if (msp == 0xffffffff)
-    {
-        return;
-    }
-
-    fptr();
-}
-
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
-
-void bootloader_Tasks(void)
+void bootloader_${BTL_TYPE}_Tasks(void)
 {
     CORETIMER_CompareSet(TIMER_COMPARE_VALUE);
 

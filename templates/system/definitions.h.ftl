@@ -22,4 +22,4 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  *******************************************************************************/
 -->
-#include "bootloader/bootloader.h"
+#include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"

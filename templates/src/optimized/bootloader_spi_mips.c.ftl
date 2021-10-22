@@ -1,16 +1,16 @@
 /*******************************************************************************
-  UART Bootloader Source File
+  SPI Bootloader Source File
 
   File Name:
-    bootloader_i2c.c
+    bootloader_spi.c
 
   Summary:
-    This file contains source code necessary to execute UART bootloader.
+    This file contains source code necessary to execute SPI bootloader.
 
   Description:
-    This file contains source code necessary to execute UART bootloader.
-    It implements bootloader protocol which uses UART peripheral to download
-    application firmware into internal flash from HOST-PC.
+    This file contains source code necessary to execute SPI bootloader.
+    It implements bootloader protocol which uses SPI peripheral to download
+    application firmware into internal flash.
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
@@ -45,6 +45,7 @@
 // *****************************************************************************
 
 #include "definitions.h"
+#include "bootloader_common.h"
 #include <device.h>
 #include <string.h>
 
@@ -58,13 +59,6 @@
 #define CLR_BIT(reg, bits)                      (reg &= ~(bits))
 #define IS_BIT_SET(reg, bit)                    ((reg & bit)? true:false)
 
-#define FLASH_START             				(${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH            				(${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE               				(${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE        				(${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-#define PAGES_IN_ERASE_BLOCK    				(ERASE_BLOCK_SIZE / PAGE_SIZE)
-#define BOOTLOADER_SIZE         				${BTL_SIZE}
-#define APP_START_ADDRESS       				(PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
 #define BL_BUFFER_SIZE                          ERASE_BLOCK_SIZE + sizeof(uint32_t)
 
 #define BL_STATUS_BIT_BUSY                      (0x01 << 0)
@@ -72,8 +66,9 @@
 #define BL_STATUS_BIT_INVALID_MEM_ADDR          (0x01 << 2)
 #define BL_STATUS_BIT_COMMAND_EXECUTION_ERROR   (0x01 << 3)      //Valid only when BL_STATUS_BIT_BUSY is 0
 #define BL_STATUS_BIT_CRC_ERROR                 (0x01 << 4)
+#define BL_STATUS_BIT_COMM_ERROR                (0x01 << 5)
 #define BL_STATUS_BIT_ALL                       (BL_STATUS_BIT_BUSY | BL_STATUS_BIT_INVALID_COMMAND | BL_STATUS_BIT_INVALID_MEM_ADDR | \
-                                                 BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR)
+                                                 BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR | BL_STATUS_BIT_COMM_ERROR)
 
 typedef enum
 {
@@ -144,7 +139,7 @@ typedef struct
 {
     SPI_BL_COMMAND_PROTOCOL                 cmd;
     uint8_t                                 status;
-	uint8_t                                 dataBufferAlignOffset;
+    uint8_t                                 dataBufferAlignOffset;
     BL_FLASH_STATE                          flashState;
     uint32_t                                appImageStartAddr;
     uint32_t                                appImageEndAddr;
@@ -167,58 +162,12 @@ static SPI_BL_DATA                          spiBLData;
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
-/* Trigger a reset */
-static void BL_TriggerReset(void)
-{    
-    /* Perform system unlock sequence */ 
-    SYSKEY = 0x00000000;
-    SYSKEY = 0xAA996655;
-    SYSKEY = 0x556699AA;
 
-    RSWRSTSET = _RSWRST_SWRST_MASK;
-    (void)RSWRST;
-}
-
-/* Function to Generate CRC by reading the firmware programmed into internal flash */
-static uint32_t BL_CRCGenerate(uint32_t start_addr, uint32_t size)
-{
-    uint32_t   i, j, value;
-    uint32_t   crc_tab[256];
-    uint32_t   crc     = 0xffffffff;
-    uint8_t    data;
-
-    for (i = 0; i < 256; i++)
-    {
-        value = i;
-
-        for (j = 0; j < 8; j++)
-        {
-            if (value & 1)
-            {
-                value = (value >> 1) ^ 0xEDB88320;
-            }
-            else
-            {
-                value >>= 1;
-            }
-        }
-        crc_tab[i] = value;
-    }
-
-    for (i = 0; i < size; i++)
-    {
-        data = *(uint8_t *)KVA0_TO_KVA1((start_addr + i));
-
-        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    }
-    return crc;
-}
-
-static void SPI_BL_CommandParser(void)
+static void BL_SPI_CommandParser(void)
 {
     switch(spiBLData.cmd.readBuffer[0])
     {
-        case BL_COMMAND_UNLOCK:            
+        case BL_COMMAND_UNLOCK:
             /* Make sure start address + size does not exceed the maximum flash address */
             if ((spiBLData.cmd.unlockCommand.appImageStartAddr + spiBLData.cmd.unlockCommand.appImageSize) > (FLASH_START + FLASH_LENGTH))
             {
@@ -228,12 +177,12 @@ static void SPI_BL_CommandParser(void)
             {
                 /* Save application start address and size for future reference */
                 spiBLData.appImageStartAddr = spiBLData.cmd.unlockCommand.appImageStartAddr;
-                spiBLData.appImageEndAddr = spiBLData.cmd.unlockCommand.appImageStartAddr + spiBLData.cmd.unlockCommand.appImageSize;                
+                spiBLData.appImageEndAddr = spiBLData.cmd.unlockCommand.appImageStartAddr + spiBLData.cmd.unlockCommand.appImageSize;
             }
             break;
-            
+
         case BL_COMMAND_ERASE:
-            
+
             if ((spiBLData.cmd.eraseCommand.memAddr < spiBLData.appImageStartAddr) ||
             ((spiBLData.cmd.eraseCommand.memAddr + ERASE_BLOCK_SIZE) > spiBLData.appImageEndAddr))
             {
@@ -245,17 +194,17 @@ static void SPI_BL_CommandParser(void)
                 spiBLData.flashState = BL_FLASH_STATE_ERASE;
             }
             break;
-            
+
         case BL_COMMAND_PROGRAM:
-            
+
             if ((spiBLData.cmd.programCommand.memAddr < spiBLData.appImageStartAddr) || (spiBLData.cmd.programCommand.nBytes > BL_BUFFER_SIZE)
                      || ((spiBLData.cmd.programCommand.memAddr + spiBLData.cmd.programCommand.nBytes) > spiBLData.appImageEndAddr))
             {
                 SET_BIT(spiBLData.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
-            }           
+            }
             else
             {
-				/* NVM requires data buffer to align to 32-bit (word) boundary. Move the buffer content to align to 32-bit boundary. */
+                /* NVM requires data buffer to align to 32-bit (word) boundary. Move the buffer content to align to 32-bit boundary. */
                 if ((uint32_t)spiBLData.cmd.programCommand.data & 0x03)
                 {
                     spiBLData.dataBufferAlignOffset = 4 - ((uint32_t)spiBLData.cmd.programCommand.data & 0x03);
@@ -271,42 +220,42 @@ static void SPI_BL_CommandParser(void)
                 spiBLData.flashState = BL_FLASH_STATE_WRITE;
             }
             break;
-            
+
         case BL_COMMAND_VERIFY:
-            
+
             SET_BIT(spiBLData.status, BL_STATUS_BIT_BUSY);
             spiBLData.flashState = BL_FLASH_STATE_VERIFY;
             break;
-            
+
         case BL_COMMAND_RESET:
-            
+
             spiBLData.flashState = BL_FLASH_STATE_RESET;
             break;
-            
+
         case BL_COMMAND_READ_STATUS:
-            
-            ${PERIPH_USED}_Write(&spiBLData.status, 1);            
-            spiBLData.status = 0;                                            
+
+            ${PERIPH_USED}_Write(&spiBLData.status, 1);
+            spiBLData.status = 0;
             break;
-            
-        default:            
-			/* 0xFF is used as a dummy byte to read the status by the host */
-			if (spiBLData.cmd.readBuffer[0] != 0xFF)
-			{
-				SET_BIT(spiBLData.status, BL_STATUS_BIT_INVALID_COMMAND);
-			}
-            break;                
+
+        default:
+            /* 0xFF is used as a dummy byte to read the status by the host */
+            if (spiBLData.cmd.readBuffer[0] != 0xFF)
+            {
+                SET_BIT(spiBLData.status, BL_STATUS_BIT_INVALID_COMMAND);
+            }
+            break;
     }
-	
-	if (!IS_BIT_SET(spiBLData.status, BL_STATUS_BIT_BUSY))
-	{
-		${PERIPH_USED}_Ready(); 
-	}
+
+    if (!IS_BIT_SET(spiBLData.status, BL_STATUS_BIT_BUSY))
+    {
+        ${PERIPH_USED}_Ready();
+    }
 }
 
 
 
-static void SPI_BL_FlashSM(void)
+static void BL_SPI_FlashTask(void)
 {
     switch(spiBLData.flashState)
     {
@@ -322,7 +271,7 @@ static void SPI_BL_FlashSM(void)
             break;
 
         case BL_FLASH_STATE_VERIFY:
-            if (BL_CRCGenerate(spiBLData.appImageStartAddr, (spiBLData.appImageEndAddr - spiBLData.appImageStartAddr)) != spiBLData.cmd.verifyCommand.crc)
+            if (bootloader_CRCGenerate(spiBLData.appImageStartAddr, (spiBLData.appImageEndAddr - spiBLData.appImageStartAddr)) != spiBLData.cmd.verifyCommand.crc)
             {
                 SET_BIT(spiBLData.status, BL_STATUS_BIT_CRC_ERROR);
             }
@@ -360,7 +309,7 @@ static void SPI_BL_FlashSM(void)
 
         case BL_FLASH_STATE_RESET:
             /* Wait for the I2C transfer to complete */
-            BL_TriggerReset();
+            bootloader_TriggerReset();
             break;
 
 
@@ -373,12 +322,17 @@ static void SPI_BL_FlashSM(void)
     }
 }
 
-void SPIEventHandler(uintptr_t context )
+static void BL_SPI_EventHandler(uintptr_t context )
 {
     if (${PERIPH_USED}_ErrorGet() == SPI_SLAVE_ERROR_NONE)
     {
-        spiBLData.nReadBytes = ${PERIPH_USED}_Read((void*)spiBLData.cmd.readBuffer, ${PERIPH_USED}_ReadCountGet());         
-    }       
+        spiBLData.nReadBytes = ${PERIPH_USED}_Read((void*)spiBLData.cmd.readBuffer, ${PERIPH_USED}_ReadCountGet());
+    }
+    else
+    {
+        SET_BIT(spiBLData.status, BL_STATUS_BIT_COMM_ERROR);
+        ${PERIPH_USED}_Ready();
+    }
 }
 
 // *****************************************************************************
@@ -387,46 +341,21 @@ void SPIEventHandler(uintptr_t context )
 // *****************************************************************************
 // *****************************************************************************
 
-
-
-void run_Application(void)
-{
-    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-
-    void (*fptr)(void);
-
-    /* Set default to APP_RESET_ADDRESS */
-    fptr = (void (*)(void))APP_START_ADDRESS;
-
-    if (msp == 0xffffffff)
-    {
-        return;
-    }
-
-    fptr();
-}
-
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
-
-void bootloader_Tasks(void)
+void bootloader_${BTL_TYPE}_Tasks(void)
 {
     spiBLData.flashState = BL_FLASH_STATE_IDLE;
 
-    ${PERIPH_USED}_CallbackRegister(SPIEventHandler, (uintptr_t) 0); 
+    ${PERIPH_USED}_CallbackRegister(BL_SPI_EventHandler, (uintptr_t) 0);
 
     while (1)
-    {                
+    {
         if (spiBLData.nReadBytes)
         {
             spiBLData.nReadBytes = 0;
-            
-            SPI_BL_CommandParser();            
+
+            BL_SPI_CommandParser();
         }
-        
-        SPI_BL_FlashSM();
+
+        BL_SPI_FlashTask();
     }
 }

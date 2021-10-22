@@ -86,7 +86,7 @@ def setupCoreComponentSymbols():
     coreComponent.getSymbolByID("CoreSysStartupFile").setValue(False)
 
     coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
-    
+
     if ("PIC32M" in Variables.get("__PROCESSOR")):
         coreComponent.getSymbolByID("CoreSysIntFile").setValue(True)
     else:
@@ -162,7 +162,7 @@ def instantiateComponent(bootloaderComponent):
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_i2c_mips.c.ftl")
     else:
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_i2c_arm.c.ftl")
-    btlSourceFile.setOutputName("bootloader.c")
+    btlSourceFile.setOutputName("bootloader_i2c.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
@@ -171,7 +171,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader.h.ftl")
-    btlHeaderFile.setOutputName("bootloader.h")
+    btlHeaderFile.setOutputName("bootloader_i2c.h")
     btlHeaderFile.setMarkup(True)
     btlHeaderFile.setOverwrite(True)
     btlHeaderFile.setDestPath("/bootloader/")
@@ -210,6 +210,8 @@ def instantiateComponent(bootloaderComponent):
     generateLinkerFileSymbol(bootloaderComponent)
 
     generateXC32SettingsAndFileSymbol(bootloaderComponent)
+
+    generateCommonFiles(bootloaderComponent)
 
     setOptimizationLevel(bootloaderComponent, "-O2")
 

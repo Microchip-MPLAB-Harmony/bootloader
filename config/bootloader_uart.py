@@ -140,7 +140,7 @@ def instantiateComponent(bootloaderComponent):
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_uart_mips.c.ftl")
     else:
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_uart_arm.c.ftl")
-    btlSourceFile.setOutputName("bootloader.c")
+    btlSourceFile.setOutputName("bootloader_uart.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
@@ -149,7 +149,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader.h.ftl")
-    btlHeaderFile.setOutputName("bootloader.h")
+    btlHeaderFile.setOutputName("bootloader_uart.h")
     btlHeaderFile.setMarkup(True)
     btlHeaderFile.setOverwrite(True)
     btlHeaderFile.setDestPath("/bootloader/")
@@ -188,6 +188,8 @@ def instantiateComponent(bootloaderComponent):
     generateLinkerFileSymbol(bootloaderComponent)
 
     generateXC32SettingsAndFileSymbol(bootloaderComponent)
+
+    generateCommonFiles(bootloaderComponent)
 
     setOptimizationLevel(bootloaderComponent, "-O2")
 

@@ -257,6 +257,27 @@ def generateLinkerFileSymbol(bootloaderComponent):
     btlLinkerFile.setOverwrite(True)
     btlLinkerFile.setType("LINKER")
 
+def generateCommonFiles(bootloaderComponent):
+    configName = Variables.get("__CONFIGURATION_NAME")
+
+    btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_SOURCE", None)
+    btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.c.ftl")
+    btlHeaderFile.setOutputName("bootloader_common.c")
+    btlHeaderFile.setMarkup(True)
+    btlHeaderFile.setOverwrite(True)
+    btlHeaderFile.setDestPath("/bootloader/")
+    btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlHeaderFile.setType("SOURCE")
+
+    btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_HEADER", None)
+    btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.h.ftl")
+    btlHeaderFile.setOutputName("bootloader_common.h")
+    btlHeaderFile.setMarkup(True)
+    btlHeaderFile.setOverwrite(True)
+    btlHeaderFile.setDestPath("/bootloader/")
+    btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlHeaderFile.setType("HEADER")
+
 # Used by Optimized Bootloaders
 def generateXC32SettingsAndFileSymbol(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")

@@ -45,6 +45,7 @@
 // *****************************************************************************
 
 #include "definitions.h"
+#include "bootloader_common.h"
 #include <device.h>
 
 // *****************************************************************************
@@ -52,16 +53,6 @@
 // Section: Type Definitions
 // *****************************************************************************
 // *****************************************************************************
-
-#define FLASH_START             (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH            (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE               (${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-#define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
-
-#define BOOTLOADER_SIZE         ${BTL_SIZE}
-
-#define APP_START_ADDRESS       (0x${core.APP_START_ADDRESS}UL)
 
 #define GUARD_OFFSET            0
 #define CMD_OFFSET              2
@@ -129,60 +120,6 @@ static bool     flash_data_ready    = false;
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
-
-<#if BTL_HW_CRC_GEN == true>
-    <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t addr = unlock_begin;
-    <#lt>    uint32_t size = unlock_end - unlock_begin;
-    <#lt>    uint32_t crc  = 0;
-
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
-
-    <#lt>    DSU_CRCCalculate (addr, size, 0xffffffff, &crc);
-
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
-
-    <#lt>    return crc;
-    <#lt>}
-<#else>
-    <#lt>/* Function to Generate CRC by reading the firmware programmed into internal flash */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t   i, j, value;
-    <#lt>    uint32_t   crc_tab[256];
-    <#lt>    uint32_t   size    = unlock_end - unlock_begin;
-    <#lt>    uint32_t   crc     = 0xffffffff;
-    <#lt>    uint8_t    data;
-
-    <#lt>    for (i = 0; i < 256; i++)
-    <#lt>    {
-    <#lt>        value = i;
-
-    <#lt>        for (j = 0; j < 8; j++)
-    <#lt>        {
-    <#lt>            if (value & 1)
-    <#lt>            {
-    <#lt>                value = (value >> 1) ^ 0xEDB88320;
-    <#lt>            }
-    <#lt>            else
-    <#lt>            {
-    <#lt>                value >>= 1;
-    <#lt>            }
-    <#lt>        }
-    <#lt>        crc_tab[i] = value;
-    <#lt>    }
-
-    <#lt>    for (i = 0; i < size; i++)
-    <#lt>    {
-    <#lt>        data = *(uint8_t *)(unlock_begin + i);
-    <#lt>
-    <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    <#lt>    }
-    <#lt>    return crc;
-    <#lt>}
-</#if>
 
 /* Function to receive application firmware via UART/USART */
 static void input_task(void)
@@ -297,12 +234,20 @@ static void command_task(void)
         uint32_t crc        = input_buffer[CRC_OFFSET];
         uint32_t crc_gen    = 0;
 
-        crc_gen = crc_generate();
+        crc_gen = bootloader_CRCGenerate(unlock_begin, unlock_end - unlock_begin);
 
         if (crc == crc_gen)
             ${PERIPH_USED}_WriteByte(BL_RESP_CRC_OK);
         else
             ${PERIPH_USED}_WriteByte(BL_RESP_CRC_FAIL);
+    }
+    else if (BL_CMD_RESET == input_command)
+    {
+        ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+
+        while(${PERIPH_USED}_TransmitComplete() == false);
+
+        bootloader_TriggerReset();
     }
 <#if BTL_DUAL_BANK == true>
     else if (BL_CMD_BKSWAP_RESET == input_command)
@@ -314,14 +259,6 @@ static void command_task(void)
         ${MEM_USED}_BankSwap();
     }
 </#if>
-    else if (BL_CMD_RESET == input_command)
-    {
-        ${PERIPH_USED}_WriteByte(BL_RESP_OK);
-
-        while(${PERIPH_USED}_TransmitComplete() == false);
-
-        NVIC_SystemReset();
-    }
     else
     {
         ${PERIPH_USED}_WriteByte(BL_RESP_INVALID);
@@ -370,28 +307,7 @@ static void flash_task(void)
 // *****************************************************************************
 // *****************************************************************************
 
-void run_Application(void)
-{
-    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
-
-    if (msp == 0xffffffff)
-    {
-        return;
-    }
-
-    __set_MSP(msp);
-
-    asm("bx %0"::"r" (reset_vector));
-}
-
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
-
-void bootloader_Tasks(void)
+void bootloader_${BTL_TYPE}_Tasks(void)
 {
     while (1)
     {

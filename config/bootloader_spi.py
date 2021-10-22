@@ -105,8 +105,8 @@ def instantiateComponent(bootloaderComponent):
 
     generateCommonSymbols(bootloaderComponent)
 
-    generateHwCRCGeneratorSymbol(bootloaderComponent)    
-    
+    generateHwCRCGeneratorSymbol(bootloaderComponent)
+
     btlDualBankEnable = False
 
     if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
@@ -139,7 +139,7 @@ def instantiateComponent(bootloaderComponent):
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_spi_mips.c.ftl")
     else:
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_spi_arm.c.ftl")
-    btlSourceFile.setOutputName("bootloader.c")
+    btlSourceFile.setOutputName("bootloader_spi.c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
@@ -148,7 +148,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader.h.ftl")
-    btlHeaderFile.setOutputName("bootloader.h")
+    btlHeaderFile.setOutputName("bootloader_spi.h")
     btlHeaderFile.setMarkup(True)
     btlHeaderFile.setOverwrite(True)
     btlHeaderFile.setDestPath("/bootloader/")
@@ -187,6 +187,8 @@ def instantiateComponent(bootloaderComponent):
     generateLinkerFileSymbol(bootloaderComponent)
 
     generateXC32SettingsAndFileSymbol(bootloaderComponent)
+
+    generateCommonFiles(bootloaderComponent)
 
     setOptimizationLevel(bootloaderComponent, "-O2")
 

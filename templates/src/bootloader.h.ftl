@@ -36,11 +36,12 @@
  *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef BOOTLOADER_H
-#define BOOTLOADER_H
+#ifndef BOOTLOADER_${BTL_TYPE}_H
+#define BOOTLOADER_${BTL_TYPE}_H
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "bootloader_common.h"
 
 <#if core.CoreArchitecture == "MIPS">
     <#lt>#include "sys/kmem.h"
@@ -142,115 +143,11 @@
     <#lt>void bootloader_SwapAndReset( void );
 </#if>
 
-<#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
-     (!BTL_LIVE_UPDATE??) >
-    <#lt>// *****************************************************************************
-    <#lt>/* Function:
-    <#lt>    bool bootloader_Trigger( void );
 
-    <#lt>Summary:
-    <#lt>    Checks if Bootloader has to be executed at startup.
-
-    <#lt>Description:
-    <#lt>    This function can be used to check for a External HW trigger or Internal firmware
-    <#lt>    trigger to execute bootloader at startup.
-
-    <#lt>    This check should happen before any system resources are initialized apart for PORT
-    <#lt>    as the same system resource can be Re-initialized by the application if bootloader jumps
-    <#lt>    to it and may cause issues.
-
-    <#lt>    - <b>External Trigger: </b>
-    <#lt>        Is achieved by triggering the selected GPIO_PIN in bootloader configuration
-    <#lt>        in MHC.
-    <#lt>    - <b>Firmware Trigger: </b>
-    <#lt>        Application firmware which wants to execute bootloader at startup needs to
-    <#lt>        fill first 16 bytes of ram location with bootloader request pattern.
-
-    <#lt>        <code>
-    <#lt>            uint32_t *sram = (uint32_t *)RAM_START_ADDRESS;
-
-    <#lt>            sram[0] = 0x5048434D;
-    <#lt>            sram[1] = 0x5048434D;
-    <#lt>            sram[2] = 0x5048434D;
-    <#lt>            sram[3] = 0x5048434D;
-    <#lt>        </code>
-
-    <#lt>Precondition:
-    <#lt>    PORT/PIO Initialize must have been called.
-
-    <#lt>Parameters:
-    <#lt>    None.
-
-    <#lt>Returns:
-    <#lt>    - True  : If any of trigger is detected.
-    <#lt>    - False : If no trigger is detected..
-
-    <#lt>Example:
-    <#lt>    <code>
-
-    <#lt>        NVMCTRL_Initialize();
-
-    <#lt>        PORT_Initialize();
-
-    <#lt>        if (bootloader_Trigger() == false)
-    <#lt>        {
-    <#lt>            run_Application();
-    <#lt>        }
-
-    <#lt>        CLOCK_Initialize();
-
-    <#lt>    </code>
-    <#lt>*/
-    <#lt>bool bootloader_Trigger( void );
-
-    <#lt>// *****************************************************************************
-    <#lt>/* Function:
-    <#lt>    void run_Application( void );
-
-    <#lt>Summary:
-    <#lt>    Runs the programmed application at startup.
-
-    <#lt>Description:
-    <#lt>    This function can be used to run programmed application though bootloader at startup.
-
-    <#lt>    If the first 4Bytes of Application Memory is not 0xFFFFFFFF then it jumps to
-    <#lt>    the application start address to run the application programmed through bootloader and
-    <#lt>    never returns.
-
-    <#lt>    If the first 4Bytes of Application Memory is 0xFFFFFFFF then it returns from function
-    <#lt>    and executes bootloader for accepting a new application firmware.
-
-    <#lt>Precondition:
-    <#lt>    bootloader_Trigger() must be called to check for bootloader triggers at startup.
-
-    <#lt>Parameters:
-    <#lt>    None.
-
-    <#lt>Returns:
-    <#lt>    None
-
-    <#lt>Example:
-    <#lt>    <code>
-
-    <#lt>        NVMCTRL_Initialize();
-
-    <#lt>        PORT_Initialize();
-
-    <#lt>        if (bootloader_Trigger() == false)
-    <#lt>        {
-    <#lt>            run_Application();
-    <#lt>        }
-
-    <#lt>        CLOCK_Initialize();
-
-    <#lt>    </code>
-    <#lt>*/
-    <#lt>void run_Application( void );
-</#if>
 
 // *****************************************************************************
 /* Function:
-    void bootloader_Tasks( void );
+    void bootloader_${BTL_TYPE}_Tasks( void )
 
  Summary:
     Starts bootloader execution.
@@ -285,10 +182,10 @@
  Example:
     <code>
 
-        bootloader_Tasks();
+        bootloader_${BTL_TYPE}_Tasks();
 
     </code>
 */
-void bootloader_Tasks( void );
+void bootloader_${BTL_TYPE}_Tasks( void );
 
-#endif
+#endif  //BOOTLOADER_${BTL_TYPE}_H

@@ -53,15 +53,6 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define FLASH_START              (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH             (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE                (${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE         (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-
-#define BOOTLOADER_SIZE          ${BTL_SIZE}
-
-#define APP_START_ADDRESS        (0x${core.APP_START_ADDRESS}UL)
-
 #define ADDR_OFFSET              1
 #define SIZE_OFFSET              2
 #define CRC_OFFSET               1
@@ -134,75 +125,21 @@ static uint8_t data_seq;
 // *****************************************************************************
 // *****************************************************************************
 
-<#if BTL_HW_CRC_GEN == true>
-    <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t addr = unlock_begin;
-    <#lt>    uint32_t size = unlock_end - unlock_begin;
-    <#lt>    uint32_t crc  = 0;
-
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
-
-    <#lt>    DSU_CRCCalculate (addr, size, 0xffffffff, &crc);
-
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
-
-    <#lt>    return crc;
-    <#lt>}
-<#else>
-    <#lt>/* Function to Generate CRC by reading the firmware programmed into internal flash */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t   i, j, value;
-    <#lt>    uint32_t   crc_tab[256];
-    <#lt>    uint32_t   size    = unlock_end - unlock_begin;
-    <#lt>    uint32_t   crc     = 0xffffffff;
-    <#lt>    uint8_t    data;
-
-    <#lt>    for (i = 0; i < 256; i++)
-    <#lt>    {
-    <#lt>        value = i;
-
-    <#lt>        for (j = 0; j < 8; j++)
-    <#lt>        {
-    <#lt>            if (value & 1)
-    <#lt>            {
-    <#lt>                value = (value >> 1) ^ 0xEDB88320;
-    <#lt>            }
-    <#lt>            else
-    <#lt>            {
-    <#lt>                value >>= 1;
-    <#lt>            }
-    <#lt>        }
-    <#lt>        crc_tab[i] = value;
-    <#lt>    }
-
-    <#lt>    for (i = 0; i < size; i++)
-    <#lt>    {
-    <#lt>        data = *(uint8_t *)(unlock_begin + i);
-    <#lt>
-    <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    <#lt>    }
-    <#lt>    return crc;
-    <#lt>}
-</#if>
-
 /* Function to program received application firmware data into internal flash */
 static void flash_write(void)
 {
     if (0 == (flash_addr % ERASE_BLOCK_SIZE))
-	{
-		/* Lock region size is always bigger than the row size */
-		${MEM_USED}_RegionUnlock(flash_addr);
+    {
+        /* Lock region size is always bigger than the row size */
+        ${MEM_USED}_RegionUnlock(flash_addr);
 
-		while(${MEM_USED}_IsBusy() == true);
+        while(${MEM_USED}_IsBusy() == true);
 
-		/* Erase the Current sector */
-		${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
+        /* Erase the Current sector */
+        ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
 
-		while(${MEM_USED}_IsBusy() == true);
-	}
+        while(${MEM_USED}_IsBusy() == true);
+    }
 
     /* Write Page */
     ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)&flash_data[0], flash_addr);
@@ -379,27 +316,6 @@ static void ${PERIPH_USED}_task(void)
 // Section: Bootloader Global Functions
 // *****************************************************************************
 // *****************************************************************************
-
-void run_Application(void)
-{
-    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
-
-    if (msp == 0xffffffff)
-    {
-        return;
-    }
-
-    __set_MSP(msp);
-
-    asm("bx %0"::"r" (reset_vector));
-}
-
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
 
 void bootloader_Tasks(void)
 {

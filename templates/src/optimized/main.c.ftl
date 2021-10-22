@@ -64,7 +64,7 @@ int main ( void )
     /* Initialize all modules */
     SYS_Initialize ( NULL );
 
-    bootloader_Tasks();
+    bootloader_${BTL_TYPE}_Tasks();
 
     /* Execution should not come here during normal operation */
     return ( EXIT_FAILURE );

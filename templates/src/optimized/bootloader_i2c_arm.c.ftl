@@ -1,16 +1,16 @@
 /*******************************************************************************
-  UART Bootloader Source File
+  I2C Bootloader Source File
 
   File Name:
     bootloader_i2c.c
 
   Summary:
-    This file contains source code necessary to execute UART bootloader.
+    This file contains source code necessary to execute I2C bootloader.
 
   Description:
-    This file contains source code necessary to execute UART bootloader.
+    This file contains source code necessary to I2C I2C bootloader.
     It implements bootloader protocol which uses UART peripheral to download
-    application firmware into internal flash from HOST-PC.
+    application firmware into internal flash.
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
@@ -45,6 +45,7 @@
 // *****************************************************************************
 
 #include "definitions.h"
+#include "bootloader_common.h"
 #include <device.h>
 
 // *****************************************************************************
@@ -53,19 +54,10 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define FLASH_START                             (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH                            (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE                               (${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE                        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-#define PAGES_IN_ERASE_BLOCK                    (ERASE_BLOCK_SIZE / PAGE_SIZE)
-
-#define BOOTLOADER_SIZE                         ${BTL_SIZE}
-
 #define SET_BIT(reg, bits)                      (reg |= (bits))
 #define CLR_BIT(reg, bits)                      (reg &= ~(bits))
 #define IS_BIT_SET(reg, bit)                    ((reg & bit)? true:false)
 
-#define BL_APP_START_ADDRESS                    (0x${core.APP_START_ADDRESS}UL)
 #define BL_BUFFER_SIZE                          ERASE_BLOCK_SIZE
 
 #define BL_STATUS_BIT_BUSY                      (0x01 << 0)
@@ -73,6 +65,7 @@
 #define BL_STATUS_BIT_INVALID_MEM_ADDR          (0x01 << 2)
 #define BL_STATUS_BIT_COMMAND_EXECUTION_ERROR   (0x01 << 3)      //Valid only when BL_STATUS_BIT_BUSY is 0
 #define BL_STATUS_BIT_CRC_ERROR                 (0x01 << 4)
+#define BL_STATUS_BIT_COMM_ERROR                (0x01 << 5)
 #define BL_STATUS_BIT_ALL                       (BL_STATUS_BIT_BUSY | BL_STATUS_BIT_INVALID_COMMAND | BL_STATUS_BIT_INVALID_MEM_ADDR | \
                                                  BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR)
 
@@ -177,88 +170,7 @@ static BL_PROTOCOL                          blProtocol;
 // *****************************************************************************
 // *****************************************************************************
 
-<#if BTL_HW_CRC_GEN == true>
-    <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
-    <#lt>static uint32_t BL_CRCGenerate(void)
-    <#lt>{
-    <#lt>    uint32_t crc  = 0;
-
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
-
-    <#lt>    DSU_CRCCalculate (
-    <#lt>       blProtocol.appImageStartAddr,
-    <#lt>       (blProtocol.appImageEndAddr - blProtocol.appImageStartAddr),
-    <#lt>       0xffffffff,
-    <#lt>       &crc
-    <#lt>   );
-
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
-
-    <#lt>    return crc;
-    <#lt>}
-<#else>
-    <#lt>/* Function to Generate CRC by reading the firmware programmed into internal flash */
-    <#lt>static uint32_t BL_CRCGenerate(void)
-    <#lt>{
-    <#lt>    uint32_t   i, j, value;
-    <#lt>    uint32_t   crc_tab[256];
-    <#lt>    uint32_t   crc = 0xffffffff;
-    <#lt>    uint32_t   size = blProtocol.appImageEndAddr - blProtocol.appImageStartAddr;
-    <#lt>    uint8_t    data;
-
-    <#lt>    for (i = 0; i < 256; i++)
-    <#lt>    {
-    <#lt>        value = i;
-
-    <#lt>        for (j = 0; j < 8; j++)
-    <#lt>        {
-    <#lt>            if (value & 1)
-    <#lt>            {
-    <#lt>                value = (value >> 1) ^ 0xEDB88320;
-    <#lt>            }
-    <#lt>            else
-    <#lt>            {
-    <#lt>                value >>= 1;
-    <#lt>            }
-    <#lt>        }
-    <#lt>        crc_tab[i] = value;
-    <#lt>    }
-
-    <#lt>    for (i = 0; i < size; i++)
-    <#lt>    {
-    <#lt>        data = *(uint8_t *)(blProtocol.appImageStartAddr + i);
-    <#lt>
-    <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    <#lt>    }
-    <#lt>    return crc;
-    <#lt>}
-</#if>
-
-/* Function to program received application firmware data into internal flash */
-<#if BTL_CMD_STRETCH_CLK == true>
-static bool BL_FlashWrite(uint32_t flash_addr, uint8_t* flash_data, uint32_t numPages)
-{
-    uint32_t page;
-    uint32_t write_idx  = 0;
-
-    for (page = 0; page < numPages; page++)
-    {
-        if (${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&flash_data[write_idx], (flash_addr + write_idx)) == true)
-        {
-            while(${MEM_USED}_IsBusy() == true);
-            write_idx += PAGE_SIZE;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-</#if>
-
-static bool BL_I2CMasterWriteHandler(uint8_t rdByte)
+static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
 {
     switch(blProtocol.rdState)
     {
@@ -319,7 +231,7 @@ static bool BL_I2CMasterWriteHandler(uint8_t rdByte)
                 if (blProtocol.command == BL_COMMAND_UNLOCK)
                 {
                     /* Save application start address and size for future reference */
-                    if ((blProtocol.cmdProtocol.unlockCommand.appImageStartAddr + blProtocol.cmdProtocol.unlockCommand.appImageSize) > FLASH_LENGTH)
+                    if ((blProtocol.cmdProtocol.unlockCommand.appImageStartAddr + blProtocol.cmdProtocol.unlockCommand.appImageSize) > (FLASH_START + FLASH_LENGTH))
                     {
                         SET_BIT(blProtocol.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
                         return false;
@@ -387,9 +299,17 @@ static void BL_I2C_EventsProcess(void)
 {
     static bool isFirstRxByte;
     static bool transferDir;
+    SERCOM_I2C_SLAVE_ERROR error;
     SERCOM_I2C_SLAVE_INTFLAG intFlags = ${PERIPH_USED}_InterruptFlagsGet();
 
-    if (intFlags & SERCOM_I2C_SLAVE_INTFLAG_AMATCH)
+    if (intFlags & SERCOM_I2C_SLAVE_INTFLAG_ERROR)
+    {
+        error = ${PERIPH_USED}_ErrorGet();
+        (void)error;
+
+        SET_BIT(blProtocol.status, BL_STATUS_BIT_COMM_ERROR);
+    }
+    else if (intFlags & SERCOM_I2C_SLAVE_INTFLAG_AMATCH)
     {
         isFirstRxByte = true;
 
@@ -411,7 +331,7 @@ static void BL_I2C_EventsProcess(void)
     {
         if (transferDir == SERCOM_I2C_SLAVE_TRANSFER_DIR_WRITE)
         {
-            if (BL_I2CMasterWriteHandler(${PERIPH_USED}_ReadByte()) == true)
+            if (BL_I2C_MasterWriteHandler(${PERIPH_USED}_ReadByte()) == true)
             {
                 ${PERIPH_USED}_CommandSet(SERCOM_I2C_SLAVE_COMMAND_SEND_ACK);
             }
@@ -446,70 +366,7 @@ static void BL_I2C_EventsProcess(void)
     }
 }
 
-<#if BTL_CMD_STRETCH_CLK == true>
-static void BL_FlashSM(void)
-{
-    switch(blProtocol.flashState)
-    {
-        case BL_FLASH_STATE_ERASE:
-
-            // Lock region size is always bigger than the row size
-            ${MEM_USED}_RegionUnlock(blProtocol.cmdProtocol.eraseCommand.memAddr);
-
-            while(${MEM_USED}_IsBusy() == true);
-
-            /* Erase the Current row */
-            ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
-
-            while(${MEM_USED}_IsBusy() == true);
-
-            CLR_BIT(blProtocol.status, BL_STATUS_BIT_BUSY);
-
-            blProtocol.flashState = BL_FLASH_STATE_IDLE;
-
-            break;
-
-        case BL_FLASH_STATE_WRITE:
-            if (BL_FlashWrite(blProtocol.cmdProtocol.programCommand.memAddr, blProtocol.cmdProtocol.programCommand.data, (blProtocol.cmdProtocol.programCommand.nBytes/PAGE_SIZE)) == false)
-            {
-                SET_BIT(blProtocol.status, BL_STATUS_BIT_COMMAND_EXECUTION_ERROR);
-            }
-            CLR_BIT(blProtocol.status, BL_STATUS_BIT_BUSY);
-            blProtocol.flashState = BL_FLASH_STATE_IDLE;
-            break;
-
-        case BL_FLASH_STATE_VERIFY:
-            if (BL_CRCGenerate() != blProtocol.cmdProtocol.verifyCommand.crc)
-            {
-                SET_BIT(blProtocol.status, BL_STATUS_BIT_CRC_ERROR);
-            }
-            CLR_BIT(blProtocol.status, BL_STATUS_BIT_BUSY);
-            blProtocol.flashState = BL_FLASH_STATE_IDLE;
-            break;
-
-        case BL_FLASH_STATE_RESET:
-            /* Wait for the I2C transfer to complete */
-            while (!(${PERIPH_USED}_InterruptFlagsGet() & SERCOM_I2C_SLAVE_INTFLAG_PREC));
-            NVIC_SystemReset();
-            break;
-
-<#if BTL_DUAL_BANK == true>
-        case BL_FLASH_STATE_BKSWAP_RESET:
-            /* Wait for the I2C transfer to complete */
-            while (!(${PERIPH_USED}_InterruptFlagsGet() & SERCOM_I2C_SLAVE_INTFLAG_PREC));
-            ${MEM_USED}_BankSwap();
-            break;
-</#if>
-
-        case BL_FLASH_STATE_IDLE:
-            break;
-
-        default:
-            break;
-    }
-}
-<#else>
-static void BL_FlashSM(void)
+static void BL_I2C_FlashTask(void)
 {
     switch(blProtocol.flashState)
     {
@@ -531,7 +388,7 @@ static void BL_FlashSM(void)
             break;
 
         case BL_FLASH_STATE_VERIFY:
-            if (BL_CRCGenerate() != blProtocol.cmdProtocol.verifyCommand.crc)
+            if (bootloader_CRCGenerate(blProtocol.appImageStartAddr, (blProtocol.appImageEndAddr - blProtocol.appImageStartAddr)) != blProtocol.cmdProtocol.verifyCommand.crc)
             {
                 SET_BIT(blProtocol.status, BL_STATUS_BIT_CRC_ERROR);
             }
@@ -567,7 +424,7 @@ static void BL_FlashSM(void)
         case BL_FLASH_STATE_RESET:
             /* Wait for the I2C transfer to complete */
             while (!(${PERIPH_USED}_InterruptFlagsGet() & SERCOM_I2C_SLAVE_INTFLAG_PREC));
-            NVIC_SystemReset();
+            bootloader_TriggerReset();
             break;
 
 <#if BTL_DUAL_BANK == true>
@@ -586,7 +443,6 @@ static void BL_FlashSM(void)
             break;
     }
 }
-</#if>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -594,34 +450,18 @@ static void BL_FlashSM(void)
 // *****************************************************************************
 // *****************************************************************************
 
-void run_Application(void)
+void bootloader_${BTL_TYPE}_Tasks(void)
 {
-    uint32_t msp            = *(uint32_t *)(BL_APP_START_ADDRESS);
-    uint32_t reset_vector   = *(uint32_t *)(BL_APP_START_ADDRESS + 4);
-
-    if (msp == 0xffffffff)
-    {
-        return;
-    }
-
-    __set_MSP(msp);
-
-    asm("bx %0"::"r" (reset_vector));
-}
-
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
-
-void bootloader_Tasks(void)
-{
-    blProtocol.flashState = BL_FLASH_STATE_IDLE;
-
     while (1)
     {
+<#if BTL_CMD_STRETCH_CLK == true>
+        if (IS_BIT_SET(blProtocol.status, BL_STATUS_BIT_BUSY) == false)
+        {
+            BL_I2C_EventsProcess();
+        }
+<#else>
         BL_I2C_EventsProcess();
-        BL_FlashSM();
+</#if>
+        BL_I2C_FlashTask();
     }
 }
