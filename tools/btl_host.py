@@ -35,6 +35,7 @@ BL_CMD_DATA         = 0xa1
 BL_CMD_VERIFY       = 0xa2
 BL_CMD_RESET        = 0xa3
 BL_CMD_BKSWAP_RESET = 0xa4
+BL_CMD_DEVCFG_DATA  = 0xa5
 
 BL_RESP_OK          = 0x50
 BL_RESP_ERROR       = 0x51
@@ -49,24 +50,24 @@ ERASE_SIZE        = 256
 
 BOOTLOADER_SIZE     = 2048
 
-# Supported Devices [ERASE_SIZE, BOOTLOADER_SIZE]
+# Supported Devices [ERASE_SIZE, BOOTLOADER_SIZE, USER_ROW_ADDR]
 devices = {
-            "SAME7X"    : [8192, 8192],
-            "SAME5X"    : [8192, 8192],
-            "SAMD5X"    : [8192, 8192],
-            "SAMG5X"    : [8192, 8192],
-            "SAMC2X"    : [256, 2048],
-            "SAMD1X"    : [256, 2048],
-            "SAMD2X"    : [256, 2048],
-            "SAMDA1"    : [256, 2048],
-            "SAML1X"    : [256, 2048],
-            "SAML2X"    : [256, 2048],
-            "SAMHA1"    : [256, 2048],
-            "PIC32MK"   : [4096, 8192],
-            "PIC32MZ"   : [16384, 16384],
-            "PIC32MZW"  : [4096, 8192],
-            "PIC32MX"   : [1024, 4096],
-            "PIC32CM"   : [256, 2048],
+            "SAME7X"    : [8192, 8192, 0xFFFFFFFF],
+            "SAME5X"    : [8192, 8192, 0x00804000],
+            "SAMD5X"    : [8192, 8192, 0x00804000],
+            "SAMG5X"    : [8192, 8192, 0xFFFFFFFF],
+            "SAMC2X"    : [256, 2048, 0x00804000],
+            "SAMD1X"    : [256, 2048, 0x00804000],
+            "SAMD2X"    : [256, 2048, 0x00804000],
+            "SAMDA1"    : [256, 2048, 0x00804000],
+            "SAML1X"    : [256, 2048, 0x00804000],
+            "SAML2X"    : [256, 2048, 0x00804000],
+            "SAMHA1"    : [256, 2048, 0x00804000],
+            "PIC32MK"   : [4096, 8192, 0xFFFFFFFF],
+            "PIC32MZ"   : [16384, 16384, 0xFFFFFFFF],
+            "PIC32MZW"  : [4096, 8192, 0xFFFFFFFF],
+            "PIC32MX"   : [1024, 4096, 0xFFFFFFFF],
+            "PIC32CM"   : [256, 2048, 0x00804000],
 }
 
 #------------------------------------------------------------------------------
@@ -163,14 +164,53 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total: 
         print()
 
+def send_device_configurations(devCfgFile, port, erase_size, addr):
+    data = []
+
+    # Expected Format for Device Configurations in text file.
+    # Each 32-Bit Fuse bit value has to be newline seperated
+    # 0x78563412
+    # 0x00EFCDAB
+
+    with open(devCfgFile,"r") as input_file:
+        for line in input_file:
+            value = int(line.strip(), 0)
+
+            # Store LSB first
+            data += [value & 0xFF]
+            data += [(value >> 8) & 0xFF]
+            data += [(value >> 16 )& 0xFF]
+            data += [(value >> 24) & 0xFF]
+
+    while len(data) % erase_size > 0:
+        data += [0xff]
+
+    size = len(data)
+
+    # Create data blocks of erase_size each
+    blocks = [data[i:i + erase_size] for i in range(0, len(data), erase_size)]
+
+    for idx, blk in enumerate(blocks):
+        resp = send_request(port, BL_CMD_DEVCFG_DATA, uint32(erase_size + 4), uint32(addr) + blk)
+
+        addr += erase_size
+
+        if resp != BL_RESP_OK:
+            if resp == BL_RESP_INVALID:
+                warning('Device configuration programming is not supported, Enable Fuse Programming in MHC for Bootloader (status = 0x%02x)' % resp)
+            else:
+                error('Device configuration programming failed (status = 0x%02x)' % resp)
+
 #------------------------------------------------------------------------------
 def main():
     parser = optparse.OptionParser(usage = 'usage: %prog [options]')
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')
     parser.add_option('-r', '--baud', dest='baud', help='UART baudrate', default=115200, metavar='BAUD')
+    parser.add_option('-u', '--parity', dest='parity', help='UART Parity (none/even/odd)', default='none', metavar='PARITY')
     parser.add_option('-t', '--tune', dest='tune', help='auto-tune UART baudrate', default=False, action='store_true')
     parser.add_option('-i', '--interface', dest='port', help='communication interface', metavar='PATH')
     parser.add_option('-f', '--file', dest='file', help='binary file to program', metavar='FILE')
+    parser.add_option('-c', '--devcfgfile', dest='devcfgfile', help='device configuration text file', metavar='DEVCFGFILE')
     parser.add_option('-a', '--address', dest='address', help='destination address', metavar='ADDR')
     parser.add_option('-p', '--sectorSize', dest='sectSize', help='Device Sector Size in Bytes', metavar='SectSize')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
@@ -202,7 +242,9 @@ def main():
         else:
             ERASE_SIZE    = devices[device][0]
 
-        BOOTLOADER_SIZE     = devices[device][1]
+        BOOTLOADER_SIZE   = devices[device][1]
+
+        DEV_CFG_ADDR      = devices[device][2]
     else:
         error('invalid device')
 
@@ -222,8 +264,15 @@ def main():
         if options.boot == True:
             error('--boot option is not supported on this device')
 
+    uart_parity = serial.PARITY_NONE
+
+    if (options.parity == 'even'):
+        uart_parity = serial.PARITY_EVEN
+    elif (options.parity == 'odd'):
+        uart_parity = serial.PARITY_ODD
+
     try:
-        port = serial.Serial(options.port, options.baud, timeout=1)
+        port = serial.Serial(port=options.port, baudrate=options.baud, parity=uart_parity, timeout=1)
     except serial.serialutil.SerialException as inst:
         error(inst)
 
@@ -275,6 +324,15 @@ def main():
         verbose(options.verbose, '... success')
     else:
         error('... fail (status = 0x%02x)' % resp)
+
+    # Send Device Configuration Command
+    if (options.devcfgfile != None):
+        if (DEV_CFG_ADDR == 0xFFFFFFFF):
+            warning('Device configuration programming is not supported for this device')
+        else:
+            verbose(options.verbose, 'Sending Device Configuration Bits')
+
+            send_device_configurations(options.devcfgfile, port, ERASE_SIZE, DEV_CFG_ADDR)
 
     # Send Reboot Command
     if (options.swap == True):
