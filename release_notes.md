@@ -8,6 +8,16 @@ nav_order: 99
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Bootloader Release v3.5.1
+
+- Updated Bootloader documentation to new format.
+
+### Known Issues
+- No changes from v3.5.0
+
+### Development Tools
+- No changes from v3.5.0
+
 ## Bootloader Release v3.5.0
 
 ### New Features
