@@ -157,19 +157,23 @@ def generateCommonSymbols(bootloaderComponent):
     global ram_size
     global btl_start
     global btl_type
+    global btl_helpkeyword
 
     btlMemUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
+    btlMemUsed.setHelp(btl_helpkeyword)
     btlMemUsed.setLabel("Bootloader NVM Memory Used")
     btlMemUsed.setReadOnly(True)
     btlMemUsed.setDefaultValue("")
 
     btlType = bootloaderComponent.createStringSymbol("BTL_TYPE", None)
+    btlType.setHelp(btl_helpkeyword)
     btlType.setLabel("Bootloader Type")
     btlType.setReadOnly(True)
     btlType.setVisible(False)
     btlType.setDefaultValue(btl_type)
 
     btlStart = bootloaderComponent.createStringSymbol("BTL_START", None)
+    btlStart.setHelp(btl_helpkeyword)
     btlStart.setLabel("Bootloader Start Address")
     btlStart.setVisible(False)
     btlStart.setDefaultValue(btl_start)
@@ -177,6 +181,7 @@ def generateCommonSymbols(bootloaderComponent):
     btl_size = calcBootloaderSize()
 
     btlSize = bootloaderComponent.createStringSymbol("BTL_SIZE", None)
+    btlSize.setHelp(btl_helpkeyword)
     btlSize.setLabel("Bootloader Size (Bytes)")
     btlSize.setVisible(False)
     btlSize.setDefaultValue(str(btl_size))
@@ -187,6 +192,7 @@ def generateCommonSymbols(bootloaderComponent):
     btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_SIZE"])
 
     btlTriggerEnable = bootloaderComponent.createBooleanSymbol("BTL_TRIGGER_ENABLE", None)
+    btlTriggerEnable.setHelp(btl_helpkeyword)
     btlTriggerEnable.setLabel("Enable Bootloader Trigger From Firmware")
     btlTriggerEnable.setDescription("This Option can be used to Force Trigger bootloader from application firmware after a soft reset.")
 
@@ -195,6 +201,7 @@ def generateCommonSymbols(bootloaderComponent):
                          to check at reset."
 
     btlTriggerLen = bootloaderComponent.createStringSymbol("BTL_TRIGGER_LEN", btlTriggerEnable)
+    btlTriggerLen.setHelp(btl_helpkeyword)
     btlTriggerLen.setLabel("Number Of Bytes To Reserve From Start Of RAM")
     btlTriggerLen.setVisible((btlTriggerEnable.getValue() == True))
     btlTriggerLen.setDefaultValue("0")
@@ -212,6 +219,7 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setVisible(False)
 
 def generateHwCRCGeneratorSymbol(bootloaderComponent):
+    global btl_helpkeyword
     crcEnable = False
 
     coreComponent = Database.getComponentByID("core")
@@ -228,6 +236,7 @@ def generateHwCRCGeneratorSymbol(bootloaderComponent):
             crcEnable = True
 
     btlHwCrc = bootloaderComponent.createBooleanSymbol("BTL_HW_CRC_GEN", None)
+    btlHwCrc.setHelp(btl_helpkeyword)
     btlHwCrc.setLabel("Bootloader Hardware CRC Generator")
     btlHwCrc.setReadOnly(True)
     btlHwCrc.setVisible(False)

@@ -22,8 +22,10 @@
 *****************************************************************************"""
 global btlSizes
 global btl_type
+global btl_helpkeyword
 
 btl_type = "I2C"
+btl_helpkeyword = "mcc_h3_i2c_bootloader_configurations"
 
 # Maximum Size for Bootloader [BYTES]
 bootloaderCore = "bootloader_arm.py"
@@ -86,6 +88,7 @@ def instantiateComponent(bootloaderComponent):
     setupCoreComponentSymbols()
 
     btlPeriphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
+    btlPeriphUsed.setHelp("mcc_h3_i2c_bootloader_configurations")
     btlPeriphUsed.setLabel("Bootloader Peripheral Used")
     btlPeriphUsed.setReadOnly(True)
     btlPeriphUsed.setDefaultValue("")
@@ -103,6 +106,7 @@ def instantiateComponent(bootloaderComponent):
                                 with other slaves on the same bus."
 
     btlCommandStretchClkEnable = bootloaderComponent.createBooleanSymbol("BTL_CMD_STRETCH_CLK", None)
+    btlCommandStretchClkEnable.setHelp("mcc_h3_i2c_bootloader_configurations")
     btlCommandStretchClkEnable.setLabel("Bootloader Commands Stretch I2C Clock")
     btlCommandStretchClkEnable.setDescription(btlCommandStretchClkDesc)
     btlCommandStretchClkEnable.setDefaultValue(False)
@@ -114,10 +118,12 @@ def instantiateComponent(bootloaderComponent):
         btlDualBankEnable = False
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
+    btlDualBank.setHelp("mcc_h3_i2c_bootloader_configurations")
     btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")
     btlDualBank.setVisible(btlDualBankEnable)
 
     btlDualBankComment = bootloaderComponent.createCommentSymbol("BTL_DUAL_BANK_COMMENT", None)
+    btlDualBankComment.setHelp("mcc_h3_i2c_bootloader_configurations")
     btlDualBankComment.setLabel("!!! WARNING Only Half of the Flash memory will be available for Application !!!")
     btlDualBankComment.setVisible(False)
     btlDualBankComment.setDependencies(setBtlDualBankCommentVisible, ["BTL_DUAL_BANK"])

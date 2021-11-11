@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE11" /><meta name="copyright" content="(C) Copyright 2021" />
+<meta name="DC.rights.owner" content="(C) Copyright 2021" />
+<meta name="DC.type" content="topic" />
+<meta name="DC.title" content="I2C Bootloader Protocol" />
+<meta name="DC.relation" scheme="URI" content="GUID-EFEE222D-BE1D-42F5-A032-C966B5DA09C2.html" />
+<meta name="DC.format" content="XHTML" />
+<meta name="DC.identifier" content="i2c-bootloader-protocol" />
+<link rel="stylesheet" type="text/css" href="stylesheets/atmel.css" />
+<title>I2C Bootloader Protocol</title>
+<meta name="Microsoft.Help.Id" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25-i2c-bootloader-protocol" />
+<meta name="Microsoft.Help.TocParent" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25" />
+<meta name="Microsoft.Help.TocOrder" content="0" />
+<meta name="Microsoft.Help.Locale" content="en-US" />
+<meta name="Microsoft.Help.TopicLocale" content="en-US" />
+<meta name="Microsoft.Help.DisplayVersion" content="MPLAB® Harmony Bootloader Library Reference A 11/2021" />
+<script language="javascript">
+       
+       if (window.parent.location.protocol != 'file:') {
+				document.addEventListener('click', function(e) {
+				    if (e.target) {
+               if (e.target.nodeName == "A" ) {
+                    if (!e.target.target) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                              
+                      var origUrl = window.parent.location.href.substr(0, window.parent.location.href.indexOf("?"));
+                      if (origUrl.length === 0) {
+                          origUrl = window.parent.location.href;
+                      }
+                      var href= e.target.getAttribute("href");
+                      var parts = href.split("#");
+          
+                      var url = "";
+                      if (parts.length == 2 ) {
+                        if (!parts[0].length) {
+                            url = window.parent.location.search.replace('?','')
+                        } else {
+                            url = parts[0].replace('.html','');
+                        }
+                      } else {
+                        url = parts[0].replace('.html','');
+                      }
+
+                      if (parts.length == 2) {
+                          url += "#" + parts[1];
+                      }
+    
+                      window.parent.location.href = origUrl + "?" + url;
+
+                      return false;
+                    }
+               }
+            }
+				});
+			}
+
+		</script><script language="javascript">
+        function cpy(id, button) {
+        
+            var element = document.getElementById(id);
+            var content = element.getAttribute("content");
+            var textArea = document.createElement("textarea");
+            
+            // Place in the top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+            
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            
+            // Avoid flash of the white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+            
+            
+            textArea.value = content;
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+               var successful = document.execCommand('copy');
+               var msg = successful ? 'successful' : 'unsuccessful';
+               if (!button.classList.contains("copied")){
+                  button.textContent = "Copied";
+                  button.classList.add("copied");
+                  setTimeout(function(){
+                    button.textContent = "Copy";
+                    button.classList.remove("copied");
+                  },1000);
+               }
+            } catch (err) {
+              console.log('Oops, unable to copy');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+      </script><script language="javascript">
+          
+          // Add the MathML namespace to html
+          var html = document.getElementsByTagName("html")[0],
+          head = document.getElementsByTagName("head")[0];
+          
+          var mathJax = document.createElement("script");
+          mathJax.src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML";
+          head.appendChild(mathJax);
+          
+          html.setAttribute("xmlns:m","http://www.w3.org/1998/Math/MathML");
+          
+          function inIframe() { try { return window.self !== window.top; } catch (e) { return true; } }
+          
+          if (!inIframe()) { 
+          
+          var Default = "index.html?GUID-3942704D-13D2-4E8E-A9DC-4055E7F6D5AB"; 
+          
+          var displaylocation = "value" + window.location.href;
+          
+          var GUIDS = displaylocation.split('GUID');          
+          
+          if (displaylocation.indexOf('#GUID') != -1) {            
+          var First = GUIDS[1].split('.html');  
+          if (GUIDS[3]){First = GUIDS[2].split('.html');}
+          if (GUIDS[4]){First = GUIDS[3].split('.html');}
+          if (GUIDS[5]){First = GUIDS[4].split('.html');}
+          
+          var Second = GUIDS[2].split('#');   
+          if (GUIDS[3]){Second = GUIDS[3].split('#');}
+          if (GUIDS[4]){Second = GUIDS[4].split('#');}
+          if (GUIDS[5]){Second = GUIDS[5].split('#');}
+          
+          Default = "index.html?" + "GUID" + First[0] + "GUID" + Second[0];     
+          }                    
+          window.top.location = Default;
+          }       
+          
+        </script><style xml:space="">
+        
+          button.copy-code{
+            display:none;
+            padding:0.7em 1.4em;
+            margin:0 0.3em 0.3em 0;
+            border-radius:0.15em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            text-transform:uppercase;
+            font-weight:400;
+            color:#FFFFFF;
+            background-color:#9c9c9c;
+            box-shadow:inset 0 -0.6em 0 -0.35em rgba(0,0,0,0.17);
+            text-align:center;
+            position:relative;
+            border: 0;
+            float: right;
+            border-radius: .5em;
+            cursor: pointer;
+          }
+          button.copy-code:active{
+            top:0.1em;
+          }
+          
+          pre:hover button.copy-code{
+            display: inline-block !important;
+          }
+          button.copy-code.copied {
+            cursor: default !important;
+          }
+          
+          
+          @media all and (max-width:30em){
+            button.copy-code{
+              display:block;
+              margin:0.4em auto;
+            }
+          }
+        
+        
+      </style><link rel="stylesheet" type="text/css" href="stylesheets/common-extended.css" /></head>
+<body id="i2c-bootloader-protocol">
+<h1 class="title topictitle1" id="ariaid-title1">I2C Bootloader Protocol</h1><div class="body"><p class="p">Each command argument is of 4 bytes and must be sent in big-endian (MSB first) format.</p>
+<p class="p"><strong class="ph b">Unlock Command (0xA0)</strong></p>
+<ul class="ul"><li class="li"><p class="p">Unlock command is used to specify the application start address and size of the application. Unlock command must be issued before issuing any other command.</p>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Payload:</strong></p>
+<ul class="ul"><li class="li"><p class="p">Arg 0 - Application start address. The start address is device dependent and must be aligned to an Erase Unit boundary which is also device dependent.</p>
+</li>
+<li class="li"><p class="p">Arg 1 - Application size. It must be rounded off to the nearest erase unit size .</p>
+</li>
+</ul>
+</li>
+</ul>
+<br /><img class="image" src="GUID-DBE2A8B5-E0CF-42C7-85A7-E4C81F5F99C6-low.png" alt="i2c_bootloader_unlock_command_range" /><br /><ul class="ul"><li class="li"><p class="p">The memory address range specified in Unlock command will be used to validate the addresses sent for other commands. The memory address specified by all other commands must lie within the address range specified for the Unlock command.</p>
+</li>
+<li class="li"><p class="p">Bootloader will calculate CRC over the entire range of memory specified by the Unlock command</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-3B6B2F72-C01A-4951-8436-BCFBAE1D45BE-low.png" alt="i2c_bootloader_unlock_command" /><br /><p class="p"><strong class="ph b">Erase Command (0xA1)</strong></p>
+<ul class="ul"><li class="li"><p class="p">Erase command erases a flash page as specified by the Erase Page Address argument</p>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Payload:</strong></p>
+<ul class="ul"><li class="li"><p class="p">Arg 0 - Starting memory address of the flash page being erased.</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">The flash page being erased must lie within the address range specified by the Unlock command else the bootloader will NAK the command and the INVALID ADDRESS error bit will be set in the status byte.</p>
+</li>
+<li class="li"><p class="p">If the command is accepted successfully, the bootloader will set the BUSY bit in the status byte. The host application must poll the status byte and ensure that the command is completed successfully (status byte indicates bootloader is not busy and no error bits are set) before issuing a new command.</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-120E52D8-B5CA-4CB4-8C21-5C953F06BF9E-low.png" alt="i2c_bootloader_erase_command" /><br /><ul class="ul"><li class="li"><p class="p"><strong class="ph b">Note:</strong> Depending on the value specified for <strong class="ph b">Bootloader Commands Stretch I2C Clock</strong>, the bootloader may either stretch the I2C clock or respond with NAK while it is busy</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Program Command (0xA2)</strong></p>
+<ul class="ul"><li class="li"><p class="p">Program command is used to send the image data</p>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Payload:</strong></p>
+<ul class="ul"><li class="li"><p class="p">Arg 0: Number of bytes to program. It must be a multiple of the flash page size. Depending on the value specified, one or more flash pages within the erase unit can be programmed. For example, if the erase row size is 256 bytes and program page size is 64 bytes, the number of bytes to program can either be 64, 128, 192 or 256.</p>
+</li>
+<li class="li"><p class="p">Arg 1: Program Memory Address. It must be aligned to the start address of the flash page being programmed.</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">The flash page being programmed must lie within the address range specified by the Unlock command; else the bootloader will NAK the command and the INVALID ADDRESS error bit will be set in the status byte.</p>
+</li>
+<li class="li"><p class="p">If the command is accepted successfully, the bootloader will set the busy bit in the status byte. The host application must poll the status byte and ensure that the command is completed successfully (status byte indicates bootloader is not busy and no error bits are set) before issuing a new command.</p>
+</li>
+<li class="li"><p class="p">The bootloader host application must ensure that the flash page being programmed is erased before issuing the Program Command</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-41BA4A5B-530C-46CD-99CB-19C5AA81A63A-low.png" alt="i2c_bootloader_program_command" /><br /><ul class="ul"><li class="li"><p class="p"><strong class="ph b">Note:</strong> Depending on the value specified for <strong class="ph b">Bootloader Commands Stretch I2C Clock</strong>, the bootloader may either stretch the I2C clock or respond with NAK while it is busy.</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Verify Command (0xA3)</strong></p>
+<ul class="ul"><li class="li"><p class="p">Verify command is used to verify the programmed application image.</p>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Payload:</strong></p>
+<ul class="ul"><li class="li"><p class="p">Arg 0: Application Image CRC. CRC is a standard IEEE CRC32 with a polynomial of <strong class="ph b">0xEDB88320</strong></p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">The bootloader host application must calculate the CRC of the application image over the entire memory range specified in the Unlock command and provide it to the bootloader. The CRC is a standard IEEE CRC32 with a polynomial of 0xEDB88320.</p>
+</li>
+<li class="li"><p class="p">The bootloader upon receiving the Verify command, calculates the CRC over the range of addresses specified by the Unlock command by reading the flash memory contents and compares it with the received CRC value.</p>
+</li>
+<li class="li"><p class="p">If the command is accepted successfully, the bootloader will set the busy bit in the status byte. The host application must poll the status byte and ensure that the CRC verification is successful (status byte indicates bootloader is not busy and no error bits are set) before issuing the Reset Command.</p>
+</li>
+<li class="li"><p class="p">If the calculated CRC and received CRC values do not match, the CRC_ERROR bit is set in the Status byte.</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-49BA9080-DF46-44B9-A244-86CFDCCB6FC7-low.png" alt="i2c_bootloader_verify_command" /><br /><ul class="ul"><li class="li"><p class="p"><strong class="ph b">Note:</strong> The bootloader will stretch the I2C clock while it is busy verifying the application image.</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Reset Command (0xA4)</strong></p>
+<ul class="ul"><li class="li"><p class="p">Reset command is used to exit the bootloader and run the application. The system takes a reset after receiving the Reset Command</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-ADED0E75-8317-423F-9FF8-ECC5B3E29418-low.png" alt="i2c_bootloader_reset_command" /><br /><p class="p"><strong class="ph b">Read Status Command (0xA5)</strong></p>
+<ul class="ul"><li class="li"><p class="p">Returns the bootloader status. The bootloader status can be read any time.</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-4BF2599D-2383-4069-97E4-E475F5083342-low.png" alt="i2c_bootloader_status_byte_command" /><br /><p class="p"><strong class="ph b">Flash Bank Swap and Reset Command (0xA6)</strong></p>
+<ul class="ul"><li class="li"><p class="p">Resets the device and swaps the flash bank.</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-DCCA709B-303F-4BB9-A02C-70F261AC0260-low.png" alt="i2c_bootloader_bank_swap_reset_command" /><br /><ul class="ul"><li class="li"><p class="p">This command is enabled only when <strong class="ph b">Fail safe update feature</strong> is selected for bootloader and the device has support for Dual Bank update</p>
+</li>
+<li class="li"><p class="p">Bank Swap and Reset command is used to Swap the inactive bank to active bank and trigger a reset to exit the bootloader and run the new application programmed in the inactive bank</p>
+</li>
+</ul>
+</div>
+<div class="related-links">
+<div class="familylinks">
+<div class="parentlink"><strong>Parent topic:</strong> <a class="link" href="GUID-EFEE222D-BE1D-42F5-A032-C966B5DA09C2.html">How the I2C Bootloader library works</a></div>
+</div>
+</div></body>
+</html>

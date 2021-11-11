@@ -186,19 +186,23 @@ def generateCommonSymbols(bootloaderComponent):
     global ram_size
     global btl_start
     global btl_type
+    global btl_helpkeyword
 
     btlMemUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
+    btlMemUsed.setHelp(btl_helpkeyword)
     btlMemUsed.setLabel("Bootloader NVM Memory Used")
     btlMemUsed.setReadOnly(True)
     btlMemUsed.setDefaultValue("")
 
     btlType = bootloaderComponent.createStringSymbol("BTL_TYPE", None)
+    btlType.setHelp(btl_helpkeyword)
     btlType.setLabel("Bootloader Type")
     btlType.setReadOnly(True)
     btlType.setVisible(False)
     btlType.setDefaultValue(btl_type)
 
     btlStart = bootloaderComponent.createStringSymbol("BTL_START", None)
+    btlStart.setHelp(btl_helpkeyword)
     btlStart.setLabel("Bootloader Start Address")
     btlStart.setVisible(False)
     btlStart.setDefaultValue(btl_start)
@@ -206,6 +210,7 @@ def generateCommonSymbols(bootloaderComponent):
     btl_size = calcBootloaderSize()
 
     btlSize = bootloaderComponent.createStringSymbol("BTL_SIZE", None)
+    btlSize.setHelp(btl_helpkeyword)
     btlSize.setLabel("Bootloader Size (Bytes)")
     btlSize.setVisible(False)
     btlSize.setDefaultValue(str(btl_size))
@@ -224,6 +229,7 @@ def generateCommonSymbols(bootloaderComponent):
                          to check at reset."
 
     btlTriggerLen = bootloaderComponent.createStringSymbol("BTL_TRIGGER_LEN", btlTriggerEnable)
+    btlTriggerLen.setHelp(btl_helpkeyword)
     btlTriggerLen.setLabel("Number Of Bytes To Reserve From Start Of RAM")
     btlTriggerLen.setVisible((btlTriggerEnable.getValue() == True))
     btlTriggerLen.setDefaultValue("0")

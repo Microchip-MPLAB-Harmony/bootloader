@@ -22,8 +22,10 @@
 *****************************************************************************"""
 global btlSizes
 global btl_type
+global btl_helpkeyword
 
 btl_type = "SERIAL_MEM"
+btl_helpkeyword = "mcc_h3_ serial_bootloader_configurations"
 bootloaderCore = ""
 
 # Maximum Size for Bootloader [BYTES]
@@ -102,6 +104,7 @@ def instantiateComponent(bootloaderComponent):
     setupCoreComponentSymbols()
 
     btlDriverUsed = bootloaderComponent.createStringSymbol("DRIVER_USED", None)
+    btlDriverUsed.setHelp("mcc_h3_ serial_bootloader_configurations")
     btlDriverUsed.setLabel("Bootloader Serial Memory Used")
     btlDriverUsed.setReadOnly(True)
     btlDriverUsed.setDefaultValue("")
@@ -111,6 +114,7 @@ def instantiateComponent(bootloaderComponent):
     generateHwCRCGeneratorSymbol(bootloaderComponent)
 
     btlSerialMemEraseEnable = bootloaderComponent.createBooleanSymbol("SERIAL_MEM_ERASE_ENABLE", None)
+    btlSerialMemEraseEnable.setHelp("mcc_h3_ serial_bootloader_configurations")
     btlSerialMemEraseEnable.setLabel("Enable Erase for Serial Memory")
     btlSerialMemEraseEnable.setVisible(False)
     btlSerialMemEraseEnable.setDefaultValue(False)
@@ -154,6 +158,7 @@ def instantiateComponent(bootloaderComponent):
     else:
         # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
         xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
+        xc32LdPreprocessroMacroSym.setHelp("mcc_h3_ serial_bootloader_configurations")
         xc32LdPreprocessroMacroSym.setCategory("C32-LD")
         xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
         xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE11" /><meta name="copyright" content="(C) Copyright 2021" />
+<meta name="DC.rights.owner" content="(C) Copyright 2021" />
+<meta name="DC.type" content="topic" />
+<meta name="DC.title" content="Bootloader linker configurations for CORTEX-M based MCUs" />
+<meta name="DC.relation" scheme="URI" content="GUID-02519565-B72E-496D-8153-E00F011D9130.html" />
+<meta name="DC.format" content="XHTML" />
+<meta name="DC.identifier" content="bootloader-linker-configurations-for-cortex-m-based-mcus" />
+<link rel="stylesheet" type="text/css" href="stylesheets/atmel.css" />
+<title>Bootloader linker configurations for CORTEX-M based MCUs</title>
+<meta name="Microsoft.Help.Id" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25-bootloader-linker-configurations-for-cortex-m-based-mcus" />
+<meta name="Microsoft.Help.TocParent" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25" />
+<meta name="Microsoft.Help.TocOrder" content="0" />
+<meta name="Microsoft.Help.Locale" content="en-US" />
+<meta name="Microsoft.Help.TopicLocale" content="en-US" />
+<meta name="Microsoft.Help.DisplayVersion" content="MPLAB® Harmony Bootloader Library Reference A 11/2021" />
+<script language="javascript">
+       
+       if (window.parent.location.protocol != 'file:') {
+				document.addEventListener('click', function(e) {
+				    if (e.target) {
+               if (e.target.nodeName == "A" ) {
+                    if (!e.target.target) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                              
+                      var origUrl = window.parent.location.href.substr(0, window.parent.location.href.indexOf("?"));
+                      if (origUrl.length === 0) {
+                          origUrl = window.parent.location.href;
+                      }
+                      var href= e.target.getAttribute("href");
+                      var parts = href.split("#");
+          
+                      var url = "";
+                      if (parts.length == 2 ) {
+                        if (!parts[0].length) {
+                            url = window.parent.location.search.replace('?','')
+                        } else {
+                            url = parts[0].replace('.html','');
+                        }
+                      } else {
+                        url = parts[0].replace('.html','');
+                      }
+
+                      if (parts.length == 2) {
+                          url += "#" + parts[1];
+                      }
+    
+                      window.parent.location.href = origUrl + "?" + url;
+
+                      return false;
+                    }
+               }
+            }
+				});
+			}
+
+		</script><script language="javascript">
+        function cpy(id, button) {
+        
+            var element = document.getElementById(id);
+            var content = element.getAttribute("content");
+            var textArea = document.createElement("textarea");
+            
+            // Place in the top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+            
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            
+            // Avoid flash of the white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+            
+            
+            textArea.value = content;
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+               var successful = document.execCommand('copy');
+               var msg = successful ? 'successful' : 'unsuccessful';
+               if (!button.classList.contains("copied")){
+                  button.textContent = "Copied";
+                  button.classList.add("copied");
+                  setTimeout(function(){
+                    button.textContent = "Copy";
+                    button.classList.remove("copied");
+                  },1000);
+               }
+            } catch (err) {
+              console.log('Oops, unable to copy');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+      </script><script language="javascript">
+          
+          // Add the MathML namespace to html
+          var html = document.getElementsByTagName("html")[0],
+          head = document.getElementsByTagName("head")[0];
+          
+          var mathJax = document.createElement("script");
+          mathJax.src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML";
+          head.appendChild(mathJax);
+          
+          html.setAttribute("xmlns:m","http://www.w3.org/1998/Math/MathML");
+          
+          function inIframe() { try { return window.self !== window.top; } catch (e) { return true; } }
+          
+          if (!inIframe()) { 
+          
+          var Default = "index.html?GUID-90F92E3B-7EB3-4EF6-8A48-81D660ED6A12"; 
+          
+          var displaylocation = "value" + window.location.href;
+          
+          var GUIDS = displaylocation.split('GUID');          
+          
+          if (displaylocation.indexOf('#GUID') != -1) {            
+          var First = GUIDS[1].split('.html');  
+          if (GUIDS[3]){First = GUIDS[2].split('.html');}
+          if (GUIDS[4]){First = GUIDS[3].split('.html');}
+          if (GUIDS[5]){First = GUIDS[4].split('.html');}
+          
+          var Second = GUIDS[2].split('#');   
+          if (GUIDS[3]){Second = GUIDS[3].split('#');}
+          if (GUIDS[4]){Second = GUIDS[4].split('#');}
+          if (GUIDS[5]){Second = GUIDS[5].split('#');}
+          
+          Default = "index.html?" + "GUID" + First[0] + "GUID" + Second[0];     
+          }                    
+          window.top.location = Default;
+          }       
+          
+        </script><style xml:space="">
+        
+          button.copy-code{
+            display:none;
+            padding:0.7em 1.4em;
+            margin:0 0.3em 0.3em 0;
+            border-radius:0.15em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            text-transform:uppercase;
+            font-weight:400;
+            color:#FFFFFF;
+            background-color:#9c9c9c;
+            box-shadow:inset 0 -0.6em 0 -0.35em rgba(0,0,0,0.17);
+            text-align:center;
+            position:relative;
+            border: 0;
+            float: right;
+            border-radius: .5em;
+            cursor: pointer;
+          }
+          button.copy-code:active{
+            top:0.1em;
+          }
+          
+          pre:hover button.copy-code{
+            display: inline-block !important;
+          }
+          button.copy-code.copied {
+            cursor: default !important;
+          }
+          
+          
+          @media all and (max-width:30em){
+            button.copy-code{
+              display:block;
+              margin:0.4em auto;
+            }
+          }
+        
+        
+      </style><link rel="stylesheet" type="text/css" href="stylesheets/common-extended.css" /></head>
+<body id="bootloader-linker-configurations-for-cortex-m-based-mcus">
+<h1 class="title topictitle1" id="ariaid-title1">Bootloader linker configurations for CORTEX-M based MCUs</h1><div class="body"><p class="p"><strong class="ph b">Linker configurations for the UART, I2C and CAN Bootloaders</strong></p>
+<ul class="ul"><li class="li"><p class="p">Bootloader library uses a custom linker script which is <strong class="ph b">generated through MHC</strong></p>
+</li>
+<li class="li"><p class="p">The values populated in the linker script are based on the Bootloader component MHC configurations</p>
+</li>
+<li class="li"><p class="p">Bootloader is configured to run from RAM in this linker script to achieve simultaneous Flash memory write and reception of the next block of data.</p>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Note: The below sections provides overview of changes done to bootloader linker scripts when compared to default linker script. The &lt;bootloader_start&gt; address and &lt;bootloader_length&gt; may vary based on the specific device used</strong></p>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d28023e29', this);">Copy</button><code id="d28023e29" content="&#xA;#define ROM_START &lt;bootloader_start&gt;&#xA;&#xA;/* Bootloader size is calculated with below criteria with optimization level -O2&#xA; * bootloader size = Minimum Flash Erase Size Or actual bootloader ELF size&#xA;                     (Rounded of to nearest erase boundary) whichever is&#xA;                     greater.&#xA; */&#xA;#define ROM_SIZE  &lt;bootloader_length&gt;&#xA;&#xA;/* Bootloader Trigger pattern needs to be stored in starting &lt;trigger_len&gt; Bytes&#xA; * of Ram by the application if it wants to run bootloader at startup without any&#xA; * external trigger.&#xA; * Example:&#xA; *     ram[0] = 0x5048434D;&#xA; *     ram[1] = 0x5048434D;&#xA; *     ....&#xA; *     ram[n] = 0x5048434D;&#xA; */&#xA;#define RAM_START (&lt;ram_start&gt; + &lt;trigger_len&gt;)&#xA;&#xA;#define RAM_SIZE  (&lt;ram_length&gt; - trigger_len)&#xA;&#xA;MEMORY&#xA;{&#xA;  rom (rx) : ORIGIN = ROM_START, LENGTH = ROM_SIZE&#xA;  ram (rwx) : ORIGIN = RAM_START, LENGTH = RAM_SIZE&#xA;}&#xA;&#xA;SECTIONS&#xA;{&#xA;    /*&#xA;     * Configure to place the vector table in Flash but to be run from RAM&#xA;     */&#xA;    .vectors :&#xA;    {&#xA;        . = ALIGN(4);&#xA;        _sfixed = .;&#xA;        KEEP(*(.vectors .vectors.*))&#xA;    } &gt; ram AT &gt; rom&#xA;&#xA;    .text :&#xA;    {&#xA;        . = ALIGN(4);&#xA;        ....&#xA;        ....&#xA;        . = ALIGN(4);&#xA;        _efixed = .;            /* End of text section */&#xA;    } &gt; rom&#xA;&#xA;    ....&#xA;    ....&#xA;&#xA;    . = ALIGN(4);&#xA;    _etext = .;&#xA;&#xA;    /* Locate text/rodata in special data section to be copied to RAM&#xA;       in startup sequence. */&#xA;    .data :&#xA;    {&#xA;        . = ALIGN(4);&#xA;        __data_start__ = .;&#xA;        _sdata = .;&#xA;        *(.dinit)&#xA;        *(.text)&#xA;        *(.text.*)&#xA;        *(.rodata)&#xA;        *(.rodata.*)&#xA;        . = ALIGN(4);&#xA;        __data_end__ = .;&#xA;        _edata = .;&#xA;    } &gt; ram AT &gt; rom&#xA;&#xA;    ....&#xA;}&#xA;">
+<span class="ph token macro property">#<span class="ph token directive keyword">define</span> ROM_START &lt;bootloader_start&gt;</span>
+
+<span class="ph token comment">/* Bootloader size is calculated with below criteria with optimization level -O2
+ * bootloader size = Minimum Flash Erase Size Or actual bootloader ELF size
+                     (Rounded of to nearest erase boundary) whichever is
+                     greater.
+ */</span>
+<span class="ph token macro property">#<span class="ph token directive keyword">define</span> ROM_SIZE  &lt;bootloader_length&gt;</span>
+
+<span class="ph token comment">/* Bootloader Trigger pattern needs to be stored in starting &lt;trigger_len&gt; Bytes
+ * of Ram by the application if it wants to run bootloader at startup without any
+ * external trigger.
+ * Example:
+ *     ram[0] = 0x5048434D;
+ *     ram[1] = 0x5048434D;
+ *     ....
+ *     ram[n] = 0x5048434D;
+ */</span>
+<span class="ph token macro property">#<span class="ph token directive keyword">define</span> RAM_START (&lt;ram_start&gt; + &lt;trigger_len&gt;)</span>
+
+<span class="ph token macro property">#<span class="ph token directive keyword">define</span> RAM_SIZE  (&lt;ram_length&gt; - trigger_len)</span>
+
+MEMORY
+<span class="ph token punctuation">{</span>
+  rom <span class="ph token punctuation">(</span>rx<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> ROM_START<span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> ROM_SIZE
+  ram <span class="ph token punctuation">(</span>rwx<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> RAM_START<span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> RAM_SIZE
+<span class="ph token punctuation">}</span>
+
+SECTIONS
+<span class="ph token punctuation">{</span>
+    <span class="ph token comment">/*
+     * Configure to place the vector table in Flash but to be run from RAM
+     */</span>
+    <span class="ph token punctuation">.</span>vectors <span class="ph token operator">:</span>
+    <span class="ph token punctuation">{</span>
+        <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+        _sfixed <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>
+        <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vectors <span class="ph token punctuation">.</span>vectors<span class="ph token punctuation">.</span><span class="ph token operator">*</span><span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+    <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> ram AT <span class="ph token operator">&gt;</span> rom
+
+    <span class="ph token punctuation">.</span>text <span class="ph token operator">:</span>
+    <span class="ph token punctuation">{</span>
+        <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+        <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+        <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+        <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+        _efixed <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>            <span class="ph token comment">/* End of text section */</span>
+    <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> rom
+
+    <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+    <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+    <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+    _etext <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>
+
+    <span class="ph token comment">/* Locate text/rodata in special data section to be copied to RAM
+       in startup sequence. */</span>
+    <span class="ph token punctuation">.</span>data <span class="ph token operator">:</span>
+    <span class="ph token punctuation">{</span>
+        <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+        __data_start__ <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>
+        _sdata <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>
+        <span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>dinit<span class="ph token punctuation">)</span>
+        <span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>text<span class="ph token punctuation">)</span>
+        <span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>text<span class="ph token punctuation">.</span><span class="ph token operator">*</span><span class="ph token punctuation">)</span>
+        <span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>rodata<span class="ph token punctuation">)</span>
+        <span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>rodata<span class="ph token punctuation">.</span><span class="ph token operator">*</span><span class="ph token punctuation">)</span>
+        <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+        __data_end__ <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>
+        _edata <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>
+    <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> ram AT <span class="ph token operator">&gt;</span> rom
+
+    <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">}</span>
+</code></pre><p class="p"><strong class="ph b">Custom startup file for UART, I2C and CAN Bootloaders</strong></p>
+<ul class="ul"><li class="li"><p class="p">To reduce the size of the binary these bootloaders make use of custom startup file which is generated by MHC</p>
+</li>
+<li class="li"><p class="p">This startup file places only the Reset handler in vector table instead of populating all the device vectors there by reducing the size of final .vector section</p>
+</li>
+<li class="li"><p class="p">This startup file also copies the entire bootloader code placed in <strong class="ph b">.data</strong> section above from flash to RAM as it is built to run from RAM</p>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d28023e491', this);">Copy</button><code id="d28023e491" content="&#xA;/* Declaration of Reset handler (may be custom) */&#xA;void __attribute__((noinline)) Reset_Handler(void);&#xA;&#xA;__attribute__ ((used, section(&#34;.vectors&#34;)))&#xA;void (* const vectors[])(void) =&#xA;{&#xA;  &amp;_ram_end_,&#xA;  Reset_Handler,&#xA;};&#xA;&#xA;...&#xA;...&#xA;&#xA;/* Linker-defined symbols for data initialization. */&#xA;extern uint32_t _sdata, _edata, _etext;&#xA;extern uint32_t _sbss, _ebss;&#xA;&#xA;void __attribute__((noinline, section(&#34;.romfunc.Reset_Handler&#34;))) Reset_Handler(void)&#xA;{&#xA;    uint32_t *pSrc, *pDst;;&#xA;&#xA;    pSrc = (uint32_t *) &amp;_etext; /* flash functions start after .text */&#xA;    pDst = (uint32_t *) &amp;_sdata;  /* boundaries of .data area to init */&#xA;&#xA;    /* Copy code from flash to RAM using .data section */&#xA;    while (pDst &lt; &amp;_edata)&#xA;        *pDst++ = *pSrc++;&#xA;&#xA;    /* Init .bss */&#xA;    pDst = &amp;_sbss;&#xA;    while (pDst &lt; &amp;_ebss)&#xA;      *pDst++ = 0;&#xA;&#xA;....&#xA;....&#xA;}&#xA;">
+<span class="ph token comment">/* Declaration of Reset handler (may be custom) */</span>
+<span class="ph token keyword">void</span> <span class="ph token function">__attribute__</span><span class="ph token punctuation">(</span><span class="ph token punctuation">(</span>noinline<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span> <span class="ph token function">Reset_Handler</span><span class="ph token punctuation">(</span><span class="ph token keyword">void</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+
+__attribute__ <span class="ph token punctuation">(</span><span class="ph token punctuation">(</span>used<span class="ph token punctuation">,</span> <span class="ph token function">section</span><span class="ph token punctuation">(</span><span class="ph token string">".vectors"</span><span class="ph token punctuation">)</span><span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token keyword">void</span> <span class="ph token punctuation">(</span><span class="ph token operator">*</span> <span class="ph token keyword">const</span> vectors<span class="ph token punctuation">[</span><span class="ph token punctuation">]</span><span class="ph token punctuation">)</span><span class="ph token punctuation">(</span><span class="ph token keyword">void</span><span class="ph token punctuation">)</span> <span class="ph token operator">=</span>
+<span class="ph token punctuation">{</span>
+  <span class="ph token operator">&amp;</span>_ram_end_<span class="ph token punctuation">,</span>
+  Reset_Handler<span class="ph token punctuation">,</span>
+<span class="ph token punctuation">}</span><span class="ph token punctuation">;</span>
+
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+<span class="ph token comment">/* Linker-defined symbols for data initialization. */</span>
+<span class="ph token keyword">extern</span> uint32_t _sdata<span class="ph token punctuation">,</span> _edata<span class="ph token punctuation">,</span> _etext<span class="ph token punctuation">;</span>
+<span class="ph token keyword">extern</span> uint32_t _sbss<span class="ph token punctuation">,</span> _ebss<span class="ph token punctuation">;</span>
+
+<span class="ph token keyword">void</span> <span class="ph token function">__attribute__</span><span class="ph token punctuation">(</span><span class="ph token punctuation">(</span>noinline<span class="ph token punctuation">,</span> <span class="ph token function">section</span><span class="ph token punctuation">(</span><span class="ph token string">".romfunc.Reset_Handler"</span><span class="ph token punctuation">)</span><span class="ph token punctuation">)</span><span class="ph token punctuation">)</span> <span class="ph token function">Reset_Handler</span><span class="ph token punctuation">(</span><span class="ph token keyword">void</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">{</span>
+    uint32_t <span class="ph token operator">*</span>pSrc<span class="ph token punctuation">,</span> <span class="ph token operator">*</span>pDst<span class="ph token punctuation">;</span><span class="ph token punctuation">;</span>
+
+    pSrc <span class="ph token operator">=</span> <span class="ph token punctuation">(</span>uint32_t <span class="ph token operator">*</span><span class="ph token punctuation">)</span> <span class="ph token operator">&amp;</span>_etext<span class="ph token punctuation">;</span> <span class="ph token comment">/* flash functions start after .text */</span>
+    pDst <span class="ph token operator">=</span> <span class="ph token punctuation">(</span>uint32_t <span class="ph token operator">*</span><span class="ph token punctuation">)</span> <span class="ph token operator">&amp;</span>_sdata<span class="ph token punctuation">;</span>  <span class="ph token comment">/* boundaries of .data area to init */</span>
+
+    <span class="ph token comment">/* Copy code from flash to RAM using .data section */</span>
+    <span class="ph token keyword">while</span> <span class="ph token punctuation">(</span>pDst <span class="ph token operator">&lt;</span> <span class="ph token operator">&amp;</span>_edata<span class="ph token punctuation">)</span>
+        <span class="ph token operator">*</span>pDst<span class="ph token operator">++</span> <span class="ph token operator">=</span> <span class="ph token operator">*</span>pSrc<span class="ph token operator">++</span><span class="ph token punctuation">;</span>
+
+    <span class="ph token comment">/* Init .bss */</span>
+    pDst <span class="ph token operator">=</span> <span class="ph token operator">&amp;</span>_sbss<span class="ph token punctuation">;</span>
+    <span class="ph token keyword">while</span> <span class="ph token punctuation">(</span>pDst <span class="ph token operator">&lt;</span> <span class="ph token operator">&amp;</span>_ebss<span class="ph token punctuation">)</span>
+      <span class="ph token operator">*</span>pDst<span class="ph token operator">++</span> <span class="ph token operator">=</span> <span class="ph token number">0</span><span class="ph token punctuation">;</span>
+
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">}</span>
+</code></pre><p class="p"><strong class="ph b">MPLAB X Setting for UART, I2C and CAN Bootloaders</strong></p>
+<ul class="ul"><li class="li"><p class="p">Below MPLAB X option is enabled by MHC for these bootloaders to remove the XC32 crt0 startup code</p>
+</li>
+<li class="li"><p class="p">By disabling this crt0 startup code we further reduce the size as it removes the default initialization mechanism code by XC32.</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-283A4BEC-1A61-43DE-8AF2-976F383B1EBE-low.png" alt="arm_bootloader_config_xc32_ld_crt0" /><br /></div>
+<div class="related-links">
+<div class="familylinks">
+<div class="parentlink"><strong>Parent topic:</strong> <a class="link" href="GUID-02519565-B72E-496D-8153-E00F011D9130.html">UART Bootloader Configurations</a></div>
+</div>
+</div></body>
+</html>

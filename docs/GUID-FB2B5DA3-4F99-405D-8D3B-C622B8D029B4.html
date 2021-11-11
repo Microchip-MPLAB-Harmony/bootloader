@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE11" /><meta name="copyright" content="(C) Copyright 2021" />
+<meta name="DC.rights.owner" content="(C) Copyright 2021" />
+<meta name="DC.type" content="topic" />
+<meta name="DC.title" content="Bootloader and Application binary merge script Help" />
+<meta name="DC.relation" scheme="URI" content="GUID-8BE0388C-8563-4ED8-9C17-F3FE7B88FE51.html" />
+<meta name="DC.format" content="XHTML" />
+<meta name="DC.identifier" content="bootloader-and-application-binary-merge-script-help" />
+<link rel="stylesheet" type="text/css" href="stylesheets/atmel.css" />
+<title>Bootloader and Application binary merge script Help</title>
+<meta name="Microsoft.Help.Id" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25-bootloader-and-application-binary-merge-script-help" />
+<meta name="Microsoft.Help.TocParent" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25" />
+<meta name="Microsoft.Help.TocOrder" content="0" />
+<meta name="Microsoft.Help.Locale" content="en-US" />
+<meta name="Microsoft.Help.TopicLocale" content="en-US" />
+<meta name="Microsoft.Help.DisplayVersion" content="MPLAB® Harmony Bootloader Library Reference A 11/2021" />
+<script language="javascript">
+       
+       if (window.parent.location.protocol != 'file:') {
+				document.addEventListener('click', function(e) {
+				    if (e.target) {
+               if (e.target.nodeName == "A" ) {
+                    if (!e.target.target) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                              
+                      var origUrl = window.parent.location.href.substr(0, window.parent.location.href.indexOf("?"));
+                      if (origUrl.length === 0) {
+                          origUrl = window.parent.location.href;
+                      }
+                      var href= e.target.getAttribute("href");
+                      var parts = href.split("#");
+          
+                      var url = "";
+                      if (parts.length == 2 ) {
+                        if (!parts[0].length) {
+                            url = window.parent.location.search.replace('?','')
+                        } else {
+                            url = parts[0].replace('.html','');
+                        }
+                      } else {
+                        url = parts[0].replace('.html','');
+                      }
+
+                      if (parts.length == 2) {
+                          url += "#" + parts[1];
+                      }
+    
+                      window.parent.location.href = origUrl + "?" + url;
+
+                      return false;
+                    }
+               }
+            }
+				});
+			}
+
+		</script><script language="javascript">
+        function cpy(id, button) {
+        
+            var element = document.getElementById(id);
+            var content = element.getAttribute("content");
+            var textArea = document.createElement("textarea");
+            
+            // Place in the top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+            
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            
+            // Avoid flash of the white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+            
+            
+            textArea.value = content;
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+               var successful = document.execCommand('copy');
+               var msg = successful ? 'successful' : 'unsuccessful';
+               if (!button.classList.contains("copied")){
+                  button.textContent = "Copied";
+                  button.classList.add("copied");
+                  setTimeout(function(){
+                    button.textContent = "Copy";
+                    button.classList.remove("copied");
+                  },1000);
+               }
+            } catch (err) {
+              console.log('Oops, unable to copy');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+      </script><script language="javascript">
+          
+          // Add the MathML namespace to html
+          var html = document.getElementsByTagName("html")[0],
+          head = document.getElementsByTagName("head")[0];
+          
+          var mathJax = document.createElement("script");
+          mathJax.src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML";
+          head.appendChild(mathJax);
+          
+          html.setAttribute("xmlns:m","http://www.w3.org/1998/Math/MathML");
+          
+          function inIframe() { try { return window.self !== window.top; } catch (e) { return true; } }
+          
+          if (!inIframe()) { 
+          
+          var Default = "index.html?GUID-FB2B5DA3-4F99-405D-8D3B-C622B8D029B4"; 
+          
+          var displaylocation = "value" + window.location.href;
+          
+          var GUIDS = displaylocation.split('GUID');          
+          
+          if (displaylocation.indexOf('#GUID') != -1) {            
+          var First = GUIDS[1].split('.html');  
+          if (GUIDS[3]){First = GUIDS[2].split('.html');}
+          if (GUIDS[4]){First = GUIDS[3].split('.html');}
+          if (GUIDS[5]){First = GUIDS[4].split('.html');}
+          
+          var Second = GUIDS[2].split('#');   
+          if (GUIDS[3]){Second = GUIDS[3].split('#');}
+          if (GUIDS[4]){Second = GUIDS[4].split('#');}
+          if (GUIDS[5]){Second = GUIDS[5].split('#');}
+          
+          Default = "index.html?" + "GUID" + First[0] + "GUID" + Second[0];     
+          }                    
+          window.top.location = Default;
+          }       
+          
+        </script><style xml:space="">
+        
+          button.copy-code{
+            display:none;
+            padding:0.7em 1.4em;
+            margin:0 0.3em 0.3em 0;
+            border-radius:0.15em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            text-transform:uppercase;
+            font-weight:400;
+            color:#FFFFFF;
+            background-color:#9c9c9c;
+            box-shadow:inset 0 -0.6em 0 -0.35em rgba(0,0,0,0.17);
+            text-align:center;
+            position:relative;
+            border: 0;
+            float: right;
+            border-radius: .5em;
+            cursor: pointer;
+          }
+          button.copy-code:active{
+            top:0.1em;
+          }
+          
+          pre:hover button.copy-code{
+            display: inline-block !important;
+          }
+          button.copy-code.copied {
+            cursor: default !important;
+          }
+          
+          
+          @media all and (max-width:30em){
+            button.copy-code{
+              display:block;
+              margin:0.4em auto;
+            }
+          }
+        
+        
+      </style><link rel="stylesheet" type="text/css" href="stylesheets/common-extended.css" /></head>
+<body id="bootloader-and-application-binary-merge-script-help">
+<h1 class="title topictitle1" id="ariaid-title1">Bootloader and Application binary merge script Help</h1><div class="body"><p class="p"><strong class="ph b">Downloading the host script</strong></p>
+<p class="p">To clone or download these host tools from Github,go to the <a class="xref" href="https://github.com/Microchip-MPLAB-Harmony/bootloader" target="_blank">main page of this repository</a> and then click Clone button to clone this repo or download as zip file. This content can also be download using MCC content manager</p>
+<p class="p">Path of the tool within the repository is <strong class="ph b">tools/btl_app_merge_bin.py</strong></p>
+<p class="p"><strong class="ph b">Setting up the Host PC</strong></p>
+<ul class="ul"><li class="li"><p class="p">The Script is compatible with <strong class="ph b">Python 3.x</strong> and higher</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Description</strong></p>
+<ul class="ul"><li class="li"><p class="p">This script should be used to merge the bootloader binary and application binary</p>
+</li>
+<li class="li"><p class="p">It creates a merged binary output where bootloader is placed from start and the application will be placed at the offset passed as parameter</p>
+</li>
+<li class="li"><p class="p">If the application offset is not equal to end of bootloader offset it fills the gap with 0xFF until the application offset</p>
+</li>
+<li class="li"><p class="p">The merged binary can be used by <strong class="ph b">btl_host.py</strong> as input for Updating bootloader and application together</p>
+</li>
+<li class="li"><p class="p">The merged binary will be created in the directory from where the script was called</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-C68ED607-6359-4088-86DE-000639E03748-low.png" alt="btl_app_merge_bin" /><br /><p class="p"><strong class="ph b">Usage Examples</strong></p>
+<p class="p">Below is the syntax to show help menu for the script</p>
+<pre class="pre codeblock"><button title="Copy Code" class="copy-code" onclick="cpy('d22156e63', this);">Copy</button><code id="d22156e63" content="python &lt;harmony3_path&gt;/bootloader/tools/btl_app_merge_bin.py --help">python &lt;harmony3_path&gt;/bootloader/tools/btl_app_merge_bin.py --help</code></pre><br /><img class="image" src="GUID-2E350EDD-7099-4CE0-9985-F43CB0082F98-low.png" alt="btl_app_merge_bin_help_menu" /><br /><p class="p">Below is the syntax and an example on how to merge a bootloader binary and application binary</p>
+<pre class="pre codeblock"><button title="Copy Code" class="copy-code" onclick="cpy('d22156e71', this);">Copy</button><code id="d22156e71" content="python &lt;harmony3_path&gt;/bootloader/tools/btl_app_merge_bin.py -o &lt;Offset&gt; -b &lt;Bootloader_binary_path&gt; -a &lt;Application_binary_path&gt;">python &lt;harmony3_path&gt;/bootloader/tools/btl_app_merge_bin.py -o &lt;Offset&gt; -b &lt;Bootloader_binary_path&gt; -a &lt;Application_binary_path&gt;</code></pre><pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d22156e73', this);">Copy</button><code id="d22156e73" content="python &lt;harmony3_path&gt;/bootloader/tools/btl_app_merge_bin.py -o 0x2000 -b &lt;harmony3_path&gt;/bootloader_apps_uart/apps/uart_fail_safe_bootloader/bootloader/firmware/sam_e54_xpro.X/dist/sam_e54_xpro/production/sam_e54_xpro.X.production.bin -a &lt;harmony3_path&gt;/bootloader_apps_uart/apps/uart_fail_safe_bootloader/test_app/firmware/sam_e54_xpro.X/dist/sam_e54_xpro/production/sam_e54_xpro.X.production.bin">python <span class="ph token operator">&lt;</span>harmony3_path<span class="ph token operator">&gt;</span><span class="ph token operator">/</span>bootloader<span class="ph token operator">/</span>tools<span class="ph token operator">/</span>btl_app_merge_bin<span class="ph token punctuation">.</span>py <span class="ph token operator">-</span>o <span class="ph token number">0x2000</span> <span class="ph token operator">-</span>b <span class="ph token operator">&lt;</span>harmony3_path<span class="ph token operator">&gt;</span><span class="ph token operator">/</span>bootloader_apps_uart<span class="ph token operator">/</span>apps<span class="ph token operator">/</span>uart_fail_safe_bootloader<span class="ph token operator">/</span>bootloader<span class="ph token operator">/</span>firmware<span class="ph token operator">/</span>sam_e54_xpro<span class="ph token punctuation">.</span>X<span class="ph token operator">/</span>dist<span class="ph token operator">/</span>sam_e54_xpro<span class="ph token operator">/</span>production<span class="ph token operator">/</span>sam_e54_xpro<span class="ph token punctuation">.</span>X<span class="ph token punctuation">.</span>production<span class="ph token punctuation">.</span>bin <span class="ph token operator">-</span>a <span class="ph token operator">&lt;</span>harmony3_path<span class="ph token operator">&gt;</span><span class="ph token operator">/</span>bootloader_apps_uart<span class="ph token operator">/</span>apps<span class="ph token operator">/</span>uart_fail_safe_bootloader<span class="ph token operator">/</span>test_app<span class="ph token operator">/</span>firmware<span class="ph token operator">/</span>sam_e54_xpro<span class="ph token punctuation">.</span>X<span class="ph token operator">/</span>dist<span class="ph token operator">/</span>sam_e54_xpro<span class="ph token operator">/</span>production<span class="ph token operator">/</span>sam_e54_xpro<span class="ph token punctuation">.</span>X<span class="ph token punctuation">.</span>production<span class="ph token punctuation">.</span>bin</code></pre><br /><img class="image" src="GUID-BFF011C1-2308-4178-BF29-A693C7B79ED3-low.png" alt="btl_app_merge_bin_output" /><br /><pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d22156e207', this);">Copy</button><code id="d22156e207" content="python &lt;harmony3_path&gt;/bootloader/tools/btl_host.py -v -s -i COM18 -d same5x -a 0x80000 -f &lt;Path_to_merged_binary&gt;/btl_app_merged.bin">python <span class="ph token operator">&lt;</span>harmony3_path<span class="ph token operator">&gt;</span><span class="ph token operator">/</span>bootloader<span class="ph token operator">/</span>tools<span class="ph token operator">/</span>btl_host<span class="ph token punctuation">.</span>py <span class="ph token operator">-</span>v <span class="ph token operator">-</span>s <span class="ph token operator">-</span>i COM18 <span class="ph token operator">-</span>d same5x <span class="ph token operator">-</span>a <span class="ph token number">0x80000</span> <span class="ph token operator">-</span>f <span class="ph token operator">&lt;</span>Path_to_merged_binary<span class="ph token operator">&gt;</span><span class="ph token operator">/</span>btl_app_merged<span class="ph token punctuation">.</span>bin</code></pre><br /><img class="image" src="GUID-479EE02A-2A47-43C7-ABDB-97615B9F1B5E-low.png" alt="btl_host_swap_bank_output" /><br /></div>
+<div class="related-links">
+<div class="familylinks">
+<div class="parentlink"><strong>Parent topic:</strong> <a class="link" href="GUID-8BE0388C-8563-4ED8-9C17-F3FE7B88FE51.html">UART Bootloader Host Script Help</a></div>
+</div>
+</div></body>
+</html>

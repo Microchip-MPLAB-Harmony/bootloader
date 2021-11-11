@@ -22,8 +22,10 @@
 *****************************************************************************"""
 global btlSizes
 global btl_type
+global btl_helpkeyword
 
 btl_type = "UDP"
+btl_helpkeyword = "mcc_h3_udp_bootloader_configurations"
 
 bootloaderCore = ""
 
@@ -126,6 +128,7 @@ def instantiateComponent(bootloaderComponent):
     generateCommonSymbols(bootloaderComponent)
 
     btlUdpPortNumber = bootloaderComponent.createStringSymbol("BTL_UDP_PORT_NUMBER", None)
+    btlUdpPortNumber.setHelp("mcc_h3_udp_bootloader_configurations")
     btlUdpPortNumber.setLabel("Bootloader UDP Port Number")
     btlUdpPortNumber.setVisible(True)
     btlUdpPortNumber.setDefaultValue("6234")
@@ -217,6 +220,7 @@ def instantiateComponent(bootloaderComponent):
     else:
         # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
         xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
+        xc32LdPreprocessroMacroSym.setHelp("mcc_h3_udp_bootloader_configurations")
         xc32LdPreprocessroMacroSym.setCategory("C32-LD")
         xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
         xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))

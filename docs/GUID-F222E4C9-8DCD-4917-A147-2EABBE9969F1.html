@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE11" /><meta name="copyright" content="(C) Copyright 2021" />
+<meta name="DC.rights.owner" content="(C) Copyright 2021" />
+<meta name="DC.type" content="topic" />
+<meta name="DC.title" content="Bootloader linker configurations for MIPS based MCUs" />
+<meta name="DC.relation" scheme="URI" content="GUID-02519565-B72E-496D-8153-E00F011D9130.html" />
+<meta name="DC.format" content="XHTML" />
+<meta name="DC.identifier" content="bootloader-linker-configurations-for-mips-based-mcus" />
+<link rel="stylesheet" type="text/css" href="stylesheets/atmel.css" />
+<title>Bootloader linker configurations for MIPS based MCUs</title>
+<meta name="Microsoft.Help.Id" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25-bootloader-linker-configurations-for-mips-based-mcus" />
+<meta name="Microsoft.Help.TocParent" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25" />
+<meta name="Microsoft.Help.TocOrder" content="0" />
+<meta name="Microsoft.Help.Locale" content="en-US" />
+<meta name="Microsoft.Help.TopicLocale" content="en-US" />
+<meta name="Microsoft.Help.DisplayVersion" content="MPLAB® Harmony Bootloader Library Reference A 11/2021" />
+<script language="javascript">
+       
+       if (window.parent.location.protocol != 'file:') {
+				document.addEventListener('click', function(e) {
+				    if (e.target) {
+               if (e.target.nodeName == "A" ) {
+                    if (!e.target.target) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                              
+                      var origUrl = window.parent.location.href.substr(0, window.parent.location.href.indexOf("?"));
+                      if (origUrl.length === 0) {
+                          origUrl = window.parent.location.href;
+                      }
+                      var href= e.target.getAttribute("href");
+                      var parts = href.split("#");
+          
+                      var url = "";
+                      if (parts.length == 2 ) {
+                        if (!parts[0].length) {
+                            url = window.parent.location.search.replace('?','')
+                        } else {
+                            url = parts[0].replace('.html','');
+                        }
+                      } else {
+                        url = parts[0].replace('.html','');
+                      }
+
+                      if (parts.length == 2) {
+                          url += "#" + parts[1];
+                      }
+    
+                      window.parent.location.href = origUrl + "?" + url;
+
+                      return false;
+                    }
+               }
+            }
+				});
+			}
+
+		</script><script language="javascript">
+        function cpy(id, button) {
+        
+            var element = document.getElementById(id);
+            var content = element.getAttribute("content");
+            var textArea = document.createElement("textarea");
+            
+            // Place in the top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+            
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            
+            // Avoid flash of the white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+            
+            
+            textArea.value = content;
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+               var successful = document.execCommand('copy');
+               var msg = successful ? 'successful' : 'unsuccessful';
+               if (!button.classList.contains("copied")){
+                  button.textContent = "Copied";
+                  button.classList.add("copied");
+                  setTimeout(function(){
+                    button.textContent = "Copy";
+                    button.classList.remove("copied");
+                  },1000);
+               }
+            } catch (err) {
+              console.log('Oops, unable to copy');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+      </script><script language="javascript">
+          
+          // Add the MathML namespace to html
+          var html = document.getElementsByTagName("html")[0],
+          head = document.getElementsByTagName("head")[0];
+          
+          var mathJax = document.createElement("script");
+          mathJax.src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML";
+          head.appendChild(mathJax);
+          
+          html.setAttribute("xmlns:m","http://www.w3.org/1998/Math/MathML");
+          
+          function inIframe() { try { return window.self !== window.top; } catch (e) { return true; } }
+          
+          if (!inIframe()) { 
+          
+          var Default = "index.html?GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1"; 
+          
+          var displaylocation = "value" + window.location.href;
+          
+          var GUIDS = displaylocation.split('GUID');          
+          
+          if (displaylocation.indexOf('#GUID') != -1) {            
+          var First = GUIDS[1].split('.html');  
+          if (GUIDS[3]){First = GUIDS[2].split('.html');}
+          if (GUIDS[4]){First = GUIDS[3].split('.html');}
+          if (GUIDS[5]){First = GUIDS[4].split('.html');}
+          
+          var Second = GUIDS[2].split('#');   
+          if (GUIDS[3]){Second = GUIDS[3].split('#');}
+          if (GUIDS[4]){Second = GUIDS[4].split('#');}
+          if (GUIDS[5]){Second = GUIDS[5].split('#');}
+          
+          Default = "index.html?" + "GUID" + First[0] + "GUID" + Second[0];     
+          }                    
+          window.top.location = Default;
+          }       
+          
+        </script><style xml:space="">
+        
+          button.copy-code{
+            display:none;
+            padding:0.7em 1.4em;
+            margin:0 0.3em 0.3em 0;
+            border-radius:0.15em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            text-transform:uppercase;
+            font-weight:400;
+            color:#FFFFFF;
+            background-color:#9c9c9c;
+            box-shadow:inset 0 -0.6em 0 -0.35em rgba(0,0,0,0.17);
+            text-align:center;
+            position:relative;
+            border: 0;
+            float: right;
+            border-radius: .5em;
+            cursor: pointer;
+          }
+          button.copy-code:active{
+            top:0.1em;
+          }
+          
+          pre:hover button.copy-code{
+            display: inline-block !important;
+          }
+          button.copy-code.copied {
+            cursor: default !important;
+          }
+          
+          
+          @media all and (max-width:30em){
+            button.copy-code{
+              display:block;
+              margin:0.4em auto;
+            }
+          }
+        
+        
+      </style><link rel="stylesheet" type="text/css" href="stylesheets/common-extended.css" /></head>
+<body id="bootloader-linker-configurations-for-mips-based-mcus">
+<h1 class="title topictitle1" id="ariaid-title1">Bootloader linker configurations for MIPS based MCUs</h1><div class="body"><p class="p"><strong class="ph b">Bootloader placement for various PIC32M product families</strong></p>
+<p class="p">The bootloader is placed in <strong class="ph b">Boot Flash Memory (BFM)</strong> or <strong class="ph b">Program Flash Memory (PFM)</strong> based on the size of the bootloader and available Boot flash memory on the device.</p>
+<ul class="ul"><li class="li"><p class="p">If the bootloader fits into the available BFM, it is placed in BFM. The user application can use the complete area of the program Flash memory.</p>
+</li>
+<li class="li"><p class="p">If the bootloader does not fit into the available BFM, it is placed in PFM. The user application can use the remaining area of the program Flash memory.</p>
+</li>
+<li class="li"><p class="p">The following table shows the available Boot Flash memory and the placement of different bootloaders by product family.</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-9C1A0BED-C9C0-4CA9-9783-484F5FD5C39C-low.png" alt="bootloader_placement" /><br /><p class="p"><strong class="ph b">Bootloader linker script settings</strong></p>
+<ul class="ul"><li class="li"><p class="p">Bootloader library uses a custom linker script which is <strong class="ph b">generated through MHC</strong></p>
+</li>
+<li class="li"><p class="p">The values populated in the linker script are based on the Bootloader component MHC configurations</p>
+</li>
+<li class="li"><p class="p">The vector address of a given interrupt is calculated using Exception Base (EBASE) CPU register and the _ebase_address should be aligned to 4KB boundary</p>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Note: The below sections provides overview of changes done to bootloader linker scripts when compared to default linker script. The address location and size may vary based on the specific device used</strong></p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">For Bootloaders placed in Boot Flash Memory (PIC32MZ and PIC32MK Devices)</strong></p>
+<ul class="ul"><li class="li"><p class="p">The bootloader start address by default will be start of <strong class="ph b">Boot flash memory (0xBFC00000)</strong>. This is the default startup location for all PIC32M devices</p>
+</li>
+<li class="li"><p class="p">The Initial 4KB from Bootloader start address are used by Reset Handler and cache_init section followed by rest of bootloader code.</p>
+</li>
+<li class="li"><p class="p">Length of the bootloader is calculated based on the bootloader being added to MHC</p>
+</li>
+<li class="li"><p class="p">XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs.</p>
+</li>
+<li class="li"><p class="p">If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address.</p>
+<ul class="ul"><li class="li"><p class="p"><strong class="ph b">Example:</strong> When _ebase_address is set to <strong class="ph b">0x9FC01000</strong> and interrupts vectors are not located withing the 4KB boundary from the ebase address <strong class="ph b">(OFFx &gt; 0x1000)</strong>, then the bitwise OR operator may not provide correct interrupt vector address.</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">To provide maximum flexibility in placement of interrupt vectors:</p>
+<ul class="ul"><li class="li"><p class="p">The <strong class="ph b">_ebase_address</strong> is placed at start of Boot flash memory <strong class="ph b">(0x9FC00000)</strong></p>
+</li>
+<li class="li"><p class="p">Offsets of exceptions and vector sections are updated to place them after the device startup code. With this the interrupt handlers can be located anywhere in the Boot Flash memory.</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">Generated linker scripts as explained above is shown here <strong class="ph b">as an example</strong></p>
+<ul class="ul"><li class="li"><p class="p">Bootloader length <strong class="ph b">&lt;bootloader_length&gt;</strong> in the below snippet is auto generated based on the bootloader component added in MHC</p>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Note: Cache related sections are not applicable for PIC32MK Devices</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d10446e118', this);">Copy</button><code id="d10446e118" content="PROVIDE(_vector_spacing = 0x0001);&#xA;PROVIDE(_ebase_address = 0x9FC00000);&#xA;&#xA;/* Place the vector table and other exceptions after the device reset and&#xA; * cache init code.&#xA; */&#xA;PROVIDE(_ebase_vector_offsets = 0x1000);&#xA;&#xA;_RESET_ADDR                    = 0xBFC00000;&#xA;_BEV_EXCPT_ADDR                = 0xBFC00380;&#xA;_DBG_EXCPT_ADDR                = 0xBFC00480;&#xA;_SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + _ebase_vector_offsets + 0;&#xA;_CACHE_ERR_EXCPT_ADDR          = _ebase_address + _ebase_vector_offsets + 0x100;&#xA;_GEN_EXCPT_ADDR                = _ebase_address + _ebase_vector_offsets + 0x180;&#xA;&#xA;kseg0_program_mem  (rx) : ORIGIN = 0x9FC01000, LENGTH = &lt;bootloader_length&gt;&#xA;&#xA;kseg1_boot_mem          : ORIGIN = 0xBFC00000, LENGTH = 0x480&#xA;&#xA;kseg1_boot_mem_4B0      : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0&#xA;...&#xA;config_BFC0FF40             : ORIGIN = 0xBFC0FF40, LENGTH = 0x4&#xA;config_BFC0FF44             : ORIGIN = 0xBFC0FF44, LENGTH = 0x4&#xA;config_BFC0FF48             : ORIGIN = 0xBFC0FF48, LENGTH = 0x4&#xA;...&#xA;...&#xA;&#xA;SECTIONS&#xA;{&#xA;  .config_BFC0FF40 : {&#xA;    KEEP(*(.config_BFC0FF40))&#xA;  } &gt; config_BFC0FF40&#xA;  .config_BFC0FF44 : {&#xA;    KEEP(*(.config_BFC0FF44))&#xA;  } &gt; config_BFC0FF44&#xA;...&#xA;...&#xA;}&#xA;&#xA;/* Boot Sections */&#xA;.reset _RESET_ADDR :&#xA;{&#xA;  KEEP(*(.reset))&#xA;  KEEP(*(.reset.startup))&#xA;} &gt; kseg1_boot_mem&#xA;&#xA;.cache_init :&#xA;{&#xA;  *(.cache_init)&#xA;  *(.cache_init.*)&#xA;} &gt; kseg1_boot_mem_4B0&#xA;...&#xA;&#xA;/* Interrupt vector table with vector offsets */&#xA;.vectors _ebase_address + _ebase_vector_offsets + 0x200 :&#xA;{&#xA;  /*  Symbol __vector_offset_n points to .vector_n if it exists,&#xA;   *  otherwise points to the default handler. The&#xA;   *  vector_offset_init.o module then provides a .data section&#xA;   *  containing values used to initialize the vector-offset SFRs&#xA;   *  in the crt0 startup code.&#xA;   */&#xA;  . = ALIGN(4) ;&#xA;  __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default);&#xA;  KEEP(*(.vector_0))&#xA;  ...&#xA;  ...&#xA;  /* Default interrupt handler */&#xA;  . = ALIGN(4) ;&#xA;  __vector_offset_default = . - _ebase_address;&#xA;  KEEP(*(.vector_default))&#xA;} &gt; kseg0_program_mem&#xA;"><span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">=</span> <span class="ph token number">0x0001</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+<span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_ebase_address <span class="ph token operator">=</span> <span class="ph token number">0x9FC00000</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+
+<span class="ph token comment">/* Place the vector table and other exceptions after the device reset and
+ * cache init code.
+ */</span>
+<span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_ebase_vector_offsets <span class="ph token operator">=</span> <span class="ph token number">0x1000</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+
+_RESET_ADDR                    <span class="ph token operator">=</span> <span class="ph token number">0xBFC00000</span><span class="ph token punctuation">;</span>
+_BEV_EXCPT_ADDR                <span class="ph token operator">=</span> <span class="ph token number">0xBFC00380</span><span class="ph token punctuation">;</span>
+_DBG_EXCPT_ADDR                <span class="ph token operator">=</span> <span class="ph token number">0xBFC00480</span><span class="ph token punctuation">;</span>
+_SIMPLE_TLB_REFILL_EXCPT_ADDR  <span class="ph token operator">=</span> _ebase_address <span class="ph token operator">+</span> _ebase_vector_offsets <span class="ph token operator">+</span> <span class="ph token number">0</span><span class="ph token punctuation">;</span>
+_CACHE_ERR_EXCPT_ADDR          <span class="ph token operator">=</span> _ebase_address <span class="ph token operator">+</span> _ebase_vector_offsets <span class="ph token operator">+</span> <span class="ph token number">0x100</span><span class="ph token punctuation">;</span>
+_GEN_EXCPT_ADDR                <span class="ph token operator">=</span> _ebase_address <span class="ph token operator">+</span> _ebase_vector_offsets <span class="ph token operator">+</span> <span class="ph token number">0x180</span><span class="ph token punctuation">;</span>
+
+kseg0_program_mem  <span class="ph token punctuation">(</span>rx<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0x9FC01000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token operator">&lt;</span>bootloader_length<span class="ph token operator">&gt;</span>
+
+kseg1_boot_mem          <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC00000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x480</span>
+
+kseg1_boot_mem_4B0      <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC004B0</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x1000</span> <span class="ph token operator">-</span> <span class="ph token number">0x4B0</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+config_BFC0FF40             <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC0FF40</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+config_BFC0FF44             <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC0FF44</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+config_BFC0FF48             <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC0FF48</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+SECTIONS
+<span class="ph token punctuation">{</span>
+  <span class="ph token punctuation">.</span>config_BFC0FF40 <span class="ph token operator">:</span> <span class="ph token punctuation">{</span>
+    <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>config_BFC0FF40<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> config_BFC0FF40
+  <span class="ph token punctuation">.</span>config_BFC0FF44 <span class="ph token operator">:</span> <span class="ph token punctuation">{</span>
+    <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>config_BFC0FF44<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> config_BFC0FF44
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">}</span>
+
+<span class="ph token comment">/* Boot Sections */</span>
+<span class="ph token punctuation">.</span>reset _RESET_ADDR <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>reset<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>reset<span class="ph token punctuation">.</span>startup<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg1_boot_mem
+
+<span class="ph token punctuation">.</span>cache_init <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+  <span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>cache_init<span class="ph token punctuation">)</span>
+  <span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>cache_init<span class="ph token punctuation">.</span><span class="ph token operator">*</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg1_boot_mem_4B0
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+<span class="ph token comment">/* Interrupt vector table with vector offsets */</span>
+<span class="ph token punctuation">.</span>vectors _ebase_address <span class="ph token operator">+</span> _ebase_vector_offsets <span class="ph token operator">+</span> <span class="ph token number">0x200</span> <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+  <span class="ph token comment">/*  Symbol __vector_offset_n points to .vector_n if it exists,
+   *  otherwise points to the default handler. The
+   *  vector_offset_init.o module then provides a .data section
+   *  containing values used to initialize the vector-offset SFRs
+   *  in the crt0 startup code.
+   */</span>
+  <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span> <span class="ph token punctuation">;</span>
+  __vector_offset_0 <span class="ph token operator">=</span> <span class="ph token punctuation">(</span><span class="ph token function">DEFINED</span><span class="ph token punctuation">(</span>__vector_dispatch_0<span class="ph token punctuation">)</span> <span class="ph token operator">?</span> <span class="ph token punctuation">(</span><span class="ph token punctuation">.</span> <span class="ph token operator">-</span> _ebase_address<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> __vector_offset_default<span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_0<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+  <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+  <span class="ph token comment">/* Default interrupt handler */</span>
+  <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span> <span class="ph token punctuation">;</span>
+  __vector_offset_default <span class="ph token operator">=</span> <span class="ph token punctuation">.</span> <span class="ph token operator">-</span> _ebase_address<span class="ph token punctuation">;</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_default<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg0_program_mem
+</code></pre><p class="p"><strong class="ph b">For Bootloaders placed in Program Flash Memory (PIC32MK Devices)</strong></p>
+<ul class="ul"><li class="li"><p class="p">The bootloader start address by default will be start of <strong class="ph b">Boot flash memory (0xBFC00000)</strong>. This is the default startup location for all PIC32M devices</p>
+</li>
+<li class="li"><p class="p">As the entire bootloader cannot be placed in BFM, Only the bootloader Reset Handler is placed in BFM. Rest of the bootloader code will be placed from <strong class="ph b">start of Program Flash memory</strong></p>
+</li>
+<li class="li"><p class="p">XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs.</p>
+</li>
+<li class="li"><p class="p">If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address.</p>
+<ul class="ul"><li class="li"><p class="p"><strong class="ph b">Example:</strong> When _ebase_address is set to <strong class="ph b">0x9D001000</strong> and interrupts vectors are not located withing the 4KB boundary from the ebase address <strong class="ph b">(OFFx &gt; 0x1000)</strong>, then the bitwise OR operator may not provide correct interrupt vector address.</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">To provide maximum flexibility in placement of interrupt vectors:</p>
+<ul class="ul"><li class="li"><p class="p">The <strong class="ph b">_ebase_address</strong> is placed at start of Program flash memory <strong class="ph b">(Example : 0x9D000000)</strong> like the default linker script</p>
+</li>
+<li class="li"><p class="p">Offsets of exceptions and vector sections are updated to place them from start of PFM. With this the interrupt handlers can be located anywhere in the bootloader space of PFM</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">Generated linker scripts as explained above is shown here <strong class="ph b">as an example</strong></p>
+<ul class="ul"><li class="li"><p class="p">Bootloader length <strong class="ph b">&lt;bootloader_length&gt;</strong> in the below snippet is auto generated based on the bootloader component added in MHC</p>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d10446e808', this);">Copy</button><code id="d10446e808" content="PROVIDE(_vector_spacing = 0x0001);&#xA;PROVIDE(_ebase_address = 0x9D000000);&#xA;&#xA;/* Place the vector table and other exceptions after the device reset and&#xA; * cache init code.&#xA; */&#xA;PROVIDE(_ebase_vector_offsets = 0x1000);&#xA;&#xA;_RESET_ADDR                    = 0xBFC00000;&#xA;_BEV_EXCPT_ADDR                = 0xBFC00380;&#xA;_DBG_EXCPT_ADDR                = 0xBFC00480;&#xA;_SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + _ebase_vector_offsets + 0;&#xA;_GEN_EXCPT_ADDR                = _ebase_address + _ebase_vector_offsets + 0x180;&#xA;&#xA;kseg0_program_mem  (rx) : ORIGIN = 0x9D000000, LENGTH = &lt;bootloader_length&gt;&#xA;&#xA;kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x480&#xA;kseg1_boot_mem_4B0          : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0&#xA;...&#xA;config_BFC03F40             : ORIGIN = 0xBFC03F40, LENGTH = 0x4&#xA;config_BFC03F44             : ORIGIN = 0xBFC03F44, LENGTH = 0x4&#xA;config_BFC03F48             : ORIGIN = 0xBFC03F48, LENGTH = 0&#xA;&#xA;SECTIONS&#xA;{&#xA;  .config_BFC03F40 : {&#xA;    KEEP(*(.config_BFC03F40))&#xA;  } &gt; config_BFC03F40&#xA;  .config_BFC03F44 : {&#xA;    KEEP(*(.config_BFC03F44))&#xA;  } &gt; config_BFC03F44&#xA;...&#xA;...&#xA;}&#xA;&#xA;/* Boot Sections */&#xA;.reset _RESET_ADDR :&#xA;{&#xA;  KEEP(*(.reset))&#xA;  KEEP(*(.reset.startup))&#xA;} &gt; kseg1_boot_mem&#xA;&#xA;...&#xA;&#xA;/* Interrupt vector table with vector offsets */&#xA;.vectors _ebase_address + _ebase_vector_offsets + 0x200 :&#xA;{&#xA;  /*  Symbol __vector_offset_n points to .vector_n if it exists,&#xA;   *  otherwise points to the default handler. The&#xA;   *  vector_offset_init.o module then provides a .data section&#xA;   *  containing values used to initialize the vector-offset SFRs&#xA;   *  in the crt0 startup code.&#xA;   */&#xA;  . = ALIGN(4) ;&#xA;  __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default);&#xA;  KEEP(*(.vector_0))&#xA;  ...&#xA;  ...&#xA;  /* Default interrupt handler */&#xA;  . = ALIGN(4) ;&#xA;  __vector_offset_default = . - _ebase_address;&#xA;  KEEP(*(.vector_default))&#xA;} &gt; kseg0_program_mem&#xA;"><span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">=</span> <span class="ph token number">0x0001</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+<span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_ebase_address <span class="ph token operator">=</span> <span class="ph token number">0x9D000000</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+
+<span class="ph token comment">/* Place the vector table and other exceptions after the device reset and
+ * cache init code.
+ */</span>
+<span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_ebase_vector_offsets <span class="ph token operator">=</span> <span class="ph token number">0x1000</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+
+_RESET_ADDR                    <span class="ph token operator">=</span> <span class="ph token number">0xBFC00000</span><span class="ph token punctuation">;</span>
+_BEV_EXCPT_ADDR                <span class="ph token operator">=</span> <span class="ph token number">0xBFC00380</span><span class="ph token punctuation">;</span>
+_DBG_EXCPT_ADDR                <span class="ph token operator">=</span> <span class="ph token number">0xBFC00480</span><span class="ph token punctuation">;</span>
+_SIMPLE_TLB_REFILL_EXCPT_ADDR  <span class="ph token operator">=</span> _ebase_address <span class="ph token operator">+</span> _ebase_vector_offsets <span class="ph token operator">+</span> <span class="ph token number">0</span><span class="ph token punctuation">;</span>
+_GEN_EXCPT_ADDR                <span class="ph token operator">=</span> _ebase_address <span class="ph token operator">+</span> _ebase_vector_offsets <span class="ph token operator">+</span> <span class="ph token number">0x180</span><span class="ph token punctuation">;</span>
+
+kseg0_program_mem  <span class="ph token punctuation">(</span>rx<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0x9D000000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token operator">&lt;</span>bootloader_length<span class="ph token operator">&gt;</span>
+
+kseg1_boot_mem              <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC00000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x480</span>
+kseg1_boot_mem_4B0          <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC004B0</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x1000</span> <span class="ph token operator">-</span> <span class="ph token number">0x4B0</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+config_BFC03F40             <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC03F40</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+config_BFC03F44             <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC03F44</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+config_BFC03F48             <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC03F48</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0</span>
+
+SECTIONS
+<span class="ph token punctuation">{</span>
+  <span class="ph token punctuation">.</span>config_BFC03F40 <span class="ph token operator">:</span> <span class="ph token punctuation">{</span>
+    <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>config_BFC03F40<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> config_BFC03F40
+  <span class="ph token punctuation">.</span>config_BFC03F44 <span class="ph token operator">:</span> <span class="ph token punctuation">{</span>
+    <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>config_BFC03F44<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> config_BFC03F44
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">}</span>
+
+<span class="ph token comment">/* Boot Sections */</span>
+<span class="ph token punctuation">.</span>reset _RESET_ADDR <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>reset<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>reset<span class="ph token punctuation">.</span>startup<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg1_boot_mem
+
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+<span class="ph token comment">/* Interrupt vector table with vector offsets */</span>
+<span class="ph token punctuation">.</span>vectors _ebase_address <span class="ph token operator">+</span> _ebase_vector_offsets <span class="ph token operator">+</span> <span class="ph token number">0x200</span> <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+  <span class="ph token comment">/*  Symbol __vector_offset_n points to .vector_n if it exists,
+   *  otherwise points to the default handler. The
+   *  vector_offset_init.o module then provides a .data section
+   *  containing values used to initialize the vector-offset SFRs
+   *  in the crt0 startup code.
+   */</span>
+  <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span> <span class="ph token punctuation">;</span>
+  __vector_offset_0 <span class="ph token operator">=</span> <span class="ph token punctuation">(</span><span class="ph token function">DEFINED</span><span class="ph token punctuation">(</span>__vector_dispatch_0<span class="ph token punctuation">)</span> <span class="ph token operator">?</span> <span class="ph token punctuation">(</span><span class="ph token punctuation">.</span> <span class="ph token operator">-</span> _ebase_address<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> __vector_offset_default<span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_0<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+  <span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+  <span class="ph token comment">/* Default interrupt handler */</span>
+  <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span> <span class="ph token punctuation">;</span>
+  __vector_offset_default <span class="ph token operator">=</span> <span class="ph token punctuation">.</span> <span class="ph token operator">-</span> _ebase_address<span class="ph token punctuation">;</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_default<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg0_program_mem
+</code></pre><p class="p"><strong class="ph b">For Bootloaders placed in Boot Flash Memory (PIC32MX Devices)</strong></p>
+<ul class="ul"><li class="li"><p class="p">The bootloader start address by default will be start of <strong class="ph b">Boot flash memory (0xBFC00000)</strong>. This is the default startup location for all PIC32M devices</p>
+</li>
+<li class="li"><p class="p">The Initial <strong class="ph b">1280 Bytes (0x500)</strong> from Bootloader start address are used by Reset Handler and then followed by rest of bootloader code.</p>
+</li>
+<li class="li"><p class="p">Length of the bootloader is calculated based on the bootloader being added to MHC</p>
+</li>
+<li class="li"><p class="p">In PIC32MX devices the _ebase_address holds the start address of vector table and it must be placed at 4KB boundary after the Reset Handler section</p>
+</li>
+<li class="li"><p class="p">Generated linker scripts as explained above is shown here <strong class="ph b">as an example.</strong></p>
+<ul class="ul"><li class="li"><p class="p">Bootloader length <strong class="ph b">&lt;bootloader_length&gt;</strong> in the below snippet is auto generated based on the bootloader component added in MHC</p>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d10446e1399', this);">Copy</button><code id="d10446e1399" content="PROVIDE(_vector_spacing = 0x0001);&#xA;PROVIDE(_ebase_address = 0x9FC01000);&#xA;&#xA;_RESET_ADDR                    = 0xBFC00000;&#xA;_BEV_EXCPT_ADDR                = 0xBFC00380;&#xA;_DBG_EXCPT_ADDR                = 0xBFC00480;&#xA;_DBG_CODE_ADDR                 = 0xBFC02000;&#xA;_DBG_CODE_SIZE                 = 0xFF0;&#xA;_GEN_EXCPT_ADDR                = _ebase_address + 0x180;&#xA;&#xA;kseg0_program_mem     (rx)  : ORIGIN = 0x9FC00500, LENGTH = &lt;bootloader_length&gt;&#xA;kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x490&#xA;...&#xA;config3                     : ORIGIN = 0xBFC02FF0, LENGTH = 0x4&#xA;config2                     : ORIGIN = 0xBFC02FF4, LENGTH = 0x4&#xA;&#xA;SECTIONS&#xA;{&#xA;  .config_BFC02FF0 : {&#xA;    KEEP(*(.config_BFC02FF0))&#xA;  } &gt; config3&#xA;  .config_BFC02FF4 : {&#xA;    KEEP(*(.config_BFC02FF4))&#xA;  } &gt; config2&#xA;}&#xA;&#xA;/* Boot Sections */&#xA;.reset _RESET_ADDR :&#xA;{&#xA;  KEEP(*(.reset))&#xA;  KEEP(*(.reset.startup))&#xA;} &gt; kseg1_boot_mem&#xA;...&#xA;&#xA;.vector_0 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 0) :&#xA;{&#xA;   KEEP(*(.vector_0))&#xA;} &gt; kseg0_program_mem&#xA;ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &lt;= (_vector_spacing &lt;&lt; 5), &#34;function at exception vector 0 too large&#34;)&#xA;&#xA;.vector_1 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 1) :&#xA;{&#xA;   KEEP(*(.vector_1))&#xA;} &gt; kseg0_program_mem&#xA;ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &lt;= (_vector_spacing &lt;&lt; 5), &#34;function at exception vector 1 too large&#34;)&#xA;...&#xA;...&#xA;"><span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">=</span> <span class="ph token number">0x0001</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+<span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_ebase_address <span class="ph token operator">=</span> <span class="ph token number">0x9FC01000</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+
+_RESET_ADDR                    <span class="ph token operator">=</span> <span class="ph token number">0xBFC00000</span><span class="ph token punctuation">;</span>
+_BEV_EXCPT_ADDR                <span class="ph token operator">=</span> <span class="ph token number">0xBFC00380</span><span class="ph token punctuation">;</span>
+_DBG_EXCPT_ADDR                <span class="ph token operator">=</span> <span class="ph token number">0xBFC00480</span><span class="ph token punctuation">;</span>
+_DBG_CODE_ADDR                 <span class="ph token operator">=</span> <span class="ph token number">0xBFC02000</span><span class="ph token punctuation">;</span>
+_DBG_CODE_SIZE                 <span class="ph token operator">=</span> <span class="ph token number">0xFF0</span><span class="ph token punctuation">;</span>
+_GEN_EXCPT_ADDR                <span class="ph token operator">=</span> _ebase_address <span class="ph token operator">+</span> <span class="ph token number">0x180</span><span class="ph token punctuation">;</span>
+
+kseg0_program_mem     <span class="ph token punctuation">(</span>rx<span class="ph token punctuation">)</span>  <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0x9FC00500</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token operator">&lt;</span>bootloader_length<span class="ph token operator">&gt;</span>
+kseg1_boot_mem              <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC00000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x490</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+config3                     <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC02FF0</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+config2                     <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC02FF4</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+
+SECTIONS
+<span class="ph token punctuation">{</span>
+  <span class="ph token punctuation">.</span>config_BFC02FF0 <span class="ph token operator">:</span> <span class="ph token punctuation">{</span>
+    <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>config_BFC02FF0<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> config3
+  <span class="ph token punctuation">.</span>config_BFC02FF4 <span class="ph token operator">:</span> <span class="ph token punctuation">{</span>
+    <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>config_BFC02FF4<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> config2
+<span class="ph token punctuation">}</span>
+
+<span class="ph token comment">/* Boot Sections */</span>
+<span class="ph token punctuation">.</span>reset _RESET_ADDR <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>reset<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>reset<span class="ph token punctuation">.</span>startup<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg1_boot_mem
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+<span class="ph token punctuation">.</span>vector_0 _ebase_address <span class="ph token operator">+</span> <span class="ph token number">0x200</span> <span class="ph token operator">+</span> <span class="ph token punctuation">(</span><span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">&lt;&lt;</span> <span class="ph token number">5</span><span class="ph token punctuation">)</span> <span class="ph token operator">*</span> <span class="ph token number">0</span><span class="ph token punctuation">)</span> <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+   <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_0<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg0_program_mem
+ASSERT <span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">==</span> <span class="ph token number">0</span> <span class="ph token operator">||</span> <span class="ph token function">SIZEOF</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_0<span class="ph token punctuation">)</span> <span class="ph token operator">&lt;=</span> <span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">&lt;&lt;</span> <span class="ph token number">5</span><span class="ph token punctuation">)</span><span class="ph token punctuation">,</span> <span class="ph token string">"function at exception vector 0 too large"</span><span class="ph token punctuation">)</span>
+
+<span class="ph token punctuation">.</span>vector_1 _ebase_address <span class="ph token operator">+</span> <span class="ph token number">0x200</span> <span class="ph token operator">+</span> <span class="ph token punctuation">(</span><span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">&lt;&lt;</span> <span class="ph token number">5</span><span class="ph token punctuation">)</span> <span class="ph token operator">*</span> <span class="ph token number">1</span><span class="ph token punctuation">)</span> <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+   <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_1<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg0_program_mem
+ASSERT <span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">==</span> <span class="ph token number">0</span> <span class="ph token operator">||</span> <span class="ph token function">SIZEOF</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_1<span class="ph token punctuation">)</span> <span class="ph token operator">&lt;=</span> <span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">&lt;&lt;</span> <span class="ph token number">5</span><span class="ph token punctuation">)</span><span class="ph token punctuation">,</span> <span class="ph token string">"function at exception vector 1 too large"</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+</code></pre><p class="p"><strong class="ph b">For Bootloaders placed in Program Flash Memory (PIC32MX Devices)</strong></p>
+<ul class="ul"><li class="li"><p class="p">The bootloader start address by default will be start of <strong class="ph b">Boot flash memory (0xBFC00000)</strong>. This is the default startup location for all PIC32M devices</p>
+</li>
+<li class="li"><p class="p">As the entire bootloader cannot be placed in BFM, Only the bootloader Reset Handler is placed in BFM. Rest of the bootloader code will be placed from <strong class="ph b">start of Program Flash memory</strong></p>
+</li>
+<li class="li"><p class="p">The <strong class="ph b">_ebase_address</strong> is placed at start of Program flash memory <strong class="ph b">(Example : 0x9D000000)</strong></p>
+</li>
+<li class="li"><p class="p">Generated linker scripts as explained above is shown here <strong class="ph b">as an example.</strong></p>
+<ul class="ul"><li class="li"><p class="p">Bootloader length <strong class="ph b">&lt;bootloader_length&gt;</strong> in the below snippet is auto generated based on the bootloader component added in MHC</p>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d10446e1977', this);">Copy</button><code id="d10446e1977" content="PROVIDE(_vector_spacing = 0x0001);&#xA;PROVIDE(_ebase_address = 0x9D000000);&#xA;&#xA;_RESET_ADDR                    = 0xBFC00000;&#xA;_BEV_EXCPT_ADDR                = 0xBFC00380;&#xA;_DBG_EXCPT_ADDR                = 0xBFC00480;&#xA;_DBG_CODE_ADDR                 = 0x9FC00490;&#xA;_DBG_CODE_SIZE                 = 0x760;&#xA;_GEN_EXCPT_ADDR                = _ebase_address + 0x180;&#xA;&#xA;kseg0_program_mem     (rx)  : ORIGIN = 0x9D000000, LENGTH = &lt;bootloader_length&gt;&#xA;kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x490&#xA;...&#xA;config3                     : ORIGIN = 0xBFC00BF0, LENGTH = 0x4&#xA;config2                     : ORIGIN = 0xBFC00BF4, LENGTH = 0x4&#xA;&#xA;SECTIONS&#xA;{&#xA;  .config_BFC00BF0 : {&#xA;    KEEP(*(.config_BFC00BF0))&#xA;  } &gt; config3&#xA;  .config_BFC00BF4 : {&#xA;    KEEP(*(.config_BFC00BF4))&#xA;  } &gt; config2&#xA;}&#xA;&#xA;/* Boot Sections */&#xA;.reset _RESET_ADDR :&#xA;{&#xA;  KEEP(*(.reset))&#xA;  KEEP(*(.reset.startup))&#xA;} &gt; kseg1_boot_mem&#xA;...&#xA;&#xA;.vector_0 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 0) :&#xA;{&#xA;   KEEP(*(.vector_0))&#xA;} &gt; kseg0_program_mem&#xA;ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &lt;= (_vector_spacing &lt;&lt; 5), &#34;function at exception vector 0 too large&#34;)&#xA;&#xA;.vector_1 _ebase_address + 0x200 + ((_vector_spacing &lt;&lt; 5) * 1) :&#xA;{&#xA;   KEEP(*(.vector_1))&#xA;} &gt; kseg0_program_mem&#xA;ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &lt;= (_vector_spacing &lt;&lt; 5), &#34;function at exception vector 1 too large&#34;)&#xA;...&#xA;...&#xA;"><span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">=</span> <span class="ph token number">0x0001</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+<span class="ph token function">PROVIDE</span><span class="ph token punctuation">(</span>_ebase_address <span class="ph token operator">=</span> <span class="ph token number">0x9D000000</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+
+_RESET_ADDR                    <span class="ph token operator">=</span> <span class="ph token number">0xBFC00000</span><span class="ph token punctuation">;</span>
+_BEV_EXCPT_ADDR                <span class="ph token operator">=</span> <span class="ph token number">0xBFC00380</span><span class="ph token punctuation">;</span>
+_DBG_EXCPT_ADDR                <span class="ph token operator">=</span> <span class="ph token number">0xBFC00480</span><span class="ph token punctuation">;</span>
+_DBG_CODE_ADDR                 <span class="ph token operator">=</span> <span class="ph token number">0x9FC00490</span><span class="ph token punctuation">;</span>
+_DBG_CODE_SIZE                 <span class="ph token operator">=</span> <span class="ph token number">0x760</span><span class="ph token punctuation">;</span>
+_GEN_EXCPT_ADDR                <span class="ph token operator">=</span> _ebase_address <span class="ph token operator">+</span> <span class="ph token number">0x180</span><span class="ph token punctuation">;</span>
+
+kseg0_program_mem     <span class="ph token punctuation">(</span>rx<span class="ph token punctuation">)</span>  <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0x9D000000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token operator">&lt;</span>bootloader_length<span class="ph token operator">&gt;</span>
+kseg1_boot_mem              <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC00000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x490</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+config3                     <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC00BF0</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+config2                     <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0xBFC00BF4</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x4</span>
+
+SECTIONS
+<span class="ph token punctuation">{</span>
+  <span class="ph token punctuation">.</span>config_BFC00BF0 <span class="ph token operator">:</span> <span class="ph token punctuation">{</span>
+    <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>config_BFC00BF0<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> config3
+  <span class="ph token punctuation">.</span>config_BFC00BF4 <span class="ph token operator">:</span> <span class="ph token punctuation">{</span>
+    <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>config_BFC00BF4<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> config2
+<span class="ph token punctuation">}</span>
+
+<span class="ph token comment">/* Boot Sections */</span>
+<span class="ph token punctuation">.</span>reset _RESET_ADDR <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>reset<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+  <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>reset<span class="ph token punctuation">.</span>startup<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg1_boot_mem
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+<span class="ph token punctuation">.</span>vector_0 _ebase_address <span class="ph token operator">+</span> <span class="ph token number">0x200</span> <span class="ph token operator">+</span> <span class="ph token punctuation">(</span><span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">&lt;&lt;</span> <span class="ph token number">5</span><span class="ph token punctuation">)</span> <span class="ph token operator">*</span> <span class="ph token number">0</span><span class="ph token punctuation">)</span> <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+   <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_0<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg0_program_mem
+ASSERT <span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">==</span> <span class="ph token number">0</span> <span class="ph token operator">||</span> <span class="ph token function">SIZEOF</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_0<span class="ph token punctuation">)</span> <span class="ph token operator">&lt;=</span> <span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">&lt;&lt;</span> <span class="ph token number">5</span><span class="ph token punctuation">)</span><span class="ph token punctuation">,</span> <span class="ph token string">"function at exception vector 0 too large"</span><span class="ph token punctuation">)</span>
+
+<span class="ph token punctuation">.</span>vector_1 _ebase_address <span class="ph token operator">+</span> <span class="ph token number">0x200</span> <span class="ph token operator">+</span> <span class="ph token punctuation">(</span><span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">&lt;&lt;</span> <span class="ph token number">5</span><span class="ph token punctuation">)</span> <span class="ph token operator">*</span> <span class="ph token number">1</span><span class="ph token punctuation">)</span> <span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+   <span class="ph token function">KEEP</span><span class="ph token punctuation">(</span><span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_1<span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> kseg0_program_mem
+ASSERT <span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">==</span> <span class="ph token number">0</span> <span class="ph token operator">||</span> <span class="ph token function">SIZEOF</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>vector_1<span class="ph token punctuation">)</span> <span class="ph token operator">&lt;=</span> <span class="ph token punctuation">(</span>_vector_spacing <span class="ph token operator">&lt;&lt;</span> <span class="ph token number">5</span><span class="ph token punctuation">)</span><span class="ph token punctuation">,</span> <span class="ph token string">"function at exception vector 1 too large"</span><span class="ph token punctuation">)</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+</code></pre><p class="p"><strong class="ph b">Using Both Boot Flash Panels on PIC32MZ device</strong></p>
+<ul class="ul"><li class="li"><p class="p">For PIC32MZ devices, with two 80 KB Boot Flash panels, bootloader may or may not fit entirely in one Boot Flash panel.</p>
+</li>
+<li class="li"><p class="p">In order to fit some of the Bootloaders, the linker script makes the two Boot Flash panels look like one contiguous Boot Flash memory. Unimplemented areas are blocked using a fill command to the linker</p>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d10446e2530', this);">Copy</button><code id="d10446e2530" content="kseg0_program_mem     (rx)  : ORIGIN = 0x9FC01000, LENGTH = 0x2FF00 - 0x1000&#xA;&#xA;/* Bootloader needs to be placed in both the Boot Flash Panels (lower and upper boot alias).&#xA;   Below region is used to fill 0xFF in reserved space between these two panles.&#xA;*/&#xA;protected_reg               : ORIGIN = 0x9FC14000, LENGTH = 0x20000-0x14000&#xA;&#xA;...&#xA;...&#xA;&#xA;SECTIONS&#xA;{&#xA;  .fill1 :&#xA;  {&#xA;    FILL(0xFF);&#xA;    . = ORIGIN(protected_reg) + LENGTH(protected_reg) - 1;&#xA;    BYTE(0xFF)&#xA;  } &gt; protected_reg&#xA;}&#xA;">kseg0_program_mem     <span class="ph token punctuation">(</span>rx<span class="ph token punctuation">)</span>  <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0x9FC01000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x2FF00</span> <span class="ph token operator">-</span> <span class="ph token number">0x1000</span>
+
+<span class="ph token comment">/* Bootloader needs to be placed in both the Boot Flash Panels (lower and upper boot alias).
+   Below region is used to fill 0xFF in reserved space between these two panles.
+*/</span>
+protected_reg               <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0x9FC14000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token number">0x20000</span><span class="ph token operator">-</span><span class="ph token number">0x14000</span>
+
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+SECTIONS
+<span class="ph token punctuation">{</span>
+  <span class="ph token punctuation">.</span>fill1 <span class="ph token operator">:</span>
+  <span class="ph token punctuation">{</span>
+    <span class="ph token function">FILL</span><span class="ph token punctuation">(</span><span class="ph token number">0xFF</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+    <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ORIGIN</span><span class="ph token punctuation">(</span>protected_reg<span class="ph token punctuation">)</span> <span class="ph token operator">+</span> <span class="ph token function">LENGTH</span><span class="ph token punctuation">(</span>protected_reg<span class="ph token punctuation">)</span> <span class="ph token operator">-</span> <span class="ph token number">1</span><span class="ph token punctuation">;</span>
+    <span class="ph token function">BYTE</span><span class="ph token punctuation">(</span><span class="ph token number">0xFF</span><span class="ph token punctuation">)</span>
+  <span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> protected_reg
+<span class="ph token punctuation">}</span>
+</code></pre><p class="p"><strong class="ph b">Note</strong></p>
+<ul class="ul"><li class="li"><p class="p">Device configuration bits should be updated by bootloader only</p>
+</li>
+<li class="li"><p class="p">The bootloader linker script is generated using generic templates for the device family. Generated linker script should be modified if there any changes or modifications to the specific device being used.</p>
+</li>
+</ul>
+</div>
+<div class="related-links">
+<div class="familylinks">
+<div class="parentlink"><strong>Parent topic:</strong> <a class="link" href="GUID-02519565-B72E-496D-8153-E00F011D9130.html">UART Bootloader Configurations</a></div>
+</div>
+</div></body>
+</html>

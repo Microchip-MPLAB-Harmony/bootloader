@@ -22,6 +22,9 @@
 *****************************************************************************"""
 global btlSizes
 global btl_type
+global btl_helpkeyword
+
+btl_helpkeyword = "mcc_h3_fs_bootloader"
 
 # Do not Change Order
 mediaList = ["SDCARD", "SERIAL_MEMORY", "USB_HOST_MSD"]
@@ -165,6 +168,7 @@ def instantiateComponent(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
 
     btlMediaType = bootloaderComponent.createKeyValueSetSymbol("MEDIA_TYPE", None)
+    btlMediaType.setHelp("mcc_h3_fs_bootloader")
     btlMediaType.setLabel("Bootloader Media Type")
     btlMediaType.addKey(mediaList[0], "0", "SDCARD")
     btlMediaType.addKey(mediaList[1], "1", "Serial Memory")
@@ -180,6 +184,7 @@ def instantiateComponent(bootloaderComponent):
     generateCommonSymbols(bootloaderComponent)
 
     btlAppImagePath = bootloaderComponent.createStringSymbol("APP_IMAGE_PATH", None)
+    btlAppImagePath.setHelp("mcc_h3_fs_bootloader")
     btlAppImagePath.setLabel("Application Binary Image Path")
     btlAppImagePath.setVisible(True)
     btlAppImagePath.setDefaultValue("image.bin")

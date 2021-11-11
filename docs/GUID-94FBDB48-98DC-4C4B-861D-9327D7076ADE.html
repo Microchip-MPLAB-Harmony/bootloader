@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE11" /><meta name="copyright" content="(C) Copyright 2021" />
+<meta name="DC.rights.owner" content="(C) Copyright 2021" />
+<meta name="DC.type" content="topic" />
+<meta name="DC.title" content="CAN Bootloader Configurations" />
+<meta name="DC.relation" scheme="URI" content="GUID-67381576-E9AA-4E3C-BE36-D32966B8E034.html" />
+<meta name="DC.relation" scheme="URI" content="-X3.html" />
+<meta name="DC.relation" scheme="URI" content="-X3.html" />
+<meta name="DC.format" content="XHTML" />
+<meta name="DC.identifier" content="can-bootloader-configurations" />
+<link rel="stylesheet" type="text/css" href="stylesheets/atmel.css" />
+<title>CAN Bootloader Configurations</title>
+<meta name="Microsoft.Help.Id" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25-can-bootloader-configurations" />
+<meta name="Microsoft.Help.TocParent" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25" />
+<meta name="Microsoft.Help.TocOrder" content="0" />
+<meta name="Microsoft.Help.Locale" content="en-US" />
+<meta name="Microsoft.Help.TopicLocale" content="en-US" />
+<meta name="Microsoft.Help.DisplayVersion" content="MPLAB® Harmony Bootloader Library Reference A 11/2021" />
+<script language="javascript">
+       
+       if (window.parent.location.protocol != 'file:') {
+				document.addEventListener('click', function(e) {
+				    if (e.target) {
+               if (e.target.nodeName == "A" ) {
+                    if (!e.target.target) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                              
+                      var origUrl = window.parent.location.href.substr(0, window.parent.location.href.indexOf("?"));
+                      if (origUrl.length === 0) {
+                          origUrl = window.parent.location.href;
+                      }
+                      var href= e.target.getAttribute("href");
+                      var parts = href.split("#");
+          
+                      var url = "";
+                      if (parts.length == 2 ) {
+                        if (!parts[0].length) {
+                            url = window.parent.location.search.replace('?','')
+                        } else {
+                            url = parts[0].replace('.html','');
+                        }
+                      } else {
+                        url = parts[0].replace('.html','');
+                      }
+
+                      if (parts.length == 2) {
+                          url += "#" + parts[1];
+                      }
+    
+                      window.parent.location.href = origUrl + "?" + url;
+
+                      return false;
+                    }
+               }
+            }
+				});
+			}
+
+		</script><script language="javascript">
+        function cpy(id, button) {
+        
+            var element = document.getElementById(id);
+            var content = element.getAttribute("content");
+            var textArea = document.createElement("textarea");
+            
+            // Place in the top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+            
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            
+            // Avoid flash of the white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+            
+            
+            textArea.value = content;
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+               var successful = document.execCommand('copy');
+               var msg = successful ? 'successful' : 'unsuccessful';
+               if (!button.classList.contains("copied")){
+                  button.textContent = "Copied";
+                  button.classList.add("copied");
+                  setTimeout(function(){
+                    button.textContent = "Copy";
+                    button.classList.remove("copied");
+                  },1000);
+               }
+            } catch (err) {
+              console.log('Oops, unable to copy');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+      </script><script language="javascript">
+          
+          // Add the MathML namespace to html
+          var html = document.getElementsByTagName("html")[0],
+          head = document.getElementsByTagName("head")[0];
+          
+          var mathJax = document.createElement("script");
+          mathJax.src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML";
+          head.appendChild(mathJax);
+          
+          html.setAttribute("xmlns:m","http://www.w3.org/1998/Math/MathML");
+          
+          function inIframe() { try { return window.self !== window.top; } catch (e) { return true; } }
+          
+          if (!inIframe()) { 
+          
+          var Default = "index.html?GUID-94FBDB48-98DC-4C4B-861D-9327D7076ADE"; 
+          
+          var displaylocation = "value" + window.location.href;
+          
+          var GUIDS = displaylocation.split('GUID');          
+          
+          if (displaylocation.indexOf('#GUID') != -1) {            
+          var First = GUIDS[1].split('.html');  
+          if (GUIDS[3]){First = GUIDS[2].split('.html');}
+          if (GUIDS[4]){First = GUIDS[3].split('.html');}
+          if (GUIDS[5]){First = GUIDS[4].split('.html');}
+          
+          var Second = GUIDS[2].split('#');   
+          if (GUIDS[3]){Second = GUIDS[3].split('#');}
+          if (GUIDS[4]){Second = GUIDS[4].split('#');}
+          if (GUIDS[5]){Second = GUIDS[5].split('#');}
+          
+          Default = "index.html?" + "GUID" + First[0] + "GUID" + Second[0];     
+          }                    
+          window.top.location = Default;
+          }       
+          
+        </script><style xml:space="">
+        
+          button.copy-code{
+            display:none;
+            padding:0.7em 1.4em;
+            margin:0 0.3em 0.3em 0;
+            border-radius:0.15em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            text-transform:uppercase;
+            font-weight:400;
+            color:#FFFFFF;
+            background-color:#9c9c9c;
+            box-shadow:inset 0 -0.6em 0 -0.35em rgba(0,0,0,0.17);
+            text-align:center;
+            position:relative;
+            border: 0;
+            float: right;
+            border-radius: .5em;
+            cursor: pointer;
+          }
+          button.copy-code:active{
+            top:0.1em;
+          }
+          
+          pre:hover button.copy-code{
+            display: inline-block !important;
+          }
+          button.copy-code.copied {
+            cursor: default !important;
+          }
+          
+          
+          @media all and (max-width:30em){
+            button.copy-code{
+              display:block;
+              margin:0.4em auto;
+            }
+          }
+        
+        
+      </style><link rel="stylesheet" type="text/css" href="stylesheets/common-extended.css" /></head>
+<body id="can-bootloader-configurations">
+<h1 class="title topictitle1" id="ariaid-title1">CAN Bootloader Configurations</h1><div class="body"><p class="p"><strong class="ph b">Bootloader Specific User Configurations</strong></p>
+<p class="p">For devices with Dual Bank support and No Data Cache</p>
+<br /><img class="image" src="GUID-6912F985-3559-47C1-A5B2-2E767D8EAB88-low.png" alt="can_bootloader_mhc_config_sam" /><br /><p class="p">For devices with No Dual Bank support and Data Cache</p>
+<br /><img class="image" src="GUID-6AFCD28C-2F76-4ED9-BA1A-4CD7C27037C2-low.png" alt="can_bootloader_mhc_config_sam_with_cache" /><br /><ul class="ul"><li class="li"><p class="p"><strong class="ph b">Bootloader Peripheral Used:</strong></p>
+<ul class="ul"><li class="li"><p class="p">Specifies the communication peripheral used by bootloader to receive the application</p>
+</li>
+<li class="li"><p class="p">The name of the peripheral will vary from device to device</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Bootloader NVM Memory Used:</strong></p>
+<ul class="ul"><li class="li"><p class="p">Specifies the memory peripheral used by bootloader to perform flash operations</p>
+</li>
+<li class="li"><p class="p">The name of the peripheral will vary from device to device</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Bootloader Size (Bytes):</strong></p>
+<ul class="ul"><li class="li"><p class="p">Specifies the maximum size of flash required by the bootloader</p>
+</li>
+<li class="li"><p class="p">This size is calculated based on Bootloader type and Memory used</p>
+</li>
+<li class="li"><p class="p">This size will vary from device to device and should always be aligned to device erase unit size</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Enable Bootloader Trigger From Firmware:</strong></p>
+<ul class="ul"><li class="li"><p class="p">This Option can be used to Force Trigger bootloader from application firmware after a soft reset. It does so by reserving the specified number of bytes in SRAM from the start of the RAM. The reserved memory is updated by the application with a pre-defined pattern. The bootloader firmware in the <a class="xref" href="can_bootloader_library_interface.html#bootloader_trigger">bootloader_Trigger()</a> routine, can check the reserved memory for the pre-defined pattern and enter bootloader mode if the pattern matches.</p>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Number Of Bytes To Reserve From Start Of RAM:</strong></p>
+<ul class="ul"><li class="li"><p class="p">This option adds the provided offset to RAM Start address in bootloader linker script.</p>
+</li>
+<li class="li"><p class="p">Application firmware can store some pattern in the reserved bytes region from RAM start for bootloader to check at reset in <a class="xref" href="can_bootloader_library_interface.html#bootloader_trigger">bootloader_Trigger()</a> function</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Use Dual Bank For Safe Flash Update:</strong></p>
+<ul class="ul"><li class="li"><p class="p">Used to configure bootloader to use Dual banks of device to upload the application</p>
+</li>
+<li class="li"><p class="p">This option is visible only for devices supporting Dual flash banks</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p"><strong class="ph b">Select MPU Region to configure non-cacheable memory:</strong></p>
+<ul class="ul"><li class="li"><p class="p">Used to select the MPU region for which he SRAM has been configured as non-cahceable space</p>
+</li>
+<li class="li"><p class="p">Configure the region selected above in MPU settings of MHC as shown in <a class="xref" href="#bootloader-mpu-configurations">Bootloader MPU Configurations</a></p>
+</li>
+<li class="li"><p class="p">A seperate section will be created for this region in the custom linker script generated for bootloader</p>
+</li>
+<li class="li"><p class="p">This option is visible only for devices which have Data cache.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Bootloader MPU Configurations</strong></p>
+<ul class="ul"><li class="li"><p class="p">Open MPU settings from MHC-&gt;Tools option. Select <strong class="ph b">Enable MPU</strong></p>
+</li>
+<li class="li"><p class="p">Configure the region selected in Bootloader component as <strong class="ph b">ram_nocache</strong> with other parameters as shown</p>
+</li>
+</ul>
+<p class="p"><img class="image" src="GUID-F40391B9-8E37-483D-BC10-F4FC861E9112-low.png" alt="can_bootloader_mhc_config_mpu" /><br />&gt;</p>
+<p class="p">Bootloader Linker code for ram_nochache</p>
+<ul class="ul"><li class="li"><p class="p">For CAN bootloader below <strong class="ph b">xxx_message_ram</strong> section will be added to the custom linker file generated</p>
+<ul class="ul"><li class="li"><p class="p"><strong class="ph b">Note: xxx should be replaced with the CAN PLIB being used.</strong></p>
+</li>
+<li class="li"><p class="p">Example: <strong class="ph b">MCAN1</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d29750e158', this);">Copy</button><code id="d29750e158" content="MEMORY&#xA;{&#xA;  rom (rx) : ORIGIN = ROM_START, LENGTH = ROM_SIZE&#xA;  ram (rwx) : ORIGIN = RAM_START, LENGTH = RAM_SIZE&#xA;&#xA;  /* The address mentioned here should match with address mentioned in MPU settings */&#xA;  ram_nocache (RWX) : ORIGIN = 0x2045f000, LENGTH = (1 &lt;&lt; (11 + 1))&#xA;&#xA;}&#xA;&#xA;...&#xA;...&#xA;&#xA;.mcan1_message_ram (NOLOAD):&#xA;{&#xA;    . = ALIGN(4);&#xA;    _s_mcan1_message_ram = .;&#xA;    *(.mcan1_message_ram)&#xA;    . = ALIGN(4);&#xA;    _e_mcan1_message_ram = .;&#xA;} &gt; ram_nocache&#xA;&#xA;...&#xA;">MEMORY
+<span class="ph token punctuation">{</span>
+  rom <span class="ph token punctuation">(</span>rx<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> ROM_START<span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> ROM_SIZE
+  ram <span class="ph token punctuation">(</span>rwx<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> RAM_START<span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> RAM_SIZE
+
+  <span class="ph token comment">/* The address mentioned here should match with address mentioned in MPU settings */</span>
+  ram_nocache <span class="ph token punctuation">(</span>RWX<span class="ph token punctuation">)</span> <span class="ph token operator">:</span> ORIGIN <span class="ph token operator">=</span> <span class="ph token number">0x2045f000</span><span class="ph token punctuation">,</span> LENGTH <span class="ph token operator">=</span> <span class="ph token punctuation">(</span><span class="ph token number">1</span> <span class="ph token operator">&lt;&lt;</span> <span class="ph token punctuation">(</span><span class="ph token number">11</span> <span class="ph token operator">+</span> <span class="ph token number">1</span><span class="ph token punctuation">)</span><span class="ph token punctuation">)</span>
+
+<span class="ph token punctuation">}</span>
+
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+
+<span class="ph token punctuation">.</span>mcan1_message_ram <span class="ph token punctuation">(</span>NOLOAD<span class="ph token punctuation">)</span><span class="ph token operator">:</span>
+<span class="ph token punctuation">{</span>
+    <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+    _s_mcan1_message_ram <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>
+    <span class="ph token operator">*</span><span class="ph token punctuation">(</span><span class="ph token punctuation">.</span>mcan1_message_ram<span class="ph token punctuation">)</span>
+    <span class="ph token punctuation">.</span> <span class="ph token operator">=</span> <span class="ph token function">ALIGN</span><span class="ph token punctuation">(</span><span class="ph token number">4</span><span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+    _e_mcan1_message_ram <span class="ph token operator">=</span> <span class="ph token punctuation">.</span><span class="ph token punctuation">;</span>
+<span class="ph token punctuation">}</span> <span class="ph token operator">&gt;</span> ram_nocache
+
+<span class="ph token punctuation">.</span><span class="ph token punctuation">.</span><span class="ph token punctuation">.</span>
+</code></pre><ul class="ul"><li class="li"><p class="p">CAN Bootloader will use this section to to allocate <strong class="ph b">MCAN Message RAM configuration in contiguous non-cacheable buffer</strong></p>
+</li>
+</ul>
+<pre class="pre codeblock language-c"><button title="Copy Code" class="copy-code" onclick="cpy('d29750e365', this);">Copy</button><code id="d29750e365" content="static uint8_t CACHE_ALIGN __attribute__((space(data), section (&#34;.mcan1_message_ram&#34;))) mcan1MessageRAM[MCAN1_MESSAGE_RAM_CONFIG_SIZE];&#xA;&#xA;/* Set MCAN1 Message RAM Configuration */&#xA;MCAN1_MessageRAMConfigSet(mcan1MessageRAM);&#xA;"><span class="ph token keyword">static</span> uint8_t CACHE_ALIGN <span class="ph token function">__attribute__</span><span class="ph token punctuation">(</span><span class="ph token punctuation">(</span><span class="ph token function">space</span><span class="ph token punctuation">(</span>data<span class="ph token punctuation">)</span><span class="ph token punctuation">,</span> section <span class="ph token punctuation">(</span><span class="ph token string">".mcan1_message_ram"</span><span class="ph token punctuation">)</span><span class="ph token punctuation">)</span><span class="ph token punctuation">)</span> mcan1MessageRAM<span class="ph token punctuation">[</span>MCAN1_MESSAGE_RAM_CONFIG_SIZE<span class="ph token punctuation">]</span><span class="ph token punctuation">;</span>
+
+<span class="ph token comment">/* Set MCAN1 Message RAM Configuration */</span>
+<span class="ph token function">MCAN1_MessageRAMConfigSet</span><span class="ph token punctuation">(</span>mcan1MessageRAM<span class="ph token punctuation">)</span><span class="ph token punctuation">;</span>
+</code></pre><p class="p"><strong class="ph b">Bootloader System Configurations</strong></p>
+<br /><img class="image" src="GUID-ADE6D8EB-49F2-492E-9D4C-0A708A7F465E-low.png" alt="can_bootloader_mhc_config_system" /><br /><ul class="ul"><li class="li"><p class="p"><strong class="ph b">Application Start Address (Hex):</strong></p>
+<ul class="ul"><li class="li"><p class="p">Start address of the application which will programmed by bootloader</p>
+</li>
+<li class="li"><p class="p">This value is filled by bootloader when its loaded which is equal to the bootloader size. It can be modified as per user need</p>
+</li>
+<li class="li"><p class="p">This value will be used by bootloader to Jump to application at device reset</p>
+</li>
+</ul>
+</li>
+</ul>
+<p class="p">Note</p>
+<ul class="ul"><li class="li"><p class="p">For optimizing the code Bootloader component disables generation of default interrupt and exception files as shown below</p>
+</li>
+<li class="li"><p class="p">Enabling these interrupts explicitly may still not work as bootloader uses custom startup file which has its own Interrupt table populating only the reset handler</p>
+</li>
+</ul>
+<br /><img class="image" src="GUID-919378C4-9EB9-4787-8B62-EF658B808E3A-low.png" alt="/can_bootloader_mhc_config_interrupt_disable" /><br /></div>
+<div class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink"><strong><a href="-X3.html">Bootloader linker configurations for CORTEX-M based MCUs</a></strong><br />
+</li>
+<li class="link ulchildlink"><strong><a href="-X3.html">Bootloader Sizing And Considerations</a></strong><br />
+</li>
+</ul>
+
+<div class="familylinks">
+<div class="parentlink"><strong>Parent topic:</strong> <a class="link" href="GUID-67381576-E9AA-4E3C-BE36-D32966B8E034.html">CAN Bootloader</a></div>
+</div>
+</div></body>
+</html>

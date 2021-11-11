@@ -24,8 +24,10 @@ import re
 
 global btlSizes
 global btl_type
+global btl_helpkeyword
 
 btl_type = "CAN"
+btl_helpkeyword = "mcc_h3_can_bootloader_configurations"
 
 # Maximum Size for Bootloader [BYTES]
 bootloaderCore = "bootloader_arm.py"
@@ -75,15 +77,18 @@ def instantiateComponent(bootloaderComponent):
     setupCoreComponentSymbols()
 
     btlPeriphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
+    btlPeriphUsed.setHelp("mcc_h3_can_bootloader_configurations")
     btlPeriphUsed.setLabel("Bootloader Peripheral Used")
     btlPeriphUsed.setReadOnly(True)
     btlPeriphUsed.setDefaultValue("")
 
     btlPeriphName = bootloaderComponent.createStringSymbol("PERIPH_NAME", None)
+    btlPeriphName.setHelp("mcc_h3_can_bootloader_configurations")
     btlPeriphName.setDefaultValue("")
     btlPeriphName.setVisible(False)
 
     btlCan = bootloaderComponent.createBooleanSymbol("BTL_CAN_PRESENT", None)
+    btlCan.setHelp("mcc_h3_can_bootloader_configurations")
     btlCan.setDefaultValue(True)
     btlCan.setVisible(False)
 
@@ -97,22 +102,26 @@ def instantiateComponent(bootloaderComponent):
         btlDualBankEnable = False
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
+    btlDualBank.setHelp("mcc_h3_can_bootloader_configurations")
     btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")
     btlDualBank.setVisible(btlDualBankEnable)
 
     btlDualBankComment = bootloaderComponent.createCommentSymbol("BTL_DUAL_BANK_COMMENT", None)
+    btlDualBankComment.setHelp("mcc_h3_can_bootloader_configurations")
     btlDualBankComment.setLabel("!!! WARNING Only Half of the Flash memory will be available for Application !!!")
     btlDualBankComment.setVisible(False)
     btlDualBankComment.setDependencies(setBtlSymbolVisible, ["BTL_DUAL_BANK"])
 
     if Database.getSymbolValue("core", "CoreArchitecture") != "CORTEX-M0PLUS":
         btlMpuRegionNumber= bootloaderComponent.createComboSymbol("BTL_MPU_REGION_NUMBER", None, list(map(str, list(range(0, Database.getSymbolValue("core", "MPU_NUMBER_REGIONS"))))))
+        btlMpuRegionNumber.setHelp("mcc_h3_can_bootloader_configurations")
         btlMpuRegionNumber.setLabel("Select MPU Region to configure non-cachable memory")
         btlMpuRegionNumber.setDefaultValue("0")
         btlMpuRegionNumber.setVisible(Database.getSymbolValue("core", "DATA_CACHE_ENABLE"))
         btlMpuRegionNumber.setDependencies(setBtlSymbolVisible, ["core.DATA_CACHE_ENABLE"])
 
         btlMpuRegionComment = bootloaderComponent.createCommentSymbol("BTL_MPU_REGION_COMMENT", None)
+        btlMpuRegionComment.setHelp("mcc_h3_can_bootloader_configurations")
         btlMpuRegionComment.setLabel("!!! Configure minimum of 512 bytes region size for non-cacheble memory in MPU Configuration !!!")
         btlMpuRegionComment.setVisible(Database.getSymbolValue("core", "DATA_CACHE_ENABLE"))
         btlMpuRegionComment.setDependencies(setBtlSymbolVisible, ["core.DATA_CACHE_ENABLE"])

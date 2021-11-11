@@ -109,6 +109,7 @@ def setBtlLiveUpdateSize(symbol, event):
 
 def setupLiveUpdateSymbols(bootloaderComponent):
     global flash_size
+    global btl_helpkeyword
 
     configName = Variables.get("__CONFIGURATION_NAME")
 
@@ -128,18 +129,21 @@ def setupLiveUpdateSymbols(bootloaderComponent):
             btlLiveUpdateEnable = True
 
     btlLiveUpdate = bootloaderComponent.createBooleanSymbol("BTL_LIVE_UPDATE", None)
+    btlLiveUpdate.setHelp(btl_helpkeyword)
     btlLiveUpdate.setLabel("Use Dual Bank For Live Update")
     btlLiveUpdate.setVisible(btlLiveUpdateEnable)
 
     length = str((flash_size / 2))
 
     btlLiveUpdateSize = bootloaderComponent.createStringSymbol("BTL_LIVE_UPDATE_SIZE", btlLiveUpdate)
+    btlLiveUpdateSize.setHelp(btl_helpkeyword)
     btlLiveUpdateSize.setLabel("Live Update Flash Bank Size (Bytes)")
     btlLiveUpdateSize.setVisible(btlLiveUpdate.getValue())
     btlLiveUpdateSize.setDefaultValue(length)
     btlLiveUpdateSize.setDependencies(setBtlLiveUpdateSize, ["BTL_LIVE_UPDATE"])
 
     btlLiveUpdateReset = bootloaderComponent.createBooleanSymbol("BTL_LIVE_UPDATE_RESET", btlLiveUpdate)
+    btlLiveUpdateReset.setHelp(btl_helpkeyword)
     btlLiveUpdateReset.setLabel("Trigger Reset After Live Update")
     btlLiveUpdateReset.setVisible(btlLiveUpdate.getValue())
     btlLiveUpdateReset.setDependencies(setBtlLiveUpdateReset, ["BTL_LIVE_UPDATE"])

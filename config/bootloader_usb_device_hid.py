@@ -22,8 +22,10 @@
 *****************************************************************************"""
 global btlSizes
 global btl_type
+global btl_helpkeyword
 
 btl_type = "USB_DEVICE_HID"
+btl_helpkeyword = "mcc_h3_usb_bootloader_configurations"
 
 bootloaderCore = ""
 
@@ -104,6 +106,7 @@ def instantiateComponent(bootloaderComponent):
     setupCoreComponentSymbols()
 
     btlUsbDeviceIndex = bootloaderComponent.createIntegerSymbol("USB_DEVICE_INDEX", None)
+    btlUsbDeviceIndex.setHelp("mcc_h3_usb_bootloader_configurations")
     btlUsbDeviceIndex.setLabel("Bootloader USB Device Index")
     btlUsbDeviceIndex.setReadOnly(True)
     btlUsbDeviceIndex.setVisible(False)
@@ -197,6 +200,7 @@ def instantiateComponent(bootloaderComponent):
     else:
         # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
         xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
+        xc32LdPreprocessroMacroSym.setHelp("mcc_h3_usb_bootloader_configurations")
         xc32LdPreprocessroMacroSym.setCategory("C32-LD")
         xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
         xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))

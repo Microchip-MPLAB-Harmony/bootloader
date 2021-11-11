@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE11" /><meta name="copyright" content="(C) Copyright 2021" />
+<meta name="DC.rights.owner" content="(C) Copyright 2021" />
+<meta name="DC.type" content="topic" />
+<meta name="DC.title" content="UART Bootloader Protocol" />
+<meta name="DC.relation" scheme="URI" content="GUID-03E67D01-3442-4A5E-A1D7-8C5EF776D876.html" />
+<meta name="DC.format" content="XHTML" />
+<meta name="DC.identifier" content="uart-bootloader-protocol" />
+<link rel="stylesheet" type="text/css" href="stylesheets/atmel.css" />
+<title>UART Bootloader Protocol</title>
+<meta name="Microsoft.Help.Id" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25-uart-bootloader-protocol" />
+<meta name="Microsoft.Help.TocParent" content="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25" />
+<meta name="Microsoft.Help.TocOrder" content="0" />
+<meta name="Microsoft.Help.Locale" content="en-US" />
+<meta name="Microsoft.Help.TopicLocale" content="en-US" />
+<meta name="Microsoft.Help.DisplayVersion" content="MPLAB® Harmony Bootloader Library Reference A 11/2021" />
+<script language="javascript">
+       
+       if (window.parent.location.protocol != 'file:') {
+				document.addEventListener('click', function(e) {
+				    if (e.target) {
+               if (e.target.nodeName == "A" ) {
+                    if (!e.target.target) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                              
+                      var origUrl = window.parent.location.href.substr(0, window.parent.location.href.indexOf("?"));
+                      if (origUrl.length === 0) {
+                          origUrl = window.parent.location.href;
+                      }
+                      var href= e.target.getAttribute("href");
+                      var parts = href.split("#");
+          
+                      var url = "";
+                      if (parts.length == 2 ) {
+                        if (!parts[0].length) {
+                            url = window.parent.location.search.replace('?','')
+                        } else {
+                            url = parts[0].replace('.html','');
+                        }
+                      } else {
+                        url = parts[0].replace('.html','');
+                      }
+
+                      if (parts.length == 2) {
+                          url += "#" + parts[1];
+                      }
+    
+                      window.parent.location.href = origUrl + "?" + url;
+
+                      return false;
+                    }
+               }
+            }
+				});
+			}
+
+		</script><script language="javascript">
+        function cpy(id, button) {
+        
+            var element = document.getElementById(id);
+            var content = element.getAttribute("content");
+            var textArea = document.createElement("textarea");
+            
+            // Place in the top-left corner of screen regardless of scroll position.
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            
+            // Ensure it has a small width and height. Setting to 1px / 1em
+            // doesn't work as this gives a negative w/h on some browsers.
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            
+            // We don't need padding, reducing the size if it does flash render.
+            textArea.style.padding = 0;
+            
+            // Clean up any borders.
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            
+            // Avoid flash of the white box if rendered for any reason.
+            textArea.style.background = 'transparent';
+            
+            
+            textArea.value = content;
+            
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+               var successful = document.execCommand('copy');
+               var msg = successful ? 'successful' : 'unsuccessful';
+               if (!button.classList.contains("copied")){
+                  button.textContent = "Copied";
+                  button.classList.add("copied");
+                  setTimeout(function(){
+                    button.textContent = "Copy";
+                    button.classList.remove("copied");
+                  },1000);
+               }
+            } catch (err) {
+              console.log('Oops, unable to copy');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+      </script><script language="javascript">
+          
+          // Add the MathML namespace to html
+          var html = document.getElementsByTagName("html")[0],
+          head = document.getElementsByTagName("head")[0];
+          
+          var mathJax = document.createElement("script");
+          mathJax.src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML";
+          head.appendChild(mathJax);
+          
+          html.setAttribute("xmlns:m","http://www.w3.org/1998/Math/MathML");
+          
+          function inIframe() { try { return window.self !== window.top; } catch (e) { return true; } }
+          
+          if (!inIframe()) { 
+          
+          var Default = "index.html?GUID-8828D474-F227-4FE0-88EE-135AA591750F"; 
+          
+          var displaylocation = "value" + window.location.href;
+          
+          var GUIDS = displaylocation.split('GUID');          
+          
+          if (displaylocation.indexOf('#GUID') != -1) {            
+          var First = GUIDS[1].split('.html');  
+          if (GUIDS[3]){First = GUIDS[2].split('.html');}
+          if (GUIDS[4]){First = GUIDS[3].split('.html');}
+          if (GUIDS[5]){First = GUIDS[4].split('.html');}
+          
+          var Second = GUIDS[2].split('#');   
+          if (GUIDS[3]){Second = GUIDS[3].split('#');}
+          if (GUIDS[4]){Second = GUIDS[4].split('#');}
+          if (GUIDS[5]){Second = GUIDS[5].split('#');}
+          
+          Default = "index.html?" + "GUID" + First[0] + "GUID" + Second[0];     
+          }                    
+          window.top.location = Default;
+          }       
+          
+        </script><style xml:space="">
+        
+          button.copy-code{
+            display:none;
+            padding:0.7em 1.4em;
+            margin:0 0.3em 0.3em 0;
+            border-radius:0.15em;
+            box-sizing: border-box;
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            text-transform:uppercase;
+            font-weight:400;
+            color:#FFFFFF;
+            background-color:#9c9c9c;
+            box-shadow:inset 0 -0.6em 0 -0.35em rgba(0,0,0,0.17);
+            text-align:center;
+            position:relative;
+            border: 0;
+            float: right;
+            border-radius: .5em;
+            cursor: pointer;
+          }
+          button.copy-code:active{
+            top:0.1em;
+          }
+          
+          pre:hover button.copy-code{
+            display: inline-block !important;
+          }
+          button.copy-code.copied {
+            cursor: default !important;
+          }
+          
+          
+          @media all and (max-width:30em){
+            button.copy-code{
+              display:block;
+              margin:0.4em auto;
+            }
+          }
+        
+        
+      </style><link rel="stylesheet" type="text/css" href="stylesheets/common-extended.css" /></head>
+<body id="uart-bootloader-protocol">
+<h1 class="title topictitle1" id="ariaid-title1">UART Bootloader Protocol</h1><div class="body"><p class="p"><strong class="ph b">Request Packet</strong></p>
+<p class="p">The uart bootloader protocol as shown in below figure is common for all the supported commands.</p>
+<br /><img class="image" src="GUID-7266FD41-AE07-436A-BADB-444BBF7B45D5-low.png" alt="uart_bootloader_protocol" /><br /><p class="p"><strong class="ph b">GUARD</strong></p>
+<ul class="ul"><li class="li"><p class="p">The Guard value must be a constant value of <strong class="ph b">0x5048434D</strong></p>
+</li>
+<li class="li"><p class="p">This value provides protection against spurious commands</p>
+</li>
+<li class="li"><p class="p">Bootloader always checks for the Guard value at start of packet reception and proceeds further accordingly</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Data Size</strong></p>
+<ul class="ul"><li class="li"><p class="p">This field indicates the number of data bytes to be received</p>
+</li>
+<li class="li"><p class="p">This value varies for different commands</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Command</strong></p>
+<ul class="ul"><li class="li"><p class="p">Indicates the command to be processed. Each command is of 1 Byte width</p>
+</li>
+<li class="li"><p class="p">Below are the supported commands</p>
+</li>
+</ul>
+
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" class="table" frame="border" border="1" rules="all"><col style="width:" /><col style="width:" /><col style="width:" /><thead class="thead" style="text-align:left;"><tr class="row"><th class="entry cellrowborder" style="vertical-align:middle;" id="d1404e60"><span>Command Type</span></th>
+<th class="entry cellrowborder" style="vertical-align:middle;" id="d1404e62"><span>Command Code</span></th>
+<th class="entry cellrowborder" style="vertical-align:middle;" id="d1404e64"><span>Description</span></th>
+</tr>
+</thead>
+<tbody class="tbody"><tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e60 "><span>Unlock</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e62 "><span>0xA0</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e64 "><span>Used to calculate application start address and end address</span></td>
+</tr>
+<tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e60 "><span>Data</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e62 "><span>0xA1</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e64 "><span>Used to send the image data</span></td>
+</tr>
+<tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e60 "><span>Verify</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e62 "><span>0xA2</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e64 "><span>Used to verify the image data sent and programmed</span></td>
+</tr>
+<tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e60 "><span>Reset</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e62 "><span>0xA3</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e64 "><span>Used to trigger a reset to run the application</span></td>
+</tr>
+<tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e60 "><span>Bank Swap and reset</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e62 "><span>0xA4</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e64 "><span>Used to Swap the bank and trigger a reset to run the application</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p"><strong class="ph b">Data</strong></p>
+<ul class="ul"><li class="li"><p class="p">Contains the actual Data to be processed based on the command</p>
+</li>
+<li class="li"><p class="p">Length of the data to be received is indicated by Data Size field</p>
+</li>
+<li class="li"><p class="p">Bootloader receives data in size of words</p>
+</li>
+<li class="li"><p class="p">All data words must be sent in a little-endian (LSB first) format</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Response Codes</strong></p>
+<p class="p">Bootloader will send a <strong class="ph b">single character response code</strong> in response to each command. Sequential commands can only be sent after the response code is received for a previous command, or after 100 ms timeout without a response.</p>
+
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" class="table" frame="border" border="1" rules="all"><col style="width:" /><col style="width:" /><col style="width:" /><thead class="thead" style="text-align:left;"><tr class="row"><th class="entry cellrowborder" style="vertical-align:middle;" id="d1404e134"><span>Response Type</span></th>
+<th class="entry cellrowborder" style="vertical-align:middle;" id="d1404e136"><span>Response Code</span></th>
+<th class="entry cellrowborder" style="vertical-align:middle;" id="d1404e138"><span>Description</span></th>
+</tr>
+</thead>
+<tbody class="tbody"><tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e134 "><span>OK</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e136 "><span>0x50</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e138 "><span>Command was received and processed successfully</span></td>
+</tr>
+<tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e134 "><span>Error</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e136 "><span>0x51</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e138 "><span>There were errors during the processing of the command</span></td>
+</tr>
+<tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e134 "><span>Invalid</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e136 "><span>0x52</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e138 "><span>Invalid command is received</span></td>
+</tr>
+<tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e134 "><span>CRC OK</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e136 "><span>0x53</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e138 "><span>CRC verification was successful</span></td>
+</tr>
+<tr class="row"><td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e134 "><span>CRC Fail</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e136 "><span>0x54</span></td>
+<td class="entry cellrowborder" style="vertical-align:middle;" headers="d1404e138 "><span>CRC verification failed</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="p"><strong class="ph b">Command Description</strong></p>
+<p class="p"><strong class="ph b">Unlock Command</strong></p>
+<p class="p">The Unlock Command sequence is as shown in below figure with corresponding responses.</p>
+<br /><img class="image" src="GUID-C2FEC2CA-1731-4AFB-BAD8-0F820539A255-low.png" alt="uart_bootloader_unlock_command" /><br /><ul class="ul"><li class="li"><p class="p">Unlock command must be issued before the first Data command</p>
+<ul class="ul"><li class="li"><p class="p">It is used to calculate application start address and end address</p>
+</li>
+<li class="li"><p class="p">This information will be used to validate if the addresses sent are within the range of flash memory</p>
+</li>
+<li class="li"><p class="p">It will also be used to validate the address coming with data packet to be programmed are within the region for which the unlock command is invoked</p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">Number of bytes of data to be received is 8 Bytes (Start Address + Image Size)</p>
+</li>
+<li class="li"><p class="p">Start Address</p>
+<ul class="ul"><li class="li"><p class="p">It is the application Start Address of the flash memory</p>
+</li>
+<li class="li"><p class="p">It is device dependent and should be always greater than or equal to the bootloader end address</p>
+</li>
+<li class="li"><p class="p">It must be aligned at an Erase Unit Size boundary, which is also device dependent</p>
+</li>
+<li class="li"><p class="p">To upgrade the bootloader itself this value must be set to 0 <strong class="ph b">(For CORTEX-M based MCUs)</strong></p>
+</li>
+</ul>
+</li>
+<li class="li"><p class="p">Image size must be in increments of Erase Unit bytes which is also device dependent</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Data Command</strong></p>
+<p class="p">The Data Command sequence is as shown in below figure with corresponding responses.</p>
+<br /><img class="image" src="GUID-02F3DAAE-8109-47C3-9E28-70BAF6BA2962-low.png" alt="uart_bootloader_data_command" /><br /><ul class="ul"><li class="li"><p class="p">Data command is used to send the image data</p>
+</li>
+<li class="li"><p class="p">Data size is equal to sum of block start address (4 Bytes) and Erase Unit Size which is device dependent</p>
+</li>
+<li class="li"><p class="p">Block start address must be located inside the region previously unlocked via the Unlock command</p>
+</li>
+<li class="li"><p class="p">Attempts to request the write outside of the unlocked region will result in error and supplied data will be discarded</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Verify Command</strong></p>
+<p class="p">The Verify Command sequence is as shown in below figure with corresponding responses.</p>
+<br /><img class="image" src="GUID-567927C9-C2B6-48C3-BE43-4B31526C64D7-low.png" alt="uart_bootloader_verify_command" /><br /><ul class="ul"><li class="li"><p class="p">Verify command is used to verify the image data sent and programmed</p>
+</li>
+<li class="li"><p class="p">Image CRC is a standard IEEE CRC32 with a polynomial of <strong class="ph b">0xEDB88320</strong></p>
+</li>
+<li class="li"><p class="p">Internal CRC is calculated based on the values actually read from the Flash memory after programming, so it verifies the whole chain.</p>
+</li>
+<li class="li"><p class="p">Image CRC is calculated over the previously unlocked region.</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Reset Command</strong></p>
+<p class="p">The Reset Command sequence is as shown in below figure with corresponding responses.</p>
+<br /><img class="image" src="GUID-A0630509-4A91-406F-958C-6F5607CCBBB2-low.png" alt="uart_bootloader_reset_command" /><br /><ul class="ul"><li class="li"><p class="p">Reset command is used to exit the bootloader and run the application</p>
+</li>
+<li class="li"><p class="p">It is necessary if the host has no control over the reset pin. It can also be useful even if host has control over the Reset</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Bank Swap and Reset Command</strong></p>
+<p class="p">The Bank Swap and Reset Command sequence is as shown in below figure with corresponding responses</p>
+<br /><img class="image" src="GUID-2AEE60F4-7C42-4DA1-9952-2B71A28160D0-low.png" alt="uart_bootloader_BankSwap_Reset_command" /><br /><ul class="ul"><li class="li"><p class="p">This command is enabled only when <strong class="ph b">Fail safe update</strong> feature is selected for bootloader and the device has support for Dual Bank update</p>
+</li>
+<li class="li"><p class="p">Bank Swap and Reset command is used to <strong class="ph b">Swap the inactive bank to active bank</strong> and trigger a reset to exit the bootloader and run the new application programmed in the inactive bank</p>
+</li>
+</ul>
+<p class="p"><strong class="ph b">Note:</strong></p>
+<p class="p">As this bootloader supports simultaneous Flash memory write and reception of the next block of data, The next block of data may be transmitted as soon as the status code is returned for the first one.</p>
+<p class="p">Because of this behavior, the status code for the last block will be sent before this block is written into the Flash memory. To ensure that this block is written, host must send another command and wait for the response. So either Verify or Reset command must be sent after the last block of data.</p>
+</div>
+<div class="related-links">
+<div class="familylinks">
+<div class="parentlink"><strong>Parent topic:</strong> <a class="link" href="GUID-03E67D01-3442-4A5E-A1D7-8C5EF776D876.html">How the UART Bootloader library works</a></div>
+</div>
+</div></body>
+</html>
