@@ -74,16 +74,23 @@
     <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
     <#lt>uint32_t bootloader_CRCGenerate(uint32_t start_addr, uint32_t size)
     <#lt>{
-    <#lt>    uint32_t crc  = 0;
+    <#lt>    uint32_t crc  = 0xffffffff;
+    <#lt>    uint32_t i;
 
     <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
 
-    <#lt>    DSU_CRCCalculate (
-    <#lt>       start_addr,
-    <#lt>       size,
-    <#lt>       0xffffffff,
-    <#lt>       &crc
-    <#lt>   );
+    <#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
+    <#lt>    {
+    <#lt>       DSU_CRCCalculate (
+    <#lt>           start_addr + i,
+    <#lt>           ERASE_BLOCK_SIZE,
+    <#lt>           crc,
+    <#lt>           &crc
+    <#lt>       );
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+    <#lt>       kickdog();
+</#if>
+    <#lt>   }
 
     <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
 
@@ -189,4 +196,14 @@ bool __WEAK bootloader_Trigger(void)
     /* Function can be overriden with custom implementation */
     return false;
 }
+
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+void kickdog(void)
+{
+    if (WDT_IsEnabled())
+    {
+        WDT_Clear();
+    }
+}
+</#if>
 

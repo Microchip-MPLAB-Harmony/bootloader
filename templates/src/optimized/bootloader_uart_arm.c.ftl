@@ -85,6 +85,7 @@ enum
 <#if BTL_DUAL_BANK == true>
     BL_CMD_BKSWAP_RESET = 0xa4,
 </#if>
+    BL_CMD_DEVCFG_DATA  = 0xa5,
 };
 
 enum
@@ -102,6 +103,8 @@ enum
 // *****************************************************************************
 // *****************************************************************************
 
+static uint8_t btl_guard[4] = {0x4D, 0x43, 0x48, 0x50};
+
 static uint32_t input_buffer[WORDS(OFFSET_SIZE + DATA_SIZE)];
 
 static uint32_t flash_data[WORDS(DATA_SIZE)];
@@ -109,6 +112,7 @@ static uint32_t flash_addr          = 0;
 
 static uint32_t unlock_begin        = 0;
 static uint32_t unlock_end          = 0;
+static uint32_t data_size           = 0;
 
 static uint8_t  input_command       = 0;
 
@@ -146,13 +150,22 @@ static void input_task(void)
     if (SYSTICK_TimerPeriodHasExpired())
     {
         header_received = false;
+        ptr = 0;
     }
 
     if (header_received == false)
     {
         byte_buf[ptr++] = input_data;
 
-        if (ptr == HEADER_SIZE)
+        // Check for each guard byte and discard if mismatch
+        if (ptr <= GUARD_SIZE)
+        {
+            if (input_data != btl_guard[ptr-1])
+            {
+                ptr = 0;
+            }
+        }
+        else if (ptr == HEADER_SIZE)
         {
             if (input_buffer[GUARD_OFFSET] != BTL_GUARD)
             {
@@ -177,6 +190,7 @@ static void input_task(void)
 
         if (ptr == size)
         {
+            data_size = size;
             ptr = 0;
             size = 0;
             packet_received = true;
@@ -211,6 +225,27 @@ static void command_task(void)
             ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
         }
     }
+<#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+    else if ((BL_CMD_DATA == input_command) || (BL_CMD_DEVCFG_DATA == input_command))
+    {
+        flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
+
+        if (((BL_CMD_DATA == input_command) && (unlock_begin <= flash_addr && flash_addr < unlock_end)) ||
+            ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= ${MEM_USED}_USERROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))))
+        {
+            for (i = 0; i < WORDS(DATA_SIZE); i++)
+                flash_data[i] = input_buffer[i + DATA_OFFSET];
+
+            flash_data_ready = true;
+
+            ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+        }
+        else
+        {
+            ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
+        }
+    }
+<#else>
     else if (BL_CMD_DATA == input_command)
     {
         flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
@@ -229,6 +264,7 @@ static void command_task(void)
             ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
         }
     }
+</#if>
     else if (BL_CMD_VERIFY == input_command)
     {
         uint32_t crc        = input_buffer[CRC_OFFSET];
@@ -271,28 +307,54 @@ static void command_task(void)
 static void flash_task(void)
 {
     uint32_t addr       = flash_addr;
-    uint32_t page       = 0;
+    uint32_t bytes_written   = 0;
     uint32_t write_idx  = 0;
+
+    // data_size = Actual data bytes to write + Address 4 Bytes
+    uint32_t bytes_to_write = (data_size - 4);
+
+    bool (*flash_erase_fptr)(uint32_t) = ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME};
+    bool (*flash_write_fptr)(uint32_t*, uint32_t) = ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME};
 
     // Lock region size is always bigger than the row size
     ${MEM_USED}_RegionUnlock(addr);
 
     while(${MEM_USED}_IsBusy() == true)
+    {
         input_task();
+    }
+
+<#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+    if (!(flash_addr >= unlock_begin && flash_addr < unlock_end))
+    {
+        flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].DEVCFG_ERASE_API_NAME};
+        flash_write_fptr =  ${.vars["${MEM_USED?lower_case}"].DEVCFG_WRITE_API_NAME};
+    }
+</#if>
 
     /* Erase the Current sector */
-    ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(addr);
+    flash_erase_fptr(addr);
 
     /* Receive Next Bytes while waiting for erase to complete */
     while(${MEM_USED}_IsBusy() == true)
-        input_task();
-
-    for (page = 0; page < PAGES_IN_ERASE_BLOCK; page++)
     {
-        ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}(&flash_data[write_idx], addr);
+        input_task();
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        kickdog();
+</#if>
+    }
+
+    for (bytes_written = 0; bytes_written < bytes_to_write; bytes_written += PAGE_SIZE)
+    {
+        flash_write_fptr(&flash_data[write_idx], addr);
 
         while(${MEM_USED}_IsBusy() == true)
+        {
             input_task();
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+            kickdog();
+</#if>
+        }
 
         addr += PAGE_SIZE;
         write_idx += WORDS(PAGE_SIZE);
@@ -311,6 +373,10 @@ void bootloader_${BTL_TYPE}_Tasks(void)
 {
     while (1)
     {
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        kickdog();
+</#if>
+
         input_task();
 
         if (flash_data_ready)

@@ -60,11 +60,26 @@
 #define ERASE_BLOCK_SIZE                        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
 #define PAGES_IN_ERASE_BLOCK                    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
+<#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+#define NVM_USER_ROW_START                      (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS}UL)
+#define NVM_USER_ROW_SIZE                       (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_SIZE}UL)
+</#if>
+
 #define BOOTLOADER_SIZE                         ${BTL_SIZE}
 <#if __PROCESSOR?matches("PIC32M.*") == false>
 #define APP_START_ADDRESS                       (0x${core.APP_START_ADDRESS}UL)
 <#else>
 #define APP_START_ADDRESS                       (PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
+</#if>
+
+<#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
+    <#if core.CoreArchitecture == "MIPS">
+        <#lt>#define BTL_TRIGGER_RAM_START   				KVA0_TO_KVA1(${BTL_RAM_START})
+    <#else>
+        <#lt>#define BTL_TRIGGER_RAM_START   				${BTL_RAM_START}
+    </#if>
+
+    <#lt>#define BTL_TRIGGER_LEN         ${BTL_TRIGGER_LEN}
 </#if>
 
 <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
@@ -248,5 +263,9 @@ Example:
     </code>
 */
 void bootloader_TriggerReset(void);
+
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+void kickdog(void);
+</#if>
 
 #endif      //BOOTLOADER_COMMON_H

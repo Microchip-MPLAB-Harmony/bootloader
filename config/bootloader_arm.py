@@ -218,6 +218,12 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
 
+    btlWdogEnable = bootloaderComponent.createBooleanSymbol("BTL_WDOG_ENABLE", None)
+    btlWdogEnable.setLabel("Enable Watchdog")
+    btlWdogEnable.setDefaultValue(False)
+    btlWdogEnable.setReadOnly(True)
+    btlWdogEnable.setVisible(False)
+
 def generateHwCRCGeneratorSymbol(bootloaderComponent):
     global btl_helpkeyword
     crcEnable = False
