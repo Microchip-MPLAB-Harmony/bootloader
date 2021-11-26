@@ -63,6 +63,8 @@ def handleMessage(messageID, args):
     if (messageID == "REQUEST_CONFIG_PARAMS"):
         if args.get("localComponentID") != None:
             result_dict = Database.sendMessage(args["localComponentID"], "SPI_SLAVE_MODE", {"isEnabled":True, "isReadOnly":True})
+            #result_dict = Database.sendMessage(args["localComponentID"], "SPI_SLAVE_RX_BUFFER_SIZE", {"size":300})
+            #result_dict = Database.sendMessage(args["localComponentID"], "SPI_SLAVE_TX_BUFFER_SIZE", {"size":32})
 
     return result_dict
 

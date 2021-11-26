@@ -126,14 +126,26 @@ SECTIONS
      * enabled via the -mitcm option, but only when this .vectors output
      * section exists in the linker script.
      */
+<#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
     .vectors :
     {
-        . = ALIGN(4);
-        _sfixed = .;
         KEEP(*(.vectors .vectors.*))
+    <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
+        . = ALIGN(256);
+    </#if>
+        _sfixed = .;
+        . = . + SIZEOF(.vectors);
     } > ram AT > rom
 
     _vectors_loadaddr = LOADADDR(.vectors);
+<#else>
+    .vectors :
+    {
+        . = ALIGN(4);
+        KEEP(*(.vectors .vectors.*))
+        _sfixed = .;
+    } > ram AT > rom
+</#if>
 
     .text :
     {

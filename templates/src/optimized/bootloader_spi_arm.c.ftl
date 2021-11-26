@@ -235,7 +235,7 @@ static void BL_SPI_CommandParser(void)
         case BL_COMMAND_READ_STATUS:
 
             ${PERIPH_USED}_Write(&spiBLData.status, 1);
-            spiBLData.status = 0;
+            CLR_BIT(spiBLData.status, BL_STATUS_BIT_ALL);
             break;
 
         default:
@@ -346,6 +346,7 @@ static void BL_SPI_EventHandler(uintptr_t context )
 void bootloader_${BTL_TYPE}_Tasks(void)
 {
     spiBLData.flashState = BL_FLASH_STATE_IDLE;
+	spiBLData.status = 0x80;
 
     ${PERIPH_USED}_CallbackRegister(BL_SPI_EventHandler, (uintptr_t) 0);
 
