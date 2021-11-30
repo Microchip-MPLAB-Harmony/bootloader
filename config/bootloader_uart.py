@@ -104,6 +104,8 @@ def instantiateComponent(bootloaderComponent):
 
     generateCommonSymbols(bootloaderComponent)
 
+    generateFuseProgrammingAndWDTSymbols(bootloaderComponent)
+
     generateHwCRCGeneratorSymbol(bootloaderComponent)
 
     btlDualBankEnable = False

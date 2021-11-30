@@ -225,7 +225,7 @@ static void command_task(void)
             ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
         }
     }
-<#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
     else if ((BL_CMD_DATA == input_command) || (BL_CMD_DEVCFG_DATA == input_command))
     {
         flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
@@ -234,7 +234,9 @@ static void command_task(void)
             ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= ${MEM_USED}_USERROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))))
         {
             for (i = 0; i < WORDS(DATA_SIZE); i++)
+            {
                 flash_data[i] = input_buffer[i + DATA_OFFSET];
+            }
 
             flash_data_ready = true;
 
@@ -253,7 +255,9 @@ static void command_task(void)
         if (unlock_begin <= flash_addr && flash_addr < unlock_end)
         {
             for (i = 0; i < WORDS(DATA_SIZE); i++)
+            {
                 flash_data[i] = input_buffer[i + DATA_OFFSET];
+            }
 
             flash_data_ready = true;
 
@@ -273,9 +277,13 @@ static void command_task(void)
         crc_gen = bootloader_CRCGenerate(unlock_begin, unlock_end - unlock_begin);
 
         if (crc == crc_gen)
+        {
             ${PERIPH_USED}_WriteByte(BL_RESP_CRC_OK);
+        }
         else
+        {
             ${PERIPH_USED}_WriteByte(BL_RESP_CRC_FAIL);
+        }
     }
     else if (BL_CMD_RESET == input_command)
     {
@@ -322,9 +330,13 @@ static void flash_task(void)
     while(${MEM_USED}_IsBusy() == true)
     {
         input_task();
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        kickdog();
+</#if>
     }
 
-<#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    // Check if the address falls in Device Configuration Space
     if (!(flash_addr >= unlock_begin && flash_addr < unlock_end))
     {
         flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].DEVCFG_ERASE_API_NAME};

@@ -152,6 +152,20 @@ def setAppStartAndCommentVisible(symbol, event):
 def setTriggerLenVisible(symbol, event):
     symbol.setVisible(event["value"])
 
+def setFuseProgram(symbol, event):
+    visibility = False
+
+    if (event["value"] != ""):
+        if (Database.getSymbolValue(event["value"].lower(), "FLASH_USERROW_START_ADDRESS") != None):
+            visibility = True
+
+    symbol.setVisible(visibility)
+
+def setWDTEnable(symbol, event):
+    result_dict = {}
+
+    result_dict = Database.sendMessage("core", "WDT_ENABLE", {"isEnabled":event["value"]})
+
 def generateCommonSymbols(bootloaderComponent):
     global ram_start
     global ram_size
@@ -218,11 +232,19 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
 
+def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
+    btlFuseProgramEnable = bootloaderComponent.createBooleanSymbol("BTL_FUSE_PROGRAM_ENABLE", None)
+    btlFuseProgramEnable.setLabel("Enable Fuse Programming")
+    btlFuseProgramEnable.setHelp(btl_helpkeyword)
+    btlFuseProgramEnable.setDefaultValue(False)
+    btlFuseProgramEnable.setVisible(False)
+    btlFuseProgramEnable.setDependencies(setFuseProgram, ["MEM_USED"])
+
     btlWdogEnable = bootloaderComponent.createBooleanSymbol("BTL_WDOG_ENABLE", None)
-    btlWdogEnable.setLabel("Enable Watchdog")
+    btlWdogEnable.setLabel("Enable Watchdog Refresh If Enabled Through FUSE")
+    btlWdogEnable.setHelp(btl_helpkeyword)
     btlWdogEnable.setDefaultValue(False)
-    btlWdogEnable.setReadOnly(True)
-    btlWdogEnable.setVisible(False)
+    btlWdogEnable.setDependencies(setWDTEnable, ["BTL_WDOG_ENABLE"])
 
 def generateHwCRCGeneratorSymbol(bootloaderComponent):
     global btl_helpkeyword
@@ -266,23 +288,23 @@ def generateLinkerFileSymbol(bootloaderComponent):
 def generateCommonFiles(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
 
-    btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_SOURCE", None)
-    btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.c.ftl")
-    btlHeaderFile.setOutputName("bootloader_common.c")
-    btlHeaderFile.setMarkup(True)
-    btlHeaderFile.setOverwrite(True)
-    btlHeaderFile.setDestPath("/bootloader/")
-    btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
-    btlHeaderFile.setType("SOURCE")
+    btlCommonSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_SOURCE", None)
+    btlCommonSourceFile.setSourcePath("../bootloader/templates/src/bootloader_common.c.ftl")
+    btlCommonSourceFile.setOutputName("bootloader_common.c")
+    btlCommonSourceFile.setMarkup(True)
+    btlCommonSourceFile.setOverwrite(True)
+    btlCommonSourceFile.setDestPath("/bootloader/")
+    btlCommonSourceFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlCommonSourceFile.setType("SOURCE")
 
-    btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_HEADER", None)
-    btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.h.ftl")
-    btlHeaderFile.setOutputName("bootloader_common.h")
-    btlHeaderFile.setMarkup(True)
-    btlHeaderFile.setOverwrite(True)
-    btlHeaderFile.setDestPath("/bootloader/")
-    btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
-    btlHeaderFile.setType("HEADER")
+    btlCommonHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_HEADER", None)
+    btlCommonHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.h.ftl")
+    btlCommonHeaderFile.setOutputName("bootloader_common.h")
+    btlCommonHeaderFile.setMarkup(True)
+    btlCommonHeaderFile.setOverwrite(True)
+    btlCommonHeaderFile.setDestPath("/bootloader/")
+    btlCommonHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlCommonHeaderFile.setType("HEADER")
 
 # Used by Optimized Bootloaders
 def generateXC32SettingsAndFileSymbol(bootloaderComponent):

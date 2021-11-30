@@ -111,6 +111,8 @@ def instantiateComponent(bootloaderComponent):
 
     generateCommonSymbols(bootloaderComponent)
 
+    generateFuseProgrammingAndWDTSymbols(bootloaderComponent)
+
     generateHwCRCGeneratorSymbol(bootloaderComponent)
 
     btlCommandStretchClkDesc = "Enabling this option stretches the I2C clock when the bootloader is busy \

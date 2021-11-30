@@ -221,6 +221,7 @@ def generateCommonSymbols(bootloaderComponent):
     btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_SIZE"])
 
     btlTriggerEnable = bootloaderComponent.createBooleanSymbol("BTL_TRIGGER_ENABLE", None)
+    btlTriggerEnable.setHelp(btl_helpkeyword)
     btlTriggerEnable.setLabel("Enable Bootloader Trigger From Firmware")
     btlTriggerEnable.setDescription("This Option can be used to Force Trigger bootloader from application firmware after a soft reset.")
 
@@ -246,6 +247,8 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
 
+def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
+    return
     # Disable Control Register Locks
     result_dict = {}
 
@@ -254,23 +257,23 @@ def generateCommonSymbols(bootloaderComponent):
 def generateCommonFiles(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
 
-    btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_SOURCE", None)
-    btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.c.ftl")
-    btlHeaderFile.setOutputName("bootloader_common.c")
-    btlHeaderFile.setMarkup(True)
-    btlHeaderFile.setOverwrite(True)
-    btlHeaderFile.setDestPath("/bootloader/")
-    btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
-    btlHeaderFile.setType("SOURCE")
+    btlCommonSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_SOURCE", None)
+    btlCommonSourceFile.setSourcePath("../bootloader/templates/src/bootloader_common.c.ftl")
+    btlCommonSourceFile.setOutputName("bootloader_common.c")
+    btlCommonSourceFile.setMarkup(True)
+    btlCommonSourceFile.setOverwrite(True)
+    btlCommonSourceFile.setDestPath("/bootloader/")
+    btlCommonSourceFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlCommonSourceFile.setType("SOURCE")
 
-    btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_HEADER", None)
-    btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.h.ftl")
-    btlHeaderFile.setOutputName("bootloader_common.h")
-    btlHeaderFile.setMarkup(True)
-    btlHeaderFile.setOverwrite(True)
-    btlHeaderFile.setDestPath("/bootloader/")
-    btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
-    btlHeaderFile.setType("HEADER")
+    btlCommonHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_COMMON_HEADER", None)
+    btlCommonHeaderFile.setSourcePath("../bootloader/templates/src/bootloader_common.h.ftl")
+    btlCommonHeaderFile.setOutputName("bootloader_common.h")
+    btlCommonHeaderFile.setMarkup(True)
+    btlCommonHeaderFile.setOverwrite(True)
+    btlCommonHeaderFile.setDestPath("/bootloader/")
+    btlCommonHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlCommonHeaderFile.setType("HEADER")
 
 def generateHwCRCGeneratorSymbol(bootloaderComponent):
     return

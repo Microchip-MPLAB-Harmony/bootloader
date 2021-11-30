@@ -70,27 +70,54 @@
 // *****************************************************************************
 // *****************************************************************************
 
+
+bool __WEAK bootloader_Trigger(void)
+{
+    /* Function can be overriden with custom implementation */
+    return false;
+}
+
+void __WEAK SYS_DeInitialize( void *data )
+{
+    /* Function can be overriden with custom implementation */
+}
+
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+void kickdog(void)
+{
+    if (WDT_IsEnabled())
+    {
+        WDT_Clear();
+    }
+}
+</#if>
+
+
 <#if BTL_HW_CRC_GEN?? && BTL_HW_CRC_GEN == true>
     <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
     <#lt>uint32_t bootloader_CRCGenerate(uint32_t start_addr, uint32_t size)
     <#lt>{
     <#lt>    uint32_t crc  = 0xffffffff;
-    <#lt>    uint32_t i;
 
     <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
 
-    <#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
-    <#lt>    {
-    <#lt>       DSU_CRCCalculate (
-    <#lt>           start_addr + i,
-    <#lt>           ERASE_BLOCK_SIZE,
-    <#lt>           crc,
-    <#lt>           &crc
-    <#lt>       );
-<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-    <#lt>       kickdog();
-</#if>
-    <#lt>   }
+    <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        <#lt>    uint32_t i;
+
+        <#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
+        <#lt>    {
+        <#lt>       DSU_CRCCalculate (
+        <#lt>           start_addr + i,
+        <#lt>           ERASE_BLOCK_SIZE,
+        <#lt>           crc,
+        <#lt>           &crc
+        <#lt>       );
+
+        <#lt>       kickdog();
+        <#lt>    }
+    <#else>
+        <#lt>    DSU_CRCCalculate (start_addr, size, crc, &crc);
+    </#if>
 
     <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
 
@@ -125,11 +152,11 @@
 
     <#lt>    for (i = 0; i < size; i++)
     <#lt>    {
-    <#lt>        <#if __PROCESSOR?matches("PIC32M.*") == false>
+    <#if __PROCESSOR?matches("PIC32M.*") == false>
     <#lt>        data = *(uint8_t *)(start_addr + i);
-    <#lt>        <#else>
+    <#else>
     <#lt>        data = *(uint8_t *)KVA0_TO_KVA1((start_addr + i));
-    <#lt>        </#if>
+    </#if>
     <#lt>
     <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
     <#lt>    }
@@ -138,72 +165,57 @@
 </#if>
 
 <#if __PROCESSOR?matches("PIC32M.*") == false>
-/* Trigger a reset */
-void bootloader_TriggerReset(void)
-{
-    NVIC_SystemReset();
-}
+    <#lt>/* Trigger a reset */
+    <#lt>void bootloader_TriggerReset(void)
+    <#lt>{
+    <#lt>    NVIC_SystemReset();
+    <#lt>}
 
-void run_Application(void)
-{
-    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
+    <#lt>void run_Application(void)
+    <#lt>{
+    <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
+    <#lt>    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
 
-    if (msp == 0xffffffff)
-    {
-        return;
-    }
+    <#lt>    if (msp == 0xffffffff)
+    <#lt>    {
+    <#lt>        return;
+    <#lt>    }
 
-    __set_MSP(msp);
+    <#lt>    /* Call Deinitialize routine to free any resources acquired by Bootloader */
+    <#lt>    SYS_DeInitialize(NULL);
 
-    asm("bx %0"::"r" (reset_vector));
-}
+    <#lt>    __set_MSP(msp);
+
+    <#lt>    asm("bx %0"::"r" (reset_vector));
+    <#lt>}
 <#else>
+    <#lt>/* Trigger a reset */
+    <#lt>void bootloader_TriggerReset(void)
+    <#lt>{
+    <#lt>    /* Perform system unlock sequence */
+    <#lt>    SYSKEY = 0x00000000;
+    <#lt>    SYSKEY = 0xAA996655;
+    <#lt>    SYSKEY = 0x556699AA;
 
-/* Trigger a reset */
-void bootloader_TriggerReset(void)
-{
-    /* Perform system unlock sequence */
-    SYSKEY = 0x00000000;
-    SYSKEY = 0xAA996655;
-    SYSKEY = 0x556699AA;
+    <#lt>    RSWRSTSET = _RSWRST_SWRST_MASK;
+    <#lt>    (void)RSWRST;
+    <#lt>}
 
-    RSWRSTSET = _RSWRST_SWRST_MASK;
-    (void)RSWRST;
-}
+    <#lt>void run_Application(void)
+    <#lt>{
+    <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
 
-void run_Application(void)
-{
-    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
+    <#lt>    void (*fptr)(void);
 
-    void (*fptr)(void);
+    <#lt>    /* Set default to APP_RESET_ADDRESS */
+    <#lt>    fptr = (void (*)(void))APP_START_ADDRESS;
 
-    /* Set default to APP_RESET_ADDRESS */
-    fptr = (void (*)(void))APP_START_ADDRESS;
+    <#lt>    if (msp == 0xffffffff)
+    <#lt>    {
+    <#lt>        return;
+    <#lt>    }
 
-    if (msp == 0xffffffff)
-    {
-        return;
-    }
-
-    fptr();
-}
-</#if>
-
-
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
-
-<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-void kickdog(void)
-{
-    if (WDT_IsEnabled())
-    {
-        WDT_Clear();
-    }
-}
+    <#lt>    fptr();
+    <#lt>}
 </#if>
 

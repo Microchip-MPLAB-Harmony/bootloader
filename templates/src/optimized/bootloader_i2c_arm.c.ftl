@@ -213,11 +213,11 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
                 /* Program enters here after receiving each word of the command argument */
                 blProtocol.nCmdArgWords++;
 
-                <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
                 if ((blProtocol.command == BL_COMMAND_UNLOCK) || (blProtocol.command == BL_COMMAND_PROGRAM) || (blProtocol.command == BL_COMMAND_DEVCFG_PROGRAM))
-                <#else>
+<#else>
                 if ((blProtocol.command == BL_COMMAND_UNLOCK) || (blProtocol.command == BL_COMMAND_PROGRAM))
-                </#if>
+</#if>
                 {
                     if (blProtocol.nCmdArgWords < 2)
                     {
@@ -261,12 +261,13 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
                 }
                 else if (blProtocol.command == BL_COMMAND_ERASE)
                 {
-                    <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
                     if (((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) &&
-                    ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr)) || ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE))))
-                    <#else>
+                        ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr)) ||
+                        ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE))))
+<#else>
                     if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
-                    </#if>
+</#if>
                     {
                         SET_BIT(blProtocol.status, BL_STATUS_BIT_BUSY);
                         blProtocol.flashState = BL_FLASH_STATE_ERASE;
@@ -277,7 +278,7 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
                         return false;
                     }
                 }
-                <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
                 else if (blProtocol.command == BL_COMMAND_DEVCFG_PROGRAM)
                 {
                     if ((blProtocol.cmdProtocol.programCommand.memAddr < ${MEM_USED}_USERROW_START_ADDRESS) || (blProtocol.cmdProtocol.programCommand.nBytes > BL_BUFFER_SIZE)
@@ -292,7 +293,7 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
                         blProtocol.rdState = BL_I2C_READ_PROGRAM_DATA;
                     }
                 }
-                </#if>
+</#if>
                 else if (blProtocol.command == BL_COMMAND_VERIFY)
                 {
                    SET_BIT(blProtocol.status, BL_STATUS_BIT_BUSY);
@@ -397,7 +398,7 @@ static void BL_I2C_FlashTask(void)
 
             while(${MEM_USED}_IsBusy() == true){}
 
-<#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
             if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
             {
                 /* Erase the Current row */
@@ -417,7 +418,7 @@ static void BL_I2C_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_WRITE:
-<#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
             if (blProtocol.command == BL_COMMAND_DEVCFG_PROGRAM)
             {
                 ${.vars["${MEM_USED?lower_case}"].DEVCFG_WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));

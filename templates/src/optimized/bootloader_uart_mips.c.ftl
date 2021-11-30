@@ -87,6 +87,8 @@ enum
     BL_RESP_CRC_FAIL    = 0x54,
 };
 
+static uint8_t btl_guard[4] = {0x4D, 0x43, 0x48, 0x50};
+
 static uint32_t CACHE_ALIGN input_buffer[WORDS(OFFSET_SIZE + DATA_SIZE)];
 
 static uint32_t CACHE_ALIGN flash_data[WORDS(DATA_SIZE)];
@@ -95,6 +97,7 @@ static uint32_t flash_addr          = 0;
 
 static uint32_t unlock_begin        = 0;
 static uint32_t unlock_end          = 0;
+static uint32_t data_size           = 0;
 
 static uint8_t  input_command       = 0;
 
@@ -287,13 +290,22 @@ static void input_task(void)
     if (CORETIMER_CompareHasExpired())
     {
         header_received = false;
+        ptr = 0;
     }
 
     if (header_received == false)
     {
         byte_buf[ptr++] = input_data;
 
-        if (ptr == HEADER_SIZE)
+        // Check for each guard byte and discard if mismatch
+        if (ptr <= GUARD_SIZE)
+        {
+            if (input_data != btl_guard[ptr-1])
+            {
+                ptr = 0;
+            }
+        }
+        else if (ptr == HEADER_SIZE)
         {
             if (input_buffer[GUARD_OFFSET] != BTL_GUARD)
             {
@@ -318,6 +330,7 @@ static void input_task(void)
 
         if (ptr == size)
         {
+            data_size = size;
             ptr = 0;
             size = 0;
             packet_received = true;
@@ -359,7 +372,9 @@ static void command_task(void)
         if (unlock_begin <= flash_addr && flash_addr < unlock_end)
         {
             for (i = 0; i < WORDS(DATA_SIZE); i++)
+            {
                 flash_data[i] = input_buffer[i + DATA_OFFSET];
+            }
 
             flash_data_ready = true;
         }
@@ -376,9 +391,13 @@ static void command_task(void)
         crc_gen = bootloader_CRCGenerate(unlock_begin, unlock_end - unlock_begin);
 
         if (crc == crc_gen)
+        {
             ${PERIPH_USED}_WriteByte(BL_RESP_CRC_OK);
+        }
         else
+        {
             ${PERIPH_USED}_WriteByte(BL_RESP_CRC_FAIL);
+        }
     }
     else if (BL_CMD_RESET == input_command)
     {
@@ -412,8 +431,11 @@ static void command_task(void)
 static void flash_task(void)
 {
     uint32_t addr       = flash_addr;
-    uint32_t page       = 0;
+    uint32_t bytes_written   = 0;
     uint32_t write_idx  = 0;
+
+    // data_size = Actual data bytes to write + Address 4 Bytes
+    uint32_t bytes_to_write = (data_size - 4);
 
 <#if BTL_DUAL_BANK == true>
     if (addr == LOWER_FLASH_SERIAL_SECTOR)
@@ -439,7 +461,7 @@ static void flash_task(void)
     /* Wait for erase to complete */
     while(${MEM_USED}_IsBusy() == true);
 
-    for (page = 0; page < PAGES_IN_ERASE_BLOCK; page++)
+    for (bytes_written = 0; bytes_written < bytes_to_write; bytes_written += PAGE_SIZE)
     {
         ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}(&flash_data[write_idx], addr);
 
