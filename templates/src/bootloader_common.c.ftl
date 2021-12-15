@@ -85,10 +85,33 @@ void __WEAK SYS_DeInitialize( void *data )
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
 void kickdog(void)
 {
-    if (WDT_IsEnabled())
-    {
-        WDT_Clear();
-    }
+	if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
+	{
+		if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
+		{
+			if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
+			{
+				if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+				{
+
+					/* Clear WDT and reset the WDT timer before the
+					timeout occurs */
+					WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+
+					WDT_REGS->WDT_INTFLAG |= WDT_INTFLAG_EW_Msk;
+				} 
+			}
+		}
+		else
+		{
+			if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+			{
+
+				/* Clear WDT and reset the WDT timer before the timeout occurs */
+				WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+			} 
+		}
+	}    
 }
 </#if>
 

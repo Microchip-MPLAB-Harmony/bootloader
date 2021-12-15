@@ -66,88 +66,42 @@ extern uint32_t _sbss, _ebss;
 void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
 {
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CM_JH00_JH01">
-    <#lt>    register uint32_t *pRam;
+    register uint32_t *pRam;
+    
+    // MCRAMC initialization loop (to handle ECC properly)
+    // Write to entire RAM (leaving initial 16 bytes) to initialize ECC checksum
+    for (pRam = (uint32_t*)&_sdata ; pRam < (uint32_t*)&_ram_end_; pRam++)
+    {
+        *pRam = 0;
 
-    <#if BTL_WDOG_ENABLE?? && BTL_WDOG_ENABLE == true>
-        <#lt>    register uint32_t wdt_ctrl = 0;
+        if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
+		{
+			if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
+			{
+				if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
+				{
+					if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+					{
 
-        <#lt>    /* Save the WDT control register to be restored after RAM init is complete */
-        <#lt>    wdt_ctrl = WDT_REGS->WDT_CTRLA;
+						/* Clear WDT and reset the WDT timer before the
+						timeout occurs */
+						WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
 
-        <#lt>    if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk) && (!(WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk)))
-        <#lt>    {
-        <#lt>        /* Wait for synchronization */
-        <#lt>        while(WDT_REGS->WDT_SYNCBUSY != 0U)
-        <#lt>        {
+						WDT_REGS->WDT_INTFLAG |= WDT_INTFLAG_EW_Msk;
+					} 
+				}
+			}
+			else
+			{
+				if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+				{
 
-        <#lt>        }
-
-        <#lt>        /* Disable Watchdog Timer */
-        <#lt>        WDT_REGS->WDT_CTRLA &= (uint8_t)(~WDT_CTRLA_ENABLE_Msk);
-
-        <#lt>        /* Wait for synchronization */
-        <#lt>        while(WDT_REGS->WDT_SYNCBUSY != 0U)
-        <#lt>        {
-
-        <#lt>        }
-        <#lt>    }
-
-        <#lt>    if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk) && (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk))
-        <#lt>    {
-        <#lt>        while(WDT_REGS->WDT_SYNCBUSY != 0U)
-        <#lt>        {
-
-        <#lt>        }
-
-        <#lt>        /* Disable window mode */
-        <#lt>        WDT_REGS->WDT_CTRLA &= (uint8_t)(~WDT_CTRLA_WEN_Msk);
-
-        <#lt>        while(WDT_REGS->WDT_SYNCBUSY != 0U)
-        <#lt>        {
-
-        <#lt>        }
-        <#lt>    }
-
-        <#lt>    __DSB();
-        <#lt>    __ISB();
-    </#if>
-
-    <#lt>    // MCRAMC initialization loop (to handle ECC properly)
-    <#lt>    // Write to entire RAM (leaving initial 16 bytes) to initialize ECC checksum
-    <#lt>    for (pRam = (uint32_t*)&_sdata ; pRam < (uint32_t*)&_ram_end_; pRam++)
-    <#lt>    {
-    <#lt>        *pRam = 0;
-
-    <#if BTL_WDOG_ENABLE?? && BTL_WDOG_ENABLE == true>
-        <#lt>        if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
-        <#lt>        {
-        <#lt>
-        <#lt>            /* Clear WDT and reset the WDT timer before the
-        <#lt>            timeout occurs */
-        <#lt>            WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
-        <#lt>        }
-    </#if>
-    <#lt>    }
-
-    <#lt>    __DSB();
-    <#lt>    __ISB();
-
-    <#if BTL_WDOG_ENABLE?? && BTL_WDOG_ENABLE == true>
-        <#lt>    /* Wait for synchronization */
-        <#lt>    while(WDT_REGS->WDT_SYNCBUSY != 0U)
-        <#lt>    {
-
-        <#lt>    }
-
-        <#lt>    /* Restore back the WDT control register */
-        <#lt>    WDT_REGS->WDT_CTRLA = wdt_ctrl;
-
-        <#lt>    /* Wait for synchronization */
-        <#lt>    while(WDT_REGS->WDT_SYNCBUSY != 0U)
-        <#lt>    {
-
-        <#lt>    }
-    </#if>
+					/* Clear WDT and reset the WDT timer before the timeout occurs */
+					WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+				} 
+			}
+		}  
+    }
 </#if>
 
     uint32_t *pSrc, *pDst;
