@@ -174,7 +174,14 @@ def send_device_configurations(devCfgFile, port, erase_size, addr):
 
     with open(devCfgFile,"r") as input_file:
         for line in input_file:
-            value = int(line.strip(), 0)
+            line = line.strip()
+
+            # Skip any empty lines
+            if (not line):
+                continue
+
+            value = int(line, 0)
+
 
             # Store LSB first
             data += [value & 0xFF]
