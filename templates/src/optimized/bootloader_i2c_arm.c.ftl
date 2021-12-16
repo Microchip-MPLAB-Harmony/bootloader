@@ -67,7 +67,7 @@
 #define BL_STATUS_BIT_CRC_ERROR                 (0x01 << 4)
 #define BL_STATUS_BIT_COMM_ERROR                (0x01 << 5)
 #define BL_STATUS_BIT_ALL                       (BL_STATUS_BIT_BUSY | BL_STATUS_BIT_INVALID_COMMAND | BL_STATUS_BIT_INVALID_MEM_ADDR | \
-                                                 BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR)
+                                                 BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR | BL_STATUS_BIT_COMM_ERROR)
 
 typedef enum
 {
@@ -233,6 +233,9 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
 
                 if (blProtocol.command == BL_COMMAND_UNLOCK)
                 {
+                    /* Since this is the first command, clear any previously set status bits (host may be retrying and status may be set from previous communication) */
+                    CLR_BIT(blProtocol.status, BL_STATUS_BIT_ALL);
+
                     /* Save application start address and size for future reference */
                     if ((blProtocol.cmdProtocol.unlockCommand.appImageStartAddr + blProtocol.cmdProtocol.unlockCommand.appImageSize) > (FLASH_START + FLASH_LENGTH))
                     {
@@ -328,6 +331,8 @@ static void BL_I2C_EventsProcess(void)
     {
         error = ${PERIPH_USED}_ErrorGet();
         (void)error;
+
+        ${PERIPH_USED}_InterruptFlagsClear(SERCOM_I2C_SLAVE_INTFLAG_ERROR);
 
         SET_BIT(blProtocol.status, BL_STATUS_BIT_COMM_ERROR);
     }
