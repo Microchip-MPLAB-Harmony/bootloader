@@ -308,9 +308,12 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
                 else if (blProtocol.command == BL_COMMAND_ERASE)
                 {
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
-                    if (((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) &&
-                        ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr)) ||
-                        ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE))))
+                    if (((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
+                        || ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
+                        || ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+    </#if>
+                       )
 <#else>
                     if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
 </#if>
@@ -327,16 +330,23 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
                 else if (blProtocol.command == BL_COMMAND_DEVCFG_PROGRAM)
                 {
-                    if ((blProtocol.cmdProtocol.programCommand.memAddr < ${MEM_USED}_USERROW_START_ADDRESS) || (blProtocol.cmdProtocol.programCommand.nBytes > BL_BUFFER_SIZE)
-                     || ((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.cmdProtocol.programCommand.nBytes) > (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
-                    {
-                        SET_BIT(blProtocol.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
-                        return false;
-                    }
-                    else
+                    if (((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS)
+                          && (blProtocol.cmdProtocol.programCommand.nBytes <= BL_BUFFER_SIZE)
+                          && ((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.cmdProtocol.programCommand.nBytes) <= (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
+                        || ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS)
+                          && (blProtocol.cmdProtocol.programCommand.nBytes <= BL_BUFFER_SIZE)
+                          && ((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.cmdProtocol.programCommand.nBytes) <= (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+    </#if>
+                        )
                     {
                         blProtocol.index = 0;
                         blProtocol.rdState = BL_I2C_READ_PROGRAM_DATA;
+                    }
+                    else
+                    {
+                        SET_BIT(blProtocol.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
+                        return false;
                     }
                 }
 </#if>
@@ -439,10 +449,44 @@ static void BL_I2C_FlashTask(void)
     switch(blProtocol.flashState)
     {
         case BL_FLASH_STATE_ERASE:
+<#if .vars["${MEM_USED?lower_case}"].NVMCTRL_REGION_LOCK_UNLOCK_WITHOUT_ADDR?? && .vars["${MEM_USED?lower_case}"].NVMCTRL_REGION_LOCK_UNLOCK_WITHOUT_ADDR == true>
+            if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
+            {
+                ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
+
+                while(${MEM_USED}_IsBusy() == true)
+                {
+        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                    kickdog();
+        </#if>
+                }
+    <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
+
+                if (blProtocol.cmdProtocol.eraseCommand.memAddr >= APP_START_ADDRESS)
+                {
+                    ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
+                }
+                else
+                {
+                    ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
+                }
+
+                while(${MEM_USED}_IsBusy() == true)
+                {
+        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                    kickdog();
+        </#if>
+                }
+    </#if>
+            }
+<#else>
             // Lock region size is always bigger than the row size
             ${MEM_USED}_RegionUnlock(blProtocol.cmdProtocol.eraseCommand.memAddr);
 
-            while(${MEM_USED}_IsBusy() == true){}
+            while(${MEM_USED}_IsBusy() == true)
+            {
+            }
+</#if>
 
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
             if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
@@ -457,6 +501,13 @@ static void BL_I2C_FlashTask(void)
                     /* Erase the NVM user row */
                     ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
                 }
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
+                else if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (blProtocol.cmdProtocol.eraseCommand.memAddr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+                {
+                    /* Erase the NVM BOCOR row */
+                    ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
+                }
+    </#if>
             }
 <#else>
             /* Erase the Current row */
@@ -475,6 +526,13 @@ static void BL_I2C_FlashTask(void)
                     /* Write the NVM user row */
                     ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
                 }
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
+                else if ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (blProtocol.cmdProtocol.programCommand.memAddr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+                {
+                    /* Write the NVM user row */
+                    ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                }
+    </#if>
             }
             else
             {

@@ -236,8 +236,12 @@ static void command_task(void)
     {
         flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
 
-        if (((BL_CMD_DATA == input_command) && (unlock_begin <= flash_addr && flash_addr < unlock_end)) ||
-            ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= ${MEM_USED}_USERROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))))
+        if (((BL_CMD_DATA == input_command) && (unlock_begin <= flash_addr && flash_addr < unlock_end))
+            || ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= ${MEM_USED}_USERROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE))))
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
+            || ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE))))
+    </#if>
+           )
         {
             for (i = 0; i < WORDS(DATA_SIZE); i++)
             {
@@ -339,23 +343,68 @@ static void flash_task(void)
     bool (*flash_erase_fptr)(uint32_t) = ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME};
     bool (*flash_write_fptr)(uint32_t*, uint32_t) = ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME};
 
+<#if .vars["${MEM_USED?lower_case}"].NVMCTRL_REGION_LOCK_UNLOCK_WITHOUT_ADDR?? && .vars["${MEM_USED?lower_case}"].NVMCTRL_REGION_LOCK_UNLOCK_WITHOUT_ADDR == true>
+
+    if ((flash_addr >= unlock_begin && flash_addr < unlock_end))
+    {
+        ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
+
+        while(${MEM_USED}_IsBusy() == true)
+        {
+            input_task();
+        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+            kickdog();
+        </#if>
+        }
+    <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
+
+        if (flash_addr >= APP_START_ADDRESS)
+        {
+            ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
+        }
+        else
+        {
+            ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
+        }
+
+        while(${MEM_USED}_IsBusy() == true)
+        {
+            input_task();
+        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+            kickdog();
+        </#if>
+        }
+    </#if>
+    }
+<#else>
     // Lock region size is always bigger than the row size
     ${MEM_USED}_RegionUnlock(addr);
 
     while(${MEM_USED}_IsBusy() == true)
     {
         input_task();
-<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+    <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
         kickdog();
-</#if>
+    </#if>
     }
+</#if>
 
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
     // Check if the address falls in Device Configuration Space
     if (!(flash_addr >= unlock_begin && flash_addr < unlock_end))
     {
-        flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME};
-        flash_write_fptr =  ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME};
+        if ((flash_addr >= ${MEM_USED}_USERROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+        {
+            flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME};
+            flash_write_fptr = ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME};
+        }
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
+        else if ((flash_addr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+        {
+            flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME};
+            flash_write_fptr = ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME};
+        }
+    </#if>
     }
 </#if>
 

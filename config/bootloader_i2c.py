@@ -26,6 +26,7 @@ global btl_helpkeyword
 
 btl_type = "I2C"
 btl_helpkeyword = "mcc_h3_i2c_bootloader_configurations"
+bootloaderCore = ""
 
 # Maximum Size for Bootloader [BYTES]
 if ("PIC32M" in Variables.get("__PROCESSOR")):
@@ -104,7 +105,7 @@ def instantiateComponent(bootloaderComponent):
     setupCoreComponentSymbols()
 
     btlPeriphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
-    btlPeriphUsed.setHelp("mcc_h3_i2c_bootloader_configurations")
+    btlPeriphUsed.setHelp(btl_helpkeyword)
     btlPeriphUsed.setLabel("Bootloader Peripheral Used")
     btlPeriphUsed.setReadOnly(True)
     btlPeriphUsed.setDefaultValue("")
@@ -124,7 +125,7 @@ def instantiateComponent(bootloaderComponent):
                                 with other slaves on the same bus."
 
     btlCommandStretchClkEnable = bootloaderComponent.createBooleanSymbol("BTL_CMD_STRETCH_CLK", None)
-    btlCommandStretchClkEnable.setHelp("mcc_h3_i2c_bootloader_configurations")
+    btlCommandStretchClkEnable.setHelp(btl_helpkeyword)
     btlCommandStretchClkEnable.setLabel("Bootloader Commands Stretch I2C Clock")
     btlCommandStretchClkEnable.setDescription(btlCommandStretchClkDesc)
     btlCommandStretchClkEnable.setDefaultValue(False)
@@ -147,12 +148,12 @@ def instantiateComponent(bootloaderComponent):
             btlDualBankEnable = True
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
-    btlDualBank.setHelp("mcc_h3_i2c_bootloader_configurations")
+    btlDualBank.setHelp(btl_helpkeyword)
     btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")
     btlDualBank.setVisible(btlDualBankEnable)
 
     btlDualBankComment = bootloaderComponent.createCommentSymbol("BTL_DUAL_BANK_COMMENT", None)
-    btlDualBankComment.setHelp("mcc_h3_i2c_bootloader_configurations")
+    btlDualBankComment.setHelp(btl_helpkeyword)
     btlDualBankComment.setLabel("!!! WARNING Only Half of the Flash memory will be available for Application !!!")
     btlDualBankComment.setVisible(False)
     btlDualBankComment.setDependencies(setBtlDualBankCommentVisible, ["BTL_DUAL_BANK"])
@@ -208,6 +209,15 @@ def instantiateComponent(bootloaderComponent):
     btlSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_INCLUDES")
     btlSystemDefFile.setSourcePath("../bootloader/templates/system/definitions.h.ftl")
     btlSystemDefFile.setMarkup(True)
+
+    if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
+        btlSourceFile.setSecurity("SECURE")
+        btlHeaderFile.setSecurity("SECURE")
+        btlmainSourceFile.setSecurity("SECURE")
+        btlInitFile.setSecurity("SECURE")
+        btlInitFile.setSourcePath("../bootloader/templates/arm/initialization_secure.c.ftl")
+        btlSystemDefFile.setSecurity("SECURE")
+        btlSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_SECURE_H_INCLUDES")
 
     generateLinkerFileSymbol(bootloaderComponent)
 

@@ -185,18 +185,39 @@ void kickdog(void)
     <#lt>        crc_tab[i] = value;
     <#lt>    }
 
-    <#lt>    for (i = 0; i < size; i++)
-    <#lt>    {
-    <#if __PROCESSOR?matches("PIC32M.*") == false>
-    <#lt>        data = *(uint8_t *)(start_addr + i);
+    <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        <#lt>    kickdog();
+
+        <#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
+        <#lt>    {
+        <#lt>        for (j = 0; j < ERASE_BLOCK_SIZE; j++)
+        <#lt>        {
+        <#if __PROCESSOR?matches("PIC32M.*") == false>
+            <#lt>            data = *(uint8_t *)(start_addr + (i + j));
+        <#else>
+            <#lt>            data = *(uint8_t *)KVA0_TO_KVA1((start_addr + (i + j)));
+        </#if>
+
+        <#lt>            crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
+        <#lt>        }
+        <#lt>        kickdog();
+        <#lt>    }
     <#else>
-    <#lt>        data = *(uint8_t *)KVA0_TO_KVA1((start_addr + i));
+        <#lt>    for (i = 0; i < size; i++)
+        <#lt>    {
+        <#if __PROCESSOR?matches("PIC32M.*") == false>
+            <#lt>        data = *(uint8_t *)(start_addr + i);
+        <#else>
+            <#lt>        data = *(uint8_t *)KVA0_TO_KVA1((start_addr + i));
+        </#if>
+
+        <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
+        <#lt>    }
     </#if>
-    <#lt>
-    <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    <#lt>    }
+
     <#lt>    return crc;
     <#lt>}
+
 </#if>
 
 <#if __PROCESSOR?matches("PIC32M.*") == false>

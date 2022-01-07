@@ -254,6 +254,10 @@ def generateHwCRCGeneratorSymbol(bootloaderComponent):
 
     # Enable PAC and DSU component if present
     for module in range (0, len(peripherals)):
+        if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
+            crcEnable=False
+            break
+
         periphName = str(peripherals[module].getAttribute("name"))
         if (periphName == "PAC"):
             coreComponent.getSymbolByID("PAC_USE").setValue(True)
@@ -285,6 +289,10 @@ def generateLinkerFileSymbol(bootloaderComponent):
     btlLinkerFile.setOverwrite(True)
     btlLinkerFile.setType("LINKER")
 
+    if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
+        btlLinkerFile.setSourcePath("../bootloader/templates/arm/bootloader_linker_optimized_secure.ld.ftl")
+        btlLinkerFile.setSecurity("SECURE")
+
 def generateCommonFiles(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
 
@@ -305,6 +313,10 @@ def generateCommonFiles(bootloaderComponent):
     btlCommonHeaderFile.setDestPath("/bootloader/")
     btlCommonHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
     btlCommonHeaderFile.setType("HEADER")
+
+    if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
+        btlCommonSourceFile.setSecurity("SECURE")
+        btlCommonHeaderFile.setSecurity("SECURE")
 
 # Used by Optimized Bootloaders
 def generateXC32SettingsAndFileSymbol(bootloaderComponent):
@@ -332,10 +344,18 @@ def generateXC32SettingsAndFileSymbol(bootloaderComponent):
     xc32ClearDataSection.setKey("place-data-into-section")
     xc32ClearDataSection.setValue("false")
 
+    if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
+        btlStartSourceFile.setSecurity("SECURE")
+        xc32NoCRT0StartupCodeSym.setSecurity("SECURE")
+        xc32ClearDataSection.setSecurity("SECURE")
+
 def setOptimizationLevel(bootloaderComponent, optimizationLevel):
     # Set Optimization level based on input
     xc32Optimization = bootloaderComponent.createSettingSymbol("XC32_OPTIMIZATION", None)
     xc32Optimization.setCategory("C32")
     xc32Optimization.setKey("optimization-level")
     xc32Optimization.setValue(optimizationLevel)
+
+    if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
+        xc32Optimization.setSecurity("SECURE")
 

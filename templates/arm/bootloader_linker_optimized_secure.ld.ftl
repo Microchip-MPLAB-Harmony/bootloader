@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------------
- * MPLAB XC32 Compiler -  Bootloader linker script
+ * MPLAB XC32 Compiler -  Bootloader linker script for TrustZone devices
  *
  * Copyright (c) 2019, Microchip Technology Inc. and its subsidiaries ("Microchip")
  * All rights reserved.
@@ -67,45 +67,55 @@ ENTRY(__XC32_RESET_HANDLER_NAME)
     #  error ROM_SIZE is greater than the max size of ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}
 #endif
 
+#ifndef SECURE
+#  warning "Defaulting to a SECURE TrustZone-M project. Please define the linker macro SECURE (e.g. -Wl,-DSECURE)."
+#  define SECURE
+#endif
+
+#if defined(SECURE)
+#  if ((BOOTPROT_SIZE == 0) || (BOOTPROT_SIZE < ${BTL_SIZE}))
+#    error "Boot protection size (BOOTPROT_SIZE) is either 0 or less than Bootloader size ${BTL_SIZE}. Update the BOOTPROT_SIZE accordingly in MCC"
+#  endif
+
+#  if (RS_SIZE < (${BTL_SIZE} + 0x2000))
+#    error "Secure SRAM length (RS_SIZE) should be greater than or equal to (${BTL_SIZE} + 8KB). Update the RS_SIZE accordingly in MCC"
+#  endif
+#endif
+
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
-    <#if core.CoreArchitecture == "CORTEX-M23">
-        <#lt>/* Bootloader Trigger pattern of length ${BTL_TRIGGER_LEN} Bytes needs to be stored
-        <#lt> * at 0x1000 offset from starting of RAM by the application if it wants to
-        <#lt> * run bootloader at startup without any external trigger.
-        <#lt> * The Offset 0x1000 is because on reset Boot ROM clears the first 4KB of RAM.
-        <#lt> * Example:
-        <#lt> *     ram[0] = 0x5048434D;
-        <#lt> *     ram[1] = 0x5048434D;
-        <#lt> *     ....
-        <#lt> *     ram[n] = 0x5048434D;
-        <#lt> */
-        <#lt>#define RAM_START (${BTL_RAM_START} + 0x1000 + ${BTL_TRIGGER_LEN})
+    <#lt>/* Bootloader Trigger pattern of length ${BTL_TRIGGER_LEN} Bytes needs to be stored
+    <#lt> * at 0x1000 offset from starting of RAM by the Secure application if it wants to
+    <#lt> * run bootloader at startup without any external trigger.
+    <#lt> * The Offset 0x1000 is because on reset Boot ROM clears the first 4KB of RAM.
+    <#lt> * Example:
+    <#lt> *     ram[0] = 0x5048434D;
+    <#lt> *     ram[1] = 0x5048434D;
+    <#lt> *     ....
+    <#lt> *     ram[n] = 0x5048434D;
+    <#lt> */
+    <#lt>#define RAM_START (${BTL_RAM_START} + 0x1000 + ${BTL_TRIGGER_LEN})
 
-        <#lt>#define RAM_SIZE  (${BTL_RAM_SIZE} - 0x1000 - ${BTL_TRIGGER_LEN})
-    <#else>
-        <#lt>/* Bootloader Trigger pattern of length ${BTL_TRIGGER_LEN} Bytes needs to be stored
-        <#lt> * from starting of Ram by the application if it wants to
-        <#lt> * run bootloader at startup without any external trigger.
-        <#lt> * Example:
-        <#lt> *     ram[0] = 0x5048434D;
-        <#lt> *     ram[1] = 0x5048434D;
-        <#lt> *     ....
-        <#lt> *     ram[n] = 0x5048434D;
-        <#lt> */
-        <#lt>#define RAM_START (${BTL_RAM_START} + ${BTL_TRIGGER_LEN})
-
-        <#lt>#define RAM_SIZE  (${BTL_RAM_SIZE} - ${BTL_TRIGGER_LEN})
-    </#if>
+    <#lt>#define RAM_SIZE  (RS_SIZE - 0x1000 - ${BTL_TRIGGER_LEN})
 <#else>
     <#lt>#define RAM_START ${BTL_RAM_START}
 
-    <#lt>#define RAM_SIZE  ${BTL_RAM_SIZE}
+    <#lt>#define RAM_SIZE  RS_SIZE
 </#if>
 
 #if (RAM_SIZE > ${BTL_RAM_SIZE})
     #  error RAM_SIZE is greater than the max size of ${BTL_RAM_SIZE}
 #endif
 
+#if defined(SECURE)
+#  define _SECURE
+#  define TZ_ROM_ORIGIN (ROM_START)
+   /* Reserve the last 32 Bytes of Secure Boot Region for SHA value if BOOTOPT is enabled */
+#  define TZ_ROM_LENGTH (BOOTPROT_SIZE - BNSC_SIZE - 32)
+#  define TZ_ROM_BNSC_ORIGIN ((ROM_START + BOOTPROT_SIZE) - BNSC_SIZE)
+#  define TZ_ROM_BNSC_LENGTH (BNSC_SIZE)
+#  define TZ_RAM_ORIGIN (RAM_START)
+#  define TZ_RAM_LENGTH (RAM_SIZE)
+#endif
 
 /*************************************************************************
  * Memory-Region Definitions
@@ -114,22 +124,11 @@ ENTRY(__XC32_RESET_HANDLER_NAME)
  *************************************************************************/
 MEMORY
 {
-  rom (rx) : ORIGIN = ROM_START, LENGTH = ROM_SIZE
-  ram (rwx) : ORIGIN = RAM_START, LENGTH = RAM_SIZE
-<#if BTL_CAN_PRESENT?? && BTL_CAN_PRESENT == true && core.DATA_CACHE_ENABLE?? && core.DATA_CACHE_ENABLE == true>
-  <#if core.CoreUseMPU == true>
-  <#assign MPU_REGION_NAME = "core.MPU_Region_Name" + BTL_MPU_REGION_NUMBER>
-  <#assign MPU_REGION_ADDR = "core.MPU_Region_" + BTL_MPU_REGION_NUMBER + "_Address">
-  <#assign MPU_REGION_SIZE = "core.MPU_Region_" + BTL_MPU_REGION_NUMBER + "_Size">
-  <#if MPU_REGION_NAME?eval?has_content>
-  ${MPU_REGION_NAME?eval} (RWX) : ORIGIN = 0x${MPU_REGION_ADDR?eval}, LENGTH = (1 << (${MPU_REGION_SIZE?eval} + 1))
-  <#else>
-  #error MPU Region ${BTL_MPU_REGION_NUMBER} is not configured
-  </#if>
-  <#else>
-  #error MPU Region ${BTL_MPU_REGION_NUMBER} is not configured
-  </#if>
-</#if>
+  rom (rx) : ORIGIN = TZ_ROM_ORIGIN, LENGTH = TZ_ROM_LENGTH
+#if defined(_SECURE)
+  rom_nsc (rx) : ORIGIN = TZ_ROM_BNSC_ORIGIN, LENGTH = TZ_ROM_BNSC_LENGTH
+#endif
+  ram (rwx) : ORIGIN = TZ_RAM_ORIGIN, LENGTH = TZ_RAM_LENGTH
 }
 
 /*************************************************************************
@@ -167,6 +166,12 @@ SECTIONS
     {
         . = ALIGN(4);
         *(.glue_7t) *(.glue_7)
+        /* Force the inclusion of debug info for veneers. This is
+         * sensitive to the name of the .o file containing the
+         * cmse_nonsecure_entry functions. What are given are
+         * common file names. */
+        KEEP(*veneer.o(.text.*))
+        KEEP(*nonsecure_entry.o(.text.*))
         *(.gnu.linkonce.r.*)
         *(.ARM.extab* .gnu.linkonce.armextab.*)
 
@@ -191,18 +196,14 @@ SECTIONS
     . = ALIGN(4);
     _etext = .;
 
-<#if BTL_CAN_PRESENT?? && BTL_CAN_PRESENT == true && core.DATA_CACHE_ENABLE?? && core.DATA_CACHE_ENABLE == true>
-    <#assign MPU_REGION_NAME = "core.MPU_Region_Name" + BTL_MPU_REGION_NUMBER>
-    .${PERIPH_USED?lower_case}_message_ram (NOLOAD):
-    {
+#if defined(_SECURE)
+    /* Holds the veneers for calling into secure code. */
     . = ALIGN(4);
-    _s_${PERIPH_USED?lower_case}_message_ram = .;
-    *(.${PERIPH_USED?lower_case}_message_ram)
-    . = ALIGN(4);
-    _e_${PERIPH_USED?lower_case}_message_ram = .;
-    } > ${MPU_REGION_NAME?eval}
+    .gnu.sgstubs : {
+        _ssgstubs = .;
+    } > rom_nsc
+#endif /* defined(SECURE) */
 
-</#if>
     /* Locate text/rodata in special data section to be copied
        in startup sequence. */
     .data :

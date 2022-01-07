@@ -66,6 +66,12 @@
         <#lt>#define NVM_USER_ROW_SIZE                       (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_SIZE}UL)
         <#lt>#define NVM_USER_PAGE_SIZE                      (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_PROGRAM_SIZE}UL)
     </#if>
+
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
+        <#lt>#define NVM_BOCOR_ROW_START                      (${.vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS}UL)
+        <#lt>#define NVM_BOCOR_ROW_SIZE                       (${.vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_SIZE}UL)
+        <#lt>#define NVM_BOCOR_PAGE_SIZE                      (${.vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_PROGRAM_SIZE}UL)
+    </#if>
 </#if>
 
 #define BOOTLOADER_SIZE                         ${BTL_SIZE}
@@ -78,6 +84,8 @@
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
     <#if core.CoreArchitecture == "MIPS">
         <#lt>#define BTL_TRIGGER_RAM_START                  KVA0_TO_KVA1(${BTL_RAM_START})
+    <#elseif core.CoreArchitecture == "CORTEX-M23">
+        <#lt>#define BTL_TRIGGER_RAM_START                  (${BTL_RAM_START} + 0x1000)
     <#else>
         <#lt>#define BTL_TRIGGER_RAM_START                  ${BTL_RAM_START}
     </#if>

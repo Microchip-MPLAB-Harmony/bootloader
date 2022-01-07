@@ -28,6 +28,7 @@ import sys
 import time
 import serial
 import optparse
+import hashlib
 
 #------------------------------------------------------------------------------
 BL_CMD_UNLOCK       = 0xa0
