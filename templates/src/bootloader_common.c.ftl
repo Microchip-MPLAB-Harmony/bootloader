@@ -95,36 +95,46 @@ uint16_t __WEAK bootloader_GetVersion( void )
 }
 
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-void kickdog(void)
-{
-    if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
-    {
-        if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
-        {
-            if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
-            {
-                if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
-                {
+    <#if (__PROCESSOR?matches("PIC32M.*") == true) || (__PROCESSOR?matches("PIC32CX.*") == true) >
+        <#lt>void kickdog(void)
+        <#lt>{
+        <#lt>    if ((WDT_IsEnabled() == true) && (WDT_IsWindowEnabled() == false))
+        <#lt>    {
+        <#lt>        WDT_Clear();
+        <#lt>    }
+        <#lt>}
+    <#else>
+        <#lt>void kickdog(void)
+        <#lt>{
+        <#lt>    if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
+        <#lt>    {
+        <#lt>        if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
+        <#lt>        {
+        <#lt>            if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
+        <#lt>            {
+        <#lt>                if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+        <#lt>                {
 
-                    /* Clear WDT and reset the WDT timer before the
-                    timeout occurs */
-                    WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+        <#lt>                    /* Clear WDT and reset the WDT timer before the
+        <#lt>                    timeout occurs */
+        <#lt>                    WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
 
-                    WDT_REGS->WDT_INTFLAG |= WDT_INTFLAG_EW_Msk;
-                }
-            }
-        }
-        else
-        {
-            if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
-            {
+        <#lt>                    WDT_REGS->WDT_INTFLAG |= WDT_INTFLAG_EW_Msk;
+        <#lt>                }
+        <#lt>            }
+        <#lt>        }
+        <#lt>        else
+        <#lt>        {
+        <#lt>            if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+        <#lt>            {
 
-                /* Clear WDT and reset the WDT timer before the timeout occurs */
-                WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
-            }
-        }
-    }
-}
+        <#lt>                /* Clear WDT and reset the WDT timer before the timeout occurs */
+        <#lt>                WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+        <#lt>            }
+        <#lt>        }
+        <#lt>    }
+        <#lt>}
+    </#if>
 </#if>
 
 
@@ -270,6 +280,11 @@ void kickdog(void)
     <#lt>    {
     <#lt>        return;
     <#lt>    }
+
+    <#lt>    /* Call Deinitialize routine to free any resources acquired by Bootloader */
+    <#lt>    SYS_DeInitialize(NULL);
+
+    <#lt>    __builtin_disable_interrupts();
 
     <#lt>    fptr();
     <#lt>}

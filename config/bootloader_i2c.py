@@ -142,7 +142,8 @@ def instantiateComponent(bootloaderComponent):
     elif ("PIC32MK" in Variables.get("__PROCESSOR")):
         if (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
             re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
-            re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR"))):
+            re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*MCA", Variables.get("__PROCESSOR"))):
             btlDualBankEnable = False
         else:
             btlDualBankEnable = True

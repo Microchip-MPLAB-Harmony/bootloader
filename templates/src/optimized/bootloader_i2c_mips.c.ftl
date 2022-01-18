@@ -69,6 +69,11 @@
 #define BL_STATUS_BIT_ALL                       (BL_STATUS_BIT_BUSY | BL_STATUS_BIT_INVALID_COMMAND | BL_STATUS_BIT_INVALID_MEM_ADDR | \
                                                  BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR | BL_STATUS_BIT_COMM_ERROR)
 
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    <#lt>#define DEVCFG_ADDRESS                          ${BTL_DEVCFG_ADDRESS}
+    <#lt>#define DEVCFG_PAGE_ADDRESS                     (DEVCFG_ADDRESS & (~ERASE_BLOCK_SIZE + 1))
+</#if>
+
 typedef enum
 {
     BL_COMMAND_UNLOCK = 0xA0,
@@ -77,6 +82,9 @@ typedef enum
     BL_COMMAND_VERIFY = 0xA3,
     BL_COMMAND_RESET = 0xA4,
     BL_COMMAND_READ_STATUS = 0xA5,
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    BL_COMMAND_DEVCFG_PROGRAM = 0xA7,
+</#if>
     BL_COMMAND_READ_VERSION = 0xA8,
     BL_COMMAND_MAX,
 }BL_COMMAND;
@@ -154,6 +162,10 @@ typedef struct
 // *****************************************************************************
 
 static volatile BL_PROTOCOL                 i2cBLData;
+
+static bool i2cBLInitDone      = false;
+
+static bool i2cBLActive        = false;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -238,7 +250,11 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
                 /* Program enters here after receiving each word of the command argument */
                 i2cBLData.nCmdArgWords++;
 
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+                if ((i2cBLData.command == BL_COMMAND_UNLOCK) || (i2cBLData.command == BL_COMMAND_PROGRAM) || (i2cBLData.command == BL_COMMAND_DEVCFG_PROGRAM))
+<#else>
                 if ((i2cBLData.command == BL_COMMAND_UNLOCK) || (i2cBLData.command == BL_COMMAND_PROGRAM))
+</#if>
                 {
                     if (i2cBLData.nCmdArgWords < 2)
                     {
@@ -285,18 +301,39 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
                 }
                 else if (i2cBLData.command == BL_COMMAND_ERASE)
                 {
-                    if ((i2cBLData.cmdProtocol.eraseCommand.memAddr < i2cBLData.appImageStartAddr) ||
-                    ((i2cBLData.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) > i2cBLData.appImageEndAddr))
-                    {
-                        SET_BIT(i2cBLData.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
-                        return false;
-                    }
-                    else
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+                    if (((i2cBLData.cmdProtocol.eraseCommand.memAddr >= i2cBLData.appImageStartAddr) && ((i2cBLData.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= i2cBLData.appImageEndAddr))
+                        || (i2cBLData.cmdProtocol.eraseCommand.memAddr >= DEVCFG_PAGE_ADDRESS)
+                       )
+<#else>
+                    if ((i2cBLData.cmdProtocol.eraseCommand.memAddr >= i2cBLData.appImageStartAddr) && ((i2cBLData.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= i2cBLData.appImageEndAddr))
+</#if>
                     {
                         SET_BIT(i2cBLData.status, BL_STATUS_BIT_BUSY);
                         i2cBLData.flashState = BL_FLASH_STATE_ERASE;
                     }
+                    else
+                    {
+                        SET_BIT(i2cBLData.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
+                        return false;
+                    }
                 }
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+                else if (i2cBLData.command == BL_COMMAND_DEVCFG_PROGRAM)
+                {
+                    if ((i2cBLData.cmdProtocol.programCommand.memAddr >= DEVCFG_PAGE_ADDRESS)
+                          && (i2cBLData.cmdProtocol.programCommand.nBytes <= BL_BUFFER_SIZE))
+                    {
+                        i2cBLData.index = 0;
+                        i2cBLData.rdState = BL_I2C_READ_PROGRAM_DATA;
+                    }
+                    else
+                    {
+                        SET_BIT(i2cBLData.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
+                        return false;
+                    }
+                }
+</#if>
                 else if (i2cBLData.command == BL_COMMAND_VERIFY)
                 {
                    SET_BIT(i2cBLData.status, BL_STATUS_BIT_BUSY);
@@ -327,6 +364,7 @@ static bool BL_I2C_EventHandler( I2C_SLAVE_TRANSFER_EVENT event, uintptr_t conte
     switch(event)
     {
         case I2C_SLAVE_TRANSFER_EVENT_ADDR_MATCH:
+            i2cBLActive   = true;
 
             /* Reset the I2C read state machine */
             i2cBLData.rdState = BL_I2C_READ_COMMAND;
@@ -367,13 +405,22 @@ static void BL_I2C_FlashTask(void)
     switch(i2cBLData.flashState)
     {
         case BL_FLASH_STATE_ERASE:
-            NVM_PageErase(i2cBLData.cmdProtocol.eraseCommand.memAddr);
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    <#if (__PROCESSOR?matches("PIC32MX.*") == false) || (__PROCESSOR?matches("PIC32MZ.[0-9]*W") == false)>
+            if (i2cBLData.cmdProtocol.eraseCommand.memAddr >= DEVCFG_PAGE_ADDRESS)
+            {
+                ${MEM_USED}_BootFlashWriteProtectDisable(NVM_LOWER_BOOT_WRITE_PROTECT_3);
+            }
+
+    </#if>
+</#if>
+            ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(i2cBLData.cmdProtocol.eraseCommand.memAddr);
             i2cBLData.flashState = BL_FLASH_STATE_ERASE_BUSY_POLL;
 
             break;
 
         case BL_FLASH_STATE_WRITE:
-            NVM_RowWrite((uint32_t*)&i2cBLData.cmdProtocol.programCommand.data[i2cBLData.nFlashBytesWritten], (i2cBLData.cmdProtocol.programCommand.memAddr + i2cBLData.nFlashBytesWritten));
+            ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&i2cBLData.cmdProtocol.programCommand.data[i2cBLData.nFlashBytesWritten], (i2cBLData.cmdProtocol.programCommand.memAddr + i2cBLData.nFlashBytesWritten));
             i2cBLData.flashState = BL_FLASH_STATE_WRITE_BUSY_POLL;
             break;
 
@@ -387,7 +434,7 @@ static void BL_I2C_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
-            if(NVM_IsBusy() == false)
+            if(${MEM_USED}_IsBusy() == false)
             {
                 CLR_BIT(i2cBLData.status, BL_STATUS_BIT_BUSY);
                 i2cBLData.flashState = BL_FLASH_STATE_IDLE;
@@ -395,7 +442,7 @@ static void BL_I2C_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
-            if(NVM_IsBusy() == false)
+            if(${MEM_USED}_IsBusy() == false)
             {
                 i2cBLData.nFlashBytesWritten += PAGE_SIZE;
 
@@ -435,12 +482,21 @@ static void BL_I2C_FlashTask(void)
 
 void bootloader_${BTL_TYPE}_Tasks(void)
 {
-    i2cBLData.flashState = BL_FLASH_STATE_IDLE;
-
-    ${PERIPH_USED}_CallbackRegister(BL_I2C_EventHandler, (uintptr_t)0);
-
-    while (1)
+    if (i2cBLInitDone == false)
     {
-        BL_I2C_FlashTask();
+        i2cBLData.flashState = BL_FLASH_STATE_IDLE;
+
+        ${PERIPH_USED}_CallbackRegister(BL_I2C_EventHandler, (uintptr_t)0);
+
+        i2cBLInitDone = true;
     }
+
+    do
+    {
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        kickdog();
+
+</#if>
+        BL_I2C_FlashTask();
+    } while (i2cBLActive);
 }

@@ -30,11 +30,14 @@ global flash_start
 global flash_size
 global flash_erase_size
 
+global mx_devCfg_addr
 global btl_start
 
 flash_start         = 0
 flash_size          = 0
 flash_erase_size    = 0
+
+mx_devCfg_addr      = "0xBFC02FF0"
 
 btl_start           = "0x9FC01000"
 
@@ -64,7 +67,7 @@ for mem_idx in range(0, len(addr_space_children)):
             ram_start   = "0xA0000000"
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
-    if ((btl_type != "UART") ):
+    if ((btl_type != "UART") and (btl_type != "I2C")):
         if (("PIC32MX" in Variables.get("__PROCESSOR")) or
             ("PIC32MK" in Variables.get("__PROCESSOR"))):
             # Bootloader start address is in Program Flash memory as
@@ -76,9 +79,11 @@ for mem_idx in range(0, len(addr_space_children)):
                 if (addr_space_children[mem_idx].getAttribute("size") == "0xbf0"):
                     # Bootloader start address is in Program Flash memory as Boot Flash Memory is only 3KB
                     btl_start = "0x9D000000"
+                    mx_devCfg_addr = "0xBFC00BF0"
                 else:
                     # The bootloader code will be placed after the startup code ending at 0x9FC00490
                     btl_start = "0x9FC00500"
+                    mx_devCfg_addr = "0xBFC02FF0"
 
 def activateAndConnectDependencies(component):
     global btl_type
@@ -181,6 +186,20 @@ def setAppStartAndCommentVisible(symbol, event):
 def setTriggerLenVisible(symbol, event):
     symbol.setVisible(event["value"])
 
+def setFuseProgram(symbol, event):
+    visibility = False
+
+    if (event["value"] != ""):
+        if (Database.getSymbolValue(event["value"].lower(), "FLASH_DEVCFG_START_ADDRESS") != None):
+            visibility = True
+
+    symbol.setVisible(visibility)
+
+def setWDTEnable(symbol, event):
+    result_dict = {}
+
+    result_dict = Database.sendMessage("core", "WDT_ENABLE", {"isEnabled":event["value"]})
+
 def generateCommonSymbols(bootloaderComponent):
     global ram_start
     global ram_size
@@ -253,7 +272,37 @@ def generateCommonSymbols(bootloaderComponent):
     result_dict = Database.sendMessage("core", "CONTROL_REGISTER_LOCK", {"isEnabled":False})
 
 def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
-    return
+    global mx_devCfg_addr
+
+    btlFuseProgramEnable = bootloaderComponent.createBooleanSymbol("BTL_FUSE_PROGRAM_ENABLE", None)
+    btlFuseProgramEnable.setLabel("Enable Fuse Programming")
+    btlFuseProgramEnable.setHelp(btl_helpkeyword)
+    btlFuseProgramEnable.setDefaultValue(False)
+
+    devCfgAddress = "0xBFC0FF40"
+
+    if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR"))):
+        devCfgAddress = "0xBFC0FF40"
+    elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+        devCfgAddress = "0xBFC0FF3C"
+    elif (re.match("PIC32MZ.[0-9]*W", Variables.get("__PROCESSOR"))):
+        devCfgAddress = "0xBFC55E88"
+    elif ("PIC32MX" in Variables.get("__PROCESSOR")):
+        devCfgAddress = mx_devCfg_addr
+    elif ("PIC32MK" in Variables.get("__PROCESSOR")):
+        devCfgAddress = "0xBFC03F40"
+
+    btlDevCfgAddress = bootloaderComponent.createStringSymbol("BTL_DEVCFG_ADDRESS", None)
+    btlDevCfgAddress.setLabel("Device Configuration Address")
+    btlDevCfgAddress.setHelp(btl_helpkeyword)
+    btlDevCfgAddress.setDefaultValue(devCfgAddress)
+    btlDevCfgAddress.setVisible(False)
+
+    btlWdogEnable = bootloaderComponent.createBooleanSymbol("BTL_WDOG_ENABLE", None)
+    btlWdogEnable.setLabel("Enable Watchdog Refresh If Enabled Through FUSE")
+    btlWdogEnable.setHelp(btl_helpkeyword)
+    btlWdogEnable.setDefaultValue(False)
+    btlWdogEnable.setDependencies(setWDTEnable, ["BTL_WDOG_ENABLE"])
 
 def generateCommonFiles(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
@@ -292,6 +341,7 @@ def generateLinkerFileSymbol(bootloaderComponent):
     # DS60001402 -> PIC32MKXXXXGPD/GPE/MCF
     # DS60001570 -> PIC32MKXXXXGPG/MCJ
     # DS60001519 -> PIC32MKXXXXGPK/MCM
+    # DS60001690 -> PIC32MKXXXXMCA
 
     # Get the (Datasheet Number) for the current Device Family
     deviceFamily = Database.getSymbolValue("core", "DEVICE_FAMILY")

@@ -67,7 +67,7 @@ devices = {
             "SAML1X"    : [256, 2048, True],
             "SAML2X"    : [256, 2048, True],
             "SAMHA1"    : [256, 2048, True],
-            "PIC32MK"   : [4096, 8192, False],
+            "PIC32MK"   : [4096, 8192, True],
             "PIC32MZ"   : [16384, 16384, False],
             "PIC32MZW"  : [4096, 8192, False],
             "PIC32MX"   : [1024, 4096, False],

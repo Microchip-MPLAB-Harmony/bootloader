@@ -79,6 +79,11 @@
 /* Compare Value to achieve a 100Ms Delay */
 #define TIMER_COMPARE_VALUE     (CORE_TIMER_FREQUENCY / 10)
 
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    <#lt>#define DEVCFG_ADDRESS          ${BTL_DEVCFG_ADDRESS}
+    <#lt>#define DEVCFG_PAGE_ADDRESS     (DEVCFG_ADDRESS & OFFSET_ALIGN_MASK)
+</#if>
+
 enum
 {
     BL_CMD_UNLOCK       = 0xa0,
@@ -87,6 +92,9 @@ enum
     BL_CMD_RESET        = 0xa3,
 <#if BTL_DUAL_BANK == true>
     BL_CMD_BKSWAP_RESET = 0xa4,
+</#if>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    BL_CMD_DEVCFG_DATA  = 0xa5,
 </#if>
     BL_CMD_READ_VERSION = 0xa6,
 };
@@ -122,6 +130,10 @@ static uint8_t  input_command       = 0;
 
 static bool     packet_received     = false;
 static bool     flash_data_ready    = false;
+
+static bool     uartBLInitDone      = false;
+
+static bool     uartBLActive        = false;
 
 <#if BTL_DUAL_BANK == true>
     <#lt>#define LOWER_FLASH_START               (FLASH_START)
@@ -335,6 +347,10 @@ static void input_task(void)
                 size            = input_buffer[SIZE_OFFSET];
                 input_command   = (uint8_t)input_buffer[CMD_OFFSET];
                 header_received = true;
+                uartBLActive    = true;
+
+                /* Disable global interrupts */
+                __builtin_disable_interrupts();
             }
 
             ptr = 0;
@@ -384,6 +400,28 @@ static void command_task(void)
             ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
         }
     }
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    else if ((BL_CMD_DATA == input_command) || (BL_CMD_DEVCFG_DATA == input_command))
+    {
+        flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
+
+        if (((BL_CMD_DATA == input_command) && (unlock_begin <= flash_addr && flash_addr < unlock_end))
+            || ((BL_CMD_DEVCFG_DATA == input_command) && (flash_addr >= DEVCFG_PAGE_ADDRESS))
+           )
+        {
+            for (i = 0; i < WORDS(DATA_SIZE); i++)
+            {
+                flash_data[i] = input_buffer[i + DATA_OFFSET];
+            }
+
+            flash_data_ready = true;
+        }
+        else
+        {
+            ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
+        }
+    }
+<#else>
     else if (BL_CMD_DATA == input_command)
     {
         flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
@@ -402,6 +440,7 @@ static void command_task(void)
             ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
         }
     }
+</#if>
     else if (BL_CMD_READ_VERSION == input_command)
     {
         ${PERIPH_USED}_WriteByte(BL_RESP_OK);
@@ -483,6 +522,15 @@ static void flash_task(void)
     }
 </#if>
 
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    <#if (__PROCESSOR?matches("PIC32MX.*") == false) || (__PROCESSOR?matches("PIC32MZ.[0-9]*W") == false)>
+        <#lt>    if (flash_addr >= DEVCFG_PAGE_ADDRESS)
+        <#lt>    {
+        <#lt>        ${MEM_USED}_BootFlashWriteProtectDisable(NVM_LOWER_BOOT_WRITE_PROTECT_3);
+        <#lt>    }
+
+    </#if>
+</#if>
     /* Erase the Current sector */
     ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(addr);
 
@@ -504,17 +552,36 @@ static void flash_task(void)
     ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 }
 
+// *****************************************************************************
+// *****************************************************************************
+// Section: Bootloader Global Functions
+// *****************************************************************************
+// *****************************************************************************
+
 void bootloader_${BTL_TYPE}_Tasks(void)
 {
-    CORETIMER_CompareSet(TIMER_COMPARE_VALUE);
-
-    while (1)
+    if (uartBLInitDone == false)
     {
+        CORETIMER_CompareSet(TIMER_COMPARE_VALUE);
+
+        uartBLInitDone = true;
+    }
+
+    do
+    {
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        kickdog();
+
+</#if>
         input_task();
 
         if (flash_data_ready)
+        {
             flash_task();
+        }
         else if (packet_received)
+        {
             command_task();
-    }
+        }
+    } while (uartBLActive);
 }
