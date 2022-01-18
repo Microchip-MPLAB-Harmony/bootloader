@@ -50,6 +50,10 @@
 // *****************************************************************************
 // *****************************************************************************
 
+/* Bootloader Major and Minor version sent for a Read Version command (MAJOR.MINOR)*/
+#define BTL_MAJOR_VERSION       3
+#define BTL_MINOR_VERSION       6
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Global objects
@@ -82,36 +86,44 @@ void __WEAK SYS_DeInitialize( void *data )
     /* Function can be overriden with custom implementation */
 }
 
+uint16_t __WEAK bootloader_GetVersion( void )
+{
+    /* Function can be overriden with custom implementation */
+    uint16_t btlVersion = (((BTL_MAJOR_VERSION & 0xFF) << 8) | (BTL_MINOR_VERSION & 0xFF));
+
+    return btlVersion;
+}
+
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
 void kickdog(void)
 {
-	if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
-	{
-		if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
-		{
-			if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
-			{
-				if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
-				{
+    if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
+    {
+        if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
+        {
+            if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
+            {
+                if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+                {
 
-					/* Clear WDT and reset the WDT timer before the
-					timeout occurs */
-					WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+                    /* Clear WDT and reset the WDT timer before the
+                    timeout occurs */
+                    WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
 
-					WDT_REGS->WDT_INTFLAG |= WDT_INTFLAG_EW_Msk;
-				} 
-			}
-		}
-		else
-		{
-			if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
-			{
+                    WDT_REGS->WDT_INTFLAG |= WDT_INTFLAG_EW_Msk;
+                }
+            }
+        }
+        else
+        {
+            if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+            {
 
-				/* Clear WDT and reset the WDT timer before the timeout occurs */
-				WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
-			} 
-		}
-	}    
+                /* Clear WDT and reset the WDT timer before the timeout occurs */
+                WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+            }
+        }
+    }
 }
 </#if>
 

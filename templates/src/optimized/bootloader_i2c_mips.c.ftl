@@ -77,6 +77,7 @@ typedef enum
     BL_COMMAND_VERIFY = 0xA3,
     BL_COMMAND_RESET = 0xA4,
     BL_COMMAND_READ_STATUS = 0xA5,
+    BL_COMMAND_READ_VERSION = 0xA8,
     BL_COMMAND_MAX,
 }BL_COMMAND;
 
@@ -160,6 +161,45 @@ static volatile BL_PROTOCOL                 i2cBLData;
 // *****************************************************************************
 // *****************************************************************************
 
+static void BL_I2C_SendResponse(uint8_t command)
+{
+    static uint8_t numVersionBytesSent = 0;
+    uint16_t btlVersion = 0;
+
+    switch(command)
+    {
+        case BL_COMMAND_READ_STATUS:
+            ${PERIPH_USED}_WriteByte(i2cBLData.status);
+
+            /* Clear all status bits except the busy bit */
+            CLR_BIT(i2cBLData.status, (BL_STATUS_BIT_ALL & ~(BL_STATUS_BIT_BUSY)));
+
+            break;
+
+        case BL_COMMAND_READ_VERSION:
+            btlVersion = bootloader_GetVersion();
+
+            if (numVersionBytesSent == 0)
+            {
+                ${PERIPH_USED}_WriteByte(((btlVersion >> 8) & 0xFF));
+
+                numVersionBytesSent = 1;
+            }
+            else
+            {
+                ${PERIPH_USED}_WriteByte((btlVersion & 0xFF));
+
+                numVersionBytesSent = 0;
+            }
+
+            break;
+
+        default:
+            break;
+    }
+
+}
+
 static bool BL_I2C_CommandParser(uint8_t rdByte)
 {
     switch(i2cBLData.rdState)
@@ -180,7 +220,7 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
             {
                 i2cBLData.flashState = BL_FLASH_STATE_RESET;
             }
-            else if (i2cBLData.command == BL_COMMAND_READ_STATUS)
+            else if ((i2cBLData.command == BL_COMMAND_READ_STATUS) || (i2cBLData.command == BL_COMMAND_READ_VERSION))
             {
                 /* Do Nothing */
             }
@@ -214,6 +254,9 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
 
                 if (i2cBLData.command == BL_COMMAND_UNLOCK)
                 {
+                    /* Since this is the first command, clear any previously set status bits (host may be retrying and status may be set from previous communication) */
+                    CLR_BIT(i2cBLData.status, BL_STATUS_BIT_ALL);
+
                     /* Save application start address and size for future reference */
                     if ((i2cBLData.cmdProtocol.unlockCommand.appImageStartAddr + i2cBLData.cmdProtocol.unlockCommand.appImageSize) > (FLASH_START + FLASH_LENGTH))
                     {
@@ -304,10 +347,7 @@ static bool BL_I2C_EventHandler( I2C_SLAVE_TRANSFER_EVENT event, uintptr_t conte
             break;
 
         case I2C_SLAVE_TRANSFER_EVENT_TX_READY:
-            ${PERIPH_USED}_WriteByte(i2cBLData.status);
-
-            /* Clear all status bits except the busy bit */
-            CLR_BIT(i2cBLData.status, (BL_STATUS_BIT_ALL & ~(BL_STATUS_BIT_BUSY)));
+            BL_I2C_SendResponse(i2cBLData.command);
 
             break;
 

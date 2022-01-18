@@ -68,9 +68,9 @@ ENTRY(__XC32_RESET_HANDLER_NAME)
 #endif
 
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
-    <#lt>/* Bootloader Trigger pattern needs to be stored in starting ${BTL_TRIGGER_LEN} Bytes of Ram
-    <#lt> * by the application if it wants to run bootloader at startup without any
-    <#lt> * external trigger.
+    <#lt>/* Bootloader Trigger pattern of length ${BTL_TRIGGER_LEN} Bytes needs to be stored
+    <#lt> * from starting of Ram by the application if it wants to
+    <#lt> * run bootloader at startup without any external trigger.
     <#lt> * Example:
     <#lt> *     ram[0] = 0x5048434D;
     <#lt> *     ram[1] = 0x5048434D;

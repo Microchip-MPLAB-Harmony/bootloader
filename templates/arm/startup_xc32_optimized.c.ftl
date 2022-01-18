@@ -39,16 +39,15 @@ extern int main(void);
 
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == false >
 
-/* Declaration of Reset handler (may be custom) */
-void __attribute__((noinline)) Reset_Handler(void);
+    <#lt>/* Declaration of Reset handler (may be custom) */
+    <#lt>void __attribute__((noinline)) Reset_Handler(void);
 
-__attribute__ ((used, section(".vectors")))
-void (* const vectors[])(void) =
-{
-  &_ram_end_,
-  Reset_Handler,
-};
-
+    <#lt>__attribute__ ((used, section(".vectors")))
+    <#lt>void (* const vectors[])(void) =
+    <#lt>{
+    <#lt>    &_ram_end_,
+    <#lt>    Reset_Handler,
+    <#lt>};
 </#if>
 
 /**
@@ -67,7 +66,7 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
 {
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CM_JH00_JH01">
     register uint32_t *pRam;
-    
+
     // MCRAMC initialization loop (to handle ECC properly)
     // Write to entire RAM (leaving initial 16 bytes) to initialize ECC checksum
     for (pRam = (uint32_t*)&_sdata ; pRam < (uint32_t*)&_ram_end_; pRam++)
@@ -75,32 +74,32 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
         *pRam = 0;
 
         if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
-		{
-			if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
-			{
-				if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
-				{
-					if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
-					{
+        {
+            if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
+            {
+                if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
+                {
+                    if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+                    {
 
-						/* Clear WDT and reset the WDT timer before the
-						timeout occurs */
-						WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+                        /* Clear WDT and reset the WDT timer before the
+                        timeout occurs */
+                        WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
 
-						WDT_REGS->WDT_INTFLAG |= WDT_INTFLAG_EW_Msk;
-					} 
-				}
-			}
-			else
-			{
-				if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
-				{
+                        WDT_REGS->WDT_INTFLAG |= WDT_INTFLAG_EW_Msk;
+                    }
+                }
+            }
+            else
+            {
+                if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+                {
 
-					/* Clear WDT and reset the WDT timer before the timeout occurs */
-					WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
-				} 
-			}
-		}  
+                    /* Clear WDT and reset the WDT timer before the timeout occurs */
+                    WDT_REGS->WDT_CLEAR = (uint8_t)WDT_CLEAR_CLEAR_KEY;
+                }
+            }
+        }
     }
 </#if>
 

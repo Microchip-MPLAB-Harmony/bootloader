@@ -8,8 +8,8 @@
     This file contains source code necessary to execute I2C bootloader.
 
   Description:
-    This file contains source code necessary to I2C I2C bootloader.
-    It implements bootloader protocol which uses UART peripheral to download
+    This file contains source code necessary to execute I2C bootloader.
+    It implements bootloader protocol which uses I2C peripheral to download
     application firmware into internal flash.
  *******************************************************************************/
 
@@ -80,7 +80,10 @@ typedef enum
 <#if BTL_DUAL_BANK == true>
     BL_COMMAND_BKSWAP_RESET = 0xA6,
 </#if>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
     BL_COMMAND_DEVCFG_PROGRAM = 0xA7,
+</#if>
+    BL_COMMAND_READ_VERSION = 0xA8,
     BL_COMMAND_MAX,
 }BL_COMMAND;
 
@@ -161,13 +164,53 @@ typedef struct
 // *****************************************************************************
 // *****************************************************************************
 
-static BL_PROTOCOL                          blProtocol;
+static BL_PROTOCOL blProtocol;
+
+static bool i2cBLActive = false;
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
+
+static void BL_I2C_SendResponse(uint8_t command)
+{
+    static uint8_t numVersionBytesSent = 0;
+    uint16_t btlVersion = 0;
+
+    switch(command)
+    {
+        case BL_COMMAND_READ_STATUS:
+            ${PERIPH_USED}_WriteByte(blProtocol.status);
+
+            /* Clear all status bits except the busy bit */
+            CLR_BIT(blProtocol.status, (BL_STATUS_BIT_ALL & ~(BL_STATUS_BIT_BUSY)));
+
+            break;
+
+        case BL_COMMAND_READ_VERSION:
+            btlVersion = bootloader_GetVersion();
+
+            if (numVersionBytesSent == 0)
+            {
+                ${PERIPH_USED}_WriteByte(((btlVersion >> 8) & 0xFF));
+
+                numVersionBytesSent = 1;
+            }
+            else
+            {
+                ${PERIPH_USED}_WriteByte((btlVersion & 0xFF));
+
+                numVersionBytesSent = 0;
+            }
+
+            break;
+
+        default:
+            break;
+    }
+}
 
 static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
 {
@@ -195,7 +238,7 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
                 blProtocol.flashState = BL_FLASH_STATE_BKSWAP_RESET;
             }
 </#if>
-            else if (blProtocol.command == BL_COMMAND_READ_STATUS)
+            else if ((blProtocol.command == BL_COMMAND_READ_STATUS) || (blProtocol.command == BL_COMMAND_READ_VERSION))
             {
                 /* Do Nothing */
             }
@@ -339,6 +382,7 @@ static void BL_I2C_EventsProcess(void)
     else if (intFlags & SERCOM_I2C_SLAVE_INTFLAG_AMATCH)
     {
         isFirstRxByte = true;
+        i2cBLActive   = true;
 
         transferDir = ${PERIPH_USED}_TransferDirGet();
 
@@ -371,10 +415,7 @@ static void BL_I2C_EventsProcess(void)
         {
             if ((isFirstRxByte == true) || (${PERIPH_USED}_LastByteAckStatusGet() == SERCOM_I2C_SLAVE_ACK_STATUS_RECEIVED_ACK))
             {
-                ${PERIPH_USED}_WriteByte(blProtocol.status);
-
-                /* Clear all status bits except the busy bit */
-                CLR_BIT(blProtocol.status, (BL_STATUS_BIT_ALL & ~(BL_STATUS_BIT_BUSY)));
+                BL_I2C_SendResponse(blProtocol.command);
 
                 isFirstRxByte = false;
 
@@ -411,8 +452,11 @@ static void BL_I2C_FlashTask(void)
             }
             else
             {
-                /* Erase the NVM user row */
-                ${.vars["${MEM_USED?lower_case}"].DEVCFG_ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
+                if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && (blProtocol.cmdProtocol.eraseCommand.memAddr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+                {
+                    /* Erase the NVM user row */
+                    ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
+                }
             }
 <#else>
             /* Erase the Current row */
@@ -426,7 +470,11 @@ static void BL_I2C_FlashTask(void)
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
             if (blProtocol.command == BL_COMMAND_DEVCFG_PROGRAM)
             {
-                ${.vars["${MEM_USED?lower_case}"].DEVCFG_WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                if ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && (blProtocol.cmdProtocol.programCommand.memAddr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+                {
+                    /* Write the NVM user row */
+                    ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                }
             }
             else
             {
@@ -503,20 +551,22 @@ static void BL_I2C_FlashTask(void)
 
 void bootloader_${BTL_TYPE}_Tasks(void)
 {
-    while (1)
+    do
     {
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
         kickdog();
-</#if>
 
+</#if>
 <#if BTL_CMD_STRETCH_CLK == true>
         if (IS_BIT_SET(blProtocol.status, BL_STATUS_BIT_BUSY) == false)
         {
             BL_I2C_EventsProcess();
         }
+
 <#else>
         BL_I2C_EventsProcess();
+
 </#if>
         BL_I2C_FlashTask();
-    }
+    } while (i2cBLActive);
 }

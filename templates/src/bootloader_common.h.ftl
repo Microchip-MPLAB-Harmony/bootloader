@@ -60,27 +60,78 @@
 #define ERASE_BLOCK_SIZE                        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
 #define PAGES_IN_ERASE_BLOCK                    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
-<#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
-#define NVM_USER_ROW_START                      (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS}UL)
-#define NVM_USER_ROW_SIZE                       (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_SIZE}UL)
+<#if BTL_FUSE_PROGRAM_ENABLE?? && BTL_FUSE_PROGRAM_ENABLE == true>
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+        <#lt>#define NVM_USER_ROW_START                      (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS}UL)
+        <#lt>#define NVM_USER_ROW_SIZE                       (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_SIZE}UL)
+        <#lt>#define NVM_USER_PAGE_SIZE                      (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_PROGRAM_SIZE}UL)
+    </#if>
 </#if>
 
 #define BOOTLOADER_SIZE                         ${BTL_SIZE}
 <#if __PROCESSOR?matches("PIC32M.*") == false>
-#define APP_START_ADDRESS                       (0x${core.APP_START_ADDRESS}UL)
+    <#lt>#define APP_START_ADDRESS                       (0x${core.APP_START_ADDRESS}UL)
 <#else>
-#define APP_START_ADDRESS                       (PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
+    <#lt>#define APP_START_ADDRESS                       (PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
 </#if>
 
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
     <#if core.CoreArchitecture == "MIPS">
-        <#lt>#define BTL_TRIGGER_RAM_START   				KVA0_TO_KVA1(${BTL_RAM_START})
+        <#lt>#define BTL_TRIGGER_RAM_START                  KVA0_TO_KVA1(${BTL_RAM_START})
     <#else>
-        <#lt>#define BTL_TRIGGER_RAM_START   				${BTL_RAM_START}
+        <#lt>#define BTL_TRIGGER_RAM_START                  ${BTL_RAM_START}
     </#if>
 
-    <#lt>#define BTL_TRIGGER_LEN         ${BTL_TRIGGER_LEN}
+    <#lt>#define BTL_TRIGGER_LEN                        ${BTL_TRIGGER_LEN}
 </#if>
+
+// *****************************************************************************
+/* Function:
+    uint16_t bootloader_GetVersion( void );
+
+Summary:
+    Returns the current bootloader version.
+
+Description:
+    This function can be used to read the current version of bootloader.
+
+    The bootloader version is of 2 Bytes. MAJOR version is sent first
+    followed by MINOR version
+
+    This function is defined as __WEAK in bootloader core and defines the bootloader
+    version to current release version of bootloader repo.
+
+    It can be overridden with custom implementation by user based on his requirement.
+
+    User can make use of bootloader read version command to read the current version
+    from the respective host.
+
+Precondition:
+    None
+
+Parameters:
+    None.
+
+Returns:
+    bootloader version - 2 Bytes (MAJOR version is sent first followed by MINOR version)
+
+Example:
+    <code>
+
+    // Bootloader Major and Minor version sent for a Read Version command (MAJOR.MINOR)
+    #define BTL_MAJOR_VERSION       3
+    #define BTL_MINOR_VERSION       6
+
+    uint16_t bootloader_GetVersion( void )
+    {
+        uint16_t btlVersion = (((BTL_MAJOR_VERSION & 0xFF) << 8) | (BTL_MINOR_VERSION & 0xFF));
+
+        return btlVersion;
+    }
+
+    </code>
+*/
+uint16_t bootloader_GetVersion( void );
 
 <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
      (!BTL_LIVE_UPDATE??) >

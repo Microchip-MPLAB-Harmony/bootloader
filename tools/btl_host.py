@@ -36,6 +36,7 @@ BL_CMD_VERIFY       = 0xa2
 BL_CMD_RESET        = 0xa3
 BL_CMD_BKSWAP_RESET = 0xa4
 BL_CMD_DEVCFG_DATA  = 0xa5
+BL_CMD_READ_VERSION = 0xa6
 
 BL_RESP_OK          = 0x50
 BL_RESP_ERROR       = 0x51
@@ -48,26 +49,28 @@ BL_GUARD            = 0x5048434D
 # Should be equal to Device Erase size
 ERASE_SIZE        = 256
 
-BOOTLOADER_SIZE     = 2048
+BOOTLOADER_SIZE   = 2048
 
-# Supported Devices [ERASE_SIZE, BOOTLOADER_SIZE, USER_ROW_ADDR]
+DEV_CFG_SUPPORT   = False
+
+# Supported Devices [ERASE_SIZE, BOOTLOADER_SIZE, DEV_CFG_SUPPORT]
 devices = {
-            "SAME7X"    : [8192, 8192, 0xFFFFFFFF],
-            "SAME5X"    : [8192, 8192, 0x00804000],
-            "SAMD5X"    : [8192, 8192, 0x00804000],
-            "SAMG5X"    : [8192, 8192, 0xFFFFFFFF],
-            "SAMC2X"    : [256, 2048, 0x00804000],
-            "SAMD1X"    : [256, 2048, 0x00804000],
-            "SAMD2X"    : [256, 2048, 0x00804000],
-            "SAMDA1"    : [256, 2048, 0x00804000],
-            "SAML1X"    : [256, 2048, 0x00804000],
-            "SAML2X"    : [256, 2048, 0x00804000],
-            "SAMHA1"    : [256, 2048, 0x00804000],
-            "PIC32MK"   : [4096, 8192, 0xFFFFFFFF],
-            "PIC32MZ"   : [16384, 16384, 0xFFFFFFFF],
-            "PIC32MZW"  : [4096, 8192, 0xFFFFFFFF],
-            "PIC32MX"   : [1024, 4096, 0xFFFFFFFF],
-            "PIC32CM"   : [256, 2048, 0x00804000],
+            "SAME7X"    : [8192, 8192, False],
+            "SAME5X"    : [8192, 8192, True],
+            "SAMD5X"    : [8192, 8192, True],
+            "SAMG5X"    : [8192, 8192, False],
+            "SAMC2X"    : [256, 2048, True],
+            "SAMD1X"    : [256, 2048, True],
+            "SAMD2X"    : [256, 2048, True],
+            "SAMDA1"    : [256, 2048, True],
+            "SAML1X"    : [256, 2048, True],
+            "SAML2X"    : [256, 2048, True],
+            "SAMHA1"    : [256, 2048, True],
+            "PIC32MK"   : [4096, 8192, False],
+            "PIC32MZ"   : [16384, 16384, False],
+            "PIC32MZW"  : [4096, 8192, False],
+            "PIC32MX"   : [1024, 4096, False],
+            "PIC32CM"   : [256, 2048, True],
 }
 
 #------------------------------------------------------------------------------
@@ -126,6 +129,16 @@ def get_response(port):
     return (v[0])
 
 #------------------------------------------------------------------------------
+def get_version(port):
+
+    major_version = get_response(port)
+    minor_version = get_response(port)
+
+    btlVersion = "v" + str(major_version) + "." + str(minor_version)
+
+    return btlVersion
+
+#------------------------------------------------------------------------------
 def send_request(port, cmd, size, data):
     req = uint32(BL_GUARD) + size + [cmd] + data
 
@@ -164,24 +177,73 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total: 
         print()
 
-def send_device_configurations(devCfgFile, port, erase_size, addr):
+def send_device_configurations(devCfgFile, port, erase_size):
     data = []
+    address = 0
+    value = 0
 
     # Expected Format for Device Configurations in text file.
-    # Each 32-Bit Fuse bit value has to be newline seperated
+    # Device Configurations for each row has to start with ROW_START followed by address
+    # Device configurations should end with ROW_END
+    # Each 32-Bit Fuse bit value has to be newline separated
+
+    # ROW_START 0x12345678
     # 0x78563412
     # 0x00EFCDAB
+    # ROW_END
 
-    with open(devCfgFile,"r") as input_file:
-        for line in input_file:
-            line = line.strip()
+    input_file = open(devCfgFile, 'r')
 
-            # Skip any empty lines
-            if (not line):
-                continue
+    for line in input_file:
+        line = line.strip()
 
+        # Skip any empty lines
+        if (not line):
+            continue
+
+        if ("ROW_START" in line):
+            # Start of new device configuration row
+            try:
+                address = int(line.split(' ')[1], 0)
+
+                # Get the Row start in which the address falls
+                rowStart = (address & (~(erase_size - 1)))
+
+                prefixBytes = (address - rowStart)
+
+                # If address is not aligned to Erase boundary add 0xFF for diff number of bytes
+                for i in range(0, prefixBytes):
+                    data += [0xff]
+
+            except:
+                error('Provide valid address for the Row in the deviceconfiguration file (Example: ROW_START 0x12345678')
+
+        elif (line == "ROW_END"):
+            # Send the Device configuration received
+            while len(data) % erase_size > 0:
+                data += [0xff]
+
+            size = len(data)
+
+            # Create data blocks of erase_size each
+            blocks = [data[i:i + erase_size] for i in range(0, len(data), erase_size)]
+
+            for idx, blk in enumerate(blocks):
+                resp = send_request(port, BL_CMD_DEVCFG_DATA, uint32(erase_size + 4), uint32(rowStart) + blk)
+
+                rowStart += erase_size
+
+                if resp != BL_RESP_OK:
+                    if resp == BL_RESP_INVALID:
+                        warning('Device configuration programming is not supported, Enable Fuse Programming in MHC for Bootloader (status = 0x%02x)' % resp)
+                        return
+                    else:
+                        error('Device configuration programming failed (status = 0x%02x)' % resp)
+
+            data = []
+
+        else:
             value = int(line, 0)
-
 
             # Store LSB first
             data += [value & 0xFF]
@@ -189,24 +251,7 @@ def send_device_configurations(devCfgFile, port, erase_size, addr):
             data += [(value >> 16 )& 0xFF]
             data += [(value >> 24) & 0xFF]
 
-    while len(data) % erase_size > 0:
-        data += [0xff]
-
-    size = len(data)
-
-    # Create data blocks of erase_size each
-    blocks = [data[i:i + erase_size] for i in range(0, len(data), erase_size)]
-
-    for idx, blk in enumerate(blocks):
-        resp = send_request(port, BL_CMD_DEVCFG_DATA, uint32(erase_size + 4), uint32(addr) + blk)
-
-        addr += erase_size
-
-        if resp != BL_RESP_OK:
-            if resp == BL_RESP_INVALID:
-                warning('Device configuration programming is not supported, Enable Fuse Programming in MHC for Bootloader (status = 0x%02x)' % resp)
-            else:
-                error('Device configuration programming failed (status = 0x%02x)' % resp)
+    input_file.close()
 
 #------------------------------------------------------------------------------
 def main():
@@ -251,7 +296,7 @@ def main():
 
         BOOTLOADER_SIZE   = devices[device][1]
 
-        DEV_CFG_ADDR      = devices[device][2]
+        DEV_CFG_SUPPORT   = devices[device][2]
     else:
         error('invalid device')
 
@@ -301,6 +346,15 @@ def main():
 
     size = len(data)
 
+    verbose(options.verbose, 'Reading Bootloader Version')
+
+    resp = send_request(port, BL_CMD_READ_VERSION, uint32(0), uint32(0))
+
+    if resp != BL_RESP_OK:
+        error('invalid response code (0x%02x). Read Bootloader version failed.' % resp)
+
+    verbose(options.verbose, 'Bootloader version : %s' % get_version(port))
+
     verbose(options.verbose, 'Unlocking\n')
     resp = send_request(port, BL_CMD_UNLOCK, uint32(8), uint32(address) + uint32(size))
 
@@ -314,7 +368,6 @@ def main():
 
     for idx, blk in enumerate(blocks):
         printProgressBar(idx+1, len(blocks), prefix = 'Programming:', suffix = 'Complete', length = 50)
-
 
         resp = send_request(port, BL_CMD_DATA, uint32(ERASE_SIZE + 4), uint32(addr) + blk)
         addr += ERASE_SIZE
@@ -334,12 +387,12 @@ def main():
 
     # Send Device Configuration Command
     if (options.devcfgfile != None):
-        if (DEV_CFG_ADDR == 0xFFFFFFFF):
+        if (DEV_CFG_SUPPORT == False):
             warning('Device configuration programming is not supported for this device')
         else:
             verbose(options.verbose, 'Sending Device Configuration Bits')
 
-            send_device_configurations(options.devcfgfile, port, ERASE_SIZE, DEV_CFG_ADDR)
+            send_device_configurations(options.devcfgfile, port, ERASE_SIZE)
 
     # Send Reboot Command
     if (options.swap == True):

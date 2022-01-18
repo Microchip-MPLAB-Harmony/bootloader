@@ -85,7 +85,10 @@ enum
 <#if BTL_DUAL_BANK == true>
     BL_CMD_BKSWAP_RESET = 0xa4,
 </#if>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
     BL_CMD_DEVCFG_DATA  = 0xa5,
+</#if>
+    BL_CMD_READ_VERSION = 0xa6,
 };
 
 enum
@@ -118,6 +121,8 @@ static uint8_t  input_command       = 0;
 
 static bool     packet_received     = false;
 static bool     flash_data_ready    = false;
+
+static bool     uartBLActive        = false;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -176,6 +181,7 @@ static void input_task(void)
                 size            = input_buffer[SIZE_OFFSET];
                 input_command   = (uint8_t)input_buffer[CMD_OFFSET];
                 header_received = true;
+                uartBLActive    = true;
             }
 
             ptr = 0;
@@ -269,6 +275,15 @@ static void command_task(void)
         }
     }
 </#if>
+    else if (BL_CMD_READ_VERSION == input_command)
+    {
+        ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+
+        uint16_t btlVersion = bootloader_GetVersion();
+
+        ${PERIPH_USED}_WriteByte(((btlVersion >> 8) & 0xFF));
+        ${PERIPH_USED}_WriteByte((btlVersion & 0xFF));
+    }
     else if (BL_CMD_VERIFY == input_command)
     {
         uint32_t crc        = input_buffer[CRC_OFFSET];
@@ -339,8 +354,8 @@ static void flash_task(void)
     // Check if the address falls in Device Configuration Space
     if (!(flash_addr >= unlock_begin && flash_addr < unlock_end))
     {
-        flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].DEVCFG_ERASE_API_NAME};
-        flash_write_fptr =  ${.vars["${MEM_USED?lower_case}"].DEVCFG_WRITE_API_NAME};
+        flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME};
+        flash_write_fptr =  ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME};
     }
 </#if>
 
@@ -383,17 +398,21 @@ static void flash_task(void)
 
 void bootloader_${BTL_TYPE}_Tasks(void)
 {
-    while (1)
+    do
     {
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
         kickdog();
-</#if>
 
+</#if>
         input_task();
 
         if (flash_data_ready)
+        {
             flash_task();
+        }
         else if (packet_received)
+        {
             command_task();
-    }
+        }
+    } while (uartBLActive);
 }

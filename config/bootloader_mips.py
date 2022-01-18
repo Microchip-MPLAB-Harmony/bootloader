@@ -247,12 +247,13 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
 
-def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
-    return
     # Disable Control Register Locks
     result_dict = {}
 
     result_dict = Database.sendMessage("core", "CONTROL_REGISTER_LOCK", {"isEnabled":False})
+
+def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
+    return
 
 def generateCommonFiles(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
