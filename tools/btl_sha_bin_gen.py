@@ -155,6 +155,12 @@ def main():
     except Exception as inst:
         error(inst)
 
+    dataSize = len(data)
+
+    # Add 0xFF if the size of binary is not equal to bootprotsize
+    for i in range(dataSize, bootprotsize):
+        data += [0xff]
+
     # Add 0xFF if size of binary is not aligned to device erase size
     while len(data) % ERASE_SIZE > 0:
         data += [0xff]
