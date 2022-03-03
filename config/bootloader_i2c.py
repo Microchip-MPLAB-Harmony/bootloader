@@ -93,7 +93,7 @@ def setupCoreComponentSymbols():
     else:
         coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
 
-    coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
+        coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
     coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 

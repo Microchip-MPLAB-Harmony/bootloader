@@ -83,11 +83,8 @@ PROVIDE(_vector_spacing = 0x0001);
 <#if BTL_START == "0x9D000000" >
     <#lt>PROVIDE(_ebase_address = 0x9D000000);
 <#else>
-    <#lt>PROVIDE(_ebase_address = 0x9FC00000);
+    <#lt>PROVIDE(_ebase_address = 0x9FC01000);
 </#if>
-
-/* Place the vector table and other exceptions after the device reset code. */
-PROVIDE(_ebase_vector_offsets = 0x1000);
 
 /*************************************************************************
  * Memory Address Equates
@@ -100,8 +97,8 @@ PROVIDE(_ebase_vector_offsets = 0x1000);
 _RESET_ADDR                    = 0xBFC00000;
 _BEV_EXCPT_ADDR                = 0xBFC00380;
 _DBG_EXCPT_ADDR                = 0xBFC00480;
-_SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + _ebase_vector_offsets + 0;
-_GEN_EXCPT_ADDR                = _ebase_address + _ebase_vector_offsets + 0x180;
+_SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + 0;
+_GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 
 /*************************************************************************
  * Memory Regions
@@ -346,7 +343,7 @@ SECTIONS
   } > kseg0_program_mem
 
   /* Interrupt vector table with vector offsets */
-  .vectors _ebase_address + _ebase_vector_offsets + 0x200 :
+  .vectors _ebase_address + 0x200 :
   {
     /*  Symbol __vector_offset_n points to .vector_n if it exists, 
      *  otherwise points to the default handler. The

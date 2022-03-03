@@ -86,7 +86,7 @@ def setupCoreComponentSymbols():
     if ("PIC32M" not in Variables.get("__PROCESSOR")):
         coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
 
-    coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
+        coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
     coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 

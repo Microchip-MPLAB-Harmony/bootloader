@@ -82,7 +82,7 @@ OPTIONAL("vector_offset_init.o")
 PROVIDE(_vector_spacing = 0x0001);
 PROVIDE(_ebase_address = 0x9D000000);
 
-/* Place the vector table and other exceptions after the device reset code. */
+/* Place the vector table after the device reset code. */
 PROVIDE(_ebase_vector_offsets = 0x1000);
 
 /*************************************************************************
@@ -93,9 +93,9 @@ PROVIDE(_ebase_vector_offsets = 0x1000);
  * _SIMPLE_TLB_REFILL_EXCPT_ADDR  -- Simple TLB-Refill Exception Vector
  * _GEN_EXCPT_ADDR                -- General Exception Vector
  *************************************************************************/
-_RESET_ADDR                    = 0xBD000000;
-_SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + _ebase_vector_offsets + 0;
-_GEN_EXCPT_ADDR                = _ebase_address + _ebase_vector_offsets + 0x180;
+_RESET_ADDR                    = 0xBD000200;
+_SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + 0;
+_GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 
 /*************************************************************************
  * Memory Regions
@@ -116,6 +116,11 @@ _GEN_EXCPT_ADDR                = _ebase_address + _ebase_vector_offsets + 0x180;
 
 MEMORY
 {
+    /* Place the exceptions starting from _ebase_address as required by device specification */
+    kseg0_exception_mem (rx) : ORIGIN = 0x9D000000, LENGTH = 0x200
+
+    kseg1_boot_mem           : ORIGIN = 0xBD000200, LENGTH = 0x1000 - 0x200
+
     /* All C files will be located here. Program Flash size of this device is 1MB/512KB
      * Program Flash Memory is reduced by Half(512KB/256KB) to support Live update.
      * Reserve 512 Bytes(ROW Size) of memory at the end of bank to store
@@ -123,7 +128,6 @@ MEMORY
      * run.
     */
     kseg0_program_mem  (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize} - 0x1000 - 512
-    kseg1_boot_mem           : ORIGIN = 0xBD000000, LENGTH = 0x480
 
     kseg0_data_mem     (w!x) : ORIGIN = ${btlRamStartAddress}, LENGTH =${btlRamSize}
     sfrs                     : ORIGIN = 0xBF800000, LENGTH = 0x100000
@@ -145,7 +149,7 @@ SECTIONS
   .app_excpt _GEN_EXCPT_ADDR :
   {
     KEEP(*(.gen_handler))
-  } > kseg0_program_mem
+  } > kseg0_exception_mem
 
   /* Interrupt vector table with vector offsets */
   .vectors _ebase_address + _ebase_vector_offsets + 0x200 :
