@@ -269,12 +269,12 @@ uint16_t __WEAK bootloader_GetVersion( void )
 
     <#lt>void run_Application(void)
     <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
+    <#lt>    uint32_t msp            = *(uint32_t *)(APP_JUMP_ADDRESS);
 
     <#lt>    void (*fptr)(void);
 
-    <#lt>    /* Set default to APP_RESET_ADDRESS */
-    <#lt>    fptr = (void (*)(void))APP_START_ADDRESS;
+    <#lt>    /* Set default to APP_JUMP_ADDRESS */
+    <#lt>    fptr = (void (*)(void))APP_JUMP_ADDRESS;
 
     <#lt>    if (msp == 0xffffffff)
     <#lt>    {

@@ -150,7 +150,7 @@ def setAppStartAndCommentVisible(symbol, event):
     global flash_size
 
     # If Bootloader is placed in Program Flash Memory Space
-    if (btl_start == "0x9D000000"):
+    if ((btl_start == "0x9D000000") or (btl_start == "0x90000000")):
         if (event["id"] == "BTL_SIZE"):
             btlSize = int(event["value"],10)
 
@@ -182,6 +182,22 @@ def setAppStartAndCommentVisible(symbol, event):
                 comment_enable = False
 
             symbol.setVisible(comment_enable)
+
+def getAppJumpAddr():
+    appStartAddr = int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16)
+
+    jumpAddr = appStartAddr
+
+    # If Bootloader is placed in Boot Flash Memory Space
+    if ((btl_start != "0x9D000000") or (btl_start != "0x90000000")):
+        if ("PIC32MX" not in Variables.get("__PROCESSOR")):
+            # Application Exceptions should be stored from App start address aligning to the _ebase_address
+            jumpAddr = str(hex(appStartAddr + 0x200))[2:]
+
+    return jumpAddr
+
+def setAppJumpAddr(symbol, event):
+    symbol.setValue(getAppJumpAddr())
 
 def setTriggerLenVisible(symbol, event):
     symbol.setVisible(event["value"])
@@ -234,6 +250,13 @@ def generateCommonSymbols(bootloaderComponent):
     btlSize.setVisible(False)
     btlSize.setDefaultValue(str(btl_size))
     btlSize.setDependencies(setBootloaderSize, ["MEM_USED"])
+
+    btlAppJumpAddr = bootloaderComponent.createStringSymbol("BTL_APP_JUMP_ADDRESS", None)
+    btlAppJumpAddr.setHelp(btl_helpkeyword)
+    btlAppJumpAddr.setLabel("Application Jump Address")
+    btlAppJumpAddr.setVisible(False)
+    btlAppJumpAddr.setDefaultValue(getAppJumpAddr())
+    btlAppJumpAddr.setDependencies(setAppJumpAddr, ["core.APP_START_ADDRESS"])
 
     btlAppAddrComment = bootloaderComponent.createCommentSymbol("BTL_APP_START_ADDR_COMMENT", None)
     btlAppAddrComment.setVisible(False)

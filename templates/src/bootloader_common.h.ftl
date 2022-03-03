@@ -79,6 +79,7 @@
     <#lt>#define APP_START_ADDRESS                       (0x${core.APP_START_ADDRESS}UL)
 <#else>
     <#lt>#define APP_START_ADDRESS                       (PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
+    <#lt>#define APP_JUMP_ADDRESS                        (PA_TO_KVA0(0x${BTL_APP_JUMP_ADDRESS}UL))
 </#if>
 
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
