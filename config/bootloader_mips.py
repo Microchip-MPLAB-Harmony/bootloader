@@ -356,36 +356,26 @@ def generateLinkerFileSymbol(bootloaderComponent):
     # Disable Default linker script generation
     Database.setSymbolValue("core", "ADD_LINKER_FILE", False)
 
-    # DS60001168 --> PIC32MX1XX/2XX
-    # DS60001185 --> PIC32MX330/350/370/430/450/470
-    # DS60001290 --> PIC32MX1XX/2XX/5XX
-    # DS60001404 --> PIC32MX1XX/2XX XLP
-    # DS60001156 --> PIC32MX5XX/6XX/7XX
+    # PIC32MX1168 --> PIC32MX1XX/2XX
+    # PIC32MX1185 --> PIC32MX330/350/370/430/450/470
+    # PIC32MX1290 --> PIC32MX1XX/2XX/5XX
+    # PIC32MX1404 --> PIC32MX1XX/2XX XLP
+    # PIC32MX1156 --> PIC32MX5XX/6XX/7XX
 
-    # DS60001402 -> PIC32MKXXXXGPD/GPE/MCF
-    # DS60001570 -> PIC32MKXXXXGPG/MCJ
-    # DS60001519 -> PIC32MKXXXXGPK/MCM
-    # DS60001690 -> PIC32MKXXXXMCA
+    # PIC32MK1402 --> PIC32MKXXXXGPD/GPE/MCF
+    # PIC32MK1570 --> PIC32MKXXXXGPG/MCJ
+    # PIC32MK1519 --> PIC32MKXXXXGPK/MCM
+    # PIC32MK1690 --> PIC32MKXXXXMCA
 
-    # Get the (Datasheet Number) for the current Device Family
-    deviceFamily = Database.getSymbolValue("core", "DEVICE_FAMILY")
+    # PIC32MZEF   --> PIC32MZXXXXEF
+    # PIC32MZDA   --> PIC32MZXXXXDA
+    # PIC32MZW    --> PIC32MZXXXXW1
 
-    # Generate Bootloader Linker Script
-    btlLinkerPath = "../bootloader/templates/mips/linkers/"
+    # Get the current Product Family
+    productFamily = Database.getSymbolValue("core", "PRODUCT_FAMILY")
 
     btlLinkerFile = bootloaderComponent.createFileSymbol("BOOTLOADER_LINKER_FILE", None)
-
-    if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_ef.ld.ftl")
-    elif (re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_da.ld.ftl")
-    elif (re.match("PIC32MZ.[0-9]*W", Variables.get("__PROCESSOR"))):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mz_w1.ld.ftl")
-    elif ("PIC32MX" in Variables.get("__PROCESSOR")):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mx_" + deviceFamily + ".ld.ftl")
-    elif ("PIC32MK" in Variables.get("__PROCESSOR")):
-        btlLinkerFile.setSourcePath(btlLinkerPath + "bootloader_linker_mk_" + deviceFamily + ".ld.ftl")
-
+    btlLinkerFile.setSourcePath("../bootloader/templates/mips/linkers/bootloader_linker_" + productFamily + ".ld.ftl")
     btlLinkerFile.setOutputName("btl.ld")
     btlLinkerFile.setMarkup(True)
     btlLinkerFile.setOverwrite(True)
