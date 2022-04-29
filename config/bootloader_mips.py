@@ -186,7 +186,7 @@ def setAppStartAndCommentVisible(symbol, event):
 def getAppJumpAddr():
     appStartAddr = int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16)
 
-    jumpAddr = appStartAddr
+    jumpAddr = str(hex(appStartAddr))[2:]
 
     # If Bootloader is placed in Boot Flash Memory Space
     if ((btl_start != "0x9D000000") or (btl_start != "0x90000000")):
@@ -301,6 +301,7 @@ def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
     btlFuseProgramEnable.setLabel("Enable Fuse Programming")
     btlFuseProgramEnable.setHelp(btl_helpkeyword)
     btlFuseProgramEnable.setDefaultValue(False)
+    btlFuseProgramEnable.setVisible(False)
 
     devCfgAddress = "0xBFC0FF40"
 
