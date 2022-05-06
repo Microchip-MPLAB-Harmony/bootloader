@@ -1,11 +1,11 @@
 /*******************************************************************************
-  UART Bootloader Source File
+  ${BTL_TYPE} Bootloader Source File
 
   File Name:
-    bootloader.c
+    bootloader_${BTL_TYPE?lower_case}.c
 
   Summary:
-    This file contains source code necessary to execute UART bootloader.
+    This file contains source code necessary to execute ${BTL_TYPE} bootloader.
 
   Description:
     This file contains source code necessary to execute UART bootloader.
@@ -123,6 +123,10 @@ static bool     packet_received     = false;
 static bool     flash_data_ready    = false;
 
 static bool     uartBLActive        = false;
+
+typedef bool (*FLASH_ERASE_FPTR)(uint32_t);
+
+typedef bool (*FLASH_WRITE_FPTR)(uint32_t*, uint32_t);
 
 // *****************************************************************************
 // *****************************************************************************
@@ -293,7 +297,7 @@ static void command_task(void)
         uint32_t crc        = input_buffer[CRC_OFFSET];
         uint32_t crc_gen    = 0;
 
-        crc_gen = bootloader_CRCGenerate(unlock_begin, unlock_end - unlock_begin);
+        crc_gen = bootloader_CRCGenerate(unlock_begin, (unlock_end - unlock_begin));
 
         if (crc == crc_gen)
         {
@@ -340,32 +344,32 @@ static void flash_task(void)
     // data_size = Actual data bytes to write + Address 4 Bytes
     uint32_t bytes_to_write = (data_size - 4);
 
-    bool (*flash_erase_fptr)(uint32_t) = ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME};
-    bool (*flash_write_fptr)(uint32_t*, uint32_t) = ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME};
+    FLASH_ERASE_FPTR flash_erase_fptr = (FLASH_ERASE_FPTR)${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME};
+    FLASH_WRITE_FPTR flash_write_fptr = (FLASH_WRITE_FPTR)${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME};
 
 <#if .vars["${MEM_USED?lower_case}"].NVMCTRL_REGION_LOCK_UNLOCK_WITHOUT_ADDR?? && .vars["${MEM_USED?lower_case}"].NVMCTRL_REGION_LOCK_UNLOCK_WITHOUT_ADDR == true>
-
     if ((flash_addr >= unlock_begin && flash_addr < unlock_end))
     {
-        ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
-
-        while(${MEM_USED}_IsBusy() == true)
-        {
-            input_task();
-        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-            kickdog();
-        </#if>
-        }
-    <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
-
-        if (flash_addr >= APP_START_ADDRESS)
-        {
-            ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
-        }
-        else
+        if (flash_addr < APP_START_ADDRESS)
         {
             ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
         }
+        else
+        {
+    <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
+            ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
+
+            while(${MEM_USED}_IsBusy() == true)
+            {
+                input_task();
+            <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                kickdog();
+            </#if>
+            }
+
+    </#if>
+            ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
+        }
 
         while(${MEM_USED}_IsBusy() == true)
         {
@@ -374,7 +378,6 @@ static void flash_task(void)
             kickdog();
         </#if>
         }
-    </#if>
     }
 <#else>
     // Lock region size is always bigger than the row size
@@ -395,14 +398,14 @@ static void flash_task(void)
     {
         if ((flash_addr >= ${MEM_USED}_USERROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
         {
-            flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME};
-            flash_write_fptr = ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME};
+            flash_erase_fptr = (FLASH_ERASE_FPTR)${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME};
+            flash_write_fptr = (FLASH_WRITE_FPTR)${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME};
         }
     <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
         else if ((flash_addr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
         {
-            flash_erase_fptr = ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME};
-            flash_write_fptr = ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME};
+            flash_erase_fptr = (FLASH_ERASE_FPTR)${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME};
+            flash_write_fptr = (FLASH_WRITE_FPTR)${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME};
         }
     </#if>
     }
