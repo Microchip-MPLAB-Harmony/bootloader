@@ -45,14 +45,11 @@
 
 #include <string.h>
 #include "device.h"
-#include "bootloader/bootloader.h"
+#include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"
 #include "bootloader/datastream/datastream.h"
 #include "bootloader/bootloader_nvm_interface.h"
 
 #define BOOTLOADER_BUFFER_SIZE  512
-
-#define MAJOR_VERSION           3  // Bootloader Major Version Shown From a Read Version on PC
-#define MINOR_VERSION           4  // Bootloader Minor Version Shown From a Read Version on PC
 
 #define SOH                     01 // Start Of Header
 #define EOT                     04 // End Of transmission
@@ -134,12 +131,6 @@ typedef struct
 
 } BOOTLOADER_DATA;
 
-static const uint8_t BootInfo[2] =
-{
-    MAJOR_VERSION,
-    MINOR_VERSION
-};
-
 BOOTLOADER_BUFFER CACHE_ALIGN dataBuff;
 
 BOOTLOADER_DATA btlData =
@@ -147,71 +138,6 @@ BOOTLOADER_DATA btlData =
     .currentState = BOOTLOADER_OPEN_DATASTREAM,
     .usrBufferEventComplete = false
 };
-
-<#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
-     (!BTL_LIVE_UPDATE??) >
-    <#lt>bool __WEAK bootloader_Trigger(void)
-    <#lt>{
-    <#lt>    /* Function can be overriden with custom implementation */
-    <#lt>    return false;
-    <#lt>}
-</#if>
-
-<#if core.CoreArchitecture == "MIPS">
-    <#lt>void bootloader_TriggerReset(void)
-    <#lt>{
-    <#lt>    /* Perform system unlock sequence */
-    <#lt>    SYSKEY = 0x00000000;
-    <#lt>    SYSKEY = 0xAA996655;
-    <#lt>    SYSKEY = 0x556699AA;
-
-    <#lt>    RSWRSTSET = _RSWRST_SWRST_MASK;
-    <#lt>    (void)RSWRST;
-    <#lt>}
-
-    <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
-         (!BTL_LIVE_UPDATE??) >
-        <#lt>void run_Application(void)
-        <#lt>{
-        <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-
-        <#lt>    void (*fptr)(void);
-
-        <#lt>    /* Set default to APP_RESET_ADDRESS */
-        <#lt>    fptr = (void (*)(void))APP_START_ADDRESS;
-
-        <#lt>    if (msp == 0xffffffff)
-        <#lt>    {
-        <#lt>        return;
-        <#lt>    }
-
-        <#lt>    fptr();
-        <#lt>}
-    </#if>
-<#else>
-    <#lt>void bootloader_TriggerReset(void)
-    <#lt>{
-    <#lt>    NVIC_SystemReset();
-    <#lt>}
-
-    <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
-         (!BTL_LIVE_UPDATE??) >
-        <#lt>void run_Application(void)
-        <#lt>{
-        <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-        <#lt>    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
-
-        <#lt>    if (msp == 0xffffffff)
-        <#lt>    {
-        <#lt>        return;
-        <#lt>    }
-
-        <#lt>    __set_MSP(msp);
-
-        <#lt>    asm("bx %0"::"r" (reset_vector));
-        <#lt>}
-    </#if>
-</#if>
 
 static const uint16_t crc_table[16] =
 {
@@ -312,6 +238,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
     uint32_t Address;
     uint32_t Length;
     uint16_t crc;
+    uint16_t btlVersion;
 
     /* First, check that we have a valid command. */
     Cmd = dataBuff.buffers.procBuff[0];
@@ -324,7 +251,14 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
     {
         case READ_BOOT_INFO:
         {
-            memcpy(&dataBuff.buffers.inputBuff[1], BootInfo, 2);
+            btlVersion = bootloader_GetVersion();
+
+            /* Major Number */
+            dataBuff.buffers.inputBuff[1] = (uint8_t)(btlVersion >> 8);
+
+            /* Minor Number */
+            dataBuff.buffers.inputBuff[2] = (uint8_t)(btlVersion & 0xFF);
+
             handle->buffSize = 2 + 1;
             handle->currentState = BOOTLOADER_SEND_RESPONSE;
             break;
@@ -375,22 +309,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
     }
 }
 
-<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
-    <#lt>void bootloader_SwapAndReset( void )
-    <#lt>{
-        <#if core.CoreArchitecture == "MIPS" >
-            <#lt>    /* Update Serial number of Inactive bank */
-            <#lt>    bootloader_NvmUpdateFlashSerial(UPPER_FLASH_SERIAL_START);
-
-            <#lt>    bootloader_TriggerReset();
-        <#else>
-            <#lt>    /* Swap bank and Reset */
-            <#lt>    bootloader_NvmSwapAndReset();
-        </#if>
-    <#lt>}
-</#if>
-
-void bootloader_Tasks( void )
+void bootloader_${BTL_TYPE}_Tasks( void )
 {
     uint32_t BuffLen=0;
     uint32_t i;

@@ -41,6 +41,7 @@
 
 #include <string.h>
 #include "configuration.h"
+#include "bootloader/bootloader_common.h"
 #include "bootloader/bootloader_nvm_interface.h"
 #include "peripheral/${MEM_USED?lower_case}/plib_${MEM_USED?lower_case}.h"
 #include "system/int/sys_int.h"
@@ -70,52 +71,12 @@ static T_NVM_DATA CACHE_ALIGN nvm_data =
     .prevAddr = APP_START_ADDRESS
 };
 
+static bool nvmDataInitDone = false;
+
 bool bootloader_NvmIsBusy(void)
 {
     return (${MEM_USED}_IsBusy());
 }
-
-<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
-    <#if core.CoreArchitecture == "MIPS" >
-        <#lt>T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
-
-        <#lt>/* Function to read the Serial number from Flash bank mapped to lower region */
-        <#lt>static uint32_t get_LowerFlashSerial(void)
-        <#lt>{
-        <#lt>    T_FLASH_SERIAL *lower_flash_serial = LOWER_FLASH_SERIAL_READ;
-
-        <#lt>    return (lower_flash_serial->serial);
-        <#lt>}
-
-        <#lt>/* Function to update the serial number based on address */
-        <#lt>void bootloader_NvmUpdateFlashSerial(uint32_t addr)
-        <#lt>{
-        <#lt>    uint32_t upper_flash_serial;
-
-        <#lt>    /* Increment Upper Mapped Flash panel serial by 1 to be ahead of the
-        <#lt>     * current running Lower Mapped Flash panel serial
-        <#lt>     */
-        <#lt>    upper_flash_serial = (get_LowerFlashSerial() + 1);
-
-        <#lt>    update_flash_serial.serial     = upper_flash_serial;
-        <#lt>    update_flash_serial.prologue   = FLASH_SERIAL_PROLOGUE;
-        <#lt>    update_flash_serial.epilogue   = FLASH_SERIAL_EPILOGUE;
-
-        <#lt>    ${MEM_USED}_QuadWordWrite((uint32_t *)&update_flash_serial, addr);
-
-        <#lt>    while(bootloader_NvmIsBusy() == true)
-        <#lt>    {
-
-        <#lt>    }
-        <#lt>}
-    <#else>
-        <#lt>/* Function to Swap the Bank and Reset */
-        <#lt>void bootloader_NvmSwapAndReset( void )
-        <#lt>{
-        <#lt>    ${MEM_USED}_BankSwap();
-        <#lt>}
-    </#if>
-</#if>
 
 void bootloader_NvmAppErase( void )
 {
@@ -169,6 +130,14 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
     uint32_t curAddress = 0;
     uint32_t alignLength = 0;
     uint32_t nextRecStartPt = 0;
+
+    if (nvmDataInitDone == false)
+    {
+        /* Set the nvm buffer to 0xFF for first record data if less than PAGE_SIZE */
+        memset((void *)nvm_data.buff, 0xFF, PAGE_SIZE);
+
+        nvmDataInitDone = true;
+    }
 
     while(totalLen >= 5) // A hex record must be at-least 5 bytes. (1 Data Len byte + 1 rec type byte+ 2 address bytes + 1 crc)
     {

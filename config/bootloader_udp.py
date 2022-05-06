@@ -139,7 +139,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
     btlSourceFile.setSourcePath("../bootloader/templates/src/unified/bootloader.c.ftl")
-    btlSourceFile.setOutputName("bootloader.c")
+    btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
@@ -148,7 +148,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader.h.ftl")
-    btlHeaderFile.setOutputName("bootloader.h")
+    btlHeaderFile.setOutputName("bootloader_" + btl_type.lower() + ".h")
     btlHeaderFile.setMarkup(True)
     btlHeaderFile.setOverwrite(True)
     btlHeaderFile.setDestPath("/bootloader/")
@@ -224,8 +224,10 @@ def instantiateComponent(bootloaderComponent):
         xc32LdPreprocessroMacroSym.setCategory("C32-LD")
         xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
         xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
-        xc32LdPreprocessroMacroSym.setAppend(True, ";")
+        xc32LdPreprocessroMacroSym.setAppend(True, ";=")
         xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN", "BTL_LIVE_UPDATE"])
+
+    generateCommonFiles(bootloaderComponent)
 
     setOptimizationLevel(bootloaderComponent, "-O2")
 

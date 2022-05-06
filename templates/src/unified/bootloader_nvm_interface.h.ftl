@@ -44,62 +44,6 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-<#if core.CoreArchitecture == "MIPS">
-    <#lt>#include "sys/kmem.h"
-</#if>
-
-#define FLASH_START             (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH            (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE               (${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-#define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
-
-<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
-    <#lt>/* Starting location of Bootloader in Inactive bank */
-    <#lt>#define INACTIVE_BANK_OFFSET    (FLASH_LENGTH / 2)
-
-    <#lt>#define INACTIVE_BANK_START     (FLASH_START + INACTIVE_BANK_OFFSET)
-
-    <#lt>#define APP_START_ADDRESS       INACTIVE_BANK_START
-
-    <#lt>#define FLASH_END_ADDRESS       (INACTIVE_BANK_START + INACTIVE_BANK_OFFSET)
-<#else>
-    <#lt>#define FLASH_END_ADDRESS       (FLASH_START + FLASH_LENGTH)
-
-    <#if core.CoreArchitecture == "MIPS">
-        <#lt>#define APP_START_ADDRESS       ((uint32_t)(PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL)))
-    <#else>
-        <#lt>#define APP_START_ADDRESS       (0x${core.APP_START_ADDRESS}UL)
-    </#if>
-</#if>
-
-<#if core.CoreArchitecture == "MIPS" && BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
-    <#lt>#define LOWER_FLASH_START               (FLASH_START)
-    <#lt>#define LOWER_FLASH_SERIAL_START        (LOWER_FLASH_START + (FLASH_LENGTH / 2) - PAGE_SIZE)
-    <#lt>#define LOWER_FLASH_SERIAL_SECTOR       (LOWER_FLASH_START + (FLASH_LENGTH / 2) - ERASE_BLOCK_SIZE)
-
-    <#lt>#define UPPER_FLASH_START               INACTIVE_BANK_START
-    <#lt>#define UPPER_FLASH_SERIAL_START        (FLASH_END_ADDRESS - PAGE_SIZE)
-    <#lt>#define UPPER_FLASH_SERIAL_SECTOR       (FLASH_END_ADDRESS - ERASE_BLOCK_SIZE)
-
-    <#lt>#define FLASH_SERIAL_PROLOGUE           0xDEADBEEF
-    <#lt>#define FLASH_SERIAL_EPILOGUE           0xBEEFDEAD
-    <#lt>#define FLASH_SERIAL_CLEAR              0xFFFFFFFF
-
-    <#lt>#define LOWER_FLASH_SERIAL_READ         ((T_FLASH_SERIAL *)KVA0_TO_KVA1(LOWER_FLASH_SERIAL_START))
-    <#lt>#define UPPER_FLASH_SERIAL_READ         ((T_FLASH_SERIAL *)KVA0_TO_KVA1(UPPER_FLASH_SERIAL_START))
-
-    <#lt>/* Structure to validate the Flash serial and its checksum
-    <#lt> * Note: The order of the members should not be changed
-    <#lt> */
-    <#lt>typedef struct
-    <#lt>{
-    <#lt>    uint32_t prologue;
-    <#lt>    uint32_t serial;
-    <#lt>    uint32_t epilogue;
-    <#lt>    uint32_t dummy;
-    <#lt>} T_FLASH_SERIAL;
-</#if>
 
 #define DATA_RECORD             0
 #define END_OF_FILE_RECORD      1
@@ -130,14 +74,6 @@ void bootloader_NvmAppErase(void);
 void bootloader_NvmPageWrite(uint32_t address, uint32_t* data);
 
 bool bootloader_NvmIsBusy(void);
-
-<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
-    <#if core.CoreArchitecture == "MIPS" >
-        <#lt>void bootloader_NvmUpdateFlashSerial(uint32_t addr);
-    <#else>
-        <#lt>void bootloader_NvmSwapAndReset( void );
-    </#if>
-</#if>
 
 #ifdef  __cplusplus
 }
