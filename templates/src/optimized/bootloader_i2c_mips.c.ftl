@@ -1,11 +1,11 @@
 /*******************************************************************************
-  I2C Bootloader Source File
+  ${BTL_TYPE} Bootloader Source File
 
   File Name:
-    bootloader_i2c.c
+    bootloader_${BTL_TYPE?lower_case}.c
 
   Summary:
-    This file contains source code necessary to execute I2C bootloader.
+    This file contains source code necessary to execute ${BTL_TYPE} bootloader.
 
   Description:
     This file contains source code necessary to execute I2C bootloader.
@@ -82,6 +82,9 @@ typedef enum
     BL_COMMAND_VERIFY = 0xA3,
     BL_COMMAND_RESET = 0xA4,
     BL_COMMAND_READ_STATUS = 0xA5,
+<#if BTL_DUAL_BANK == true>
+    BL_COMMAND_BKSWAP_RESET = 0xA6,
+</#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
     BL_COMMAND_DEVCFG_PROGRAM = 0xA7,
 </#if>
@@ -105,6 +108,9 @@ typedef enum
     BL_FLASH_STATE_RESET,
     BL_FLASH_STATE_ERASE_BUSY_POLL,
     BL_FLASH_STATE_WRITE_BUSY_POLL,
+<#if BTL_DUAL_BANK == true>
+    BL_FLASH_STATE_BKSWAP_RESET,
+</#if>
 }BL_FLASH_STATE;
 
 typedef struct
@@ -232,6 +238,12 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
             {
                 i2cBLData.flashState = BL_FLASH_STATE_RESET;
             }
+<#if BTL_DUAL_BANK == true>
+            else if (i2cBLData.command == BL_COMMAND_BKSWAP_RESET)
+            {
+                i2cBLData.flashState = BL_FLASH_STATE_BKSWAP_RESET;
+            }
+</#if>
             else if ((i2cBLData.command == BL_COMMAND_READ_STATUS) || (i2cBLData.command == BL_COMMAND_READ_VERSION))
             {
                 /* Do Nothing */
@@ -301,6 +313,17 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
                 }
                 else if (i2cBLData.command == BL_COMMAND_ERASE)
                 {
+<#if BTL_DUAL_BANK == true>
+                    if (i2cBLData.cmdProtocol.eraseCommand.memAddr == LOWER_FLASH_SERIAL_SECTOR)
+                    {
+                        /* Send error response if active Flash Panels (Lower Flash)
+                         * Serial Sector is being erased.
+                         */
+                        SET_BIT(i2cBLData.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
+                        return false;
+                    }
+
+</#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
                     if (((i2cBLData.cmdProtocol.eraseCommand.memAddr >= i2cBLData.appImageStartAddr) && ((i2cBLData.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= i2cBLData.appImageEndAddr))
                         || (i2cBLData.cmdProtocol.eraseCommand.memAddr >= DEVCFG_PAGE_ADDRESS)
@@ -414,6 +437,13 @@ static void BL_I2C_FlashTask(void)
 
     </#if>
 </#if>
+<#if BTL_DUAL_BANK == true>
+            if (i2cBLData.cmdProtocol.eraseCommand.memAddr == UPPER_FLASH_SERIAL_SECTOR)
+            {
+                bootloader_SetUpperFlashSerialErased(true);
+            }
+
+</#if>
             ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(i2cBLData.cmdProtocol.eraseCommand.memAddr);
             i2cBLData.flashState = BL_FLASH_STATE_ERASE_BUSY_POLL;
 
@@ -461,8 +491,20 @@ static void BL_I2C_FlashTask(void)
         case BL_FLASH_STATE_RESET:
             /* Wait for the I2C transfer to complete */
             while (${PERIPH_USED}_IsBusy());
+
             bootloader_TriggerReset();
             break;
+<#if BTL_DUAL_BANK == true>
+
+        case BL_FLASH_STATE_BKSWAP_RESET:
+            /* Wait for the I2C transfer to complete */
+            while (${PERIPH_USED}_IsBusy());
+
+            bootloader_UpdateUpperFlashSerial();
+
+            bootloader_TriggerReset();
+            break;
+</#if>
 
         case BL_FLASH_STATE_IDLE:
             /* Do nothing */

@@ -1,11 +1,11 @@
 /*******************************************************************************
-  I2C Bootloader Source File
+  ${BTL_TYPE} Bootloader Source File
 
   File Name:
-    bootloader_i2c.c
+    bootloader_${BTL_TYPE?lower_case}.c
 
   Summary:
-    This file contains source code necessary to execute I2C bootloader.
+    This file contains source code necessary to execute ${BTL_TYPE} bootloader.
 
   Description:
     This file contains source code necessary to execute I2C bootloader.
@@ -452,24 +452,25 @@ static void BL_I2C_FlashTask(void)
 <#if .vars["${MEM_USED?lower_case}"].NVMCTRL_REGION_LOCK_UNLOCK_WITHOUT_ADDR?? && .vars["${MEM_USED?lower_case}"].NVMCTRL_REGION_LOCK_UNLOCK_WITHOUT_ADDR == true>
             if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
             {
-                ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
-
-                while(${MEM_USED}_IsBusy() == true)
-                {
-        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-                    kickdog();
-        </#if>
-                }
-    <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
-
-                if (blProtocol.cmdProtocol.eraseCommand.memAddr >= APP_START_ADDRESS)
-                {
-                    ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
-                }
-                else
+                if (blProtocol.cmdProtocol.eraseCommand.memAddr < APP_START_ADDRESS)
                 {
                     ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
                 }
+                else
+                {
+    <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
+                    ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
+
+                    while(${MEM_USED}_IsBusy() == true)
+                    {
+        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                    kickdog();
+        </#if>
+                    }
+
+    </#if>
+                    ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
+                }
 
                 while(${MEM_USED}_IsBusy() == true)
                 {
@@ -477,7 +478,6 @@ static void BL_I2C_FlashTask(void)
                     kickdog();
         </#if>
                 }
-    </#if>
             }
 <#else>
             // Lock region size is always bigger than the row size

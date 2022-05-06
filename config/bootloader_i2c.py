@@ -88,9 +88,7 @@ def setupCoreComponentSymbols():
 
     coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
 
-    if ("PIC32M" in Variables.get("__PROCESSOR")):
-        coreComponent.getSymbolByID("CoreSysIntFile").setValue(True)
-    else:
+    if ("PIC32M" not in Variables.get("__PROCESSOR")):
         coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
 
         coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
@@ -166,7 +164,7 @@ def instantiateComponent(bootloaderComponent):
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_i2c_mips.c.ftl")
     else:
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_i2c_arm.c.ftl")
-    btlSourceFile.setOutputName("bootloader_i2c.c")
+    btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
@@ -175,7 +173,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader.h.ftl")
-    btlHeaderFile.setOutputName("bootloader_i2c.h")
+    btlHeaderFile.setOutputName("bootloader_" + btl_type.lower() + ".h")
     btlHeaderFile.setMarkup(True)
     btlHeaderFile.setOverwrite(True)
     btlHeaderFile.setDestPath("/bootloader/")
