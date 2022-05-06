@@ -139,10 +139,11 @@ void SYS_Initialize ( void* data )
         run_Application();
     }
 
-    <#-- /* Call PM initialize if device is SAML21/SAML22 for Perfermoance level
+    <#-- /* Call PM initialize if device is SAM L21/L22 or PIC32CM LE/LS for Performance level
           * configuration */
     -->
-<#if __PROCESSOR?matches(".*SAML2.*") == true >
+<#if (__PROCESSOR?matches(".*SAML2.*") == true) ||
+     (__PROCESSOR?matches("PIC32CM.[0-9]*L.[ES]*.*") == true) >
     PM_Initialize();
 </#if>
 
