@@ -156,6 +156,9 @@ def setMediaInformation(symbol, event):
     component.getSymbolByID("BTL_SIZE").setValue(btlSize)
     component.getSymbolByID("BTL_SIZE").setReadOnly(False)
 
+    component.getSymbolByID("BOOTLOADER_SRC").setOutputName("bootloader_" + btl_type.lower() + ".c")
+    component.getSymbolByID("BOOTLOADER_HEADER").setOutputName("bootloader_" + btl_type.lower() + ".h")
+
 def setupCoreComponentSymbols():
 
     coreComponent = Database.getComponentByID("core")
@@ -168,7 +171,7 @@ def instantiateComponent(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
 
     btlMediaType = bootloaderComponent.createKeyValueSetSymbol("MEDIA_TYPE", None)
-    btlMediaType.setHelp("mcc_h3_fs_bootloader")
+    btlMediaType.setHelp("btl_helpkeyword")
     btlMediaType.setLabel("Bootloader Media Type")
     btlMediaType.addKey(mediaList[0], "0", "SDCARD")
     btlMediaType.addKey(mediaList[1], "1", "Serial Memory")
@@ -184,7 +187,7 @@ def instantiateComponent(bootloaderComponent):
     generateCommonSymbols(bootloaderComponent)
 
     btlAppImagePath = bootloaderComponent.createStringSymbol("APP_IMAGE_PATH", None)
-    btlAppImagePath.setHelp("mcc_h3_fs_bootloader")
+    btlAppImagePath.setHelp("btl_helpkeyword")
     btlAppImagePath.setLabel("Application Binary Image Path")
     btlAppImagePath.setVisible(True)
     btlAppImagePath.setDefaultValue("image.bin")
@@ -194,7 +197,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
     btlSourceFile.setSourcePath("../bootloader/templates/src/fs/bootloader.c.ftl")
-    btlSourceFile.setOutputName("bootloader.c")
+    btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
@@ -203,7 +206,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader.h.ftl")
-    btlHeaderFile.setOutputName("bootloader.h")
+    btlHeaderFile.setOutputName("bootloader_" + btl_type.lower() + ".h")
     btlHeaderFile.setMarkup(True)
     btlHeaderFile.setOverwrite(True)
     btlHeaderFile.setDestPath("/bootloader/")
@@ -243,8 +246,10 @@ def instantiateComponent(bootloaderComponent):
         xc32LdPreprocessroMacroSym.setCategory("C32-LD")
         xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
         xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
-        xc32LdPreprocessroMacroSym.setAppend(True, ";")
+        xc32LdPreprocessroMacroSym.setAppend(True, ";=")
         xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
+
+    generateCommonFiles(bootloaderComponent)
 
     setOptimizationLevel(bootloaderComponent, "-O2")
 

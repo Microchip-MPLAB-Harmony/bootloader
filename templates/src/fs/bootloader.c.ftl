@@ -46,25 +46,11 @@
 #include <string.h>
 #include "configuration.h"
 #include "peripheral/${MEM_USED?lower_case}/plib_${MEM_USED?lower_case}.h"
-#include "bootloader/bootloader.h"
+#include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"
 #include "system/fs/sys_fs.h"
 <#if BTL_TYPE == "USB_HOST_MSD" >
     <#lt>#include "usb/usb_host.h"
 </#if>
-<#if core.CoreArchitecture == "MIPS">
-    <#lt>#include "sys/kmem.h"
-
-    <#lt>#define APP_START_ADDRESS       ((uint32_t)(PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL)))
-<#else>
-
-    <#lt>#define APP_START_ADDRESS       (0x${core.APP_START_ADDRESS}UL)
-</#if>
-
-#define FLASH_START             (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH            (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE               (${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-#define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
 
 #define BOOTLOADER_MOUNT_NAME   SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0
 #define BOOTLOADER_DEV_NAME     SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0
@@ -129,62 +115,6 @@ BOOTLOADER_DATA btlData =
     .deviceAttached = false,
     .progAddr       = APP_START_ADDRESS
 };
-
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
-
-<#if core.CoreArchitecture == "MIPS">
-    <#lt>static void bootloader_TriggerReset(void)
-    <#lt>{
-    <#lt>    /* Perform system unlock sequence */
-    <#lt>    SYSKEY = 0x00000000;
-    <#lt>    SYSKEY = 0xAA996655;
-    <#lt>    SYSKEY = 0x556699AA;
-
-    <#lt>    RSWRSTSET = _RSWRST_SWRST_MASK;
-    <#lt>    (void)RSWRST;
-    <#lt>}
-
-    <#lt>void run_Application(void)
-    <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-
-    <#lt>    void (*fptr)(void);
-
-    <#lt>    /* Set default to APP_RESET_ADDRESS */
-    <#lt>    fptr = (void (*)(void))APP_START_ADDRESS;
-
-    <#lt>    if (msp == 0xffffffff)
-    <#lt>    {
-    <#lt>        return;
-    <#lt>    }
-
-    <#lt>    fptr();
-    <#lt>}
-<#else>
-    <#lt>static void bootloader_TriggerReset(void)
-    <#lt>{
-    <#lt>    NVIC_SystemReset();
-    <#lt>}
-
-    <#lt>void run_Application(void)
-    <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-    <#lt>    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
-
-    <#lt>    if (msp == 0xffffffff)
-    <#lt>    {
-    <#lt>        return;
-    <#lt>    }
-
-    <#lt>    __set_MSP(msp);
-
-    <#lt>    asm("bx %0"::"r" (reset_vector));
-    <#lt>}
-</#if>
 
 <#if BTL_TYPE == "USB_HOST_MSD" >
     <#lt>USB_HOST_EVENT_RESPONSE bootloader_USBHostEventHandler (USB_HOST_EVENT event, void * eventData, uintptr_t context)
@@ -260,7 +190,7 @@ void bootloader_NVMPageWrite(uint8_t* data)
     btlData.progAddr += PAGE_SIZE;
 }
 
-void bootloader_Tasks( void )
+void bootloader_${BTL_TYPE}_Tasks( void )
 {
     size_t fileReadLength;
 
