@@ -54,20 +54,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define FLASH_START             (${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}UL)
-#define FLASH_LENGTH            (${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}UL)
-#define PAGE_SIZE               (${.vars["${MEM_USED?lower_case}"].FLASH_PROGRAM_SIZE}UL)
-#define ERASE_BLOCK_SIZE        (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE}UL)
-#define PAGES_IN_ERASE_BLOCK    (ERASE_BLOCK_SIZE / PAGE_SIZE)
-#define DATA_SIZE               ERASE_BLOCK_SIZE
-
-#define BOOTLOADER_SIZE         ${BTL_SIZE}
-
-<#if core.CoreArchitecture == "MIPS">
-    <#lt>#define APP_START_ADDRESS       ((uint32_t)(PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL)))
-<#else>
-    <#lt>#define APP_START_ADDRESS       (0x${core.APP_START_ADDRESS}UL)
-</#if>
+#define DATA_SIZE                   ERASE_BLOCK_SIZE
 
 #define APP_UPDATE_REQUIRED         (0xFFFFFFFFU)
 #define APP_CLEAR_UPDATE_REQUIRED   (0x00000000U)
@@ -172,6 +159,9 @@ typedef struct
     /* Application Start address */
     uint32_t appStartAddress;
 
+    /* Application Jump address */
+    uint32_t appJumpAddress;
+    
     /* Size of the application binary */
     uint32_t appSize;
 
@@ -203,6 +193,8 @@ typedef struct
 
     uint32_t appStartAddress;
 
+    uint32_t appJumpAddress;
+
     uint32_t crc32;
 
 } BOOTLOADER_DATA;
@@ -220,6 +212,11 @@ BOOTLOADER_DATA CACHE_ALIGN btlData =
     .state              = BOOTLOADER_STATE_INIT,
     .flash_addr         = APP_START_ADDRESS,
     .appStartAddress    = APP_START_ADDRESS,
+<#if __PROCESSOR?matches("PIC32M.*") == false>
+    .appJumpAddress     = APP_START_ADDRESS,
+<#else>
+    .appJumpAddress     = APP_JUMP_ADDRESS,
+</#if>
 };
 
 <#if .vars["${DRIVER_USED?lower_case}"].EEPROM_PAGE_SIZE??>
@@ -235,114 +232,6 @@ static uint8_t CACHE_ALIGN flash_data[DATA_SIZE];
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
-
-<#if core.CoreArchitecture == "MIPS">
-    <#lt>static void bootloader_TriggerReset(void)
-    <#lt>{
-    <#lt>    /* Perform system unlock sequence */
-    <#lt>    SYSKEY = 0x00000000;
-    <#lt>    SYSKEY = 0xAA996655;
-    <#lt>    SYSKEY = 0x556699AA;
-
-    <#lt>    RSWRSTSET = _RSWRST_SWRST_MASK;
-    <#lt>    (void)RSWRST;
-    <#lt>}
-
-    <#lt>void run_Application(void)
-    <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(btlData.appStartAddress);
-
-    <#lt>    void (*fptr)(void);
-
-    <#lt>    /* Set default to appStartAddress */
-    <#lt>    fptr = (void (*)(void))btlData.appStartAddress;
-
-    <#lt>    if (msp == 0xffffffff)
-    <#lt>    {
-    <#lt>        return;
-    <#lt>    }
-
-    <#lt>    fptr();
-    <#lt>}
-<#else>
-    <#lt>static void bootloader_TriggerReset(void)
-    <#lt>{
-    <#lt>    NVIC_SystemReset();
-    <#lt>}
-
-    <#lt>void run_Application(void)
-    <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(btlData.appStartAddress);
-    <#lt>    uint32_t reset_vector   = *(uint32_t *)(btlData.appStartAddress + 4);
-
-    <#lt>    if (msp == 0xffffffff)
-    <#lt>    {
-    <#lt>        return;
-    <#lt>    }
-
-    <#lt>    __set_MSP(msp);
-
-    <#lt>    asm("bx %0"::"r" (reset_vector));
-    <#lt>}
-</#if>
-
-<#if BTL_HW_CRC_GEN?? && BTL_HW_CRC_GEN == true>
-    <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t addr = btlData.appStartAddress;
-    <#lt>    uint32_t size = appMetaData.appSize;
-    <#lt>    uint32_t crc  = 0;
-
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
-
-    <#lt>    DSU_CRCCalculate (addr, size, 0xffffffff, &crc);
-
-    <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
-
-    <#lt>    return crc;
-    <#lt>}
-<#else>
-    <#lt>/* Function to Generate CRC by reading the firmware programmed into internal flash */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t   i, j, value;
-    <#lt>    uint32_t   crc_tab[256];
-    <#lt>    uint32_t   size    = appMetaData.appSize;
-    <#lt>    uint32_t   crc     = 0xffffffff;
-    <#lt>    uint8_t    data;
-
-    <#lt>    for (i = 0; i < 256; i++)
-    <#lt>    {
-    <#lt>        value = i;
-
-    <#lt>        for (j = 0; j < 8; j++)
-    <#lt>        {
-    <#lt>            if (value & 1)
-    <#lt>            {
-    <#lt>                value = (value >> 1) ^ 0xEDB88320;
-    <#lt>            }
-    <#lt>            else
-    <#lt>            {
-    <#lt>                value >>= 1;
-    <#lt>            }
-    <#lt>        }
-    <#lt>        crc_tab[i] = value;
-    <#lt>    }
-
-    <#lt>    for (i = 0; i < size; i++)
-    <#lt>    {
-    <#if core.CoreArchitecture == "MIPS">
-        <#lt>        data = *(uint8_t *)KVA0_TO_KVA1((btlData.appStartAddress + i));
-    <#else>
-        <#lt>        data = *(uint8_t *)(btlData.appStartAddress + i);
-    </#if>
-    <#lt>
-    <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    <#lt>    }
-    <#lt>    return crc;
-    <#lt>}
-</#if>
 
 static bool BOOTLOADER_WaitForXferComplete( void )
 {
@@ -407,11 +296,17 @@ static bool BOOTLOADER_CheckForUpdate( void )
 
         btlData.flash_addr      = appMetaData.appStartAddress;
         btlData.appStartAddress = appMetaData.appStartAddress;
+        btlData.appJumpAddress  = appMetaData.appJumpAddress;
     }
     else
     {
         btlData.flash_addr      = APP_START_ADDRESS;
         btlData.appStartAddress = APP_START_ADDRESS;
+<#if __PROCESSOR?matches("PIC32M.*") == false>
+        btlData.appJumpAddress  = APP_START_ADDRESS;
+<#else>
+        btlData.appJumpAddress  = APP_JUMP_ADDRESS;
+</#if>
     }
 
     return status;
@@ -450,10 +345,7 @@ static bool BOOTLOADER_UpdateMetaData( void )
     return status;
 }
 
-void __WEAK SYS_DeInitialize( void *data )
-{
-    /* Function can be overriden with custom implementation */
-}
+extern void SYS_DeInitialize( void *data );
 
 static void BOOTLOADER_ReleaseResources(void)
 {
@@ -507,13 +399,7 @@ static void flash_task(void)
 // *****************************************************************************
 // *****************************************************************************
 
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
-
-void bootloader_Tasks ( void )
+void bootloader_${BTL_TYPE}_Tasks ( void )
 {
     /* Check the application's current state. */
     switch ( btlData.state )
@@ -599,7 +485,8 @@ void bootloader_Tasks ( void )
         {
             BOOTLOADER_ReleaseResources();
 
-            run_Application();
+            run_Application(btlData.appJumpAddress);
+
             break;
         }
 
@@ -645,7 +532,7 @@ void bootloader_Tasks ( void )
 
         case BOOTLOADER_STATE_VERIFY_BINARY:
         {
-            btlData.crc32 = crc_generate();
+            btlData.crc32 = bootloader_CRCGenerate(btlData.appStartAddress, appMetaData.appSize);
 
             if (btlData.crc32 == appMetaData.appCRC32)
             {

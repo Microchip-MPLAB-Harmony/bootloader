@@ -25,7 +25,7 @@ global btl_type
 global btl_helpkeyword
 
 btl_type = "SERIAL_MEM"
-btl_helpkeyword = "mcc_h3_ serial_bootloader_configurations"
+btl_helpkeyword = "mcc_h3_serial_bootloader_configurations"
 bootloaderCore = ""
 
 # Maximum Size for Bootloader [BYTES]
@@ -104,7 +104,7 @@ def instantiateComponent(bootloaderComponent):
     setupCoreComponentSymbols()
 
     btlDriverUsed = bootloaderComponent.createStringSymbol("DRIVER_USED", None)
-    btlDriverUsed.setHelp("mcc_h3_ serial_bootloader_configurations")
+    btlDriverUsed.setHelp(btl_helpkeyword)
     btlDriverUsed.setLabel("Bootloader Serial Memory Used")
     btlDriverUsed.setReadOnly(True)
     btlDriverUsed.setDefaultValue("")
@@ -114,7 +114,7 @@ def instantiateComponent(bootloaderComponent):
     generateHwCRCGeneratorSymbol(bootloaderComponent)
 
     btlSerialMemEraseEnable = bootloaderComponent.createBooleanSymbol("SERIAL_MEM_ERASE_ENABLE", None)
-    btlSerialMemEraseEnable.setHelp("mcc_h3_ serial_bootloader_configurations")
+    btlSerialMemEraseEnable.setHelp(btl_helpkeyword)
     btlSerialMemEraseEnable.setLabel("Enable Erase for Serial Memory")
     btlSerialMemEraseEnable.setVisible(False)
     btlSerialMemEraseEnable.setDefaultValue(False)
@@ -125,7 +125,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
     btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_serial_mem.c.ftl")
-    btlSourceFile.setOutputName("bootloader.c")
+    btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
@@ -134,7 +134,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader.h.ftl")
-    btlHeaderFile.setOutputName("bootloader.h")
+    btlHeaderFile.setOutputName("bootloader_" + btl_type.lower() + ".h")
     btlHeaderFile.setMarkup(True)
     btlHeaderFile.setOverwrite(True)
     btlHeaderFile.setDestPath("/bootloader/")
@@ -158,12 +158,14 @@ def instantiateComponent(bootloaderComponent):
     else:
         # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
         xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
-        xc32LdPreprocessroMacroSym.setHelp("mcc_h3_ serial_bootloader_configurations")
+        xc32LdPreprocessroMacroSym.setHelp("btl_helpkeyword")
         xc32LdPreprocessroMacroSym.setCategory("C32-LD")
         xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
         xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
         xc32LdPreprocessroMacroSym.setAppend(True, ";=")
         xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
+
+    generateCommonFiles(bootloaderComponent)
 
     setOptimizationLevel(bootloaderComponent, "-O2")
 
