@@ -79,7 +79,7 @@ void SYS_Initialize ( void* data )
 
     if (bootloader_Trigger() == false)
     {
-        run_Application();
+        run_Application(APP_START_ADDRESS);
     }
 
     PM_Initialize();

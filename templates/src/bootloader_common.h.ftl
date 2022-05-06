@@ -47,6 +47,9 @@
 
 #include "definitions.h"
 #include <device.h>
+<#if core.CoreArchitecture == "MIPS">
+    <#lt>#include "sys/kmem.h"
+</#if>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -194,7 +197,7 @@ uint16_t bootloader_GetVersion( void );
 
     <#lt>        if (bootloader_Trigger() == false)
     <#lt>        {
-    <#lt>            run_Application();
+    <#lt>            run_Application(APP_START_ADDRESS);
     <#lt>        }
 
     <#lt>        CLOCK_Initialize();
@@ -205,7 +208,7 @@ uint16_t bootloader_GetVersion( void );
 
     <#lt>// *****************************************************************************
     <#lt>/* Function:
-    <#lt>    void run_Application( void );
+    <#lt>    void run_Application( uint32_t address );
 
     <#lt>Summary:
     <#lt>    Runs the programmed application at startup.
@@ -224,7 +227,7 @@ uint16_t bootloader_GetVersion( void );
     <#lt>    bootloader_Trigger() must be called to check for bootloader triggers at startup.
 
     <#lt>Parameters:
-    <#lt>    None.
+    <#lt>    address - Application Start/Jump address.
 
     <#lt>Returns:
     <#lt>    None
@@ -238,14 +241,14 @@ uint16_t bootloader_GetVersion( void );
 
     <#lt>        if (bootloader_Trigger() == false)
     <#lt>        {
-    <#lt>            run_Application();
+    <#lt>            run_Application(APP_START_ADDRESS);
     <#lt>        }
 
     <#lt>        CLOCK_Initialize();
 
     <#lt>    </code>
     <#lt>*/
-    <#lt>void run_Application( void );
+    <#lt>void run_Application( uint32_t address );
 </#if>
 
 // *****************************************************************************

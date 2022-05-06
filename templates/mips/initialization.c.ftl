@@ -135,7 +135,7 @@ void SYS_Initialize ( void* data )
 
     if (bootloader_Trigger() == false)
     {
-        run_Application();
+        run_Application(APP_JUMP_ADDRESS);
     }
 
     <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_PERIPHERALS}

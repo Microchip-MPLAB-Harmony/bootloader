@@ -54,6 +54,10 @@
 #define BTL_MAJOR_VERSION       3
 #define BTL_MINOR_VERSION       6
 
+<#if __PROCESSOR?matches("PIC32M.*") == true>
+    <#lt>#define WORD_ALIGN_MASK         (~(sizeof(uint32_t) - 1))
+
+</#if>
 // *****************************************************************************
 // *****************************************************************************
 // Section: Global objects
@@ -232,15 +236,15 @@ uint16_t __WEAK bootloader_GetVersion( void )
 
 <#if __PROCESSOR?matches("PIC32M.*") == false>
     <#lt>/* Trigger a reset */
-    <#lt>void bootloader_TriggerReset(void)
+    <#lt>void __NO_RETURN bootloader_TriggerReset(void)
     <#lt>{
     <#lt>    NVIC_SystemReset();
     <#lt>}
 
-    <#lt>void run_Application(void)
+    <#lt>void run_Application(uint32_t address)
     <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(APP_START_ADDRESS);
-    <#lt>    uint32_t reset_vector   = *(uint32_t *)(APP_START_ADDRESS + 4);
+    <#lt>    uint32_t msp            = *(uint32_t *)(address);
+    <#lt>    uint32_t reset_vector   = *(uint32_t *)(address + 4);
 
     <#lt>    if (msp == 0xffffffff)
     <#lt>    {
@@ -267,16 +271,15 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>    (void)RSWRST;
     <#lt>}
 
-    <#lt>void run_Application(void)
+    <#lt>void run_Application(uint32_t address)
     <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(APP_JUMP_ADDRESS);
+    <#lt>    uint32_t jumpAddrVal = *(uint32_t *)(address & WORD_ALIGN_MASK);
 
     <#lt>    void (*fptr)(void);
 
-    <#lt>    /* Set default to APP_JUMP_ADDRESS */
-    <#lt>    fptr = (void (*)(void))APP_JUMP_ADDRESS;
+    <#lt>    fptr = (void (*)(void))address;
 
-    <#lt>    if (msp == 0xffffffff)
+    <#lt>    if (jumpAddrVal == 0xffffffff)
     <#lt>    {
     <#lt>        return;
     <#lt>    }

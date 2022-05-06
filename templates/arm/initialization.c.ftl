@@ -136,7 +136,7 @@ void SYS_Initialize ( void* data )
 
     if (bootloader_Trigger() == false)
     {
-        run_Application();
+        run_Application(APP_START_ADDRESS);
     }
 
     <#-- /* Call PM initialize if device is SAM L21/L22 or PIC32CM LE/LS for Performance level

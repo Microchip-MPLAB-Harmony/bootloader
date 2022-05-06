@@ -1,8 +1,8 @@
 /*******************************************************************************
-  Bootloader Header File
+  ${BTL_TYPE} Bootloader Header File
 
   File Name:
-    bootloader.h
+    bootloader_${BTL_TYPE?lower_case}.h
 
   Summary:
     This file contains Interface definitions of bootloder
@@ -81,7 +81,7 @@
 
     <#lt>        if (bootloader_Trigger() == false)
     <#lt>        {
-    <#lt>            run_Application();
+    <#lt>            run_Application(APP_JUMP_ADDRESS);
     <#lt>        }
 
     <#lt>    </code>
