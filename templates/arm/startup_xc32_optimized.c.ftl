@@ -25,7 +25,7 @@
 
 #include "definitions.h" /* for potential custom handler names */
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
-    <lt>#include "device_vectors.h"
+    <#lt>#include "device_vectors.h"
 </#if>
 #include <libpic32c.h>
 #include <sys/cdefs.h>
@@ -59,7 +59,7 @@ extern int main(void);
 extern uint32_t _sdata, _edata, _etext;
 extern uint32_t _sbss, _ebss;
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
-    <lt>extern uint32_t _vectors_loadaddr;
+    <#lt>extern uint32_t _vectors_loadaddr;
 </#if>
 
 void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)

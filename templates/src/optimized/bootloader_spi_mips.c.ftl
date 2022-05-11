@@ -1,11 +1,11 @@
 /*******************************************************************************
-  SPI Bootloader Source File
+  ${BTL_TYPE} Bootloader Source File
 
   File Name:
-    bootloader_spi.c
+    bootloader_${BTL_TYPE?lower_case}.c
 
   Summary:
-    This file contains source code necessary to execute SPI bootloader.
+    This file contains source code necessary to execute ${BTL_TYPE} bootloader.
 
   Description:
     This file contains source code necessary to execute SPI bootloader.
@@ -61,6 +61,11 @@
 
 #define BL_BUFFER_SIZE                          ERASE_BLOCK_SIZE + sizeof(uint32_t)
 
+/* MSB bit is set for the spi master to decide if a slave is present or not.
+ * If slave is not present, the read value may be 0x00 or 0xFF.
+ */
+#define BL_STATUS_READY                         (0x80)
+
 #define BL_STATUS_BIT_BUSY                      (0x01 << 0)
 #define BL_STATUS_BIT_INVALID_COMMAND           (0x01 << 1)
 #define BL_STATUS_BIT_INVALID_MEM_ADDR          (0x01 << 2)
@@ -78,15 +83,12 @@ typedef enum
     BL_COMMAND_VERIFY = 0xA3,
     BL_COMMAND_RESET = 0xA4,
     BL_COMMAND_READ_STATUS = 0xA5,
+<#if BTL_DUAL_BANK == true>
+    BL_COMMAND_BKSWAP_RESET = 0xA6,
+</#if>
+    BL_COMMAND_READ_VERSION = 0xA8,
     BL_COMMAND_MAX,
 }BL_COMMAND;
-
-typedef enum
-{
-    BL_I2C_READ_COMMAND = 0,
-    BL_I2C_READ_COMMAND_ARGUMENTS,
-    BL_I2C_READ_PROGRAM_DATA,
-}BL_I2C_READ_STATE;
 
 typedef enum
 {
@@ -97,6 +99,9 @@ typedef enum
     BL_FLASH_STATE_RESET,
     BL_FLASH_STATE_ERASE_BUSY_POLL,
     BL_FLASH_STATE_WRITE_BUSY_POLL,
+<#if BTL_DUAL_BANK == true>
+    BL_FLASH_STATE_BKSWAP_RESET,
+</#if>
 }BL_FLASH_STATE;
 
 typedef struct __PACKED
@@ -145,6 +150,7 @@ typedef struct
     uint32_t                                appImageEndAddr;
     uint32_t                                nFlashBytesWritten;
     volatile uint32_t                       nReadBytes;
+    uint16_t                                btlVersion;
 }SPI_BL_DATA;
 
 
@@ -157,14 +163,45 @@ typedef struct
 
 static SPI_BL_DATA                          spiBLData;
 
+static bool spiBLInitDone   = false;
+
+static bool spiBLActive     = false;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
 
+static void BL_SPI_SubmitWriteRequest(void)
+{
+    /* NVM requires data buffer to align to 32-bit (word) boundary. Move the buffer content to align to 32-bit boundary. */
+    if ((uint32_t)spiBLData.cmd.programCommand.data & 0x03)
+    {
+        spiBLData.dataBufferAlignOffset = 4 - ((uint32_t)spiBLData.cmd.programCommand.data & 0x03);
+
+        memmove(&spiBLData.cmd.programCommand.data[spiBLData.dataBufferAlignOffset], spiBLData.cmd.programCommand.data, spiBLData.cmd.programCommand.nBytes);
+    }
+    else
+    {
+        /* Already aligned to word boundary */
+        spiBLData.dataBufferAlignOffset = 0;
+    }
+
+    SET_BIT(spiBLData.status, BL_STATUS_BIT_BUSY);
+    spiBLData.nFlashBytesWritten = 0;}
+
 static void BL_SPI_CommandParser(void)
 {
+    if (spiBLActive == false)
+    {
+        if ((spiBLData.cmd.readBuffer[0] >= BL_COMMAND_UNLOCK) &&
+            (spiBLData.cmd.readBuffer[0] < BL_COMMAND_MAX))
+        {
+            spiBLActive = true;
+        }
+    }
+
     switch(spiBLData.cmd.readBuffer[0])
     {
         case BL_COMMAND_UNLOCK:
@@ -183,6 +220,18 @@ static void BL_SPI_CommandParser(void)
 
         case BL_COMMAND_ERASE:
 
+<#if BTL_DUAL_BANK == true>
+            if (spiBLData.cmd.eraseCommand.memAddr == LOWER_FLASH_SERIAL_SECTOR)
+            {
+                /* Send error response if active Flash Panels (Lower Flash)
+                 * Serial Sector is being erased.
+                 */
+                SET_BIT(spiBLData.status, BL_STATUS_BIT_INVALID_MEM_ADDR);
+
+                break;
+            }
+
+</#if>
             if ((spiBLData.cmd.eraseCommand.memAddr < spiBLData.appImageStartAddr) ||
             ((spiBLData.cmd.eraseCommand.memAddr + ERASE_BLOCK_SIZE) > spiBLData.appImageEndAddr))
             {
@@ -204,19 +253,8 @@ static void BL_SPI_CommandParser(void)
             }
             else
             {
-                /* NVM requires data buffer to align to 32-bit (word) boundary. Move the buffer content to align to 32-bit boundary. */
-                if ((uint32_t)spiBLData.cmd.programCommand.data & 0x03)
-                {
-                    spiBLData.dataBufferAlignOffset = 4 - ((uint32_t)spiBLData.cmd.programCommand.data & 0x03);
-                    memmove(&spiBLData.cmd.programCommand.data[spiBLData.dataBufferAlignOffset], spiBLData.cmd.programCommand.data, spiBLData.cmd.programCommand.nBytes);
-                }
-                else
-                {
-                    /* Already aligned to word boundary */
-                    spiBLData.dataBufferAlignOffset = 0;
-                }
-                SET_BIT(spiBLData.status, BL_STATUS_BIT_BUSY);
-                spiBLData.nFlashBytesWritten = 0;
+                BL_SPI_SubmitWriteRequest();
+
                 spiBLData.flashState = BL_FLASH_STATE_WRITE;
             }
             break;
@@ -232,10 +270,27 @@ static void BL_SPI_CommandParser(void)
             spiBLData.flashState = BL_FLASH_STATE_RESET;
             break;
 
+<#if BTL_DUAL_BANK == true>
+        case BL_COMMAND_BKSWAP_RESET:
+
+            spiBLData.flashState = BL_FLASH_STATE_BKSWAP_RESET;
+            break;
+</#if>
         case BL_COMMAND_READ_STATUS:
 
             ${PERIPH_USED}_Write(&spiBLData.status, 1);
             CLR_BIT(spiBLData.status, BL_STATUS_BIT_ALL);
+            break;
+
+        case BL_COMMAND_READ_VERSION:
+
+            spiBLData.btlVersion = bootloader_GetVersion();
+
+            /* Swap Major and Minor Number */
+            spiBLData.btlVersion = (((spiBLData.btlVersion << 8) & 0xFF00) | ((spiBLData.btlVersion >> 8) & 0xFF));
+
+            ${PERIPH_USED}_Write(&spiBLData.btlVersion, 2);
+
             break;
 
         default:
@@ -253,20 +308,18 @@ static void BL_SPI_CommandParser(void)
     }
 }
 
-
-
 static void BL_SPI_FlashTask(void)
 {
     switch(spiBLData.flashState)
     {
         case BL_FLASH_STATE_ERASE:
            /* Erase the Current sector */
-            NVM_PageErase(spiBLData.cmd.eraseCommand.memAddr);
+            ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(spiBLData.cmd.eraseCommand.memAddr);
             spiBLData.flashState = BL_FLASH_STATE_ERASE_BUSY_POLL;
             break;
 
         case BL_FLASH_STATE_WRITE:
-            NVM_RowWrite((uint32_t*)&spiBLData.cmd.programCommand.data[spiBLData.dataBufferAlignOffset + spiBLData.nFlashBytesWritten], (spiBLData.cmd.programCommand.memAddr + spiBLData.nFlashBytesWritten));
+            ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&spiBLData.cmd.programCommand.data[spiBLData.dataBufferAlignOffset + spiBLData.nFlashBytesWritten], (spiBLData.cmd.programCommand.memAddr + spiBLData.nFlashBytesWritten));
             spiBLData.flashState = BL_FLASH_STATE_WRITE_BUSY_POLL;
             break;
 
@@ -281,16 +334,23 @@ static void BL_SPI_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
-            if(NVM_IsBusy() == false)
+            if(${MEM_USED}_IsBusy() == false)
             {
                 CLR_BIT(spiBLData.status, BL_STATUS_BIT_BUSY);
                 ${PERIPH_USED}_Ready();
                 spiBLData.flashState = BL_FLASH_STATE_IDLE;
+<#if BTL_DUAL_BANK == true>
+
+                if (spiBLData.cmd.eraseCommand.memAddr == UPPER_FLASH_SERIAL_SECTOR)
+                {
+                    bootloader_SetUpperFlashSerialErased(true);
+                }
+</#if>
             }
             break;
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
-            if(NVM_IsBusy() == false)
+            if(${MEM_USED}_IsBusy() == false)
             {
                 spiBLData.nFlashBytesWritten += PAGE_SIZE;
 
@@ -308,10 +368,16 @@ static void BL_SPI_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_RESET:
-            /* Wait for the I2C transfer to complete */
             bootloader_TriggerReset();
             break;
 
+<#if BTL_DUAL_BANK == true>
+        case BL_FLASH_STATE_BKSWAP_RESET:
+            bootloader_UpdateUpperFlashSerial();
+
+            bootloader_TriggerReset();
+            break;
+</#if>
 
         case BL_FLASH_STATE_IDLE:
             /* Do nothing */
@@ -343,13 +409,21 @@ static void BL_SPI_EventHandler(uintptr_t context )
 
 void bootloader_${BTL_TYPE}_Tasks(void)
 {
-    spiBLData.flashState = BL_FLASH_STATE_IDLE;
-	spiBLData.status = 0x80;
-
-    ${PERIPH_USED}_CallbackRegister(BL_SPI_EventHandler, (uintptr_t) 0);
-
-    while (1)
+    if (spiBLInitDone == false)
     {
+        spiBLData.flashState = BL_FLASH_STATE_IDLE;
+
+        spiBLData.status = BL_STATUS_READY;
+
+        ${PERIPH_USED}_CallbackRegister(BL_SPI_EventHandler, (uintptr_t) 0);
+    }
+
+    do
+    {
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        kickdog();
+
+</#if>
         if (spiBLData.nReadBytes)
         {
             spiBLData.nReadBytes = 0;
@@ -358,5 +432,5 @@ void bootloader_${BTL_TYPE}_Tasks(void)
         }
 
         BL_SPI_FlashTask();
-    }
+    } while (spiBLActive);
 }

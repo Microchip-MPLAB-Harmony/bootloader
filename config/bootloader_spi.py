@@ -22,20 +22,21 @@
 *****************************************************************************"""
 global btlSizes
 global btl_type
+global btl_helpkeyword
 
 btl_type = "SPI"
-
+btl_helpkeyword = "mcc_h3_spi_bootloader_configurations"
 bootloaderCore = ""
 
 # Maximum Size for Bootloader [BYTES]
 if ("PIC32M" in Variables.get("__PROCESSOR")):
     bootloaderCore = "bootloader_mips.py"
     btlSizes = {
-                "PIC32MX"     : [4096],
-                "PIC32MK"     : [8192],
-                "PIC32MZDA"   : [8192],
-                "PIC32MZEF"   : [8192],
-                "PIC32MZW"    : [8192],
+                "PIC32MX"     : [8192],
+                "PIC32MK"     : [12288],
+                "PIC32MZDA"   : [16384],
+                "PIC32MZEF"   : [16384],
+                "PIC32MZW"    : [12288],
     }
 else:
     bootloaderCore = "bootloader_arm.py"
@@ -86,10 +87,7 @@ def setupCoreComponentSymbols():
 
     coreComponent.getSymbolByID("CoreSysIntFile").setValue(True)
 
-    if (not ("PIC32M" in Variables.get("__PROCESSOR"))):
-        coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(True)
-    else:
-        coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
+    coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(True)
 
     coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 
@@ -101,6 +99,7 @@ def instantiateComponent(bootloaderComponent):
     setupCoreComponentSymbols()
 
     btlPeriphUsed = bootloaderComponent.createStringSymbol("PERIPH_USED", None)
+    btlPeriphUsed.setHelp(btl_helpkeyword)
     btlPeriphUsed.setLabel("Bootloader Peripheral Used")
     btlPeriphUsed.setReadOnly(True)
     btlPeriphUsed.setDefaultValue("")
@@ -122,16 +121,19 @@ def instantiateComponent(bootloaderComponent):
     elif ("PIC32MK" in Variables.get("__PROCESSOR")):
         if (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
             re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
-            re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR"))):
+            re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*MCA", Variables.get("__PROCESSOR"))):
             btlDualBankEnable = False
         else:
             btlDualBankEnable = True
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
+    btlDualBank.setHelp(btl_helpkeyword)
     btlDualBank.setLabel("Use Dual Bank For Safe Flash Update")
     btlDualBank.setVisible(btlDualBankEnable)
 
     btlDualBankComment = bootloaderComponent.createCommentSymbol("BTL_DUAL_BANK_COMMENT", None)
+    btlDualBankComment.setHelp(btl_helpkeyword)
     btlDualBankComment.setLabel("!!! WARNING Only Half of the Flash memory will be available for Application !!!")
     btlDualBankComment.setVisible(False)
     btlDualBankComment.setDependencies(setBtlDualBankCommentVisible, ["BTL_DUAL_BANK"])
@@ -143,7 +145,7 @@ def instantiateComponent(bootloaderComponent):
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_spi_mips.c.ftl")
     else:
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_spi_arm.c.ftl")
-    btlSourceFile.setOutputName("bootloader_spi.c")
+    btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
     btlSourceFile.setDestPath("/bootloader/")
@@ -152,7 +154,7 @@ def instantiateComponent(bootloaderComponent):
 
     btlHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_HEADER", None)
     btlHeaderFile.setSourcePath("../bootloader/templates/src/bootloader.h.ftl")
-    btlHeaderFile.setOutputName("bootloader_spi.h")
+    btlHeaderFile.setOutputName("bootloader_" + btl_type.lower() + ".h")
     btlHeaderFile.setMarkup(True)
     btlHeaderFile.setOverwrite(True)
     btlHeaderFile.setDestPath("/bootloader/")
@@ -187,6 +189,15 @@ def instantiateComponent(bootloaderComponent):
     btlSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_H_INCLUDES")
     btlSystemDefFile.setSourcePath("../bootloader/templates/system/definitions.h.ftl")
     btlSystemDefFile.setMarkup(True)
+
+    if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
+        btlSourceFile.setSecurity("SECURE")
+        btlHeaderFile.setSecurity("SECURE")
+        btlmainSourceFile.setSecurity("SECURE")
+        btlInitFile.setSecurity("SECURE")
+        btlInitFile.setSourcePath("../bootloader/templates/arm/initialization_secure.c.ftl")
+        btlSystemDefFile.setSecurity("SECURE")
+        btlSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_SECURE_H_INCLUDES")
 
     generateLinkerFileSymbol(bootloaderComponent)
 
