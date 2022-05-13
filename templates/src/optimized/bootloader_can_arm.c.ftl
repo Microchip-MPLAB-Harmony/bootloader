@@ -1,11 +1,11 @@
 /*******************************************************************************
-  CAN Bootloader Source File
+  ${BTL_TYPE} Bootloader Source File
 
   File Name:
-    bootloader.c
+    bootloader_${BTL_TYPE?lower_case}.c
 
   Summary:
-    This file contains source code necessary to execute CAN bootloader.
+    This file contains source code necessary to execute ${BTL_TYPE} bootloader.
 
   Description:
     This file contains source code necessary to execute CAN bootloader.
@@ -68,6 +68,12 @@
 #define SIZE_SIZE                4
 #define MAX_DATA_SIZE            60
 
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    <#lt>#define DEVCFG_ADDR_OFFSET       1
+    <#lt>#define DEVCFG_ADDR_SIZE         4
+    <#lt>#define DEVCFG_DATA_OFFSET       8
+</#if>
+
 #define HEADER_MAGIC             0xE2
 #define ${PERIPH_NAME}_FILTER_ID 0x45A
 
@@ -89,6 +95,10 @@ enum
 <#if BTL_DUAL_BANK == true>
     BL_CMD_BKSWAP_RESET = 0xa4,
 </#if>
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    BL_CMD_DEVCFG_DATA  = 0xa5,
+</#if>
+    BL_CMD_READ_VERSION = 0xa6,
 };
 
 enum
@@ -111,6 +121,9 @@ static uint8_t  flash_data[PAGE_SIZE];
 static uint32_t flash_addr;
 static uint32_t flash_size;
 static uint32_t flash_ptr;
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+static uint32_t devCfg_ptr;
+</#if>
 
 static uint32_t unlock_begin;
 static uint32_t unlock_end;
@@ -123,6 +136,10 @@ static uint8_t CACHE_ALIGN ${PERIPH_USED?lower_case}MessageRAM[${PERIPH_USED}_ME
 static uint8_t rxFiFo0[${PERIPH_USED}_RX_FIFO0_SIZE];
 static uint8_t txFiFo[${PERIPH_USED}_TX_FIFO_BUFFER_SIZE];
 static uint8_t data_seq;
+
+static bool canBLInitDone      = false;
+
+static bool canBLActive        = false;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -150,14 +167,58 @@ static void flash_write(void)
         /* Erase the Current sector */
         ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
 
-        while(${MEM_USED}_IsBusy() == true);
+        while(${MEM_USED}_IsBusy() == true)
+        {
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+            kickdog();
+</#if>
+        }
     }
 
     /* Write Page */
     ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)&flash_data[0], flash_addr);
 
-    while(${MEM_USED}_IsBusy() == true);
+    while(${MEM_USED}_IsBusy() == true)
+    {
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        kickdog();
+</#if>
+    }
 }
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+
+    <#lt>/* Function to program Device configuration */
+    <#lt>static void device_config_write(uint32_t addr)
+    <#lt>{
+    <#lt>    if (0 == (addr % ERASE_BLOCK_SIZE))
+    <#lt>    {
+    <#lt>        /* Lock region size is always bigger than the row size */
+    <#lt>        ${MEM_USED}_RegionUnlock(addr);
+
+    <#lt>        while(${MEM_USED}_IsBusy() == true);
+
+    <#lt>        /* Erase the NVM user row */
+    <#lt>        ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME}(addr);
+
+    <#lt>        while(${MEM_USED}_IsBusy() == true)
+    <#lt>        {
+    <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        <#lt>            kickdog();
+    </#if>
+    <#lt>        }
+    <#lt>    }
+
+    <#lt>    /* Write the NVM user row */
+    <#lt>    ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME}((uint32_t *)&flash_data[0], addr);
+
+    <#lt>    while(${MEM_USED}_IsBusy() == true)
+    <#lt>    {
+    <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        <#lt>        kickdog();
+    </#if>
+    <#lt>    }
+    <#lt>}
+</#if>
 
 /* Function to process command from the received message */
 static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
@@ -166,6 +227,9 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
     uint32_t size = rx_message[HEADER_SIZE_OFFSET];
     uint32_t *data = (uint32_t *)rx_message;
     ${PERIPH_NAME}_TX_BUFFER *txBuffer = NULL;
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    uint32_t devcfgAddr = 0;
+</#if>
 
     memset(txFiFo, 0U, ${PERIPH_USED}_TX_FIFO_BUFFER_ELEMENT_SIZE);
     txBuffer = (${PERIPH_NAME}_TX_BUFFER *)txFiFo;
@@ -239,6 +303,60 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
             ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
     }
+<#if BTL_FUSE_PROGRAM_ENABLE == true>
+    else if (BL_CMD_DEVCFG_DATA == command)
+    {
+        if (rx_message[HEADER_SEQ_OFFSET] != data_seq)
+        {
+            txBuffer->data[0] = BL_RESP_SEQ_ERROR;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+        }
+        else
+        {
+            /* Get the Address from 2nd word of the rx_message */
+            devcfgAddr = data[DEVCFG_ADDR_OFFSET];
+
+            if ((devcfgAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && (devcfgAddr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+            {
+                for (uint8_t i = 0; i < (size - DEVCFG_ADDR_SIZE); i++)
+                {
+                    flash_data[devCfg_ptr++] = rx_message[DEVCFG_DATA_OFFSET + i];
+
+                    if (devCfg_ptr == PAGE_SIZE)
+                    {
+                        /* Align to page Boundary */
+                        devcfgAddr = devcfgAddr - (devcfgAddr % PAGE_SIZE);
+
+                        device_config_write(devcfgAddr);
+
+                        devCfg_ptr = 0;
+                    }
+                }
+            }
+            else
+            {
+                txBuffer->data[0] = BL_RESP_ERROR;
+                ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+                return;
+            }
+
+            data_seq++;
+            txBuffer->data[0] = BL_RESP_OK;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+        }
+    }
+</#if>
+    else if (BL_CMD_READ_VERSION == command)
+    {
+        uint16_t btlVersion = bootloader_GetVersion();
+
+        txBuffer->data[0] = BL_RESP_OK;
+
+        txBuffer->data[1] = (uint8_t)((btlVersion >> 8) & 0xFF);
+        txBuffer->data[2] = (uint8_t)(btlVersion & 0xFF);
+
+        ${PERIPH_USED}_MessageTransmitFifo(3U, txBuffer);
+    }
     else if (BL_CMD_VERIFY == command)
     {
         uint32_t crc        = data[CRC_OFFSET];
@@ -250,7 +368,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
             ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
 
-        crc_gen = crc_generate();
+        crc_gen = bootloader_CRCGenerate(unlock_begin, (unlock_end - unlock_begin));
 
         if (crc == crc_gen)
         {
@@ -312,19 +430,23 @@ static void ${PERIPH_USED}_task(void)
 
         /* Check ${PERIPH_USED} Status */
         status = ${PERIPH_USED}_ErrorGet();
-        <#if PERIPH_NAME == "CAN">
+<#if PERIPH_NAME == "CAN">
         if (((status & ${PERIPH_NAME}_PSR_LEC_Msk) == ${PERIPH_NAME}_ERROR_NONE) || ((status & ${PERIPH_NAME}_PSR_LEC_Msk) == ${PERIPH_NAME}_ERROR_LEC_NC))
-        <#else>
+<#else>
         if (((status & ${PERIPH_NAME}_PSR_LEC_Msk) == ${PERIPH_NAME}_ERROR_NONE) || ((status & ${PERIPH_NAME}_PSR_LEC_Msk) == ${PERIPH_NAME}_ERROR_LEC_NO_CHANGE))
-        </#if>
+</#if>
         {
             numberOfMessage = ${PERIPH_USED}_RxFifoFillLevelGet(${PERIPH_NAME}_RX_FIFO_0);
             if (numberOfMessage != 0U)
             {
+                canBLActive = true;
+
                 memset(rxFiFo0, 0U, (numberOfMessage * ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE));
+
                 if (${PERIPH_USED}_MessageReceiveFifo(${PERIPH_NAME}_RX_FIFO_0, numberOfMessage, (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0) == true)
                 {
                     rxBuf = (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0;
+
                     for (count = 0U; count < numberOfMessage; count++)
                     {
                         process_command(rxBuf->data, CANDlcToLengthGet(rxBuf->dlc));
@@ -342,13 +464,23 @@ static void ${PERIPH_USED}_task(void)
 // *****************************************************************************
 // *****************************************************************************
 
-void bootloader_Tasks(void)
+void bootloader_${BTL_TYPE}_Tasks(void)
 {
-    /* Set ${PERIPH_USED} Message RAM Configuration */
-    ${PERIPH_USED}_MessageRAMConfigSet(${PERIPH_USED?lower_case}MessageRAM);
-
-    while (1)
+    if (canBLInitDone == false)
     {
-        ${PERIPH_USED}_task();
+        /* Set ${PERIPH_USED} Message RAM Configuration */
+        ${PERIPH_USED}_MessageRAMConfigSet(${PERIPH_USED?lower_case}MessageRAM);
+
+        canBLInitDone = true;
     }
+
+    do
+    {
+<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+        kickdog();
+
+</#if>
+        ${PERIPH_USED}_task();
+
+    }  while (canBLActive);
 }
