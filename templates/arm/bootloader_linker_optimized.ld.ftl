@@ -197,7 +197,7 @@ SECTIONS
     {
     . = ALIGN(4);
     _s_${PERIPH_USED?lower_case}_message_ram = .;
-    *(.${PERIPH_USED?lower_case}_message_ram)
+    *(.${PERIPH_USED?lower_case}_message_ram .${PERIPH_USED?lower_case}_message_ram.*)
     . = ALIGN(4);
     _e_${PERIPH_USED?lower_case}_message_ram = .;
     } > ${MPU_REGION_NAME?eval}

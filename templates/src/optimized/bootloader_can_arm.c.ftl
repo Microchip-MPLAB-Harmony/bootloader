@@ -71,6 +71,10 @@
 #define HEADER_MAGIC             0xE2
 #define ${PERIPH_NAME}_FILTER_ID 0x45A
 
+/* Standard identifier id[28:18]*/
+#define WRITE_ID(id)             (id << 18U)
+#define READ_ID(id)              (id >> 18U)
+
 #define WORDS(x)                 ((int)((x) / sizeof(uint32_t)))
 
 #define OFFSET_ALIGN_MASK        (~ERASE_BLOCK_SIZE + 1)
@@ -116,7 +120,8 @@ static uint8_t CACHE_ALIGN __attribute__((space(data), section (".${PERIPH_USED?
 <#else>
 static uint8_t CACHE_ALIGN ${PERIPH_USED?lower_case}MessageRAM[${PERIPH_USED}_MESSAGE_RAM_CONFIG_SIZE];
 </#if>
-static uint8_t rx_message[HEADER_SIZE + MAX_DATA_SIZE];
+static uint8_t rxFiFo0[${PERIPH_USED}_RX_FIFO0_SIZE];
+static uint8_t txFiFo[${PERIPH_USED}_TX_FIFO_BUFFER_SIZE];
 static uint8_t data_seq;
 
 // *****************************************************************************
@@ -124,6 +129,13 @@ static uint8_t data_seq;
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
+
+/* Data length code to Message Length */
+static uint8_t CANDlcToLengthGet(uint8_t dlc)
+{
+    uint8_t msgLength[] = {0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U, 12U, 16U, 20U, 24U, 32U, 48U, 64U};
+    return msgLength[dlc];
+}
 
 /* Function to program received application firmware data into internal flash */
 static void flash_write(void)
@@ -153,13 +165,20 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
     uint32_t command = rx_message[HEADER_CMD_OFFSET];
     uint32_t size = rx_message[HEADER_SIZE_OFFSET];
     uint32_t *data = (uint32_t *)rx_message;
-    uint8_t tx_message = 0;
+    ${PERIPH_NAME}_TX_BUFFER *txBuffer = NULL;
+
+    memset(txFiFo, 0U, ${PERIPH_USED}_TX_FIFO_BUFFER_ELEMENT_SIZE);
+    txBuffer = (${PERIPH_NAME}_TX_BUFFER *)txFiFo;
+    txBuffer->id = WRITE_ID(${PERIPH_NAME}_FILTER_ID);
+    txBuffer->dlc = 1U;
+    txBuffer->fdf = 1U;
+    txBuffer->brs = 1U;
 
     if ((rx_messageLength < HEADER_SIZE) || (size > MAX_DATA_SIZE) ||
         (rx_messageLength < (HEADER_SIZE + size)) || (HEADER_MAGIC != rx_message[HEADER_MAGIC_OFFSET]))
     {
-        tx_message = BL_RESP_ERROR;
-        ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+        txBuffer->data[0] = BL_RESP_ERROR;
+        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
     }
     else if (BL_CMD_UNLOCK == command)
     {
@@ -171,15 +190,15 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         {
             unlock_begin = begin;
             unlock_end = end;
-            tx_message = BL_RESP_OK;
-            ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+            txBuffer->data[0] = BL_RESP_OK;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         else
         {
             unlock_begin = 0;
             unlock_end = 0;
-            tx_message = BL_RESP_ERROR;
-            ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+            txBuffer->data[0] = BL_RESP_ERROR;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         data_seq = 0;
         flash_ptr = 0;
@@ -190,8 +209,8 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
     {
         if (rx_message[HEADER_SEQ_OFFSET] != data_seq)
         {
-            tx_message = BL_RESP_SEQ_ERROR;
-            ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+            txBuffer->data[0] = BL_RESP_SEQ_ERROR;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         else
         {
@@ -199,8 +218,8 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
             {
                 if (0 == flash_size)
                 {
-                    tx_message = BL_RESP_ERROR;
-                    ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+                    txBuffer->data[0] = BL_RESP_ERROR;
+                    ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
                     return;
                 }
 
@@ -216,8 +235,8 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
                 }
             }
             data_seq++;
-            tx_message = BL_RESP_OK;
-            ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+            txBuffer->data[0] = BL_RESP_OK;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
     }
     else if (BL_CMD_VERIFY == command)
@@ -227,33 +246,33 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
 
         if (size != CRC_SIZE)
         {
-            tx_message = BL_RESP_ERROR;
-            ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+            txBuffer->data[0] = BL_RESP_ERROR;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
 
         crc_gen = crc_generate();
 
         if (crc == crc_gen)
         {
-            tx_message = BL_RESP_CRC_OK;
-            ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+            txBuffer->data[0] = BL_RESP_CRC_OK;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         else
         {
-            tx_message = BL_RESP_CRC_FAIL;
-            ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+            txBuffer->data[0] = BL_RESP_CRC_FAIL;
+            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
     }
 <#if BTL_DUAL_BANK == true>
     else if (BL_CMD_BKSWAP_RESET == command)
     {
-        tx_message = BL_RESP_OK;
-
         if (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_TFE_MASK))
         {
             ${PERIPH_USED}_InterruptClear(${PERIPH_NAME}_INTERRUPT_TFE_MASK);
         }
-        ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+
+        txBuffer->data[0] = BL_RESP_OK;
+        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         while (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_TFE_MASK) == false);
 
         ${MEM_USED}_BankSwap();
@@ -261,31 +280,31 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
 </#if>
     else if (BL_CMD_RESET == command)
     {
-        tx_message = BL_RESP_OK;
-
         if (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_TFE_MASK))
         {
             ${PERIPH_USED}_InterruptClear(${PERIPH_NAME}_INTERRUPT_TFE_MASK);
         }
-        ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+
+        txBuffer->data[0] = BL_RESP_OK;
+        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         while (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_TFE_MASK) == false);
 
         NVIC_SystemReset();
     }
     else
     {
-        tx_message = BL_RESP_INVALID;
-        ${PERIPH_USED}_MessageTransmit(${PERIPH_NAME}_FILTER_ID, 1, &tx_message, ${PERIPH_NAME}_MODE_FD_WITH_BRS, ${PERIPH_NAME}_MSG_ATTR_TX_FIFO_DATA_FRAME);
+        txBuffer->data[0] = BL_RESP_INVALID;
+        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
     }
 }
 
 /* Function to receive application firmware via ${PERIPH_USED} */
 static void ${PERIPH_USED}_task(void)
 {
-    uint32_t                   status = 0;
-    uint32_t                   rx_messageID = 0;
-    uint8_t                    rx_messageLength = 0;
-    ${PERIPH_NAME}_MSG_RX_FRAME_ATTRIBUTE msgFrameAttr = ${PERIPH_NAME}_MSG_RX_DATA_FRAME;
+    uint32_t                   status = 0U;
+    uint8_t                    numberOfMessage = 0U;
+    uint8_t                    count = 0U;
+    ${PERIPH_NAME}_RX_BUFFER   *rxBuf = NULL;
 
     if (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_RF0N_MASK))
     {
@@ -299,13 +318,19 @@ static void ${PERIPH_USED}_task(void)
         if (((status & ${PERIPH_NAME}_PSR_LEC_Msk) == ${PERIPH_NAME}_ERROR_NONE) || ((status & ${PERIPH_NAME}_PSR_LEC_Msk) == ${PERIPH_NAME}_ERROR_LEC_NO_CHANGE))
         </#if>
         {
-            memset(rx_message, 0x00, sizeof(rx_message));
-
-            /* Receive FIFO 0 New Message */
-            if (${PERIPH_USED}_MessageReceive(&rx_messageID, &rx_messageLength, rx_message, 0, ${PERIPH_NAME}_MSG_ATTR_RX_FIFO0, &msgFrameAttr) == true)
+            numberOfMessage = ${PERIPH_USED}_RxFifoFillLevelGet(${PERIPH_NAME}_RX_FIFO_0);
+            if (numberOfMessage != 0U)
             {
-                process_command(rx_message, rx_messageLength);
-                (void)rx_messageID;
+                memset(rxFiFo0, 0U, (numberOfMessage * ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE));
+                if (${PERIPH_USED}_MessageReceiveFifo(${PERIPH_NAME}_RX_FIFO_0, numberOfMessage, (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0) == true)
+                {
+                    rxBuf = (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0;
+                    for (count = 0U; count < numberOfMessage; count++)
+                    {
+                        process_command(rxBuf->data, CANDlcToLengthGet(rxBuf->dlc));
+                        rxBuf += ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE;
+                    }
+                }
             }
         }
     }
