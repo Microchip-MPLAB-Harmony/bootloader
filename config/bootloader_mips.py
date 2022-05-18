@@ -69,7 +69,8 @@ for mem_idx in range(0, len(addr_space_children)):
 
     if ((btl_type != "UART") and (btl_type != "I2C") and (btl_type != "SPI")):
         if (("PIC32MX" in Variables.get("__PROCESSOR")) or
-            ("PIC32MK" in Variables.get("__PROCESSOR"))):
+            ("PIC32MK" in Variables.get("__PROCESSOR")) or
+            ("PIC32MM" in Variables.get("__PROCESSOR"))):
             # Bootloader start address is in Program Flash memory as
             # Bootloader size is greater than Boot Flash Memory (3KB and 12KB)
             btl_start = "0x9D000000"
@@ -84,6 +85,13 @@ for mem_idx in range(0, len(addr_space_children)):
                     # The bootloader code will be placed after the startup code ending at 0x9FC00490
                     btl_start = "0x9FC00500"
                     mx_devCfg_addr = "0xBFC02FF0"
+        if ("PIC32MM" in Variables.get("__PROCESSOR")):
+            if (btl_type == "UART"):
+                # The bootloader code will be placed after the startup and debug execution code ending at 0x9FC00BF0
+                btl_start = "0x9FC00BF0"
+            else:
+                # Bootloader start address is in Program Flash memory as Boot Flash Memory is only ~5KB
+                btl_start = "0x9D000000"
 
 def activateAndConnectDependencies(component):
     global btl_type
@@ -186,11 +194,16 @@ def setAppStartAndCommentVisible(symbol, event):
 def getAppJumpAddr():
     appStartAddr = int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16)
 
+    if ("PIC32MM" in Variables.get("__PROCESSOR")):
+        # The bit 0 of the address indicates ISA mode, For PIC32MM this bit needs
+        # to be set to 1 indicating microMIPS architecture
+        appStartAddr = appStartAddr + 1
+
     jumpAddr = str(hex(appStartAddr))[2:]
 
     # If Bootloader is placed in Boot Flash Memory Space
     if ((btl_start != "0x9D000000") or (btl_start != "0x90000000")):
-        if ("PIC32MX" not in Variables.get("__PROCESSOR")):
+        if (("PIC32MX" not in Variables.get("__PROCESSOR")) and ("PIC32MM" not in Variables.get("__PROCESSOR"))):
             # Application Exceptions should be stored from App start address aligning to the _ebase_address
             jumpAddr = str(hex(appStartAddr + 0x200))[2:]
 
@@ -315,6 +328,8 @@ def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
         devCfgAddress = mx_devCfg_addr
     elif ("PIC32MK" in Variables.get("__PROCESSOR")):
         devCfgAddress = "0xBFC03F40"
+    elif ("PIC32MM" in Variables.get("__PROCESSOR")):
+        devCfgAddress = "0xBFC01744"
 
     btlDevCfgAddress = bootloaderComponent.createStringSymbol("BTL_DEVCFG_ADDRESS", None)
     btlDevCfgAddress.setLabel("Device Configuration Address")
@@ -370,6 +385,9 @@ def generateLinkerFileSymbol(bootloaderComponent):
     # PIC32MZEF   --> PIC32MZXXXXEF
     # PIC32MZDA   --> PIC32MZXXXXDA
     # PIC32MZW    --> PIC32MZXXXXW1
+
+    # PIC32MM1324 --> PIC32MMXXXXGPL 
+    # PIC32MM1387 --> PIC32MMXXXXGPM
 
     # Get the current Product Family
     productFamily = Database.getSymbolValue("core", "PRODUCT_FAMILY")

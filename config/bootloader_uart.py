@@ -34,6 +34,8 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
     btlSizes = {
                 "PIC32MX"     : [4096],
                 "PIC32MK"     : [8192],
+                "PIC32MM1324" : [4096],
+                "PIC32MM1387" : [4096],
                 "PIC32MZDA"   : [8192],
                 "PIC32MZEF"   : [8192],
                 "PIC32MZW"    : [8192],
@@ -50,6 +52,7 @@ else:
 def getMaxBootloaderSize(arch):
 
     if (arch in btlSizes):
+        
         return btlSizes[arch][0]
     else:
         return 0

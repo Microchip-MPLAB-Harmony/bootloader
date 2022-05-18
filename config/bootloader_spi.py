@@ -34,6 +34,8 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
     btlSizes = {
                 "PIC32MX"     : [8192],
                 "PIC32MK"     : [12288],
+                "PIC32MM1324" : [6144],
+                "PIC32MM1387" : [6144],
                 "PIC32MZDA"   : [16384],
                 "PIC32MZEF"   : [16384],
                 "PIC32MZW"    : [12288],

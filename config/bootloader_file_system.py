@@ -53,6 +53,8 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
     sdcard_btlSizes = {
                 "PIC32MX"     : [49152],
                 "PIC32MK"     : [49152],
+                "PIC32MM1324" : [32768],
+                "PIC32MM1387" : [32768],
                 "PIC32MZDA"   : [53248],
                 "PIC32MZEF"   : [53248],
                 "PIC32MZW"    : [53248],
@@ -61,6 +63,8 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
     serial_memory_btlSizes = {
                 "PIC32MX"     : [40960],
                 "PIC32MK"     : [36864],
+                "PIC32MM1324" : [24576],
+                "PIC32MM1387" : [24576],
                 "PIC32MZDA"   : [49152],
                 "PIC32MZEF"   : [49152],
                 "PIC32MZW"    : [45056],
@@ -69,6 +73,7 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
     usb_host_msd_btlSizes = {
                 "PIC32MX"     : [69632],
                 "PIC32MK"     : [69632],
+                "PIC32MM1387" : [45056],
                 "PIC32MZDA"   : [81920],
                 "PIC32MZEF"   : [81920],
                 "PIC32MZW"    : [69632],
