@@ -78,23 +78,79 @@
 </#if>
 
 #define BOOTLOADER_SIZE                         ${BTL_SIZE}
-<#if __PROCESSOR?matches("PIC32M.*") == false>
-    <#lt>#define APP_START_ADDRESS                       (0x${core.APP_START_ADDRESS}UL)
+
+<#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
+     (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true) >
+    <#lt>/* Starting location of Bootloader in Inactive bank */
+    <#lt>#define INACTIVE_BANK_OFFSET                    (FLASH_LENGTH / 2)
+
+    <#lt>#define INACTIVE_BANK_START                     (FLASH_START + INACTIVE_BANK_OFFSET)
+
+    <#lt>#define FLASH_END_ADDRESS                       (INACTIVE_BANK_START + INACTIVE_BANK_OFFSET)
+
 <#else>
-    <#lt>#define APP_START_ADDRESS                       (PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL))
-    <#lt>#define APP_JUMP_ADDRESS                        (PA_TO_KVA0(0x${BTL_APP_JUMP_ADDRESS}UL))
+    <#lt>#define FLASH_END_ADDRESS                       (FLASH_START + FLASH_LENGTH)
+
+</#if>
+
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+    <#lt>#define APP_START_ADDRESS                       INACTIVE_BANK_START
+<#else>
+    <#if core.CoreArchitecture == "MIPS">
+        <#lt>#define APP_START_ADDRESS                       ((uint32_t)(PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL)))
+        <#lt>#define APP_JUMP_ADDRESS                        ((uint32_t)(PA_TO_KVA0(0x${BTL_APP_JUMP_ADDRESS}UL)))
+    <#else>
+        <#lt>#define APP_START_ADDRESS                       (0x${core.APP_START_ADDRESS}UL)
+    </#if>
+</#if>
+
+<#if (core.CoreArchitecture == "MIPS") &&
+     ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
+     (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
+
+    <#lt>#define LOWER_FLASH_START                       (FLASH_START)
+    <#lt>#define LOWER_FLASH_SERIAL_START                (LOWER_FLASH_START + (FLASH_LENGTH / 2) - PAGE_SIZE)
+    <#lt>#define LOWER_FLASH_SERIAL_SECTOR               (LOWER_FLASH_START + (FLASH_LENGTH / 2) - ERASE_BLOCK_SIZE)
+
+    <#lt>#define UPPER_FLASH_START                       INACTIVE_BANK_START
+    <#lt>#define UPPER_FLASH_SERIAL_START                (FLASH_END_ADDRESS - PAGE_SIZE)
+    <#lt>#define UPPER_FLASH_SERIAL_SECTOR               (FLASH_END_ADDRESS - ERASE_BLOCK_SIZE)
+
+    <#lt>#define FLASH_SERIAL_PROLOGUE                   0xDEADBEEF
+    <#lt>#define FLASH_SERIAL_EPILOGUE                   0xBEEFDEAD
+    <#lt>#define FLASH_SERIAL_CLEAR                      0xFFFFFFFF
+
+    <#lt>#define LOWER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(LOWER_FLASH_SERIAL_START))
+    <#lt>#define UPPER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(UPPER_FLASH_SERIAL_START))
+
+    <#lt>typedef enum
+    <#lt>{
+    <#lt>    PROGRAM_FLASH_BANK_1,
+    <#lt>    PROGRAM_FLASH_BANK_2,
+    <#lt>} T_FLASH_BANK;
+
+    <#lt>/* Structure to validate the Flash serial and its checksum
+    <#lt> * Note: The order of the members should not be changed
+    <#lt> */
+    <#lt>typedef struct
+    <#lt>{
+    <#lt>    uint32_t prologue;
+    <#lt>    uint32_t serial;
+    <#lt>    uint32_t epilogue;
+    <#lt>    uint32_t dummy;
+    <#lt>} T_FLASH_SERIAL;
 </#if>
 
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
     <#if core.CoreArchitecture == "MIPS">
-        <#lt>#define BTL_TRIGGER_RAM_START                  KVA0_TO_KVA1(${BTL_RAM_START})
+        <#lt>#define BTL_TRIGGER_RAM_START                   KVA0_TO_KVA1(${BTL_RAM_START})
     <#elseif core.CoreArchitecture == "CORTEX-M23">
-        <#lt>#define BTL_TRIGGER_RAM_START                  (${BTL_RAM_START} + 0x1000)
+        <#lt>#define BTL_TRIGGER_RAM_START                   (${BTL_RAM_START} + 0x1000)
     <#else>
-        <#lt>#define BTL_TRIGGER_RAM_START                  ${BTL_RAM_START}
+        <#lt>#define BTL_TRIGGER_RAM_START                   ${BTL_RAM_START}
     </#if>
 
-    <#lt>#define BTL_TRIGGER_LEN                        ${BTL_TRIGGER_LEN}
+    <#lt>#define BTL_TRIGGER_LEN                         ${BTL_TRIGGER_LEN}
 </#if>
 
 // *****************************************************************************
@@ -327,7 +383,26 @@ Example:
 */
 void bootloader_TriggerReset(void);
 
+<#if (core.CoreArchitecture == "MIPS") &&
+     ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
+      (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
+    <#lt>/* Function to read the Serial number from Flash bank mapped to lower region */
+    <#lt>uint32_t bootloader_GetLowerFlashSerial(void);
+
+    <#lt>/* Function to update the serial number based on address */
+    <#lt>void bootloader_UpdateFlashSerial(uint32_t serial, uint32_t addr);
+
+    <#lt>/* Function to update the serial number in upper flash panel (Inactive Panel) */
+    <#lt>void bootloader_UpdateUpperFlashSerial(void);
+
+    <#if BTL_DUAL_BANK?? && BTL_DUAL_BANK == true >
+        <#lt>/* Function to mark the Upper flash erase status */
+        <#lt>void bootloader_SetUpperFlashSerialErased(bool erased);
+    </#if>
+</#if>
+
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+/* Function to refresh watchdog timer */
 void kickdog(void);
 </#if>
 

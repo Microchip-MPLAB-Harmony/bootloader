@@ -79,11 +79,14 @@
 // *****************************************************************************
 
 
-bool __WEAK bootloader_Trigger(void)
-{
-    /* Function can be overriden with custom implementation */
-    return false;
-}
+<#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
+     (!BTL_LIVE_UPDATE??) >
+    <#lt>bool __WEAK bootloader_Trigger(void)
+    <#lt>{
+    <#lt>    /* Function can be overriden with custom implementation */
+    <#lt>    return false;
+    <#lt>}
+</#if>
 
 void __WEAK SYS_DeInitialize( void *data )
 {
@@ -241,23 +244,26 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>    NVIC_SystemReset();
     <#lt>}
 
-    <#lt>void run_Application(uint32_t address)
-    <#lt>{
-    <#lt>    uint32_t msp            = *(uint32_t *)(address);
-    <#lt>    uint32_t reset_vector   = *(uint32_t *)(address + 4);
+    <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
+         (!BTL_LIVE_UPDATE??) >
+        <#lt>void run_Application(uint32_t address)
+        <#lt>{
+        <#lt>    uint32_t msp            = *(uint32_t *)(address);
+        <#lt>    uint32_t reset_vector   = *(uint32_t *)(address + 4);
 
-    <#lt>    if (msp == 0xffffffff)
-    <#lt>    {
-    <#lt>        return;
-    <#lt>    }
+        <#lt>    if (msp == 0xffffffff)
+        <#lt>    {
+        <#lt>        return;
+        <#lt>    }
 
-    <#lt>    /* Call Deinitialize routine to free any resources acquired by Bootloader */
-    <#lt>    SYS_DeInitialize(NULL);
+        <#lt>    /* Call Deinitialize routine to free any resources acquired by Bootloader */
+        <#lt>    SYS_DeInitialize(NULL);
 
-    <#lt>    __set_MSP(msp);
+        <#lt>    __set_MSP(msp);
 
-    <#lt>    asm("bx %0"::"r" (reset_vector));
-    <#lt>}
+        <#lt>    asm("bx %0"::"r" (reset_vector));
+        <#lt>}
+    </#if>
 <#else>
     <#lt>/* Trigger a reset */
     <#lt>void bootloader_TriggerReset(void)
@@ -271,25 +277,193 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>    (void)RSWRST;
     <#lt>}
 
-    <#lt>void run_Application(uint32_t address)
-    <#lt>{
-    <#lt>    uint32_t jumpAddrVal = *(uint32_t *)(address & WORD_ALIGN_MASK);
+    <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
+         (!BTL_LIVE_UPDATE??) >
+        <#lt>void run_Application(uint32_t address)
+        <#lt>{
+        <#lt>    uint32_t jumpAddrVal = *(uint32_t *)(address & WORD_ALIGN_MASK);
 
-    <#lt>    void (*fptr)(void);
+        <#lt>    void (*fptr)(void);
 
-    <#lt>    fptr = (void (*)(void))address;
+        <#lt>    fptr = (void (*)(void))address;
 
-    <#lt>    if (jumpAddrVal == 0xffffffff)
-    <#lt>    {
-    <#lt>        return;
-    <#lt>    }
+        <#lt>    if (jumpAddrVal == 0xffffffff)
+        <#lt>    {
+        <#lt>        return;
+        <#lt>    }
 
-    <#lt>    /* Call Deinitialize routine to free any resources acquired by Bootloader */
-    <#lt>    SYS_DeInitialize(NULL);
+        <#lt>    /* Call Deinitialize routine to free any resources acquired by Bootloader */
+        <#lt>    SYS_DeInitialize(NULL);
 
-    <#lt>    __builtin_disable_interrupts();
+        <#lt>    __builtin_disable_interrupts();
 
-    <#lt>    fptr();
-    <#lt>}
+        <#lt>    fptr();
+        <#lt>}
+    </#if>
 </#if>
 
+<#if (core.CoreArchitecture == "MIPS") &&
+     ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
+      (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
+    <#lt>T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
+
+    <#lt>/* Function to read the Serial number from Flash bank mapped to lower region */
+    <#lt>uint32_t bootloader_GetLowerFlashSerial(void)
+    <#lt>{
+    <#lt>    T_FLASH_SERIAL *lower_flash_serial = LOWER_FLASH_SERIAL_READ;
+
+    <#lt>    return (lower_flash_serial->serial);
+    <#lt>}
+
+    <#lt>/* Function to update the serial number based on address */
+    <#lt>void bootloader_UpdateFlashSerial(uint32_t serial, uint32_t addr)
+    <#lt>{
+    <#lt>    update_flash_serial.serial         = serial;
+    <#lt>    update_flash_serial.prologue       = FLASH_SERIAL_PROLOGUE;
+    <#lt>    update_flash_serial.epilogue       = FLASH_SERIAL_EPILOGUE;
+
+    <#lt>    ${MEM_USED}_QuadWordWrite((uint32_t *)&update_flash_serial, addr);
+
+    <#lt>    while(${MEM_USED}_IsBusy() == true);
+    <#lt>}
+
+    <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+        <#lt>/* Function to update the serial number in upper flash panel (Inactive Panel) */
+        <#lt>void bootloader_UpdateUpperFlashSerial(void)
+        <#lt>{
+        <#lt>    uint32_t upper_flash_serial;
+
+        <#lt>    /* Increment Upper Mapped Flash panel serial by 1 to be ahead of the
+        <#lt>     * current running Lower Mapped Flash panel serial
+        <#lt>     */
+        <#lt>    upper_flash_serial = bootloader_GetLowerFlashSerial() + 1;
+
+        <#lt>    bootloader_UpdateFlashSerial(upper_flash_serial, UPPER_FLASH_SERIAL_START);
+        <#lt>}
+    <#elseif BTL_DUAL_BANK?? && BTL_DUAL_BANK == true >
+        <#lt>volatile uint32_t   dummy_read;
+
+        <#lt>static bool         upper_flash_serial_erased   = false;
+
+        <#lt>void bootloader_SetUpperFlashSerialErased(bool erased)
+        <#lt>{
+        <#lt>    upper_flash_serial_erased = erased;
+        <#lt>}
+
+        <#lt>/* Function to update the serial number in upper flash panel (Inactive Panel) */
+        <#lt>void bootloader_UpdateUpperFlashSerial(void)
+        <#lt>{
+        <#lt>    uint32_t upper_flash_serial;
+
+        <#lt>    /* Increment Upper Mapped Flash panel serial by 1 to be ahead of the
+        <#lt>     * current running Lower Mapped Flash panel serial
+        <#lt>     */
+        <#lt>    upper_flash_serial = bootloader_GetLowerFlashSerial() + 1;
+
+        <#lt>    /* Check if the Serial sector was erased during programming */
+        <#lt>    if (upper_flash_serial_erased == false)
+        <#lt>    {
+        <#lt>        /* Erase the Sector in which Flash Serial Resides */
+        <#lt>        ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(UPPER_FLASH_SERIAL_SECTOR);
+
+        <#lt>        /* Wait for erase to complete */
+        <#lt>        while(${MEM_USED}_IsBusy() == true);
+        <#lt>    }
+        <#lt>    else
+        <#lt>    {
+        <#lt>        bootloader_SetUpperFlashSerialErased(false);
+        <#lt>    }
+
+        <#lt>    bootloader_UpdateFlashSerial(upper_flash_serial, UPPER_FLASH_SERIAL_START);
+        <#lt>}
+
+        <#lt>/* Function to swap the banks.
+        <#lt> * This function has to be removed once NVM PLIB has the support
+        <#lt> */
+        <#lt>static void bootloader_ProgramFlashSwapBank( T_FLASH_BANK flash_bank )
+        <#lt>{
+        <#lt>    /* NVMOP can be written only when WREN is zero. So, clear WREN */
+        <#lt>    NVMCONCLR = _NVMCON_WREN_MASK;
+
+        <#lt>    /* Write the unlock key sequence */
+        <#lt>    NVMKEY = 0x0;
+        <#lt>    NVMKEY = 0xAA996655;
+        <#lt>    NVMKEY = 0x556699AA;
+
+        <#lt>    if (flash_bank == PROGRAM_FLASH_BANK_1)
+        <#lt>    {
+        <#lt>        /* Map Program Flash Memory Bank 1 to lower region */
+        <#lt>        NVMCONCLR = _NVMCON_PFSWAP_MASK;
+        <#lt>    }
+        <#lt>    else if (flash_bank == PROGRAM_FLASH_BANK_2)
+        <#lt>    {
+        <#lt>        /* Map Program Flash Memory Bank 2 to lower region */
+        <#lt>        NVMCONSET = _NVMCON_PFSWAP_MASK;
+        <#lt>    }
+        <#lt>}
+
+        <#lt>/* Function to Select Appropriate program flash bank based on the serial number */
+        <#lt>void bootloader_ProgramFlashBankSelect( void )
+        <#lt>{
+        <#lt>    /* Map Program Flash Bank 1 to lower region after a reset */
+        <#lt>    bootloader_ProgramFlashSwapBank(PROGRAM_FLASH_BANK_1);
+
+        <#lt>    T_FLASH_SERIAL *lower_flash_serial = LOWER_FLASH_SERIAL_READ;
+        <#lt>    T_FLASH_SERIAL *upper_flash_serial = UPPER_FLASH_SERIAL_READ;
+
+        <#lt>    /* If Both Flash Panels do not have any Serial number */
+        <#lt>    if( lower_flash_serial->prologue == FLASH_SERIAL_CLEAR &&
+        <#lt>        upper_flash_serial->prologue == FLASH_SERIAL_CLEAR)
+        <#lt>    {
+        <#lt>        /* Program Checksum and initial ID's for both panels*/
+        <#lt>        bootloader_UpdateFlashSerial(0, LOWER_FLASH_SERIAL_START);
+        <#lt>        bootloader_UpdateFlashSerial(0, UPPER_FLASH_SERIAL_START);
+        <#lt>    }
+        <#lt>    /* If both the panels have proper checksum and serial number*/
+        <#lt>    else if((lower_flash_serial->prologue == FLASH_SERIAL_PROLOGUE) &&
+        <#lt>        (lower_flash_serial->epilogue == FLASH_SERIAL_EPILOGUE) &&
+        <#lt>        (upper_flash_serial->prologue == FLASH_SERIAL_PROLOGUE) &&
+        <#lt>        (upper_flash_serial->epilogue == FLASH_SERIAL_EPILOGUE))
+        <#lt>    {
+        <#lt>        /* If Upper flash panel has latest firmware */
+        <#lt>        if(upper_flash_serial->serial > lower_flash_serial->serial)
+        <#lt>        {
+        <#lt>            /* Map Program Flash Bank 2 to lower region */
+        <#lt>            bootloader_ProgramFlashSwapBank(PROGRAM_FLASH_BANK_2);
+
+        <#lt>            /* Perform Dummy Read of Inactive panel(Upper Flash) after BankSwap
+        <#lt>             * for Swap to take effect
+        <#lt>             */
+        <#lt>            dummy_read = *(uint32_t *)(UPPER_FLASH_START);
+        <#lt>        }
+        <#lt>    }
+        <#lt>    /* Fallback Case when Panel 1 checksum and serial number is corrupted */
+        <#lt>    else if((upper_flash_serial->prologue == FLASH_SERIAL_PROLOGUE) &&
+        <#lt>            (upper_flash_serial->epilogue == FLASH_SERIAL_EPILOGUE))
+        <#lt>    {
+        <#lt>        /* Map Program Flash Bank 2 to lower region */
+        <#lt>        bootloader_ProgramFlashSwapBank(PROGRAM_FLASH_BANK_2);
+
+        <#lt>        /* Perform Dummy Read of Inactive panel(Upper Flash) after BankSwap
+        <#lt>         * for Swap to take effect
+        <#lt>         */
+        <#lt>        dummy_read = *(uint32_t *)(UPPER_FLASH_START);
+        <#lt>    }
+        <#lt>}
+    </#if>
+</#if>
+
+<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
+    <#lt>void bootloader_SwapAndReset( void )
+    <#lt>{
+        <#if core.CoreArchitecture == "MIPS" >
+            <#lt>    /* Update Serial number of Inactive bank */
+            <#lt>    bootloader_UpdateUpperFlashSerial();
+
+            <#lt>    bootloader_TriggerReset();
+        <#else>
+            <#lt>    /* Swap bank and Reset */
+            <#lt>    ${MEM_USED}_BankSwap();
+        </#if>
+    <#lt>}
+</#if>
