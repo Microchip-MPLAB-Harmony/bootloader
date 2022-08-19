@@ -124,9 +124,22 @@ static bool     flash_data_ready    = false;
 
 static bool     uartBLActive        = false;
 
+<#if .vars["${MEM_USED?lower_case}"].USES_DRV_API?? && .vars["${MEM_USED?lower_case}"].USES_DRV_API == true>
+typedef bool (*FLASH_ERASE_FPTR)(const DRV_HANDLE, uint32_t);
+
+typedef bool (*FLASH_WRITE_FPTR)(const DRV_HANDLE, uint32_t*, uint32_t);
+
+/* Memory Driver Handle */
+static DRV_HANDLE memoryHandle = DRV_HANDLE_INVALID;
+<#else>
 typedef bool (*FLASH_ERASE_FPTR)(uint32_t);
 
 typedef bool (*FLASH_WRITE_FPTR)(uint32_t*, uint32_t);
+</#if>
+
+<#macro apiHandle>
+<#if .vars["${MEM_USED?lower_case}"].USES_DRV_API?? && .vars["${MEM_USED?lower_case}"].USES_DRV_API == true>
+memoryHandle, </#if></#macro>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -275,7 +288,11 @@ static void command_task(void)
 
             flash_data_ready = true;
 
+<#if .vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME?? && .vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME == "None">
+            // Memory write is blocking, BL_RESP_OK will be sent after write.
+<#else>
             ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+</#if>
         }
         else
         {
@@ -334,6 +351,32 @@ static void command_task(void)
     packet_received = false;
 }
 
+<#macro addIndentSpaces spaces><#list 0..spaces as j> </#list></#macro>
+
+<#macro ReceiveNextByteWhileMemoryIsBusy indentSpaces=0>
+<#if .vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME?? >
+    <#if .vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME != "None">
+<@addIndentSpaces indentSpaces/>   /* Receive Next Bytes while waiting for memory to be ready */
+<@addIndentSpaces indentSpaces/>   while(${.vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME}(<@apiHandle/>) == true)
+<@addIndentSpaces indentSpaces/>   {
+<@addIndentSpaces indentSpaces/>       input_task();
+<@addIndentSpaces indentSpaces/>   <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+<@addIndentSpaces indentSpaces/>       kickdog();
+<@addIndentSpaces indentSpaces/>   </#if>
+<@addIndentSpaces indentSpaces/>   }
+    </#if>
+<#else>
+<@addIndentSpaces indentSpaces/>   /* Receive Next Bytes while waiting for memory to be ready */
+<@addIndentSpaces indentSpaces/>   while(${MEM_USED}_IsBusy() == true)
+<@addIndentSpaces indentSpaces/>   {
+<@addIndentSpaces indentSpaces/>       input_task();
+<@addIndentSpaces indentSpaces/>   <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+<@addIndentSpaces indentSpaces/>       kickdog();
+<@addIndentSpaces indentSpaces/>   </#if>
+<@addIndentSpaces indentSpaces/>   }
+</#if>
+</#macro>
+
 /* Function to program received application firmware data into internal flash */
 static void flash_task(void)
 {
@@ -380,18 +423,17 @@ static void flash_task(void)
         }
     }
 <#else>
+<#if .vars["${MEM_USED?lower_case}"].REGION_UNLOCK_API_NAME?? >
+    <#if .vars["${MEM_USED?lower_case}"].REGION_UNLOCK_API_NAME != "None">
+    // Lock region size is always bigger than the row size
+    ${.vars["${MEM_USED?lower_case}"].REGION_UNLOCK_API_NAME}(<@apiHandle/>addr);
+    </#if>
+<#else>
     // Lock region size is always bigger than the row size
     ${MEM_USED}_RegionUnlock(addr);
-
-    while(${MEM_USED}_IsBusy() == true)
-    {
-        input_task();
-    <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-        kickdog();
-    </#if>
-    }
 </#if>
-
+    <@ReceiveNextByteWhileMemoryIsBusy/>
+</#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
     // Check if the address falls in Device Configuration Space
     if (!(flash_addr >= unlock_begin && flash_addr < unlock_end))
@@ -410,34 +452,24 @@ static void flash_task(void)
     </#if>
     }
 </#if>
-
     /* Erase the Current sector */
-    flash_erase_fptr(addr);
+    flash_erase_fptr(<@apiHandle/>addr);
 
-    /* Receive Next Bytes while waiting for erase to complete */
-    while(${MEM_USED}_IsBusy() == true)
-    {
-        input_task();
-<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-        kickdog();
-</#if>
-    }
+    <@ReceiveNextByteWhileMemoryIsBusy/>
 
     for (bytes_written = 0; bytes_written < bytes_to_write; bytes_written += PAGE_SIZE)
     {
-        flash_write_fptr(&flash_data[write_idx], addr);
+        flash_write_fptr(<@apiHandle/>&flash_data[write_idx], addr);
 
-        while(${MEM_USED}_IsBusy() == true)
-        {
-            input_task();
-<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-            kickdog();
-</#if>
-        }
+        <@ReceiveNextByteWhileMemoryIsBusy 4/>
 
         addr += PAGE_SIZE;
         write_idx += WORDS(PAGE_SIZE);
     }
+
+<#if .vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME?? && .vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME == "None">
+    ${PERIPH_USED}_WriteByte(BL_RESP_OK);
+</#if>
 
     flash_data_ready = false;
 }
@@ -450,6 +482,13 @@ static void flash_task(void)
 
 void bootloader_${BTL_TYPE}_Tasks(void)
 {
+<#if .vars["${MEM_USED?lower_case}"].USES_DRV_API?? && .vars["${MEM_USED?lower_case}"].USES_DRV_API == true>
+    while (memoryHandle == DRV_HANDLE_INVALID)
+    {
+        memoryHandle = ${.vars["${MEM_USED?lower_case}"].OPEN_API_NAME}((SYS_MODULE_INDEX)${MEM_USED}_INDEX, DRV_IO_INTENT_READWRITE);
+    }
+</#if>
+
     do
     {
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>

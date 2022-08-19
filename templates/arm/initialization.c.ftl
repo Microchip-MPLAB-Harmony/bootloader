@@ -122,6 +122,9 @@ ${core.LIST_SYSTEM_INIT_C_INITIALIZER_STATIC_FUNCTIONS}
 
 void SYS_Initialize ( void* data )
 {
+<#if (__PROCESSOR?matches(".*SAMRH7.*") == true) >
+    <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_CORE}
+<#else>
     ${MEM_USED}_Initialize();
 
     <#-- /* For SAME70/SAMV70/SAMV71/SAMS70 and SAMG5x devices clock needs to be initialized
@@ -133,6 +136,7 @@ void SYS_Initialize ( void* data )
 </#if>
 
     ${core.PORT_API_PREFIX}_Initialize();
+</#if>
 
     if (bootloader_Trigger() == false)
     {
@@ -149,7 +153,8 @@ void SYS_Initialize ( void* data )
 
     <#-- /* Check if device is other than SAME70/SAMV70/SAMV71/SAMS70 */ -->
 <#if (__PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == false) &&
-     (__PROCESSOR?matches(".*SAMG5.[0-9]*.*") == false) >
+     (__PROCESSOR?matches(".*SAMG5.[0-9]*.*") == false) && 
+     (__PROCESSOR?matches(".*SAMRH7.*") == false) >
     CLOCK_Initialize();
 </#if>
 

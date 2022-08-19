@@ -61,12 +61,15 @@ def getMaxBootloaderSize(arch):
 execfile(Module.getPath() + "/config/" + bootloaderCore)
 
 def handleMessage(messageID, args):
+    global btlMemUsedStartAddr
 
     result_dict = {}
 
     if (messageID == "REQUEST_CONFIG_PARAMS"):
         if args.get("localComponentID") != None:
             result_dict = Database.sendMessage(args["localComponentID"], "UART_BLOCKING_MODE", {"isEnabled":True})
+    if (messageID == "FLASH_START_UPDATE"):
+            btlMemUsedStartAddr.setValue(int(args["address"], 16))
 
     return result_dict
 
@@ -94,6 +97,14 @@ def setupCoreComponentSymbols():
     coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 
     coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
+
+    # Disable Cache in core: not enable in startup code
+    DataCache = coreComponent.getSymbolByID("DATA_CACHE_ENABLE")
+    if (DataCache.getValue()):
+        DataCache.setValue(False)
+    InstructionCache = coreComponent.getSymbolByID("INSTRUCTION_CACHE_ENABLE")
+    if (InstructionCache.getValue()):
+        InstructionCache.setValue(False)
 
 def instantiateComponent(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
@@ -211,6 +222,8 @@ def instantiateComponent(bootloaderComponent):
 
 def onAttachmentConnected(source, target):
     global flash_erase_size
+    global flash_size
+    global btlMemUsedSize
 
     localComponent = source["component"]
     remoteComponent = target["component"]
@@ -242,7 +255,12 @@ def onAttachmentConnected(source, target):
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
+        btlMemUsedSize = int(Database.getSymbolValue(remoteID, "FLASH_SIZE"), 16)
+
         localComponent.getSymbolByID("MEM_USED").setValue(remoteID.upper())
+
+        memUsedStartAddrValue = int(Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS"), 16)
+        localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(memUsedStartAddrValue)
 
         Database.setSymbolValue(remoteID, "INTERRUPT_ENABLE", False)
 
@@ -271,6 +289,7 @@ def onAttachmentDisconnected(source, target):
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0
         localComponent.getSymbolByID("MEM_USED").clearValue()
+        localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(0)
 
 def finalizeComponent(bootloaderComponent):
     activateAndConnectDependencies("uart_bootloader")

@@ -54,7 +54,7 @@ SEARCH_DIR(.)
  */
 ENTRY(__XC32_RESET_HANDLER_NAME)
 
-#define ROM_START ${.vars["${MEM_USED?lower_case}"].FLASH_START_ADDRESS}
+#define ROM_START ${BTL_START}
 
 /* Bootloader size is calculated with below criteria with optimization level -O2
  * bootloader size = Minimum Flash Erase Size Or actual bootloader ELF size

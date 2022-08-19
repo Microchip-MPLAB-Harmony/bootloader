@@ -31,6 +31,9 @@ global flash_erase_size
 
 global btl_start
 
+global btlMemUsedStartAddr
+global btlMemUsedSize
+
 flash_start         = 0
 flash_size          = 0
 flash_erase_size    = 0
@@ -59,7 +62,7 @@ for mem_idx in range(0, len(addr_space_children)):
         ram_start   = addr_space_children[mem_idx].getAttribute("start")
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
-    btl_start = str(flash_start)
+    btl_start = str(hex(flash_start))
 
 def activateAndConnectDependencies(component):
     nvmMemoryName = ""
@@ -116,31 +119,49 @@ def setAppStartAndCommentVisible(symbol, event):
     global flash_start
     global flash_size
     global flash_erase_size
+    global btlMemUsedStartAddr
+
+    memUsed_addr = btlMemUsedStartAddr.getValue()
 
     if (event["id"] == "BTL_SIZE"):
         btlSize = int(event["value"],10)
 
-        if ((btlSize != 0) and (flash_erase_size != 0)):
-            appStartAligned = btlSize
-
-            # If the bootloader size is not aligned to Erase Block Size
-            if ((btlSize % flash_erase_size) != 0):
-                appStartAligned = btlSize + (flash_erase_size - (btlSize % flash_erase_size))
-
-            custom_app_start_addr = str(hex(flash_start + appStartAligned))
+        if ( (memUsed_addr != 0) and (memUsed_addr != flash_start) ):
+            custom_app_start_addr = str(hex(memUsed_addr))
         else:
-            custom_app_start_addr = str(hex(flash_start))
+            if ((btlSize != 0) and (flash_erase_size != 0)):
+                appStartAligned = btlSize
+
+                # If the bootloader size is not aligned to Erase Block Size
+                if ((btlSize % flash_erase_size) != 0):
+                    appStartAligned = btlSize + (flash_erase_size - (btlSize % flash_erase_size))
+
+                custom_app_start_addr = str(hex(flash_start + appStartAligned))
+            else:
+                custom_app_start_addr = str(hex(flash_start))
 
         Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
+    elif (event["id"] == "BTL_MEM_START_ADDR"):
+        if ( (memUsed_addr != 0) and (memUsed_addr != flash_start) ):
+            custom_app_start_addr = str(hex(memUsed_addr))
+
+            Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
     else:
         comment_enable      = True
 
         custom_app_start_addr = int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16)
         btl_size = calcBootloaderSize()
 
-        if (custom_app_start_addr < (flash_start + btl_size)):
+        if ( (memUsed_addr != 0) and (memUsed_addr != flash_start) ):
+            btl_mem_addr = memUsed_addr
+            btl_mem_size = btlMemUsedSize
+        else:
+            btl_mem_addr = flash_start
+            btl_mem_size = flash_size
+
+        if ( (btl_mem_addr == btl_start) and (custom_app_start_addr < (btl_mem_addr + btl_size)) ):
             symbol.setLabel("WARNING!!! Application Start Address Should be equal to or Greater than Bootloader Size !!!")
-        elif (custom_app_start_addr >= (flash_start + flash_size)):
+        elif (custom_app_start_addr >= (btl_mem_addr + btl_mem_size)):
             symbol.setLabel("WARNING!!! Application Start Address is exceeding the Flash Memory Space !!!")
         elif ((flash_erase_size != 0) and (custom_app_start_addr % flash_erase_size != 0)):
             symbol.setLabel("WARNING!!! Application Start Address should be aligned to Erase block size ( "+ str(flash_erase_size) + " bytes ) of Flash memory !!!")
@@ -172,12 +193,18 @@ def generateCommonSymbols(bootloaderComponent):
     global btl_start
     global btl_type
     global btl_helpkeyword
+    global btlMemUsedStartAddr
 
     btlMemUsed = bootloaderComponent.createStringSymbol("MEM_USED", None)
     btlMemUsed.setHelp(btl_helpkeyword)
     btlMemUsed.setLabel("Bootloader NVM Memory Used")
     btlMemUsed.setReadOnly(True)
     btlMemUsed.setDefaultValue("")
+
+    btlMemUsedStartAddr = bootloaderComponent.createIntegerSymbol("BTL_MEM_START_ADDR", None)
+    btlMemUsedStartAddr.setLabel("Bootloader Memory Used start address")
+    btlMemUsedStartAddr.setVisible(False)
+    btlMemUsedStartAddr.setDefaultValue(0)
 
     btlType = bootloaderComponent.createStringSymbol("BTL_TYPE", None)
     btlType.setHelp(btl_helpkeyword)
@@ -203,7 +230,7 @@ def generateCommonSymbols(bootloaderComponent):
 
     btlAppAddrComment = bootloaderComponent.createCommentSymbol("BTL_APP_START_ADDR_COMMENT", None)
     btlAppAddrComment.setVisible(False)
-    btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_SIZE"])
+    btlAppAddrComment.setDependencies(setAppStartAndCommentVisible, ["core.APP_START_ADDRESS", "BTL_SIZE", "BTL_MEM_START_ADDR"])
 
     btlTriggerEnable = bootloaderComponent.createBooleanSymbol("BTL_TRIGGER_ENABLE", None)
     btlTriggerEnable.setHelp(btl_helpkeyword)
