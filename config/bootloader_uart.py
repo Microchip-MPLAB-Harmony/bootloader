@@ -52,7 +52,6 @@ else:
 def getMaxBootloaderSize(arch):
 
     if (arch in btlSizes):
-        
         return btlSizes[arch][0]
     else:
         return 0
@@ -99,12 +98,12 @@ def setupCoreComponentSymbols():
     coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
 
     # Disable Cache in core: not enable in startup code
-    DataCache = coreComponent.getSymbolByID("DATA_CACHE_ENABLE")
-    if (DataCache.getValue()):
-        DataCache.setValue(False)
-    InstructionCache = coreComponent.getSymbolByID("INSTRUCTION_CACHE_ENABLE")
-    if (InstructionCache.getValue()):
-        InstructionCache.setValue(False)
+    if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE") != None):
+        if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE")):
+            Database.setSymbolValue("core", "DATA_CACHE_ENABLE", False)
+    if (Database.getSymbolValue("core", "INSTRUCTION_CACHE_ENABLE") != None):
+        if (Database.getSymbolValue("core", "INSTRUCTION_CACHE_ENABLE")):
+            Database.setSymbolValue("core", "INSTRUCTION_CACHE_ENABLE", False)
 
 def instantiateComponent(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
