@@ -254,12 +254,20 @@ def onAttachmentConnected(source, target):
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
-        btlMemUsedSize = int(Database.getSymbolValue(remoteID, "FLASH_SIZE"), 16)
+        if (type(Database.getSymbolValue(remoteID, "FLASH_SIZE")) == int):
+            btlMemUsedSize = Database.getSymbolValue(remoteID, "FLASH_SIZE")
+        else:
+            btlMemUsedSize = int(Database.getSymbolValue(remoteID, "FLASH_SIZE"), 16)
 
         localComponent.getSymbolByID("MEM_USED").setValue(remoteID.upper())
 
-        memUsedStartAddrValue = int(Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS"), 16)
-        localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(memUsedStartAddrValue)
+        if ("PIC32M" not in Variables.get("__PROCESSOR")):
+            if (type(Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS")) == int):
+                memUsedStartAddrValue = Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS")
+            else:
+                memUsedStartAddrValue = int(Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS"), 16)
+
+            localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(int(memUsedStartAddrValue))
 
         Database.setSymbolValue(remoteID, "INTERRUPT_ENABLE", False)
 
@@ -288,7 +296,8 @@ def onAttachmentDisconnected(source, target):
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0
         localComponent.getSymbolByID("MEM_USED").clearValue()
-        localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(0)
+        if ("PIC32M" not in Variables.get("__PROCESSOR")):
+            localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(0)
 
 def finalizeComponent(bootloaderComponent):
     activateAndConnectDependencies("uart_bootloader")
