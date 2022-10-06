@@ -371,8 +371,61 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
     return true;
 }
 
+<#if PERIPH_USED?starts_with("TWIHS")>
 static void BL_I2C_EventsProcess(void)
 {
+    TWIHS_SLAVE_STATUS_FLAG statusRegister;
+
+    statusRegister = ${PERIPH_USED}_StatusGet();
+
+    if (statusRegister & TWIHS_SR_SVACC_Msk) //host is accessing our client address
+    {
+        i2cBLActive   = true;
+
+        if (IS_BIT_SET(blProtocol.status, BL_STATUS_BIT_BUSY)) //if client is busy, send back a NACK
+        {
+            ${PERIPH_USED}_NACKDataPhase(true);
+        }
+        else //client is not busy
+        {
+            if (statusRegister & TWIHS_SR_SVREAD_Msk) //if host is reading
+            {
+                BL_I2C_SendResponse(blProtocol.command);
+            }
+            else //if host is writing
+            {
+                if (statusRegister & TWIHS_SR_RXRDY_Msk) //we have received a character from the host
+                {
+                    if (BL_I2C_MasterWriteHandler(${PERIPH_USED}_ReadByte()) == true) //reading the byte will clear the RXRDY bit
+                    {
+                        ${PERIPH_USED}_NACKDataPhase(false);
+                    }
+                    else
+                    {
+                        ${PERIPH_USED}_NACKDataPhase(true);
+                    }
+                }
+                else
+                {
+                    //do nothing, just wait for next character
+                }
+            }
+        }
+    }
+    else if ((statusRegister & TWIHS_SR_SVACC_Msk) == 0) //if SVCACC=0, that is end of access
+    {
+        /* Reset the I2C read state machine */
+        blProtocol.rdState = BL_I2C_READ_COMMAND;
+    }
+    else
+    {
+        //do nothing
+    }
+}
+<#else>
+static void BL_I2C_EventsProcess(void)
+{
+
     static bool isFirstRxByte;
     static bool transferDir;
     <#assign PERIPHERAL_INST_NAME = PERIPH_INSTANCE_NAME>
@@ -445,6 +498,7 @@ static void BL_I2C_EventsProcess(void)
         ${PERIPH_USED}_InterruptFlagsClear(SERCOM_I2C_SLAVE_INTFLAG_PREC);
     }
 }
+</#if>
 
 static void BL_I2C_FlashTask(void)
 {
@@ -582,7 +636,12 @@ static void BL_I2C_FlashTask(void)
 
         case BL_FLASH_STATE_RESET:
             /* Wait for the I2C transfer to complete */
+<#if PERIPH_USED?starts_with("TWIHS")>
+            while ((${PERIPH_USED}_REGS->TWIHS_SR & TWIHS_SR_SVACC_Msk) == TWIHS_SR_SVACC_Msk);
+<#else>
             while (!(${PERIPH_USED}_InterruptFlagsGet() & SERCOM_I2C_SLAVE_INTFLAG_PREC));
+</#if>
+
             bootloader_TriggerReset();
             break;
 
