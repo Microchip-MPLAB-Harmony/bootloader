@@ -53,6 +53,39 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 
+#define BTL_TRIGGER_PATTERN (0x5048434DUL)
+
+static uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START;
+
+bool bootloader_Trigger(void)
+{
+    uint32_t i;
+
+    // Cheap delay. This should give at leat 1 ms delay.
+    for (i = 0; i < 2000; i++)
+    {
+        asm("nop");
+    }
+
+    /* Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter
+     * Bootloader.
+     */
+    if (BTL_TRIGGER_PATTERN == ramStart[0] && BTL_TRIGGER_PATTERN == ramStart[1] &&
+        BTL_TRIGGER_PATTERN == ramStart[2] && BTL_TRIGGER_PATTERN == ramStart[3])
+    {
+        ramStart[0] = 0;
+        return true;
+    }
+
+    /* Check for Switch press to enter Bootloader */
+    if (SWITCH_Get() == 0)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Main Entry Point

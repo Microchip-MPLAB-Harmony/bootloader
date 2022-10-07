@@ -40,9 +40,9 @@ flash_erase_size    = 0
 
 btl_start           = "0x0"
 
-NvmMemoryNames      = ["NVM", "NVMCTRL", "EFC", "HEFC"]
-FlashNames          = ["FLASH", "IFLASH"]
-RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM", "FlexRAM", "DRAM"]
+NvmMemoryNames      = ["NVM", "NVMCTRL", "EFC", "HEFC", "FCW"]
+FlashNames          = ["FLASH", "IFLASH", "FCR_PFM"]
+RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM", "FlexRAM", "DRAM", "FLEXRAM"]
 
 addr_space          = ATDF.getNode("/avr-tools-device-file/devices/device/address-spaces/address-space")
 addr_space_children = addr_space.getChildren()
@@ -61,6 +61,8 @@ for mem_idx in range(0, len(addr_space_children)):
     if ((any(x == mem_seg for x in RamNames) == True) and (mem_type == "ram")):
         ram_start   = addr_space_children[mem_idx].getAttribute("start")
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
+    else:
+        print("Warning: Valid memory name not found, USB Bootloader will not launch")
 
     btl_start = str(hex(flash_start))
 
@@ -236,6 +238,7 @@ def generateCommonSymbols(bootloaderComponent):
     btlTriggerEnable.setHelp(btl_helpkeyword)
     btlTriggerEnable.setLabel("Enable Bootloader Trigger From Firmware")
     btlTriggerEnable.setDescription("This Option can be used to Force Trigger bootloader from application firmware after a soft reset.")
+    btlTriggerEnable.setValue(True)
 
     btlTriggerLenDesc = "This option adds the provided offset to RAM Start address in bootloader linker script. \
                          Application firmware can store some pattern in the reserved bytes region from RAM start for bootloader \
@@ -245,7 +248,7 @@ def generateCommonSymbols(bootloaderComponent):
     btlTriggerLen.setHelp(btl_helpkeyword)
     btlTriggerLen.setLabel("Number Of Bytes To Reserve From Start Of RAM")
     btlTriggerLen.setVisible((btlTriggerEnable.getValue() == True))
-    btlTriggerLen.setDefaultValue("0")
+    btlTriggerLen.setDefaultValue("16")
     btlTriggerLen.setDependencies(setTriggerLenVisible, ["BTL_TRIGGER_ENABLE"])
     btlTriggerLen.setDescription(btlTriggerLenDesc)
 
