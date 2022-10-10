@@ -33,7 +33,7 @@ bootloaderCore = ""
 if ("PIC32M" in Variables.get("__PROCESSOR")):
     bootloaderCore = "bootloader_mips.py"
     btlSizes = {
-                "PIC32MX"     : [81920],
+                "PIC32MX"     : [86016],
                 "PIC32MZDA"   : [86016],
                 "PIC32MZEF"   : [86016],
                 "PIC32MZW"    : [86016],
