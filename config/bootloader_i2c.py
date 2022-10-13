@@ -52,7 +52,11 @@ else:
 def getMaxBootloaderSize(arch):
 
     if (arch in btlSizes):
-        return btlSizes[arch][0]
+        btlsize = btlSizes[arch][0]
+        deviceFamily = Database.getSymbolValue("core", "DeviceFamily")
+        if deviceFamily == "SAM_L10_L11":
+            btlsize += 2048
+        return btlsize
     else:
         return 0
 
@@ -109,6 +113,10 @@ def instantiateComponent(bootloaderComponent):
     btlPeriphUsed.setLabel("Bootloader Peripheral Used")
     btlPeriphUsed.setReadOnly(True)
     btlPeriphUsed.setDefaultValue("")
+
+    btlPeriphUsedName = bootloaderComponent.createStringSymbol("PERIPH_INSTANCE_NAME", None)
+    btlPeriphUsedName.setVisible(False)
+    btlPeriphUsedName.setDefaultValue("")
 
     generateCommonSymbols(bootloaderComponent)
 
@@ -242,6 +250,7 @@ def onAttachmentConnected(source, target):
 
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
         localComponent.getSymbolByID("PERIPH_USED").setValue(periph_name)
+        localComponent.getSymbolByID("PERIPH_INSTANCE_NAME").setValue(remoteID.lower())
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
@@ -265,6 +274,7 @@ def onAttachmentDisconnected(source, target):
         dummyDict = Database.sendMessage(remoteID, "I2C_SLAVE_MODE", {"isReadOnly":False})
         dummyDict = Database.sendMessage(remoteID, "I2C_SLAVE_INTERRUPT_MODE", {"isReadOnly":False})
         dummyDict = Database.sendMessage(remoteID, "I2C_SLAVE_SMART_MODE", {"isReadOnly":False})
+        localComponent.getSymbolByID("PERIPH_INSTANCE_NAME").clearValue()
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0

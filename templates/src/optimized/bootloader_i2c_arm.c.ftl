@@ -101,10 +101,8 @@ typedef enum
     BL_FLASH_STATE_WRITE,
     BL_FLASH_STATE_VERIFY,
     BL_FLASH_STATE_RESET,
-<#if BTL_CMD_STRETCH_CLK == false>
     BL_FLASH_STATE_ERASE_BUSY_POLL,
     BL_FLASH_STATE_WRITE_BUSY_POLL,
-</#if>
 <#if BTL_DUAL_BANK == true>
     BL_FLASH_STATE_BKSWAP_RESET,
 </#if>
@@ -377,9 +375,13 @@ static void BL_I2C_EventsProcess(void)
 {
     static bool isFirstRxByte;
     static bool transferDir;
+    <#assign PERIPHERAL_INST_NAME = PERIPH_INSTANCE_NAME>
+    <#if .vars[PERIPHERAL_INST_NAME].I2CS_INTENSET_ERROR>
     SERCOM_I2C_SLAVE_ERROR error;
+    </#if>
     SERCOM_I2C_SLAVE_INTFLAG intFlags = ${PERIPH_USED}_InterruptFlagsGet();
 
+    <#if .vars[PERIPHERAL_INST_NAME].I2CS_INTENSET_ERROR>
     if (intFlags & SERCOM_I2C_SLAVE_INTFLAG_ERROR)
     {
         error = ${PERIPH_USED}_ErrorGet();
@@ -389,7 +391,7 @@ static void BL_I2C_EventsProcess(void)
 
         SET_BIT(blProtocol.status, BL_STATUS_BIT_COMM_ERROR);
     }
-    else if (intFlags & SERCOM_I2C_SLAVE_INTFLAG_AMATCH)
+    else <#else>    </#if>if (intFlags & SERCOM_I2C_SLAVE_INTFLAG_AMATCH)
     {
         isFirstRxByte = true;
         i2cBLActive   = true;
