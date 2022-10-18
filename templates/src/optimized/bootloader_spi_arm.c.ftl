@@ -505,7 +505,11 @@ static void BL_SPI_FlashTask(void)
 
 static void BL_SPI_EventHandler(uintptr_t context )
 {
+<#if PERIPH_USED?starts_with("FLEXCOM")>
+    if (${PERIPH_USED}_ErrorGet() == FLEXCOM_SPI_SLAVE_ERROR_NONE)
+<#else>
     if (${PERIPH_USED}_ErrorGet() == SPI_SLAVE_ERROR_NONE)
+</#if>
     {
         spiBLData.nReadBytes = ${PERIPH_USED}_Read((void*)spiBLData.cmd.readBuffer, ${PERIPH_USED}_ReadCountGet());
     }
