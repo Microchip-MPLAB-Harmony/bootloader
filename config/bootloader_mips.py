@@ -202,10 +202,9 @@ def getAppJumpAddr():
     jumpAddr = str(hex(appStartAddr))[2:]
 
     # If Bootloader is placed in Boot Flash Memory Space
-    if ((btl_start != "0x9D000000") or (btl_start != "0x90000000")):
-        if (("PIC32MX" not in Variables.get("__PROCESSOR")) and ("PIC32MM" not in Variables.get("__PROCESSOR"))):
-            # Application Exceptions should be stored from App start address aligning to the _ebase_address
-            jumpAddr = str(hex(appStartAddr + 0x200))[2:]
+    if (("PIC32MK" in Variables.get("__PROCESSOR")) or ("PIC32MZ" in Variables.get("__PROCESSOR"))):
+        # Application Exceptions should be stored from App start address aligning to the _ebase_address
+        jumpAddr = str(hex(appStartAddr + 0x200))[2:]
 
     return jumpAddr
 
@@ -386,7 +385,7 @@ def generateLinkerFileSymbol(bootloaderComponent):
     # PIC32MZDA   --> PIC32MZXXXXDA
     # PIC32MZW    --> PIC32MZXXXXW1
 
-    # PIC32MM1324 --> PIC32MMXXXXGPL 
+    # PIC32MM1324 --> PIC32MMXXXXGPL
     # PIC32MM1387 --> PIC32MMXXXXGPM
 
     # Get the current Product Family

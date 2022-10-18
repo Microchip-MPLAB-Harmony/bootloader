@@ -178,7 +178,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 
     print ('\r%s |%s| %s%% %s \r' % (prefix, bar, percent, suffix), end =""),
 
-    if iteration == total: 
+    if iteration == total:
         print()
 
 def send_device_configurations(devCfgFile, port, erase_size):
@@ -339,19 +339,9 @@ def main():
 
     data = []
 
-    if ("PIC32M" in device):
-        if ("PIC32MK" in device):
-            # For PIC32MK devices the general exception is placed at 0x180 offset from _ebase_address
-            # Fill 0xFF from _ebase_address to 0x180
-            for i in range(0, 0x180):
-                data += [0xff]
-
-            # Move the start address to start of Exceptions region (_ebase_address or start of application space)
-            address = (address & (~(ERASE_SIZE - 1)))
-
-        elif ("PIC32MZ" in device):
-            # Move the start address to start of Exceptions region (_ebase_address)
-            address = (address & (~(ERASE_SIZE - 1)))
+    if ("PIC32MK" in device) or ("PIC32MZ" in device):
+        # Move the start address to start of Exceptions region (_ebase_address)
+        address = (address & (~(ERASE_SIZE - 1)))
 
     try:
         data += [(x) for x in open(options.file, 'rb').read()]
