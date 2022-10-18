@@ -72,7 +72,7 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
 
     usb_host_msd_btlSizes = {
                 "PIC32MX"     : [69632],
-                "PIC32MK"     : [69632],
+                "PIC32MK"     : [65536],
                 "PIC32MM1387" : [45056],
                 "PIC32MZDA"   : [81920],
                 "PIC32MZEF"   : [81920],
