@@ -143,14 +143,14 @@ SECTIONS
      * section exists in the linker script.
      */
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
+<#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
+    .vectors RAM_START - ${BTL_TRIGGER_LEN} + 0x400:
+<#else>
     .vectors :
+</#if>
     {
-        KEEP(*(.vectors .vectors.*))
-    <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
-        . = ALIGN(256);
-    </#if>
         _sfixed = .;
-        . = . + SIZEOF(.vectors);
+        KEEP(*(.vectors .vectors.*))
     } > ram AT > rom
 
     _vectors_loadaddr = LOADADDR(.vectors);
@@ -238,7 +238,7 @@ SECTIONS
         __bss_end__ = .;
         _ebss = . ;
         _ezero = .;
-    } > ram
+    } > ram AT > ram
 
     . = ALIGN(4);
     _end = . ;
