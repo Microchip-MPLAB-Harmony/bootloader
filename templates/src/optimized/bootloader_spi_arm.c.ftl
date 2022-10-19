@@ -512,6 +512,10 @@ static void BL_SPI_EventHandler(uintptr_t context )
 </#if>
     {
         spiBLData.nReadBytes = ${PERIPH_USED}_Read((void*)spiBLData.cmd.readBuffer, ${PERIPH_USED}_ReadCountGet());
+        if(spiBLData.nReadBytes == 0)
+        {
+            ${PERIPH_USED}_Ready();
+        }
     }
     else
     {
