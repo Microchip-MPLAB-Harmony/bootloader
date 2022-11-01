@@ -8,6 +8,43 @@ nav_order: 99
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Bootloader Release v3.6.0
+
+### New Features
+
+- This release includes support for
+    - **I2C bootloader** for PIC32M family of 32-bit microcontrollers.
+    - **SPI bootloader** for SAM and PIC32M family of 32-bit microcontrollers.            
+    - **PIC32CM LE/LS family** of 32-bit microcontrollers
+        - UART Bootloader
+        - I2C Bootloader
+        - CAN Bootloader
+        - SPI Bootloader
+
+    - **PIC32CM JH00/01 family** of 32-bit microcontrollers
+        - UART Bootloader
+        - I2C Bootloader
+        - CAN Bootloader
+        - SPI Bootloader
+
+- Below are new bootloader application repos added
+    - [bootloader_apps_spi](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_spi)
+
+### Known Issues
+
+The current known issues are as follows:
+
+- Initialized global variables will not be initialized at startup for UART, I2C and CAN bootloaders.
+
+- Unified Host application when configured to use USB protocol has to be closed before programming any PIC32M based application using MPLAB X IDE
+
+### Development Tools
+
+* [MPLAB® X IDE v6.00](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v4.10](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * MPLAB® Code Configurator (MCC) v5.1.17
+
 ## Bootloader Release v3.5.1
 
 - Updated Bootloader documentation to new format.

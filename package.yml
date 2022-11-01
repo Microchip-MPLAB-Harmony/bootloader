@@ -1,0 +1,24 @@
+package:
+  format-version: "1.0.0"
+  name: "bootloader"
+  type: "api"
+  status: "production"
+  required: false
+  version: "3.6.0"
+
+  dependencies:
+    - name: "bsp"
+      type: "package"
+      version: "3.14.0"
+    - name: "csp"
+      type: "package"
+      version: "3.14.0"
+    - name: "core"
+      type: "package"
+      version: "3.11.1"
+    - name: "net"
+      type: "package"
+      version: "3.8.0"
+    - name: "usb"
+      type: "package"
+      version: "3.10.0"
