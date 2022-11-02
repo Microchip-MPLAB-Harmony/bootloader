@@ -1,0 +1,326 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us" data-whc_version="24.1">
+    <head><link rel="shortcut icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><link rel="icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="bool bootloader_Trigger ( void ); Summary Checks if Bootloader has to be executed at startup. Description This function can be used to check for a External HW trigger or Internal firmware trigger to ..."/><meta name="copyright" content="(C) Copyright 2022"/><meta name="DC.rights.owner" content="(C) Copyright 2022"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="GUID-A1E794F4-0659-4283-AF6A-3642708A0F7D.md"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="bootloader-trigger-function"/><title>1.8.7.2 bootloader_Trigger Function</title><!--  Generated with Oxygen version 24.1, build number 2022062014.  --><meta name="wh-path2root" content=""/><meta name="wh-toc-id" content="&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&lt;?workdir /D:\InfoShare\Data\Publish\Data\phdeq0vmkzj\work\temp?&gt;&lt;?workdir-uri file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/temp/?&gt;&lt;?path2project?&gt;&lt;?path2project-uri?&gt;&lt;?path2rootmap-uri?&gt;&lt;topic xmlns:ditaarch=&#34;http://dita.oasis-open.org/architecture/2005/&#34; xmlns:dita-ot=&#34;http://dita-ot.sourceforge.net/ns/201007/dita-ot&#34; class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;1.2&#34; domains=&#34;(topic hi-d) (topic ut-d) (topic indexing-d) (topic hazard-d) (topic abbrev-d) (topic pr-d) (topic sw-d) (topic ui-d)&#34; id=&#34;bootloader-trigger-function&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;topic:1;182:3&#34; specializations=&#34;&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;title:1;182:3&#34;&gt;bootloader_Trigger Function&lt;/title&gt;&lt;body class=&#34;- topic/body &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;body:1;182:3&#34;&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;codeblock:1;182:3&#34;&gt;bool bootloader_Trigger(void);&lt;/codeblock&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:1;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:1;182:3&#34;&gt;Summary&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:2;182:3&#34;&gt;Checks if Bootloader has to be executed at startup.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:3;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:2;182:3&#34;&gt;Description&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:4;182:3&#34;&gt;This function can be used to check for a External HW trigger or Internal firmware trigger to execute bootloader at startup.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:5;182:3&#34;&gt;This function has to be implemented by the bootloader application to override the &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:3;182:3&#34;&gt;WEAK implementation&lt;/b&gt; in bootloader.c&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:6;182:3&#34;&gt;The checks in trigger function should happen before any system resources are initialized apart for PORT, As the same system resource can be Re-initialized by the application if bootloader jumps to it and may cause issues.&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;ul:1;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;li:1;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:7;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:4;182:3&#34;&gt;External Trigger:&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;ul:2;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;li:2;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:8;182:3&#34;&gt;Can be achieved by triggering a GPIO_PIN at startup.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;li:3;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:9;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:5;182:3&#34;&gt;Firmware Trigger:&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;ul:3;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;li:4;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:10;182:3&#34;&gt;Application firmware which wants to execute bootloader at startup needs to fill first n bytes of ram location with a request pattern. The Number of bytes to be reserved for storing the pattern has to be configured in bootloader component configuration in MCC.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;codeblock:2;182:3&#34;&gt;uint32_t *sram = (uint32_t *)BTL_TRIGGER_RAM_START; sram[0] = 0x5048434D; sram[1] = 0x5048434D; sram[2] = 0x5048434D; sram[3] = 0x5048434D;&lt;/codeblock&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:11;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:6;182:3&#34;&gt;Precondition&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:12;182:3&#34;&gt;PORT/PIO Initialize must have been called.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:13;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:7;182:3&#34;&gt;Parameters&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:14;182:3&#34;&gt;None&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:15;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:8;182:3&#34;&gt;Returns&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;ul:4;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;li:5;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:16;182:3&#34;&gt;True : If any of trigger is detected.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;li:6;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:17;182:3&#34;&gt;False : If no trigger is detected..&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;p:18;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;b:9;182:3&#34;&gt;Example&lt;/b&gt;&lt;/p&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md&#34; xtrc=&#34;codeblock:3;182:3&#34;&gt;#define BTL_TRIGGER_PATTERN 0x5048434D static uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START; bool bootloader_Trigger(void) { // Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter Bootloader. if (BTL_TRIGGER_PATTERN == ramStart[0] &amp;amp;&amp;amp; BTL_TRIGGER_PATTERN == ramStart[1] &amp;amp;&amp;amp; BTL_TRIGGER_PATTERN == ramStart[2] &amp;amp;&amp;amp; BTL_TRIGGER_PATTERN == ramStart[3]) { ramStart[0] = 0; return true; } // Check for Switch press to enter Bootloader if (SWITCH_Get() == 0) { return true; } return false; } void SYS_Initialize() { NVMCTRL_Initialize(); PORT_Initialize(); if (bootloader_Trigger() == false) { run_Application(); } CLOCK_Initialize(); } &lt;/codeblock&gt;&lt;/body&gt;&lt;related-links class=&#34;- topic/related-links &#34;&gt;&lt;linkpool class=&#34;- topic/linkpool &#34; mapkeyref=&#34;GUID-581B40CE-B0AF-4B5C-9394-846B18202E94&#34; xtrc=&#34;topicref:23;3:4570&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-A4BB9B6D-B235-46EB-A069-515F74FAE730.ditamap&#34;&gt;&lt;link class=&#34;- topic/link &#34; format=&#34;dita&#34; href=&#34;GUID-A1E794F4-0659-4283-AF6A-3642708A0F7D.md&#34; mapclass=&#34;- map/topicref &#34; role=&#34;parent&#34; scope=&#34;local&#34; type=&#34;topic&#34; xtrc=&#34;topicref:21;3:4289&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-A4BB9B6D-B235-46EB-A069-515F74FAE730.ditamap&#34;&gt;&lt;?ditaot usertext?&gt;&lt;linktext class=&#34;- topic/linktext &#34;&gt;&lt;?ditaot gentext?&gt;File System Bootloader Library Interface&lt;/linktext&gt;&lt;/link&gt;&lt;/linkpool&gt;&lt;/related-links&gt;&lt;/topic&gt;"/><meta name="wh-source-relpath" content="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.md"/><meta name="wh-out-relpath" content="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2_8.html"/>
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/lib/bootstrap/css/bootstrap.min.css"/>
+    
+    <link rel="stylesheet" href="./oxygen-webhelp/lib/jquery-ui/jquery-ui.min.css"/>
+    
+    <!-- Template default styles  -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/app/topic-page.css?buildId=2022062014"/>
+    
+    
+    <script src="./oxygen-webhelp/lib/jquery/jquery-3.5.1.min.js"></script>
+    
+    <script data-main="./oxygen-webhelp/app/topic-page.js" src="./oxygen-webhelp/lib/requirejs/require.js"></script>
+<link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/microchip.css?buildId=2022062014"/><link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/notes.css?buildId=2022062014"/>
+<script src="mchp-context-help.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async="" type="text/javascript"></script>
+</head>
+
+    <body id="bootloader-trigger-function" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            Jump to main content
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="index.html" class=" wh_logo d-none d-sm-block "><img src="oxygen-webhelp\template\resources/images/microchip.png" alt="MPLAB® Harmony Bootloader Library "/></a>
+                    <div class=" wh_publication_title "><a href="index.html">MPLAB® Harmony Bootloader Library </a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="search.html"><div><input type="search" placeholder="Search " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="Search query" required="required"/><button type="submit" class="wh_search_button" aria-label="Search"><span class="search_input_text">Search</span></button></div></form>
+            
+            <div class="mchp-color-stripe-grid-container">
+  <div class="mchp-main-bar mchp-orange-bar"></div>
+  <div class="mchp-main-bar mchp-blue-bar"></div>
+  <div class="mchp-main-bar mchp-green-bar"></div>
+</div>
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="index.html"><span>Home</span></a></span></li><li><div class="topicref" data-id="mplab-harmony-bootloader-library"><div class="title"><a href="GUID-21B27208-104A-468D-8F94-F58D432AB08C.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Bootloader Library</a></div></div></li><li><div class="topicref" data-id="file-system-bootloader"><div class="title"><a href="GUID-B40F9A07-D16A-42CF-8121-B52B5BDD7685.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8</ph>
+File System Bootloader</a></div></div></li><li><div class="topicref" data-id="file-system-bootloader-library-interface"><div class="title"><a href="GUID-A1E794F4-0659-4283-AF6A-3642708A0F7D.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.7</ph>
+File System Bootloader Library Interface</a></div></div></li><li class="active"><div class="topicref" data-id="bootloader-trigger-function"><div class="title"><a href="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2_8.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.7.2</ph>
+bootloader_Trigger Function</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="Toggle search highlights" title="Toggle search highlights"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="Collapse sections" title="Collapse sections"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="Print this page" aria-label="Print this page"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem" aria-expanded="true"><div data-tocid="mplab-harmony-bootloader-library-d1920e9" class="topicref" data-id="mplab-harmony-bootloader-library" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mplab-harmony-bootloader-library-d1920e9-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-21B27208-104A-468D-8F94-F58D432AB08C.html" id="mplab-harmony-bootloader-library-d1920e9-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Bootloader Library</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="uart-bootloader-d1920e17" class="topicref" data-id="uart-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart-bootloader-d1920e17-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-7EF4113C-BB31-47A2-96E8-2965EC312340.html" id="uart-bootloader-d1920e17-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.1</ph>
+UART Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c-bootloader-d1920e273" class="topicref" data-id="i2c-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c-bootloader-d1920e273-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-DAABEA91-BE58-400D-B1FE-1808457896A8.html" id="i2c-bootloader-d1920e273-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.2</ph>
+I2C Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-bootloader-d1920e513" class="topicref" data-id="spi-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-bootloader-d1920e513-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C3D87F0A-AB90-4363-9D23-98BD93F319BE.html" id="spi-bootloader-d1920e513-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3</ph>
+SPI Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="can-bootloader-d1920e753" class="topicref" data-id="can-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-bootloader-d1920e753-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-67381576-E9AA-4E3C-BE36-D32966B8E034.html" id="can-bootloader-d1920e753-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4</ph>
+CAN Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="serial-memory-bootloader-d1920e961" class="topicref" data-id="serial-memory-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action serial-memory-bootloader-d1920e961-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-AC20F067-9388-42CD-A49D-05496869CC4D.html" id="serial-memory-bootloader-d1920e961-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.5</ph>
+Serial Memory Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb-device-hid-bootloader-d1920e1105" class="topicref" data-id="usb-device-hid-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb-device-hid-bootloader-d1920e1105-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-EEB0BC77-4006-44EF-8E7F-A9B4D5948189.html" id="usb-device-hid-bootloader-d1920e1105-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.6</ph>
+USB Device HID Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="udp-bootloader-d1920e1297" class="topicref" data-id="udp-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action udp-bootloader-d1920e1297-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C2D4E98A-C367-48ED-9079-5AC48374542D.html" id="udp-bootloader-d1920e1297-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.7</ph>
+UDP Bootloader</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="file-system-bootloader-d1920e1505" class="topicref" data-id="file-system-bootloader" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action file-system-bootloader-d1920e1505-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-B40F9A07-D16A-42CF-8121-B52B5BDD7685.html" id="file-system-bootloader-d1920e1505-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8</ph>
+File System Bootloader</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="how-the-file-system-bootloader-library-works-d1920e1513" class="topicref" data-id="how-the-file-system-bootloader-library-works" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action how-the-file-system-bootloader-library-works-d1920e1513-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-90369DFF-8F80-4CB1-9536-FD4A4EA4B0DD.html" id="how-the-file-system-bootloader-library-works-d1920e1513-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.1</ph>
+How the File System Bootloader library works</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="file-system-bootloader-system-level-execution-flow-d1920e1537" class="topicref" data-id="file-system-bootloader-system-level-execution-flow" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action file-system-bootloader-system-level-execution-flow-d1920e1537-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-BF0771C3-3A36-4B29-9CD4-E9D7F6EC193F.html" id="file-system-bootloader-system-level-execution-flow-d1920e1537-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.2</ph>
+File System Bootloader system level execution flow</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb-host-msd-bootloader-configurations-d1920e1561" class="topicref" data-id="usb-host-msd-bootloader-configurations" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb-host-msd-bootloader-configurations-d1920e1561-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-D70E2C74-59C6-4741-9FCA-CD7EBF5AED80.html" id="usb-host-msd-bootloader-configurations-d1920e1561-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.3</ph>
+USB Host MSD Bootloader Configurations</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="sd-card-bootloader-configurations-d1920e1585" class="topicref" data-id="sd-card-bootloader-configurations" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action sd-card-bootloader-configurations-d1920e1585-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-7325E59D-D429-4305-9AFC-5BE10EE38EE2.html" id="sd-card-bootloader-configurations-d1920e1585-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.4</ph>
+SD Card Bootloader Configurations</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="serial-memory-bootloader-configurations-d1920e1609" class="topicref" data-id="serial-memory-bootloader-configurations" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action serial-memory-bootloader-configurations-d1920e1609-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-2A66A563-5A79-49DA-AE0F-90CA19F807EA.html" id="serial-memory-bootloader-configurations-d1920e1609-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.5</ph>
+Serial Memory Bootloader Configurations</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="configurations-for-the-application-to-be-bootloaded-d1920e1633" class="topicref" data-id="configurations-for-the-application-to-be-bootloaded" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action configurations-for-the-application-to-be-bootloaded-d1920e1633-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-81FF31CA-1770-4876-8AAB-FA0015038359_8.html" id="configurations-for-the-application-to-be-bootloaded-d1920e1633-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.6</ph>
+Configurations for the application to be bootloaded</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="file-system-bootloader-library-interface-d1920e1665" class="topicref" data-id="file-system-bootloader-library-interface" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action file-system-bootloader-library-interface-d1920e1665-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-A1E794F4-0659-4283-AF6A-3642708A0F7D.html" id="file-system-bootloader-library-interface-d1920e1665-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.7</ph>
+File System Bootloader Library Interface</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="bootloader-xxx-tasks-function-d1920e1673" class="topicref" data-id="bootloader-xxx-tasks-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9_8.html" id="bootloader-xxx-tasks-function-d1920e1673-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.7.1</ph>
+bootloader_XXX_Tasks Function</a></div></div></li><li role="treeitem" class="active"><div data-tocid="bootloader-trigger-function-d1920e1681" class="topicref" data-id="bootloader-trigger-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2_8.html" id="bootloader-trigger-function-d1920e1681-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.7.2</ph>
+bootloader_Trigger Function</a></div></div></li><li role="treeitem"><div data-tocid="run-application-function-d1920e1689" class="topicref" data-id="run-application-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-8453780B-E7F1-4D9F-8609-DD333F154CC7_8.html" id="run-application-function-d1920e1689-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.7.3</ph>
+run_Application Function</a></div></div></li></ul></li><li role="treeitem"><div data-tocid="debugging-bootloader-and-application-to-be-bootloaded-d1920e1697" class="topicref" data-id="debugging-bootloader-and-application-to-be-bootloaded" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-E3F876E5-BE9E-426E-8DC4-E03EF71E8605_8.html" id="debugging-bootloader-and-application-to-be-bootloaded-d1920e1697-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.8</ph>
+Debugging Bootloader and Application to be bootloaded</a></div></div></li></ul></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article role="article" aria-labelledby="ariaid-title1"><h1 class="- topic/title title topictitle1" id="ariaid-title1">1.8.7.2 bootloader_Trigger Function</h1><div class="- topic/body body"><pre class="+ topic/pre pr-d/codeblock pre codeblock c">bool <span class="hl-functions">bootloader_Trigger</span>(<strong class="hl-keyword">void</strong>);</pre><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Summary</strong></p><p class="- topic/p p">Checks if Bootloader has to be executed at startup.</p><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Description</strong></p><p class="- topic/p p">This function can be used to check for a External HW trigger or Internal firmware trigger to execute bootloader at startup.</p><p class="- topic/p p">This function has to be implemented by the bootloader application to override the <strong class="+ topic/ph hi-d/b ph b">WEAK implementation</strong> in bootloader.c</p><p class="- topic/p p">The checks in trigger function should happen before any system resources are initialized apart for PORT, As the same system resource can be Re-initialized by the application if bootloader jumps to it and may cause issues.</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">External Trigger:</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Can be achieved by triggering a GPIO_PIN at startup.</p></li></ul></li><li class="- topic/li li"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Firmware Trigger:</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Application firmware which wants to execute bootloader at startup needs to fill first n bytes of ram location with a request pattern.
+The Number of bytes to be reserved for storing the pattern has to be configured in bootloader component configuration in MCC.</p></li></ul></li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock c">uint32_t *sram = (uint32_t *)BTL_TRIGGER_RAM_START;
+
+sram[<span class="hl-number">0</span>] = <span class="hl-number">0x5048434D</span>;
+sram[<span class="hl-number">1</span>] = <span class="hl-number">0x5048434D</span>;
+sram[<span class="hl-number">2</span>] = <span class="hl-number">0x5048434D</span>;
+sram[<span class="hl-number">3</span>] = <span class="hl-number">0x5048434D</span>;</pre><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Precondition</strong></p><p class="- topic/p p">PORT/PIO Initialize must have been called.</p><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Parameters</strong></p><p class="- topic/p p">None</p><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Returns</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">True  : If any of trigger is detected.</p></li><li class="- topic/li li"><p class="- topic/p p">False : If no trigger is detected..</p></li></ul><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Example</strong></p><pre class="+ topic/pre pr-d/codeblock pre codeblock c"><span class="hl-directive">#define</span> <span class="hl-defines">BTL_TRIGGER_PATTERN</span>  <span class="hl-number">0x5048434D</span>
+
+<strong class="hl-keyword">static</strong> uint32_t *ramStart = (uint32_t *)BTL_TRIGGER_RAM_START;
+
+bool <span class="hl-functions">bootloader_Trigger</span>(<strong class="hl-keyword">void</strong>)
+{
+    <em class="hl-comment">// Check for Bootloader Trigger Pattern in first 16 Bytes of RAM to enter Bootloader.</em>
+    <strong class="hl-keyword">if</strong> (BTL_TRIGGER_PATTERN == ramStart[<span class="hl-number">0</span>] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[<span class="hl-number">1</span>] &amp;&amp;
+        BTL_TRIGGER_PATTERN == ramStart[<span class="hl-number">2</span>] &amp;&amp; BTL_TRIGGER_PATTERN == ramStart[<span class="hl-number">3</span>])
+    {
+        ramStart[<span class="hl-number">0</span>] = <span class="hl-number">0</span>;
+        <strong class="hl-keyword">return</strong> true;
+    }
+
+    <em class="hl-comment">// Check for Switch press to enter Bootloader</em>
+    <strong class="hl-keyword">if</strong> (SWITCH_Get() == <span class="hl-number">0</span>)
+    {
+        <strong class="hl-keyword">return</strong> true;
+    }
+
+    <strong class="hl-keyword">return</strong> false;
+}
+
+<strong class="hl-keyword">void</strong> <span class="hl-functions">SYS_Initialize</span>()
+{
+    NVMCTRL_Initialize();
+
+    PORT_Initialize();
+
+    <strong class="hl-keyword">if</strong> (bootloader_Trigger() == false)
+    {
+        run_Application();
+    }
+
+    CLOCK_Initialize();
+}
+</pre></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <div class="footer">
+  <div class="mchp-wh-footer">
+    <div class="mchp-footer">
+      <div class="mchp-footer-tier1">
+        <div class="spacer"></div>
+        <div class="mchp-footer-container">
+          <div class="mchp-footer-links mchp-social-media-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.facebook.com/pages/Microchip-Technology-Inc/20320981741" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Facebook" src="oxygen-webhelp/template/resources/images/201016-corp-facebook.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.linkedin.com/company/microchip-technology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip LinkedIn" src="oxygen-webhelp/template/resources/images/201016-corp-linkedin.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://twitter.com/MicrochipTech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Twitter" src="oxygen-webhelp/template/resources/images/201016-corp-twitter.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.youtube.com/user/MicrochipTechnology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip YouTube" src="oxygen-webhelp/template/resources/images/201016-corp-youtube.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.instagram.com/microchiptechnologyinc/" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Instagram" src="oxygen-webhelp/template/resources/images/201016-corp-instagram.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.weibo.com/microchiptech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Weibo" src="oxygen-webhelp/template/resources/images/201016-corp-weibo.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.microchip.com/en-us/about/blog" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Blog" src="oxygen-webhelp/template/resources/images/201016-corp-blog.png"/>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://www.microchip.com/about-us/contact-us" class="mchp-link__link">Contact</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information" class="mchp-link__link">Legal</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/privacy-policy" class="mchp-link__link">Privacy Policy</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/microchip-cookie-statement" class="mchp-link__link">Cookies</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://careers.microchip.com/" class="mchp-link__link">Careers</a>
+                  <span class="mchp-link__separator"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-newsletter">
+            <div class="cmp-text">
+              <p>Stay on the leading edge with our blog</p>
+            </div>
+            <div class="mchp-button-wrapper">
+              <a role="button" href="https://www.microchip.com/en-us/about/blog" class="mchp-button mchp-button-regular solid">
+                <span class="mchp-button__span">MicroSolutions</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="graphic">
+          <img src="oxygen-webhelp/template/resources/images/footer-graphic.png"/>
+        </div>
+      </div>
+      <div class="mchp-footer-tier2">
+        <p class="mchp-copyright">© Copyright 1998-2022 Microchip Technology Inc. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async="true" src="https://www.googletagmanager.com/gtag/js?id=UA-2724382-19"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];  
+    function gtag(){dataLayer.push(arguments);}  
+    gtag('js', new Date());   
+    gtag('config', 'UA-2724382-19');
+  </script>
+</div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+        
+    </body>
+</html>

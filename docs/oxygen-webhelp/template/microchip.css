@@ -1,0 +1,458 @@
+/***********************************************************
+ *                                                         *
+ * Microchip Webhelp skin customizations                   *
+ *                                                         *
+ * 20220105 RWS HL Initial setup                           *
+ *                                                         *
+ ***********************************************************/
+
+/* RWS HL: make room for the Microchip color bar */
+#wh_topic_container, .wh_content_flex_container {
+  margin-top: 15px;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fonts.
+ *  
+ */
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Fight with bootstrap
+ *  
+ */
+.wh_header {
+  background-color: #fff;
+  padding: unset;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Publication titles
+ *  
+ */
+.wh_publication_title > a {
+  padding: 0.1em 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  line-height: 1em;
+  font-size: 1.8em;
+}
+@media only screen and (min-width: 768px) {
+  .wh_topic_page .wh_header {
+    padding: 0;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Tiles
+ *  
+ */
+.wh_tile {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.29);
+}
+.wh_tile_title {
+  font-size: 1.5em;
+  font-weight: 600;
+  border-bottom: 1px solid #b6b7b9;
+  padding-bottom: 5px;
+}
+.wh_tile_title a {
+  color: #1c355e;
+}
+.wh_tile_title a:hover {
+  color: #1c355e;
+  text-decoration: underline;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Search
+ *  
+ */
+.wh_search_input {
+  background-image: url("resources/images/Default-Banner-Background.png");
+}
+.wh_search_button {
+  background-color: #1c355e;
+  color: #fff;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Breadcrumbs
+ *  
+ */
+.wh_tools {
+  background-color: #fff;
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Microchip Footer
+ *  
+ */
+.footer {
+  height: 135px;
+}
+.wh_footer {
+  margin-top: 2em;
+  font-size: 12px;
+  color: rgba(0,0,0,0.5);
+}
+.mchp-wh-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.mchp-footer {
+  display: flex;
+  flex-direction: column;
+  line-height: 24px;
+}
+.mchp-footer-container {
+  max-width: 1400px;
+  display: flex;
+  flex: 10;
+  justify-content: space-between;
+  padding-left: 10px;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+.mchp-footer .graphic, .mchp-footer .spacer {
+  flex: 1;
+}
+.mchp-footer .graphic img {
+  height: 100px;
+  width: auto !important;
+  float: right;
+}
+.mchp-footer div {
+  align-self: center;
+}
+.mchp-footer .mchp-footer-tier1 {
+  justify-content: center;
+  display: inherit;
+  background-color: #1c355e;
+  width: 100%;
+  height: 100px;
+  margin: 0;
+  margin-top: auto;
+  color: #fff;
+}
+.mchp-footer .mchp-footer-tier2 {
+  display: inherit;
+  justify-content: center;
+  background-color: #fff;
+  width: 100%;
+  margin: 10px 0;
+  font-size: 12px;
+}
+.mchp-footer .mchp-social-media-links * .mchp-component-item {
+  margin-right: 5px;
+  max-width: 25px;
+}
+.mchp-footer .mchp-social-media-links .mchp-component-items {
+  justify-content: space-between;
+}
+.mchp-footer .mchp-footer-links .mchp-component-items {
+  display: flex;
+  line-height: 2;
+}
+.mchp-footer .link {
+  white-space: nowrap;
+}
+.mchp-footer .link a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 13px;
+}
+.mchp-footer .link a:hover {
+    text-decoration: underline;
+}
+.mchp-footer .mchp-link__separator {
+  padding-left: 6px;
+  padding-right: 8px;
+}
+.mchp-footer .mchp-footer-tier1 .mchp-footer-newsletter p {
+  display: block;
+  font-size: 12px;
+  color: #fff;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+.mchp-footer .mchp-footer-tier1 a {
+  font-size: 13px;
+}
+.mchp-footer .mchp-footer-newsletter .mchp-button-wrapper {
+  max-width: 250px;
+  width: 100%;
+}
+.mchp-footer .mchp-footer-newsletter .mchp-button-wrapper a {
+  width: 100%;
+  padding: 0;
+  background: #41b6e6;
+  text-align: center;
+  cursor: pointer;
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  border-radius: 2px;
+}
+.mchp-footer .mchp-footer-newsletter .mchp-button-wrapper a:hover {
+  background-color: #fff;
+}
+.mchp-button-wrapper .solid {
+  background-color: #1c355e;
+  color: #fff !important;
+  border: 1px solid #1c355e;
+}
+.mchp-button-wrapper .solid:hover {
+  background-color: #41b6e6;
+  border: 1px solid #41b6e6;
+}
+.mchp-footer .mchp-footer-newsletter .mchp-button-wrapper a:hover span {
+  color: #41b6e6;
+}
+.mchp-footer .mchp-footer-newsletter .mchp-button-wrapper span {
+  transition: background .2s ease .15s,color .2s ease .15s,border .2s ease .15s;
+}
+.mchp-button-wrapper .mchp-button__span {
+  width: 100%;
+}
+.cmp-image__link {
+  font-weight: 600;
+  line-height: 24px;
+  color: #1c355e;
+  text-decoration: none;
+}
+.cmp-image__image {
+  width: 100%;
+}
+.mchp-button-wrapper .mchp-button {
+  display: flex;
+  width: fit-content;
+  cursor: pointer;
+  padding: 15px;
+  text-decoration: none;
+  transition: background .2s ease .15s,color .2s ease .15s,border .2s ease .15s;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
+  border-radius: 2px;
+}
+.mchp-footer .mchp-copyright {
+  margin: 10px;
+  line-height: 24px;
+}
+@media only screen and (max-width: 1199px) {
+  .footer {
+    height: 250px;
+  }
+  .mchp-footer .graphic, .mchp-footer .spacer {
+    flex: 0;
+  }
+  .mchp-footer .mchp-footer-tier1 {
+    height: auto;
+  }
+  .mchp-footer-container {
+    flex-direction:column;
+    z-index: 1;
+  }
+  .mchp-footer .mchp-footer-links {
+    padding-top: 20px;
+    padding-bottom: 7px;
+  }
+  .mchp-footer .mchp-footer-newsletter {
+    padding-top: 35px;
+    padding-bottom: 20px;
+  }
+  .mchp-footer .graphic {
+    position: absolute;
+    right: 0;
+    align-self: flex-end;
+  }
+  .mchp-footer .graphic img {
+    height: 205px;
+    width: 35% !important;
+    object-fit: cover;
+    object-position: 0;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Microchip html fragments
+ *  
+ */
+.mchp-color-stripe-grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas: ". . .";
+  grid-template-rows: 1fr;
+  gap: 0 3px;
+  margin-top: 45px;
+  position: absolute;
+  width: 100%;
+} 
+.mchp-main-bar {
+  height: 7px;
+}
+.mchp-orange-bar {
+  background-color: #f68d2e;
+}
+.mchp-blue-bar {
+  background-color: #41b6e6;
+}
+.mchp-green-bar {
+  background-color: #6cc24a;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Microchip topic contents
+ *  
+ */
+.figcap {
+  font-style: normal;
+  font-weight: bold;
+}
+.fig--title-label-number {
+  display: inline;
+}
+.fig--title-label::after {
+  content: ""
+}
+.tablecap {
+  width: 100%;
+}
+p.compact {
+  margin-bottom: auto;
+}
+table.bitFieldValues {
+  border: 1px solid #000;
+}
+
+table.table th {
+  text-align: left;
+}
+table.bitFieldValues th {
+  text-align: left;
+  border-bottom: 2px solid;
+  border-top: 1px solid;
+}
+table.table .vertical-left span, table.table .vertical-center span, table.table .vertical-right span, span.rotate {
+  writing-mode: tb;
+  transform: rotate(180deg);
+}
+table.table .vertical-left {
+  vertical-align: bottom;
+  text-align: left;
+}
+table.table .vertical-center {
+  vertical-align: bottom;
+  text-align: center;
+}
+table.table .vertical-right {
+  vertical-align: bottom;
+  text-align: right;
+}
+table.table .valign-top {
+  vertical-align: top;
+}
+table.table .valign-middle {
+  vertical-align: middle;
+}
+table.table .valign-bottom {
+  vertical-align: bottom;
+}
+/*
+ * ------------------------------------------------------------------
+ *  
+ * Microchip SIDSC elements
+ *  
+ */
+.registerBody {
+  display: none;
+}
+.register .table {
+  width: 100%;
+  text-align: center;
+}
+.register .table td {
+  border: none;
+  padding: 0.25rem;
+}
+.register .reserved {
+  background-color: #e0e0e0;
+}
+.register .table td:first-child {
+  text-align: end;
+}
+.register .table tr:nth-child(2) td {
+  border: 1px solid black;
+}
+.register .table tr:nth-child(2) td:first-child, .register .table tr:nth-child(2) td:last-child {
+  border: none;
+}
+.active-low {
+  text-decoration: overline;
+}
+.mchip-registerproperties td, .mchip-registerproperties th {
+  padding: 0;
+  vertical-align: top;
+}
+.mchip-registerproperties table {
+  margin: 0;
+}
+table.registersummary {
+  width: 100%;
+}
+table.registersummary th {
+  text-align: center;
+  background-color: #e0e0e0;
+}
+table.registersummary th, table.registersummary td {
+  border: 1px solid;
+  padding: 0.25rem;
+}
+
+table.register td.reserved,
+table.registersummary td.reserved {
+  background-color: #dcdcdc;
+}
+
+ol.horizontal {
+  padding-left: 0;
+  margin-left: 0;
+  counter-reset: list-number;
+}
+
+ol.horizontal > li {
+  display: inline;
+  counter-increment: list-number;
+}
+
+ol.horizontal > li:before {
+ content: ' ' counter(list-number)'. ';
+ padding-left: 5pt;
+}
+
+/* Override default color for codeph */
+code {
+  color: inherit !important;
+  background-color: inherit !important;
+}

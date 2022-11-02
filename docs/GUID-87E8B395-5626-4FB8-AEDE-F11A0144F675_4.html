@@ -1,0 +1,297 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us" data-whc_version="24.1">
+    <head><link rel="shortcut icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><link rel="icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="uint16_t bootloader_GetVersion ( void ); Summary Returns the current bootloader version. Description This function can be used to read the current version of bootloader. The bootloader version is of 2 ..."/><meta name="copyright" content="(C) Copyright 2022"/><meta name="DC.rights.owner" content="(C) Copyright 2022"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="GUID-39A587F3-01B0-40CD-BF7E-3F23871BE462.md"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="bootloader-getversion-function"/><title>1.4.5.3 bootloader_GetVersion Function</title><!--  Generated with Oxygen version 24.1, build number 2022062014.  --><meta name="wh-path2root" content=""/><meta name="wh-toc-id" content="&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&lt;?workdir /D:\InfoShare\Data\Publish\Data\phdeq0vmkzj\work\temp?&gt;&lt;?workdir-uri file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/temp/?&gt;&lt;?path2project?&gt;&lt;?path2project-uri?&gt;&lt;?path2rootmap-uri?&gt;&lt;topic xmlns:ditaarch=&#34;http://dita.oasis-open.org/architecture/2005/&#34; xmlns:dita-ot=&#34;http://dita-ot.sourceforge.net/ns/201007/dita-ot&#34; class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;1.2&#34; domains=&#34;(topic hi-d) (topic ut-d) (topic indexing-d) (topic hazard-d) (topic abbrev-d) (topic pr-d) (topic sw-d) (topic ui-d)&#34; id=&#34;bootloader-getversion-function&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;topic:1;182:3&#34; specializations=&#34;&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;title:1;182:3&#34;&gt;bootloader_GetVersion Function&lt;/title&gt;&lt;body class=&#34;- topic/body &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;body:1;182:3&#34;&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;codeblock:1;182:3&#34;&gt;uint16_t bootloader_GetVersion( void );&lt;/codeblock&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:1;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;b:1;182:3&#34;&gt;Summary&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:2;182:3&#34;&gt;Returns the current bootloader version.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:3;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;b:2;182:3&#34;&gt;Description&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:4;182:3&#34;&gt;This function can be used to read the current version of bootloader.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:5;182:3&#34;&gt;The bootloader version is of 2 Bytes. MAJOR version is sent first followed by MINOR version&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:6;182:3&#34;&gt;This function is defined as __WEAK in bootloader core and defines the bootloader version to current release version of bootloader repo.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:7;182:3&#34;&gt;It can be overridden with custom implementation by user based on his requirement.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:8;182:3&#34;&gt;User can make use of bootloader read version command to read the current version from the respective host.&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:9;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;b:3;182:3&#34;&gt;Precondition&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:10;182:3&#34;&gt;None&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:11;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;b:4;182:3&#34;&gt;Parameters&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:12;182:3&#34;&gt;None&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:13;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;b:5;182:3&#34;&gt;Returns&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;ul:1;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;li:1;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:14;182:3&#34;&gt;bootloader version : 2 Bytes (MAJOR version is sent first followed by MINOR version)&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;p:15;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;b:6;182:3&#34;&gt;Example&lt;/b&gt;&lt;/p&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md&#34; xtrc=&#34;codeblock:2;182:3&#34;&gt;// Bootloader Major and Minor version sent for a Read Version command (MAJOR.MINOR) #define BTL_MAJOR_VERSION 3 #define BTL_MINOR_VERSION 6 uint16_t bootloader_GetVersion( void ) { uint16_t btlVersion = (((BTL_MAJOR_VERSION &amp;amp; 0xFF) &amp;lt;&amp;lt; 8) | (BTL_MINOR_VERSION &amp;amp; 0xFF)); return btlVersion; } &lt;/codeblock&gt;&lt;/body&gt;&lt;related-links class=&#34;- topic/related-links &#34;&gt;&lt;linkpool class=&#34;- topic/linkpool &#34; mapkeyref=&#34;GUID-581B40CE-B0AF-4B5C-9394-846B18202E94&#34; xtrc=&#34;topicref:18;3:3832&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F64715BC-DD27-4C75-97B0-58EADD7A7B92.ditamap&#34;&gt;&lt;link class=&#34;- topic/link &#34; format=&#34;dita&#34; href=&#34;GUID-39A587F3-01B0-40CD-BF7E-3F23871BE462.md&#34; mapclass=&#34;- map/topicref &#34; role=&#34;parent&#34; scope=&#34;local&#34; type=&#34;topic&#34; xtrc=&#34;topicref:15;3:3405&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F64715BC-DD27-4C75-97B0-58EADD7A7B92.ditamap&#34;&gt;&lt;?ditaot usertext?&gt;&lt;linktext class=&#34;- topic/linktext &#34;&gt;&lt;?ditaot gentext?&gt;CAN Bootloader Library Interface&lt;/linktext&gt;&lt;/link&gt;&lt;/linkpool&gt;&lt;/related-links&gt;&lt;/topic&gt;"/><meta name="wh-source-relpath" content="GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675.md"/><meta name="wh-out-relpath" content="GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675_4.html"/>
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/lib/bootstrap/css/bootstrap.min.css"/>
+    
+    <link rel="stylesheet" href="./oxygen-webhelp/lib/jquery-ui/jquery-ui.min.css"/>
+    
+    <!-- Template default styles  -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/app/topic-page.css?buildId=2022062014"/>
+    
+    
+    <script src="./oxygen-webhelp/lib/jquery/jquery-3.5.1.min.js"></script>
+    
+    <script data-main="./oxygen-webhelp/app/topic-page.js" src="./oxygen-webhelp/lib/requirejs/require.js"></script>
+<link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/microchip.css?buildId=2022062014"/><link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/notes.css?buildId=2022062014"/>
+<script src="mchp-context-help.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async="" type="text/javascript"></script>
+</head>
+
+    <body id="bootloader-getversion-function" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            Jump to main content
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="index.html" class=" wh_logo d-none d-sm-block "><img src="oxygen-webhelp\template\resources/images/microchip.png" alt="MPLAB® Harmony Bootloader Library "/></a>
+                    <div class=" wh_publication_title "><a href="index.html">MPLAB® Harmony Bootloader Library </a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="search.html"><div><input type="search" placeholder="Search " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="Search query" required="required"/><button type="submit" class="wh_search_button" aria-label="Search"><span class="search_input_text">Search</span></button></div></form>
+            
+            <div class="mchp-color-stripe-grid-container">
+  <div class="mchp-main-bar mchp-orange-bar"></div>
+  <div class="mchp-main-bar mchp-blue-bar"></div>
+  <div class="mchp-main-bar mchp-green-bar"></div>
+</div>
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="index.html"><span>Home</span></a></span></li><li><div class="topicref" data-id="mplab-harmony-bootloader-library"><div class="title"><a href="GUID-21B27208-104A-468D-8F94-F58D432AB08C.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Bootloader Library</a></div></div></li><li><div class="topicref" data-id="can-bootloader"><div class="title"><a href="GUID-67381576-E9AA-4E3C-BE36-D32966B8E034.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4</ph>
+CAN Bootloader</a></div></div></li><li><div class="topicref" data-id="can-bootloader-library-interface"><div class="title"><a href="GUID-39A587F3-01B0-40CD-BF7E-3F23871BE462.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.5</ph>
+CAN Bootloader Library Interface</a></div></div></li><li class="active"><div class="topicref" data-id="bootloader-getversion-function"><div class="title"><a href="GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675_4.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.5.3</ph>
+bootloader_GetVersion Function</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="Toggle search highlights" title="Toggle search highlights"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="Collapse sections" title="Collapse sections"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="Print this page" aria-label="Print this page"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem" aria-expanded="true"><div data-tocid="mplab-harmony-bootloader-library-d1920e9" class="topicref" data-id="mplab-harmony-bootloader-library" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mplab-harmony-bootloader-library-d1920e9-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-21B27208-104A-468D-8F94-F58D432AB08C.html" id="mplab-harmony-bootloader-library-d1920e9-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Bootloader Library</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="uart-bootloader-d1920e17" class="topicref" data-id="uart-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart-bootloader-d1920e17-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-7EF4113C-BB31-47A2-96E8-2965EC312340.html" id="uart-bootloader-d1920e17-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.1</ph>
+UART Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c-bootloader-d1920e273" class="topicref" data-id="i2c-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c-bootloader-d1920e273-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-DAABEA91-BE58-400D-B1FE-1808457896A8.html" id="i2c-bootloader-d1920e273-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.2</ph>
+I2C Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-bootloader-d1920e513" class="topicref" data-id="spi-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-bootloader-d1920e513-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C3D87F0A-AB90-4363-9D23-98BD93F319BE.html" id="spi-bootloader-d1920e513-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3</ph>
+SPI Bootloader</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="can-bootloader-d1920e753" class="topicref" data-id="can-bootloader" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action can-bootloader-d1920e753-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-67381576-E9AA-4E3C-BE36-D32966B8E034.html" id="can-bootloader-d1920e753-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4</ph>
+CAN Bootloader</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="how-the-can-bootloader-library-works-d1920e761" class="topicref" data-id="how-the-can-bootloader-library-works" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action how-the-can-bootloader-library-works-d1920e761-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-13849322-051C-4B2E-9CD0-632F6D89DDB0.html" id="how-the-can-bootloader-library-works-d1920e761-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.1</ph>
+How the CAN Bootloader library works</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="can-bootloader-system-level-execution-flow-d1920e801" class="topicref" data-id="can-bootloader-system-level-execution-flow" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-bootloader-system-level-execution-flow-d1920e801-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-58FF7035-084F-4CDE-A151-818752F0DCF2.html" id="can-bootloader-system-level-execution-flow-d1920e801-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.2</ph>
+CAN Bootloader system level execution flow</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="can-bootloader-configurations-d1920e825" class="topicref" data-id="can-bootloader-configurations" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-bootloader-configurations-d1920e825-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-94FBDB48-98DC-4C4B-861D-9327D7076ADE.html" id="can-bootloader-configurations-d1920e825-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.3</ph>
+CAN Bootloader Configurations</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="configurations-for-the-application-to-be-bootloaded-d1920e849" class="topicref" data-id="configurations-for-the-application-to-be-bootloaded" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action configurations-for-the-application-to-be-bootloaded-d1920e849-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-81FF31CA-1770-4876-8AAB-FA0015038359_4.html" id="configurations-for-the-application-to-be-bootloaded-d1920e849-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.4</ph>
+Configurations for the application to be bootloaded</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="can-bootloader-library-interface-d1920e865" class="topicref" data-id="can-bootloader-library-interface" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action can-bootloader-library-interface-d1920e865-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-39A587F3-01B0-40CD-BF7E-3F23871BE462.html" id="can-bootloader-library-interface-d1920e865-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.5</ph>
+CAN Bootloader Library Interface</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="bootloader-xxx-tasks-function-d1920e873" class="topicref" data-id="bootloader-xxx-tasks-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9_4.html" id="bootloader-xxx-tasks-function-d1920e873-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.5.1</ph>
+bootloader_XXX_Tasks Function</a></div></div></li><li role="treeitem"><div data-tocid="bootloader-trigger-function-d1920e881" class="topicref" data-id="bootloader-trigger-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2_4.html" id="bootloader-trigger-function-d1920e881-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.5.2</ph>
+bootloader_Trigger Function</a></div></div></li><li role="treeitem" class="active"><div data-tocid="bootloader-getversion-function-d1920e889" class="topicref" data-id="bootloader-getversion-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675_4.html" id="bootloader-getversion-function-d1920e889-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.5.3</ph>
+bootloader_GetVersion Function</a></div></div></li><li role="treeitem"><div data-tocid="run-application-function-d1920e897" class="topicref" data-id="run-application-function" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-8453780B-E7F1-4D9F-8609-DD333F154CC7_4.html" id="run-application-function-d1920e897-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.5.4</ph>
+run_Application Function</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2cspican-bootloader-tools-help-d1920e905" class="topicref" data-id="i2cspican-bootloader-tools-help" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2cspican-bootloader-tools-help-d1920e905-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-FCD04D38-6A0B-4B16-ABC6-33AC5EE0C561_3.html" id="i2cspican-bootloader-tools-help-d1920e905-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.6</ph>
+I2C/SPI/CAN Bootloader Tools Help</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="debugging-bootloader-and-application-to-be-bootloaded-d1920e937" class="topicref" data-id="debugging-bootloader-and-application-to-be-bootloaded" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action debugging-bootloader-and-application-to-be-bootloaded-d1920e937-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-05CA35ED-C84A-4F88-AAC1-F37D8F6EFEF4_4.html" id="debugging-bootloader-and-application-to-be-bootloaded-d1920e937-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4.7</ph>
+Debugging Bootloader and Application to be bootloaded</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="serial-memory-bootloader-d1920e961" class="topicref" data-id="serial-memory-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action serial-memory-bootloader-d1920e961-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-AC20F067-9388-42CD-A49D-05496869CC4D.html" id="serial-memory-bootloader-d1920e961-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.5</ph>
+Serial Memory Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb-device-hid-bootloader-d1920e1105" class="topicref" data-id="usb-device-hid-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb-device-hid-bootloader-d1920e1105-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-EEB0BC77-4006-44EF-8E7F-A9B4D5948189.html" id="usb-device-hid-bootloader-d1920e1105-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.6</ph>
+USB Device HID Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="udp-bootloader-d1920e1297" class="topicref" data-id="udp-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action udp-bootloader-d1920e1297-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C2D4E98A-C367-48ED-9079-5AC48374542D.html" id="udp-bootloader-d1920e1297-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.7</ph>
+UDP Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="file-system-bootloader-d1920e1505" class="topicref" data-id="file-system-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action file-system-bootloader-d1920e1505-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-B40F9A07-D16A-42CF-8121-B52B5BDD7685.html" id="file-system-bootloader-d1920e1505-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8</ph>
+File System Bootloader</a></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article role="article" aria-labelledby="ariaid-title1"><h1 class="- topic/title title topictitle1" id="ariaid-title1">1.4.5.3 bootloader_GetVersion Function</h1><div class="- topic/body body"><pre class="+ topic/pre pr-d/codeblock pre codeblock c">uint16_t <span class="hl-functions">bootloader_GetVersion</span>( <strong class="hl-keyword">void</strong> );</pre><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Summary</strong></p><p class="- topic/p p">Returns the current bootloader version.</p><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Description</strong></p><p class="- topic/p p">This function can be used to read the current version of bootloader.</p><p class="- topic/p p">The bootloader version is of 2 Bytes. MAJOR version is sent first
+followed by MINOR version</p><p class="- topic/p p">This function is defined as __WEAK in bootloader core and defines the bootloader
+version to current release version of bootloader repo.</p><p class="- topic/p p">It can be overridden with custom implementation by user based on his requirement.</p><p class="- topic/p p">User can make use of bootloader read version command to read the current version
+from the respective host.</p><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Precondition</strong></p><p class="- topic/p p">None</p><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Parameters</strong></p><p class="- topic/p p">None</p><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Returns</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">bootloader version : 2 Bytes (MAJOR version is sent first followed by MINOR version)</p></li></ul><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Example</strong></p><pre class="+ topic/pre pr-d/codeblock pre codeblock c"><em class="hl-comment">// Bootloader Major and Minor version sent for a Read Version command (MAJOR.MINOR)</em>
+<span class="hl-directive">#define</span> <span class="hl-defines">BTL_MAJOR_VERSION</span>       <span class="hl-number">3</span>
+<span class="hl-directive">#define</span> <span class="hl-defines">BTL_MINOR_VERSION</span>       <span class="hl-number">6</span>
+
+uint16_t <span class="hl-functions">bootloader_GetVersion</span>( <strong class="hl-keyword">void</strong> )
+{
+    uint16_t btlVersion = (((BTL_MAJOR_VERSION &amp; <span class="hl-number">0xFF</span>) &lt;&lt; <span class="hl-number">8</span>) | (BTL_MINOR_VERSION &amp; <span class="hl-number">0xFF</span>));
+
+    <strong class="hl-keyword">return</strong> btlVersion;
+}
+</pre></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <div class="footer">
+  <div class="mchp-wh-footer">
+    <div class="mchp-footer">
+      <div class="mchp-footer-tier1">
+        <div class="spacer"></div>
+        <div class="mchp-footer-container">
+          <div class="mchp-footer-links mchp-social-media-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.facebook.com/pages/Microchip-Technology-Inc/20320981741" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Facebook" src="oxygen-webhelp/template/resources/images/201016-corp-facebook.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.linkedin.com/company/microchip-technology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip LinkedIn" src="oxygen-webhelp/template/resources/images/201016-corp-linkedin.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://twitter.com/MicrochipTech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Twitter" src="oxygen-webhelp/template/resources/images/201016-corp-twitter.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.youtube.com/user/MicrochipTechnology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip YouTube" src="oxygen-webhelp/template/resources/images/201016-corp-youtube.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.instagram.com/microchiptechnologyinc/" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Instagram" src="oxygen-webhelp/template/resources/images/201016-corp-instagram.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.weibo.com/microchiptech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Weibo" src="oxygen-webhelp/template/resources/images/201016-corp-weibo.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.microchip.com/en-us/about/blog" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Blog" src="oxygen-webhelp/template/resources/images/201016-corp-blog.png"/>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://www.microchip.com/about-us/contact-us" class="mchp-link__link">Contact</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information" class="mchp-link__link">Legal</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/privacy-policy" class="mchp-link__link">Privacy Policy</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/microchip-cookie-statement" class="mchp-link__link">Cookies</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://careers.microchip.com/" class="mchp-link__link">Careers</a>
+                  <span class="mchp-link__separator"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-newsletter">
+            <div class="cmp-text">
+              <p>Stay on the leading edge with our blog</p>
+            </div>
+            <div class="mchp-button-wrapper">
+              <a role="button" href="https://www.microchip.com/en-us/about/blog" class="mchp-button mchp-button-regular solid">
+                <span class="mchp-button__span">MicroSolutions</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="graphic">
+          <img src="oxygen-webhelp/template/resources/images/footer-graphic.png"/>
+        </div>
+      </div>
+      <div class="mchp-footer-tier2">
+        <p class="mchp-copyright">© Copyright 1998-2022 Microchip Technology Inc. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async="true" src="https://www.googletagmanager.com/gtag/js?id=UA-2724382-19"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];  
+    function gtag(){dataLayer.push(arguments);}  
+    gtag('js', new Date());   
+    gtag('config', 'UA-2724382-19');
+  </script>
+</div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+        
+    </body>
+</html>

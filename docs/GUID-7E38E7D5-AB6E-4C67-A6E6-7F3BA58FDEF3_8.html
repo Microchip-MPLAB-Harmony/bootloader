@@ -1,0 +1,283 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us" data-whc_version="24.1">
+    <head><link rel="shortcut icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><link rel="icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Bootloader Sizes The example Bootloaders provided have XC32 optimization settings to -O2 However, in terms of size, this option does not produce the most optimal code. Turning on the -Os will reduce ..."/><meta name="copyright" content="(C) Copyright 2022"/><meta name="DC.rights.owner" content="(C) Copyright 2022"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="GUID-D70E2C74-59C6-4741-9FCA-CD7EBF5AED80.md"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="bootloader-sizing-and-considerations"/><title>1.8.3.2 Bootloader Sizing And Considerations</title><!--  Generated with Oxygen version 24.1, build number 2022062014.  --><meta name="wh-path2root" content=""/><meta name="wh-toc-id" content="&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&lt;?workdir /D:\InfoShare\Data\Publish\Data\phdeq0vmkzj\work\temp?&gt;&lt;?workdir-uri file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/temp/?&gt;&lt;?path2project?&gt;&lt;?path2project-uri?&gt;&lt;?path2rootmap-uri?&gt;&lt;topic xmlns:ditaarch=&#34;http://dita.oasis-open.org/architecture/2005/&#34; xmlns:dita-ot=&#34;http://dita-ot.sourceforge.net/ns/201007/dita-ot&#34; class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;1.2&#34; domains=&#34;(topic hi-d) (topic ut-d) (topic indexing-d) (topic hazard-d) (topic abbrev-d) (topic pr-d) (topic sw-d) (topic ui-d)&#34; id=&#34;bootloader-sizing-and-considerations&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;topic:1;182:3&#34; specializations=&#34;&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;title:1;182:3&#34;&gt;Bootloader Sizing And Considerations&lt;/title&gt;&lt;body class=&#34;- topic/body &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;body:1;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:1;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:1;182:3&#34;&gt;Bootloader Sizes&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;ul:1;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:1;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:2;182:3&#34;&gt;The example Bootloaders provided have XC32 optimization settings to &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:2;182:3&#34;&gt;-O2&lt;/b&gt;&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:2;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:3;182:3&#34;&gt;However, in terms of size, this option does not produce the most optimal code. Turning on the &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:3;182:3&#34;&gt;-Os&lt;/b&gt; will reduce the size of the Bootloader.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:3;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:4;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:4;182:3&#34;&gt;Note: By default the bootloader size will be rounded off to the nearest erase unit size of the device&lt;/b&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:5;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:5;182:3&#34;&gt;Size change considerations&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;ul:2;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:4;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:6;182:3&#34;&gt;It must be ensured that the user applications memory region does not overlap with the memory region reserved for the Bootloader.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:5;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:7;182:3&#34;&gt;The Bootloader generated by MCC should be considered a starting point for your products Bootloader. As such, adding new features may cause the Bootloader to exceed the default size calculated&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:6;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:8;182:3&#34;&gt;If the size of the Bootloader changes, the following steps should be performed to adjust both the Bootloader and the application in order to make sure that both fit and make best use of the device memory&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;ul:3;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:7;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:9;182:3&#34;&gt;Increase the &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:6;182:3&#34;&gt;Bootloader Size&lt;/b&gt; in Bootloader MCC config menu to some approximate value and regenerate the code&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:8;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:10;182:3&#34;&gt;Determine the new ending address of the Bootloader. This can be done by using either the &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:7;182:3&#34;&gt;.map file&lt;/b&gt; generated by MPLAB X IDE with the respective Compiler, or by using the ELFViewer plug-in for MPLAB X IDE&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:9;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:11;182:3&#34;&gt;Round the size from the map file to the nearest &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:8;182:3&#34;&gt;ERASE unit size&lt;/b&gt; value&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:10;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:12;182:3&#34;&gt;Enter the new value again in &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;b:9;182:3&#34;&gt;Bootloader Size&lt;/b&gt; in Bootloader MCC config menu&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:11;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:13;182:3&#34;&gt;Change the Application start Address from system settings in both Bootloader and application projects accordingly if it is falling inside bootloader region&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:12;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:14;182:3&#34;&gt;Recompile both the Bootloader and the application&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:13;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:15;182:3&#34;&gt;If only the Application start address needs to be modified for application then perform following steps:&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;ul:4;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:14;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:16;182:3&#34;&gt;Change the Application start Address from system settings in both Bootloader and application projects accordingly&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;li:15;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md&#34; xtrc=&#34;p:17;182:3&#34;&gt;Recompile both the Bootloader and the application&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;related-links class=&#34;- topic/related-links &#34;&gt;&lt;linkpool class=&#34;- topic/linkpool &#34; mapkeyref=&#34;GUID-581B40CE-B0AF-4B5C-9394-846B18202E94&#34; xtrc=&#34;topicref:10;3:2672&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-A4BB9B6D-B235-46EB-A069-515F74FAE730.ditamap&#34;&gt;&lt;link class=&#34;- topic/link &#34; format=&#34;dita&#34; href=&#34;GUID-D70E2C74-59C6-4741-9FCA-CD7EBF5AED80.md&#34; mapclass=&#34;- map/topicref &#34; role=&#34;parent&#34; scope=&#34;local&#34; type=&#34;topic&#34; xtrc=&#34;topicref:8;3:2391&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-A4BB9B6D-B235-46EB-A069-515F74FAE730.ditamap&#34;&gt;&lt;?ditaot usertext?&gt;&lt;linktext class=&#34;- topic/linktext &#34;&gt;&lt;?ditaot gentext?&gt;USB Host MSD Bootloader Configurations&lt;/linktext&gt;&lt;/link&gt;&lt;/linkpool&gt;&lt;/related-links&gt;&lt;/topic&gt;"/><meta name="wh-source-relpath" content="GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3.md"/><meta name="wh-out-relpath" content="GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3_8.html"/>
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/lib/bootstrap/css/bootstrap.min.css"/>
+    
+    <link rel="stylesheet" href="./oxygen-webhelp/lib/jquery-ui/jquery-ui.min.css"/>
+    
+    <!-- Template default styles  -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/app/topic-page.css?buildId=2022062014"/>
+    
+    
+    <script src="./oxygen-webhelp/lib/jquery/jquery-3.5.1.min.js"></script>
+    
+    <script data-main="./oxygen-webhelp/app/topic-page.js" src="./oxygen-webhelp/lib/requirejs/require.js"></script>
+<link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/microchip.css?buildId=2022062014"/><link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/notes.css?buildId=2022062014"/>
+<script src="mchp-context-help.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async="" type="text/javascript"></script>
+</head>
+
+    <body id="bootloader-sizing-and-considerations" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            Jump to main content
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="index.html" class=" wh_logo d-none d-sm-block "><img src="oxygen-webhelp\template\resources/images/microchip.png" alt="MPLAB® Harmony Bootloader Library "/></a>
+                    <div class=" wh_publication_title "><a href="index.html">MPLAB® Harmony Bootloader Library </a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="search.html"><div><input type="search" placeholder="Search " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="Search query" required="required"/><button type="submit" class="wh_search_button" aria-label="Search"><span class="search_input_text">Search</span></button></div></form>
+            
+            <div class="mchp-color-stripe-grid-container">
+  <div class="mchp-main-bar mchp-orange-bar"></div>
+  <div class="mchp-main-bar mchp-blue-bar"></div>
+  <div class="mchp-main-bar mchp-green-bar"></div>
+</div>
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="index.html"><span>Home</span></a></span></li><li><div class="topicref" data-id="mplab-harmony-bootloader-library"><div class="title"><a href="GUID-21B27208-104A-468D-8F94-F58D432AB08C.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Bootloader Library</a></div></div></li><li><div class="topicref" data-id="file-system-bootloader"><div class="title"><a href="GUID-B40F9A07-D16A-42CF-8121-B52B5BDD7685.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8</ph>
+File System Bootloader</a></div></div></li><li><div class="topicref" data-id="usb-host-msd-bootloader-configurations"><div class="title"><a href="GUID-D70E2C74-59C6-4741-9FCA-CD7EBF5AED80.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.3</ph>
+USB Host MSD Bootloader Configurations</a></div></div></li><li class="active"><div class="topicref" data-id="bootloader-sizing-and-considerations"><div class="title"><a href="GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3_8.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.3.2</ph>
+Bootloader Sizing And Considerations</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="Toggle search highlights" title="Toggle search highlights"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="Collapse sections" title="Collapse sections"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="Print this page" aria-label="Print this page"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem" aria-expanded="true"><div data-tocid="mplab-harmony-bootloader-library-d1920e9" class="topicref" data-id="mplab-harmony-bootloader-library" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mplab-harmony-bootloader-library-d1920e9-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-21B27208-104A-468D-8F94-F58D432AB08C.html" id="mplab-harmony-bootloader-library-d1920e9-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Bootloader Library</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="uart-bootloader-d1920e17" class="topicref" data-id="uart-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart-bootloader-d1920e17-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-7EF4113C-BB31-47A2-96E8-2965EC312340.html" id="uart-bootloader-d1920e17-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.1</ph>
+UART Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c-bootloader-d1920e273" class="topicref" data-id="i2c-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c-bootloader-d1920e273-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-DAABEA91-BE58-400D-B1FE-1808457896A8.html" id="i2c-bootloader-d1920e273-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.2</ph>
+I2C Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-bootloader-d1920e513" class="topicref" data-id="spi-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-bootloader-d1920e513-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C3D87F0A-AB90-4363-9D23-98BD93F319BE.html" id="spi-bootloader-d1920e513-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3</ph>
+SPI Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="can-bootloader-d1920e753" class="topicref" data-id="can-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-bootloader-d1920e753-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-67381576-E9AA-4E3C-BE36-D32966B8E034.html" id="can-bootloader-d1920e753-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4</ph>
+CAN Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="serial-memory-bootloader-d1920e961" class="topicref" data-id="serial-memory-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action serial-memory-bootloader-d1920e961-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-AC20F067-9388-42CD-A49D-05496869CC4D.html" id="serial-memory-bootloader-d1920e961-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.5</ph>
+Serial Memory Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb-device-hid-bootloader-d1920e1105" class="topicref" data-id="usb-device-hid-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb-device-hid-bootloader-d1920e1105-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-EEB0BC77-4006-44EF-8E7F-A9B4D5948189.html" id="usb-device-hid-bootloader-d1920e1105-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.6</ph>
+USB Device HID Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="udp-bootloader-d1920e1297" class="topicref" data-id="udp-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action udp-bootloader-d1920e1297-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C2D4E98A-C367-48ED-9079-5AC48374542D.html" id="udp-bootloader-d1920e1297-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.7</ph>
+UDP Bootloader</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="file-system-bootloader-d1920e1505" class="topicref" data-id="file-system-bootloader" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action file-system-bootloader-d1920e1505-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-B40F9A07-D16A-42CF-8121-B52B5BDD7685.html" id="file-system-bootloader-d1920e1505-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8</ph>
+File System Bootloader</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="how-the-file-system-bootloader-library-works-d1920e1513" class="topicref" data-id="how-the-file-system-bootloader-library-works" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action how-the-file-system-bootloader-library-works-d1920e1513-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-90369DFF-8F80-4CB1-9536-FD4A4EA4B0DD.html" id="how-the-file-system-bootloader-library-works-d1920e1513-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.1</ph>
+How the File System Bootloader library works</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="file-system-bootloader-system-level-execution-flow-d1920e1537" class="topicref" data-id="file-system-bootloader-system-level-execution-flow" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action file-system-bootloader-system-level-execution-flow-d1920e1537-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-BF0771C3-3A36-4B29-9CD4-E9D7F6EC193F.html" id="file-system-bootloader-system-level-execution-flow-d1920e1537-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.2</ph>
+File System Bootloader system level execution flow</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="usb-host-msd-bootloader-configurations-d1920e1561" class="topicref" data-id="usb-host-msd-bootloader-configurations" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action usb-host-msd-bootloader-configurations-d1920e1561-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-D70E2C74-59C6-4741-9FCA-CD7EBF5AED80.html" id="usb-host-msd-bootloader-configurations-d1920e1561-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.3</ph>
+USB Host MSD Bootloader Configurations</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem"><div data-tocid="bootloader-linker-configurations-for-mips-based-mcus-d1920e1569" class="topicref" data-id="bootloader-linker-configurations-for-mips-based-mcus" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1_7.html" id="bootloader-linker-configurations-for-mips-based-mcus-d1920e1569-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.3.1</ph>
+Bootloader linker configurations for MIPS based MCUs</a></div></div></li><li role="treeitem" class="active"><div data-tocid="bootloader-sizing-and-considerations-d1920e1577" class="topicref" data-id="bootloader-sizing-and-considerations" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3_8.html" id="bootloader-sizing-and-considerations-d1920e1577-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.3.2</ph>
+Bootloader Sizing And Considerations</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="sd-card-bootloader-configurations-d1920e1585" class="topicref" data-id="sd-card-bootloader-configurations" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action sd-card-bootloader-configurations-d1920e1585-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-7325E59D-D429-4305-9AFC-5BE10EE38EE2.html" id="sd-card-bootloader-configurations-d1920e1585-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.4</ph>
+SD Card Bootloader Configurations</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="serial-memory-bootloader-configurations-d1920e1609" class="topicref" data-id="serial-memory-bootloader-configurations" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action serial-memory-bootloader-configurations-d1920e1609-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-2A66A563-5A79-49DA-AE0F-90CA19F807EA.html" id="serial-memory-bootloader-configurations-d1920e1609-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.5</ph>
+Serial Memory Bootloader Configurations</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="configurations-for-the-application-to-be-bootloaded-d1920e1633" class="topicref" data-id="configurations-for-the-application-to-be-bootloaded" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action configurations-for-the-application-to-be-bootloaded-d1920e1633-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-81FF31CA-1770-4876-8AAB-FA0015038359_8.html" id="configurations-for-the-application-to-be-bootloaded-d1920e1633-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.6</ph>
+Configurations for the application to be bootloaded</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="file-system-bootloader-library-interface-d1920e1665" class="topicref" data-id="file-system-bootloader-library-interface" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action file-system-bootloader-library-interface-d1920e1665-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-A1E794F4-0659-4283-AF6A-3642708A0F7D.html" id="file-system-bootloader-library-interface-d1920e1665-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.7</ph>
+File System Bootloader Library Interface</a></div></div></li><li role="treeitem"><div data-tocid="debugging-bootloader-and-application-to-be-bootloaded-d1920e1697" class="topicref" data-id="debugging-bootloader-and-application-to-be-bootloaded" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-E3F876E5-BE9E-426E-8DC4-E03EF71E8605_8.html" id="debugging-bootloader-and-application-to-be-bootloaded-d1920e1697-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8.8</ph>
+Debugging Bootloader and Application to be bootloaded</a></div></div></li></ul></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article role="article" aria-labelledby="ariaid-title1"><h1 class="- topic/title title topictitle1" id="ariaid-title1">1.8.3.2 Bootloader Sizing And Considerations</h1><div class="- topic/body body"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Bootloader Sizes</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">The example Bootloaders provided have XC32 optimization settings to <strong class="+ topic/ph hi-d/b ph b">-O2</strong></p></li><li class="- topic/li li"><p class="- topic/p p">However, in terms of size, this option does not produce the most optimal code. Turning on the <strong class="+ topic/ph hi-d/b ph b">-Os</strong> will reduce the size of the Bootloader.</p></li><li class="- topic/li li"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Note: By default the bootloader size will be rounded off to the nearest erase unit size of the device</strong></p></li></ul><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Size change considerations</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">It must be ensured that the user applications memory region does not overlap with the memory region reserved for the Bootloader.</p></li><li class="- topic/li li"><p class="- topic/p p">The Bootloader generated by MCC should be considered a starting point for your products Bootloader. As such, adding new features may cause the Bootloader to exceed the default size calculated</p></li><li class="- topic/li li"><p class="- topic/p p">If the size of the Bootloader changes, the following steps should be performed to adjust both the Bootloader and the application in order to make sure that both fit and make best use of the device memory</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Increase the <strong class="+ topic/ph hi-d/b ph b">Bootloader Size</strong> in Bootloader MCC config menu to some approximate value and regenerate the code</p></li><li class="- topic/li li"><p class="- topic/p p">Determine the new ending address of the Bootloader. This can be done by using either the <strong class="+ topic/ph hi-d/b ph b">.map file</strong> generated by MPLAB X IDE with the respective Compiler, or by using the ELFViewer plug-in for MPLAB X IDE</p></li><li class="- topic/li li"><p class="- topic/p p">Round the size from the map file to the nearest <strong class="+ topic/ph hi-d/b ph b">ERASE unit size</strong> value</p></li><li class="- topic/li li"><p class="- topic/p p">Enter the new value again in <strong class="+ topic/ph hi-d/b ph b">Bootloader Size</strong> in Bootloader MCC config menu</p></li><li class="- topic/li li"><p class="- topic/p p">Change the Application start Address from system settings in both Bootloader and application projects accordingly if it is falling inside bootloader region</p></li><li class="- topic/li li"><p class="- topic/p p">Recompile both the Bootloader and the application</p></li></ul></li><li class="- topic/li li"><p class="- topic/p p">If only the Application start address needs to be modified for application then perform following steps:</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Change the Application start Address from system settings in both Bootloader and application projects accordingly</p></li><li class="- topic/li li"><p class="- topic/p p">Recompile both the Bootloader and the application</p></li></ul></li></ul></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <div class="footer">
+  <div class="mchp-wh-footer">
+    <div class="mchp-footer">
+      <div class="mchp-footer-tier1">
+        <div class="spacer"></div>
+        <div class="mchp-footer-container">
+          <div class="mchp-footer-links mchp-social-media-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.facebook.com/pages/Microchip-Technology-Inc/20320981741" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Facebook" src="oxygen-webhelp/template/resources/images/201016-corp-facebook.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.linkedin.com/company/microchip-technology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip LinkedIn" src="oxygen-webhelp/template/resources/images/201016-corp-linkedin.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://twitter.com/MicrochipTech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Twitter" src="oxygen-webhelp/template/resources/images/201016-corp-twitter.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.youtube.com/user/MicrochipTechnology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip YouTube" src="oxygen-webhelp/template/resources/images/201016-corp-youtube.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.instagram.com/microchiptechnologyinc/" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Instagram" src="oxygen-webhelp/template/resources/images/201016-corp-instagram.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.weibo.com/microchiptech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Weibo" src="oxygen-webhelp/template/resources/images/201016-corp-weibo.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.microchip.com/en-us/about/blog" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Blog" src="oxygen-webhelp/template/resources/images/201016-corp-blog.png"/>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://www.microchip.com/about-us/contact-us" class="mchp-link__link">Contact</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information" class="mchp-link__link">Legal</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/privacy-policy" class="mchp-link__link">Privacy Policy</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/microchip-cookie-statement" class="mchp-link__link">Cookies</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://careers.microchip.com/" class="mchp-link__link">Careers</a>
+                  <span class="mchp-link__separator"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-newsletter">
+            <div class="cmp-text">
+              <p>Stay on the leading edge with our blog</p>
+            </div>
+            <div class="mchp-button-wrapper">
+              <a role="button" href="https://www.microchip.com/en-us/about/blog" class="mchp-button mchp-button-regular solid">
+                <span class="mchp-button__span">MicroSolutions</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="graphic">
+          <img src="oxygen-webhelp/template/resources/images/footer-graphic.png"/>
+        </div>
+      </div>
+      <div class="mchp-footer-tier2">
+        <p class="mchp-copyright">© Copyright 1998-2022 Microchip Technology Inc. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async="true" src="https://www.googletagmanager.com/gtag/js?id=UA-2724382-19"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];  
+    function gtag(){dataLayer.push(arguments);}  
+    gtag('js', new Date());   
+    gtag('config', 'UA-2724382-19');
+  </script>
+</div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+        
+    </body>
+</html>

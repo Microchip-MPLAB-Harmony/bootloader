@@ -1,0 +1,1 @@
+define({"topics":[{"title":"<ph>1.3.4.1<\/ph>\nApplication project configurations for CORTEX-M based MCUs","href":"GUID-74A00B0A-18C1-47BD-A5F7-5BAFEDDAD130_3.html","attributes":{"data-id":"application-project-configurations-for-cortex-m-based-mcus"},"menu":{"hasChildren":false},"tocID":"application-project-configurations-for-cortex-m-based-mcus-d1920e641","topics":[]}]});

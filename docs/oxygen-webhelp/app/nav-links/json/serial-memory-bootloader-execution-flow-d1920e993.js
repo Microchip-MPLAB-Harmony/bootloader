@@ -1,0 +1,1 @@
+define({"topics":[{"title":"<ph>1.5.2.1<\/ph>\nBootloader Trigger Methods","href":"GUID-171634E3-4F7B-4CBD-BCE9-EC2BB22BF2AD_5.html","attributes":{"data-id":"bootloader-trigger-methods"},"menu":{"hasChildren":false},"tocID":"bootloader-trigger-methods-d1920e1001","topics":[]}]});

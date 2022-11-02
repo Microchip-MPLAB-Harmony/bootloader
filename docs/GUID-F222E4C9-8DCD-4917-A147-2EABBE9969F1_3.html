@@ -1,0 +1,521 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us" data-whc_version="24.1">
+    <head><link rel="shortcut icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><link rel="icon" href="oxygen-webhelp\template\resources/images/favicon.ico"/><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="description" content="Bootloader placement for various PIC32M product families The bootloader is placed in Boot Flash Memory (BFM) or Program Flash Memory (PFM) based on the size of the bootloader and available Boot flash ..."/><meta name="copyright" content="(C) Copyright 2022"/><meta name="DC.rights.owner" content="(C) Copyright 2022"/><meta name="DC.type" content="topic"/><meta name="DC.relation" content="GUID-E032DE1F-C543-4251-ACD3-C3625D466841.md"/><meta name="DC.format" content="HTML5"/><meta name="DC.identifier" content="bootloader-linker-configurations-for-mips-based-mcus"/><title>1.3.3.1 Bootloader linker configurations for MIPS based MCUs</title><!--  Generated with Oxygen version 24.1, build number 2022062014.  --><meta name="wh-path2root" content=""/><meta name="wh-toc-id" content="&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&lt;?workdir /D:\InfoShare\Data\Publish\Data\phdeq0vmkzj\work\temp?&gt;&lt;?workdir-uri file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/temp/?&gt;&lt;?path2project?&gt;&lt;?path2project-uri?&gt;&lt;?path2rootmap-uri?&gt;&lt;topic xmlns:ditaarch=&#34;http://dita.oasis-open.org/architecture/2005/&#34; xmlns:dita-ot=&#34;http://dita-ot.sourceforge.net/ns/201007/dita-ot&#34; class=&#34;- topic/topic &#34; ditaarch:DITAArchVersion=&#34;1.2&#34; domains=&#34;(topic hi-d) (topic ut-d) (topic indexing-d) (topic hazard-d) (topic abbrev-d) (topic pr-d) (topic sw-d) (topic ui-d)&#34; id=&#34;bootloader-linker-configurations-for-mips-based-mcus&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;topic:1;182:3&#34; specializations=&#34;&#34;&gt;&lt;title class=&#34;- topic/title &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;title:1;182:3&#34;&gt;Bootloader linker configurations for MIPS based MCUs&lt;/title&gt;&lt;body class=&#34;- topic/body &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;body:1;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:1;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:1;182:3&#34;&gt;Bootloader placement for various PIC32M product families&lt;/b&gt;&lt;/p&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:2;182:3&#34;&gt;The bootloader is placed in &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:2;182:3&#34;&gt;Boot Flash Memory (BFM)&lt;/b&gt; or &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:3;182:3&#34;&gt;Program Flash Memory (PFM)&lt;/b&gt; based on the size of the bootloader and available Boot flash memory on the device.&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:1;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:1;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:3;182:3&#34;&gt;If the bootloader fits into the available BFM, it is placed in BFM. The user application can use the complete area of the program Flash memory.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:2;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:4;182:3&#34;&gt;If the bootloader does not fit into the available BFM, it is placed in PFM. The user application can use the remaining area of the program Flash memory.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:3;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:5;182:3&#34;&gt;The following table shows the available Boot Flash memory and the placement of different bootloaders by product family.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;image class=&#34;- topic/image &#34; href=&#34;GUID-9C1A0BED-C9C0-4CA9-9783-484F5FD5C39C-low.png&#34; placement=&#34;break&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;image:1;182:3&#34; dita-ot:image-width=&#34;687&#34; dita-ot:image-height=&#34;263&#34; dita-ot:horizontal-dpi=&#34;120&#34; dita-ot:vertical-dpi=&#34;120&#34;&gt;&lt;alt class=&#34;- topic/alt &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;alt:1;182:3&#34;&gt;bootloader_placement&lt;/alt&gt;&lt;/image&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:6;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:4;182:3&#34;&gt;Bootloader linker script settings&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:2;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:4;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:7;182:3&#34;&gt;Bootloader library uses a custom linker script which is &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:5;182:3&#34;&gt;generated through MCC&lt;/b&gt;&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:5;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:8;182:3&#34;&gt;The values populated in the linker script are based on the Bootloader component MCC configurations&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:6;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:9;182:3&#34;&gt;The vector address of a given interrupt is calculated using Exception Base (EBASE) CPU register and the _ebase_address should be aligned to 4KB boundary&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:7;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:10;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:6;182:3&#34;&gt;Note: The below sections provides overview of changes done to bootloader linker scripts when compared to default linker script. The address location and size may vary based on the specific device used&lt;/b&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:11;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:7;182:3&#34;&gt;For Bootloaders placed in Boot Flash Memory (PIC32MZ and PIC32MK Devices)&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:3;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:8;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:12;182:3&#34;&gt;The bootloader start address by default will be start of &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:8;182:3&#34;&gt;Boot flash memory (0xBFC00000)&lt;/b&gt;. This is the default startup location for all PIC32M devices&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:9;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:13;182:3&#34;&gt;The Initial 4KB from Bootloader start address are used by Reset Handler and cache_init section followed by rest of bootloader code.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:10;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:14;182:3&#34;&gt;Length of the bootloader is calculated based on the bootloader being added to MCC&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:11;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:15;182:3&#34;&gt;XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs.&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:4;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:12;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:16;182:3&#34;&gt;If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address.&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:5;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:13;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:17;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:9;182:3&#34;&gt;Example:&lt;/b&gt; When _ebase_address is set to &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:10;182:3&#34;&gt;0x9FC01000&lt;/b&gt; and interrupts vectors are not located withing the 4KB boundary from the ebase address &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:11;182:3&#34;&gt;(OFFx &amp;gt; 0x1000)&lt;/b&gt;, then the bitwise OR operator may not provide correct interrupt vector address.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:14;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:18;182:3&#34;&gt;Generated linker scripts as explained above is shown here &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:12;182:3&#34;&gt;as an example&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:6;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:15;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:19;182:3&#34;&gt;Bootloader length &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:13;182:3&#34;&gt;&amp;lt;bootloader_length&amp;gt;&lt;/b&gt; in the below snippet is auto generated based on the bootloader component added in MCC&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:16;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:20;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:14;182:3&#34;&gt;Note: Cache related sections are not applicable for PIC32MK Devices&lt;/b&gt;&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;codeblock:1;182:3&#34;&gt;PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9FC01000); _RESET_ADDR = 0xBFC00000; _BEV_EXCPT_ADDR = 0xBFC00380; _DBG_EXCPT_ADDR = 0xBFC00480; _SIMPLE_TLB_REFILL_EXCPT_ADDR = _ebase_address + 0; _CACHE_ERR_EXCPT_ADDR = _ebase_address + 0x100; _GEN_EXCPT_ADDR = _ebase_address + 0x180; kseg0_program_mem (rx) : ORIGIN = 0x9FC01000, LENGTH = &amp;lt;bootloader_length&amp;gt; kseg1_boot_mem : ORIGIN = 0xBFC00000, LENGTH = 0x480 kseg1_boot_mem_4B0 : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0 ... config_BFC0FF40 : ORIGIN = 0xBFC0FF40, LENGTH = 0x4 config_BFC0FF44 : ORIGIN = 0xBFC0FF44, LENGTH = 0x4 config_BFC0FF48 : ORIGIN = 0xBFC0FF48, LENGTH = 0x4 ... ... SECTIONS { .config_BFC0FF40 : { KEEP(*(.config_BFC0FF40)) } &amp;gt; config_BFC0FF40 .config_BFC0FF44 : { KEEP(*(.config_BFC0FF44)) } &amp;gt; config_BFC0FF44 ... ... } /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &amp;gt; kseg1_boot_mem .cache_init : { *(.cache_init) *(.cache_init.*) } &amp;gt; kseg1_boot_mem_4B0 ... /* Interrupt vector table with vector offsets */ .vectors _ebase_address + 0x200 : { /* Symbol __vector_offset_n points to .vector_n if it exists, * otherwise points to the default handler. The * vector_offset_init.o module then provides a .data section * containing values used to initialize the vector-offset SFRs * in the crt0 startup code. */ . = ALIGN(4) ; __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default); KEEP(*(.vector_0)) ... ... /* Default interrupt handler */ . = ALIGN(4) ; __vector_offset_default = . - _ebase_address; KEEP(*(.vector_default)) } &amp;gt; kseg0_program_mem &lt;/codeblock&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:21;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:15;182:3&#34;&gt;For Bootloaders placed in Program Flash Memory (PIC32MK Devices)&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:7;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:17;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:22;182:3&#34;&gt;The bootloader start address by default will be start of &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:16;182:3&#34;&gt;Boot flash memory (0xBFC00000)&lt;/b&gt;. This is the default startup location for all PIC32M devices&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:18;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:23;182:3&#34;&gt;As the entire bootloader cannot be placed in BFM, Only the bootloader Reset Handler is placed in BFM. Rest of the bootloader code along with exceptions and vector table will be placed from &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:17;182:3&#34;&gt;start of Program Flash memory&lt;/b&gt;&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:19;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:24;182:3&#34;&gt;XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:20;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:25;182:3&#34;&gt;If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address.&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:8;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:21;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:26;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:18;182:3&#34;&gt;Example:&lt;/b&gt; When _ebase_address is set to &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:19;182:3&#34;&gt;0x9D001000&lt;/b&gt; and interrupts vectors are not located withing the 4KB boundary from the ebase address &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:20;182:3&#34;&gt;(OFFx &amp;gt; 0x1000)&lt;/b&gt;, then the bitwise OR operator may not provide correct interrupt vector address.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:22;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:27;182:3&#34;&gt;To provide maximum flexibility in placement of interrupt vectors:&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:9;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:23;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:28;182:3&#34;&gt;The &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:21;182:3&#34;&gt;_ebase_address&lt;/b&gt; is placed at start of Program flash memory &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:22;182:3&#34;&gt;(Example : 0x9D000000)&lt;/b&gt; like the default linker script&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:24;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:29;182:3&#34;&gt;Generated linker scripts as explained above is shown here &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:23;182:3&#34;&gt;as an example&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:10;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:25;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:30;182:3&#34;&gt;Bootloader length &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:24;182:3&#34;&gt;&amp;lt;bootloader_length&amp;gt;&lt;/b&gt; in the below snippet is auto generated based on the bootloader component added in MCC&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;codeblock:2;182:3&#34;&gt;PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D000000); _RESET_ADDR = 0xBFC00000; _BEV_EXCPT_ADDR = 0xBFC00380; _DBG_EXCPT_ADDR = 0xBFC00480; _SIMPLE_TLB_REFILL_EXCPT_ADDR = _ebase_address + 0; _GEN_EXCPT_ADDR = _ebase_address + 0x180; kseg0_program_mem (rx) : ORIGIN = 0x9D000000, LENGTH = &amp;lt;bootloader_length&amp;gt; kseg1_boot_mem : ORIGIN = 0xBFC00000, LENGTH = 0x480 kseg1_boot_mem_4B0 : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0 ... config_BFC03F40 : ORIGIN = 0xBFC03F40, LENGTH = 0x4 config_BFC03F44 : ORIGIN = 0xBFC03F44, LENGTH = 0x4 config_BFC03F48 : ORIGIN = 0xBFC03F48, LENGTH = 0 SECTIONS { .config_BFC03F40 : { KEEP(*(.config_BFC03F40)) } &amp;gt; config_BFC03F40 .config_BFC03F44 : { KEEP(*(.config_BFC03F44)) } &amp;gt; config_BFC03F44 ... ... } /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &amp;gt; kseg1_boot_mem ... /* Interrupt vector table with vector offsets */ .vectors _ebase_address + 0x200 : { /* Symbol __vector_offset_n points to .vector_n if it exists, * otherwise points to the default handler. The * vector_offset_init.o module then provides a .data section * containing values used to initialize the vector-offset SFRs * in the crt0 startup code. */ . = ALIGN(4) ; __vector_offset_0 = (DEFINED(__vector_dispatch_0) ? (. - _ebase_address) : __vector_offset_default); KEEP(*(.vector_0)) ... ... /* Default interrupt handler */ . = ALIGN(4) ; __vector_offset_default = . - _ebase_address; KEEP(*(.vector_default)) } &amp;gt; kseg0_program_mem &lt;/codeblock&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:31;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:25;182:3&#34;&gt;For Bootloaders placed in Boot Flash Memory (PIC32MX and PIC32MM Devices)&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:11;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:26;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:32;182:3&#34;&gt;The bootloader start address by default will be start of &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:26;182:3&#34;&gt;Boot flash memory (0xBFC00000)&lt;/b&gt;. This is the default startup location for all PIC32M devices&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:27;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:33;182:3&#34;&gt;The Initial memory from Bootloader start address are used by Reset Handler and then followed by rest of bootloader code.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:28;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:34;182:3&#34;&gt;Length of the bootloader is calculated based on the bootloader being added to MCC&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:29;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:35;182:3&#34;&gt;The _ebase_address holds the start address of vector table and it must be placed at 4KB boundary after the Reset Handler section&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:30;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:36;182:3&#34;&gt;Generated linker scripts as explained above is shown here &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:27;182:3&#34;&gt;as an example.&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:12;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:31;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:37;182:3&#34;&gt;Bootloader length &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:28;182:3&#34;&gt;&amp;lt;bootloader_length&amp;gt;&lt;/b&gt; in the below snippet is auto generated based on the bootloader component added in MCC&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;codeblock:3;182:3&#34;&gt;PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9FC01000); _RESET_ADDR = 0xBFC00000; _BEV_EXCPT_ADDR = 0xBFC00380; _DBG_EXCPT_ADDR = 0xBFC00480; _DBG_CODE_ADDR = 0xBFC02000; _DBG_CODE_SIZE = 0xFF0; _GEN_EXCPT_ADDR = _ebase_address + 0x180; kseg0_program_mem (rx) : ORIGIN = 0x9FC00500, LENGTH = &amp;lt;bootloader_length&amp;gt; kseg1_boot_mem : ORIGIN = 0xBFC00000, LENGTH = 0x490 ... config3 : ORIGIN = 0xBFC02FF0, LENGTH = 0x4 config2 : ORIGIN = 0xBFC02FF4, LENGTH = 0x4 SECTIONS { .config_BFC02FF0 : { KEEP(*(.config_BFC02FF0)) } &amp;gt; config3 .config_BFC02FF4 : { KEEP(*(.config_BFC02FF4)) } &amp;gt; config2 } /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &amp;gt; kseg1_boot_mem ... .vector_0 _ebase_address + 0x200 + ((_vector_spacing &amp;lt;&amp;lt; 5) * 0) : { KEEP(*(.vector_0)) } &amp;gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &amp;lt;= (_vector_spacing &amp;lt;&amp;lt; 5), &#34;function at exception vector 0 too large&#34;) .vector_1 _ebase_address + 0x200 + ((_vector_spacing &amp;lt;&amp;lt; 5) * 1) : { KEEP(*(.vector_1)) } &amp;gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &amp;lt;= (_vector_spacing &amp;lt;&amp;lt; 5), &#34;function at exception vector 1 too large&#34;) ... ... &lt;/codeblock&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:38;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:29;182:3&#34;&gt;For Bootloaders placed in Program Flash Memory (PIC32MX and PIC32MM Devices)&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:13;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:32;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:39;182:3&#34;&gt;The bootloader start address by default will be start of &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:30;182:3&#34;&gt;Boot flash memory (0xBFC00000)&lt;/b&gt;. This is the default startup location for all PIC32M devices&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:33;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:40;182:3&#34;&gt;As the entire bootloader cannot be placed in BFM, Only the bootloader Reset Handler is placed in BFM. Rest of the bootloader code will be placed from &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:31;182:3&#34;&gt;start of Program Flash memory&lt;/b&gt;&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:34;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:41;182:3&#34;&gt;The &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:32;182:3&#34;&gt;_ebase_address&lt;/b&gt; is placed at start of Program flash memory &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:33;182:3&#34;&gt;(Example : 0x9D000000)&lt;/b&gt;&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:35;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:42;182:3&#34;&gt;Generated linker scripts as explained above is shown here &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:34;182:3&#34;&gt;as an example.&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:14;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:36;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:43;182:3&#34;&gt;Bootloader length &lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:35;182:3&#34;&gt;&amp;lt;bootloader_length&amp;gt;&lt;/b&gt; in the below snippet is auto generated based on the bootloader component added in MCC&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;codeblock:4;182:3&#34;&gt;PROVIDE(_vector_spacing = 0x0001); PROVIDE(_ebase_address = 0x9D000000); _RESET_ADDR = 0xBFC00000; _BEV_EXCPT_ADDR = 0xBFC00380; _DBG_EXCPT_ADDR = 0xBFC00480; _DBG_CODE_ADDR = 0x9FC00490; _DBG_CODE_SIZE = 0x760; _GEN_EXCPT_ADDR = _ebase_address + 0x180; kseg0_program_mem (rx) : ORIGIN = 0x9D000000, LENGTH = &amp;lt;bootloader_length&amp;gt; kseg1_boot_mem : ORIGIN = 0xBFC00000, LENGTH = 0x490 ... config3 : ORIGIN = 0xBFC00BF0, LENGTH = 0x4 config2 : ORIGIN = 0xBFC00BF4, LENGTH = 0x4 SECTIONS { .config_BFC00BF0 : { KEEP(*(.config_BFC00BF0)) } &amp;gt; config3 .config_BFC00BF4 : { KEEP(*(.config_BFC00BF4)) } &amp;gt; config2 } /* Boot Sections */ .reset _RESET_ADDR : { KEEP(*(.reset)) KEEP(*(.reset.startup)) } &amp;gt; kseg1_boot_mem ... .vector_0 _ebase_address + 0x200 + ((_vector_spacing &amp;lt;&amp;lt; 5) * 0) : { KEEP(*(.vector_0)) } &amp;gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_0) &amp;lt;= (_vector_spacing &amp;lt;&amp;lt; 5), &#34;function at exception vector 0 too large&#34;) .vector_1 _ebase_address + 0x200 + ((_vector_spacing &amp;lt;&amp;lt; 5) * 1) : { KEEP(*(.vector_1)) } &amp;gt; kseg0_program_mem ASSERT (_vector_spacing == 0 || SIZEOF(.vector_1) &amp;lt;= (_vector_spacing &amp;lt;&amp;lt; 5), &#34;function at exception vector 1 too large&#34;) ... ... &lt;/codeblock&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:44;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:36;182:3&#34;&gt;Using Both Boot Flash Panels on PIC32MZ device&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:15;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:37;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:45;182:3&#34;&gt;For PIC32MZ devices, with two 80 KB Boot Flash panels, bootloader may or may not fit entirely in one Boot Flash panel.&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:38;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:46;182:3&#34;&gt;In order to fit some of the Bootloaders, the linker script makes the two Boot Flash panels look like one contiguous Boot Flash memory. Unimplemented areas are blocked using a fill command to the linker&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;codeblock class=&#34;+ topic/pre pr-d/codeblock &#34; xml:space=&#34;preserve&#34; outputclass=&#34;c&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;codeblock:5;182:3&#34;&gt;kseg0_program_mem (rx) : ORIGIN = 0x9FC01000, LENGTH = 0x2FF00 - 0x1000 /* Bootloader needs to be placed in both the Boot Flash Panels (lower and upper boot alias). Below region is used to fill 0xFF in reserved space between these two panles. */ protected_reg : ORIGIN = 0x9FC14000, LENGTH = 0x20000-0x14000 ... ... SECTIONS { .fill1 : { FILL(0xFF); . = ORIGIN(protected_reg) + LENGTH(protected_reg) - 1; BYTE(0xFF) } &amp;gt; protected_reg } &lt;/codeblock&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:47;182:3&#34;&gt;&lt;b class=&#34;+ topic/ph hi-d/b &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;b:37;182:3&#34;&gt;Note&lt;/b&gt;&lt;/p&gt;&lt;ul class=&#34;- topic/ul &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;ul:16;182:3&#34;&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:39;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:48;182:3&#34;&gt;Device configuration bits should be updated by bootloader only&lt;/p&gt;&lt;/li&gt;&lt;li class=&#34;- topic/li &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;li:40;182:3&#34;&gt;&lt;p class=&#34;- topic/p &#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md&#34; xtrc=&#34;p:49;182:3&#34;&gt;The bootloader linker script is generated using generic templates for the device family. Generated linker script should be modified if there any changes or modifications to the specific device being used.&lt;/p&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;related-links class=&#34;- topic/related-links &#34;&gt;&lt;linkpool class=&#34;- topic/linkpool &#34; mapkeyref=&#34;GUID-581B40CE-B0AF-4B5C-9394-846B18202E94&#34; xtrc=&#34;topicref:13;3:3102&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-A6150575-B080-4D0D-BAD7-4A73A8250018.ditamap&#34;&gt;&lt;link class=&#34;- topic/link &#34; format=&#34;dita&#34; href=&#34;GUID-E032DE1F-C543-4251-ACD3-C3625D466841.md&#34; mapclass=&#34;- map/topicref &#34; role=&#34;parent&#34; scope=&#34;local&#34; type=&#34;topic&#34; xtrc=&#34;topicref:12;3:2967&#34; xtrf=&#34;file:/D:/InfoShare/Data/Publish/Data/phdeq0vmkzj/work/2/en-US/GUID-A6150575-B080-4D0D-BAD7-4A73A8250018.ditamap&#34;&gt;&lt;?ditaot usertext?&gt;&lt;linktext class=&#34;- topic/linktext &#34;&gt;&lt;?ditaot gentext?&gt;SPI Bootloader Configurations&lt;/linktext&gt;&lt;/link&gt;&lt;/linkpool&gt;&lt;/related-links&gt;&lt;/topic&gt;"/><meta name="wh-source-relpath" content="GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1.md"/><meta name="wh-out-relpath" content="GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1_3.html"/>
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/lib/bootstrap/css/bootstrap.min.css"/>
+    
+    <link rel="stylesheet" href="./oxygen-webhelp/lib/jquery-ui/jquery-ui.min.css"/>
+    
+    <!-- Template default styles  -->
+    <link rel="stylesheet" type="text/css" href="./oxygen-webhelp/app/topic-page.css?buildId=2022062014"/>
+    
+    
+    <script src="./oxygen-webhelp/lib/jquery/jquery-3.5.1.min.js"></script>
+    
+    <script data-main="./oxygen-webhelp/app/topic-page.js" src="./oxygen-webhelp/lib/requirejs/require.js"></script>
+<link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/microchip.css?buildId=2022062014"/><link rel="stylesheet" type="text/css" href="oxygen-webhelp/template/notes.css?buildId=2022062014"/>
+<script src="mchp-context-help.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async="" type="text/javascript"></script>
+</head>
+
+    <body id="bootloader-linker-configurations-for-mips-based-mcus" class="wh_topic_page frmBody">
+        <a href="#wh_topic_body" class="sr-only sr-only-focusable">
+            Jump to main content
+        </a>
+        
+        
+        
+        
+        <header class="navbar navbar-default wh_header">
+    <div class="container-fluid">
+        <div class="wh_header_flex_container navbar-nav navbar-expand-md navbar-dark">
+            <div class="wh_logo_and_publication_title_container">
+                <div class="wh_logo_and_publication_title">
+                    
+                    <a href="index.html" class=" wh_logo d-none d-sm-block "><img src="oxygen-webhelp\template\resources/images/microchip.png" alt="MPLAB® Harmony Bootloader Library "/></a>
+                    <div class=" wh_publication_title "><a href="index.html">MPLAB® Harmony Bootloader Library </a></div>
+                    
+                </div>
+                
+                
+            </div>
+
+            <div class="wh_top_menu_and_indexterms_link collapse navbar-collapse" id="wh_top_menu_and_indexterms_link">
+                
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</header>
+        
+        
+         
+        
+        <div class=" wh_search_input navbar-form wh_topic_page_search search " role="form">
+            
+            
+            
+            <form id="searchForm" method="get" role="search" action="search.html"><div><input type="search" placeholder="Search " class="wh_search_textfield" id="textToSearch" name="searchQuery" aria-label="Search query" required="required"/><button type="submit" class="wh_search_button" aria-label="Search"><span class="search_input_text">Search</span></button></div></form>
+            
+            <div class="mchp-color-stripe-grid-container">
+  <div class="mchp-main-bar mchp-orange-bar"></div>
+  <div class="mchp-main-bar mchp-blue-bar"></div>
+  <div class="mchp-main-bar mchp-green-bar"></div>
+</div>
+            
+        </div>
+        
+        <div class="container-fluid" id="wh_topic_container">
+            <div class="row">
+
+                <nav class="wh_tools d-print-none navbar-expand-md" aria-label="Tools">
+                    
+                    <div data-tooltip-position="bottom" class=" wh_breadcrumb "><ol class="d-print-none"><li><span class="home"><a href="index.html"><span>Home</span></a></span></li><li><div class="topicref" data-id="mplab-harmony-bootloader-library"><div class="title"><a href="GUID-21B27208-104A-468D-8F94-F58D432AB08C.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Bootloader Library</a></div></div></li><li><div class="topicref" data-id="spi-bootloader"><div class="title"><a href="GUID-C3D87F0A-AB90-4363-9D23-98BD93F319BE.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3</ph>
+SPI Bootloader</a></div></div></li><li><div class="topicref" data-id="spi-bootloader-configurations"><div class="title"><a href="GUID-E032DE1F-C543-4251-ACD3-C3625D466841.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3</ph>
+SPI Bootloader Configurations</a></div></div></li><li class="active"><div class="topicref" data-id="bootloader-linker-configurations-for-mips-based-mcus"><div class="title"><a href="GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1_3.html"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1</ph>
+Bootloader linker configurations for MIPS based MCUs</a></div></div></li></ol></div>
+                    
+                    
+                    
+                    <div class="wh_right_tools">
+                        <button class="wh_hide_highlight" aria-label="Toggle search highlights" title="Toggle search highlights"></button>
+                        <button class="webhelp_expand_collapse_sections" data-next-state="collapsed" aria-label="Collapse sections" title="Collapse sections"></button>
+                        
+                        
+                        
+                        
+                        <div class=" wh_print_link print d-none d-md-inline-block "><button onClick="window.print()" title="Print this page" aria-label="Print this page"></button></div>
+                        
+                        <button type="button" id="wh_toc_button" class="custom-toggler navbar-toggler collapsed wh_toggle_button navbar-light" aria-expanded="false" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    
+                </nav>
+            </div>
+            
+            
+            
+            
+            <div class="wh_content_area">
+                <div class="row">
+                    
+                        <nav id="wh_publication_toc" class="col-lg-3 col-md-3 col-sm-12 d-md-block d-none d-print-none" aria-label="Table of Contents Container">
+                            <div id="wh_publication_toc_content">
+		                        
+                            	<div class=" wh_publication_toc " data-tooltip-position="right"><span class="expand-button-action-labels"><span id="button-expand-action" role="button" aria-label="Expand"></span><span id="button-collapse-action" role="button" aria-label="Collapse"></span><span id="button-pending-action" role="button" aria-label="Pending"></span></span><ul role="tree" aria-label="Table of Contents"><li role="treeitem" aria-expanded="true"><div data-tocid="mplab-harmony-bootloader-library-d1920e9" class="topicref" data-id="mplab-harmony-bootloader-library" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action mplab-harmony-bootloader-library-d1920e9-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-21B27208-104A-468D-8F94-F58D432AB08C.html" id="mplab-harmony-bootloader-library-d1920e9-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1</ph>
+MPLAB® Harmony Bootloader Library</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="uart-bootloader-d1920e17" class="topicref" data-id="uart-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action uart-bootloader-d1920e17-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-7EF4113C-BB31-47A2-96E8-2965EC312340.html" id="uart-bootloader-d1920e17-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.1</ph>
+UART Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2c-bootloader-d1920e273" class="topicref" data-id="i2c-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2c-bootloader-d1920e273-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-DAABEA91-BE58-400D-B1FE-1808457896A8.html" id="i2c-bootloader-d1920e273-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.2</ph>
+I2C Bootloader</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="spi-bootloader-d1920e513" class="topicref" data-id="spi-bootloader" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action spi-bootloader-d1920e513-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C3D87F0A-AB90-4363-9D23-98BD93F319BE.html" id="spi-bootloader-d1920e513-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3</ph>
+SPI Bootloader</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" aria-expanded="false"><div data-tocid="how-the-spi-bootloader-library-works-d1920e521" class="topicref" data-id="how-the-spi-bootloader-library-works" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action how-the-spi-bootloader-library-works-d1920e521-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-DCC1F793-FF85-4FB8-843B-55E8B63AD0DA.html" id="how-the-spi-bootloader-library-works-d1920e521-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.1</ph>
+How the SPI Bootloader library works</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-bootloader-system-level-execution-flow-d1920e577" class="topicref" data-id="spi-bootloader-system-level-execution-flow" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-bootloader-system-level-execution-flow-d1920e577-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-B0752E8E-3A32-4C46-A6CE-D84942466743.html" id="spi-bootloader-system-level-execution-flow-d1920e577-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.2</ph>
+SPI Bootloader system level execution flow</a></div></div></li><li role="treeitem" aria-expanded="true"><div data-tocid="spi-bootloader-configurations-d1920e601" class="topicref" data-id="spi-bootloader-configurations" data-state="expanded"><span role="button" tabindex="0" aria-labelledby="button-collapse-action spi-bootloader-configurations-d1920e601-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-E032DE1F-C543-4251-ACD3-C3625D466841.html" id="spi-bootloader-configurations-d1920e601-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3</ph>
+SPI Bootloader Configurations</a></div></div><ul role="group" class="navbar-nav nav-list"><li role="treeitem" class="active"><div data-tocid="bootloader-linker-configurations-for-mips-based-mcus-d1920e609" class="topicref" data-id="bootloader-linker-configurations-for-mips-based-mcus" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-F222E4C9-8DCD-4917-A147-2EABBE9969F1_3.html" id="bootloader-linker-configurations-for-mips-based-mcus-d1920e609-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.1</ph>
+Bootloader linker configurations for MIPS based MCUs</a></div></div></li><li role="treeitem"><div data-tocid="spi-bootloader-linker-configurations-for-cortex-m-based-mcus-d1920e617" class="topicref" data-id="spi-bootloader-linker-configurations-for-cortex-m-based-mcus" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-AB95BE54-1EE7-4F93-A4D4-94BE8313FED5.html" id="spi-bootloader-linker-configurations-for-cortex-m-based-mcus-d1920e617-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.2</ph>
+SPI Bootloader linker configurations for CORTEX-M based MCUs</a></div></div></li><li role="treeitem"><div data-tocid="bootloader-sizing-and-considerations-d1920e625" class="topicref" data-id="bootloader-sizing-and-considerations" data-state="leaf"><span role="button" class="wh-expand-btn"></span><div class="title"><a href="GUID-7E38E7D5-AB6E-4C67-A6E6-7F3BA58FDEF3_3.html" id="bootloader-sizing-and-considerations-d1920e625-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.3.3</ph>
+Bootloader Sizing And Considerations</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="configurations-for-the-application-to-be-bootloaded-d1920e633" class="topicref" data-id="configurations-for-the-application-to-be-bootloaded" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action configurations-for-the-application-to-be-bootloaded-d1920e633-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-81FF31CA-1770-4876-8AAB-FA0015038359_3.html" id="configurations-for-the-application-to-be-bootloaded-d1920e633-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.4</ph>
+Configurations for the application to be bootloaded</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="spi-bootloader-library-interface-d1920e649" class="topicref" data-id="spi-bootloader-library-interface" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action spi-bootloader-library-interface-d1920e649-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-05CBC347-61D3-4418-BD84-628FC174DFDB.html" id="spi-bootloader-library-interface-d1920e649-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.5</ph>
+SPI Bootloader Library Interface</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="i2cspican-bootloader-tools-help-d1920e689" class="topicref" data-id="i2cspican-bootloader-tools-help" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action i2cspican-bootloader-tools-help-d1920e689-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-FCD04D38-6A0B-4B16-ABC6-33AC5EE0C561_2.html" id="i2cspican-bootloader-tools-help-d1920e689-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.6</ph>
+I2C/SPI/CAN Bootloader Tools Help</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="debugging-bootloader-and-application-to-be-bootloaded-d1920e729" class="topicref" data-id="debugging-bootloader-and-application-to-be-bootloaded" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action debugging-bootloader-and-application-to-be-bootloaded-d1920e729-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-05CA35ED-C84A-4F88-AAC1-F37D8F6EFEF4_3.html" id="debugging-bootloader-and-application-to-be-bootloaded-d1920e729-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.3.7</ph>
+Debugging Bootloader and Application to be bootloaded</a></div></div></li></ul></li><li role="treeitem" aria-expanded="false"><div data-tocid="can-bootloader-d1920e753" class="topicref" data-id="can-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action can-bootloader-d1920e753-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-67381576-E9AA-4E3C-BE36-D32966B8E034.html" id="can-bootloader-d1920e753-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.4</ph>
+CAN Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="serial-memory-bootloader-d1920e961" class="topicref" data-id="serial-memory-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action serial-memory-bootloader-d1920e961-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-AC20F067-9388-42CD-A49D-05496869CC4D.html" id="serial-memory-bootloader-d1920e961-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.5</ph>
+Serial Memory Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="usb-device-hid-bootloader-d1920e1105" class="topicref" data-id="usb-device-hid-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action usb-device-hid-bootloader-d1920e1105-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-EEB0BC77-4006-44EF-8E7F-A9B4D5948189.html" id="usb-device-hid-bootloader-d1920e1105-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.6</ph>
+USB Device HID Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="udp-bootloader-d1920e1297" class="topicref" data-id="udp-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action udp-bootloader-d1920e1297-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-C2D4E98A-C367-48ED-9079-5AC48374542D.html" id="udp-bootloader-d1920e1297-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.7</ph>
+UDP Bootloader</a></div></div></li><li role="treeitem" aria-expanded="false"><div data-tocid="file-system-bootloader-d1920e1505" class="topicref" data-id="file-system-bootloader" data-state="not-ready"><span role="button" tabindex="0" aria-labelledby="button-expand-action file-system-bootloader-d1920e1505-link" class="wh-expand-btn"></span><div class="title"><a href="GUID-B40F9A07-D16A-42CF-8121-B52B5BDD7685.html" id="file-system-bootloader-d1920e1505-link"><ph xmlns="http://www.oxygenxml.com/ns/webhelp/toc">1.8</ph>
+File System Bootloader</a></div></div></li></ul></li></ul></div>
+		                        
+                            </div>
+                        </nav>
+                    
+                    
+                    <div class="col-lg-9 col-md-9 col-sm-12" id="wh_topic_body">
+                        <button id="wh_close_publication_toc_button" class="close-toc-button d-none" aria-label="Toggle publishing table of content" aria-controls="wh_publication_toc" aria-expanded="true">
+                            <span class="close-toc-icon-container">
+                                <span class="close-toc-icon"></span>     
+                            </span>
+                        </button>
+                        
+                        
+                        <div class=" wh_topic_content body "><main role="main"><article role="article" aria-labelledby="ariaid-title1"><h1 class="- topic/title title topictitle1" id="ariaid-title1">1.3.3.1 Bootloader linker configurations for MIPS based MCUs</h1><div class="- topic/body body"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Bootloader placement for various PIC32M product families</strong></p><p class="- topic/p p">The bootloader is placed in <strong class="+ topic/ph hi-d/b ph b">Boot Flash Memory (BFM)</strong> or <strong class="+ topic/ph hi-d/b ph b">Program Flash Memory (PFM)</strong> based on the size of the bootloader and available Boot flash memory on the device.</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">If the bootloader fits into the available BFM, it is placed in BFM. The user application can use the complete area of the program Flash memory.</p></li><li class="- topic/li li"><p class="- topic/p p">If the bootloader does not fit into the available BFM, it is placed in PFM. The user application can use the remaining area of the program Flash memory.</p></li><li class="- topic/li li"><p class="- topic/p p">The following table shows the available Boot Flash memory and the placement of different bootloaders by product family.</p></li></ul><img class="- topic/image image break" src="GUID-9C1A0BED-C9C0-4CA9-9783-484F5FD5C39C-low.png" alt="bootloader_placement"/><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Bootloader linker script settings</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Bootloader library uses a custom linker script which is <strong class="+ topic/ph hi-d/b ph b">generated through MCC</strong></p></li><li class="- topic/li li"><p class="- topic/p p">The values populated in the linker script are based on the Bootloader component MCC configurations</p></li><li class="- topic/li li"><p class="- topic/p p">The vector address of a given interrupt is calculated using Exception Base (EBASE) CPU register and the _ebase_address should be aligned to 4KB boundary</p></li><li class="- topic/li li"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Note: The below sections provides overview of changes done to bootloader linker scripts when compared to default linker script. The address location and size may vary based on the specific device used</strong></p></li></ul><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">For Bootloaders placed in Boot Flash Memory (PIC32MZ and PIC32MK Devices)</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">The bootloader start address by default will be start of <strong class="+ topic/ph hi-d/b ph b">Boot flash memory (0xBFC00000)</strong>. This is the default startup location for all PIC32M devices</p></li><li class="- topic/li li"><p class="- topic/p p">The Initial 4KB from Bootloader start address are used by Reset Handler and cache_init section followed by rest of bootloader code.</p></li><li class="- topic/li li"><p class="- topic/p p">Length of the bootloader is calculated based on the bootloader being added to MCC</p></li><li class="- topic/li li"><p class="- topic/p p">XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs.</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address.</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Example:</strong> When _ebase_address is set to <strong class="+ topic/ph hi-d/b ph b">0x9FC01000</strong> and interrupts vectors are not located withing the 4KB boundary from the ebase address <strong class="+ topic/ph hi-d/b ph b">(OFFx &gt; 0x1000)</strong>, then the bitwise OR operator may not provide correct interrupt vector address.</p></li></ul></li></ul></li><li class="- topic/li li"><p class="- topic/p p">Generated linker scripts as explained above is shown here <strong class="+ topic/ph hi-d/b ph b">as an example</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Bootloader length <strong class="+ topic/ph hi-d/b ph b">&lt;bootloader_length&gt;</strong> in the below snippet is auto generated based on the bootloader component added in MCC</p></li><li class="- topic/li li"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Note: Cache related sections are not applicable for PIC32MK Devices</strong></p></li></ul></li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock c">PROVIDE(_vector_spacing = <span class="hl-number">0x0001</span>);
+PROVIDE(_ebase_address = <span class="hl-number">0x9FC01000</span>);
+
+_RESET_ADDR                    = <span class="hl-number">0xBFC00000</span>;
+_BEV_EXCPT_ADDR                = <span class="hl-number">0xBFC00380</span>;
+_DBG_EXCPT_ADDR                = <span class="hl-number">0xBFC00480</span>;
+_SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + <span class="hl-number">0</span>;
+_CACHE_ERR_EXCPT_ADDR          = _ebase_address + <span class="hl-number">0x100</span>;
+_GEN_EXCPT_ADDR                = _ebase_address + <span class="hl-number">0x180</span>;
+
+kseg0_program_mem  (rx) : ORIGIN = <span class="hl-number">0x9FC01000</span>, LENGTH = &lt;bootloader_length&gt;
+
+kseg1_boot_mem          : ORIGIN = <span class="hl-number">0xBFC00000</span>, LENGTH = <span class="hl-number">0x480</span>
+
+kseg1_boot_mem_<span class="hl-number">4</span>B0      : ORIGIN = <span class="hl-number">0xBFC004B0</span>, LENGTH = <span class="hl-number">0x1000</span> - <span class="hl-number">0x4B0</span>
+...
+config_BFC0FF40             : ORIGIN = <span class="hl-number">0xBFC0FF40</span>, LENGTH = <span class="hl-number">0x4</span>
+config_BFC0FF44             : ORIGIN = <span class="hl-number">0xBFC0FF44</span>, LENGTH = <span class="hl-number">0x4</span>
+config_BFC0FF48             : ORIGIN = <span class="hl-number">0xBFC0FF48</span>, LENGTH = <span class="hl-number">0x4</span>
+...
+...
+
+SECTIONS
+{
+  .config_BFC0FF40 : {
+    KEEP(*(.config_BFC0FF40))
+  } &gt; config_BFC0FF40
+  .config_BFC0FF44 : {
+    KEEP(*(.config_BFC0FF44))
+  } &gt; config_BFC0FF44
+...
+...
+}
+
+<em class="hl-comment">/* Boot Sections */</em>
+.reset _RESET_ADDR :
+{
+  KEEP(*(.reset))
+  KEEP(*(.reset.startup))
+} &gt; kseg1_boot_mem
+
+.cache_init :
+{
+  *(.cache_init)
+  *(.cache_init.*)
+} &gt; kseg1_boot_mem_<span class="hl-number">4</span>B0
+...
+
+<em class="hl-comment">/* Interrupt vector table with vector offsets */</em>
+.vectors _ebase_address + <span class="hl-number">0x200</span> :
+{
+  <em class="hl-comment">/*  Symbol __vector_offset_n points to .vector_n if it exists,
+   *  otherwise points to the default handler. The
+   *  vector_offset_init.o module then provides a .data section
+   *  containing values used to initialize the vector-offset SFRs
+   *  in the crt0 startup code.
+   */</em>
+  . = ALIGN(<span class="hl-number">4</span>) ;
+  __vector_offset_<span class="hl-number">0</span> = (DEFINED(__vector_dispatch_<span class="hl-number">0</span>) ? (. - _ebase_address) : __vector_offset_default);
+  KEEP(*(.vector_<span class="hl-number">0</span>))
+  ...
+  ...
+  <em class="hl-comment">/* Default interrupt handler */</em>
+  . = ALIGN(<span class="hl-number">4</span>) ;
+  __vector_offset_default = . - _ebase_address;
+  KEEP(*(.vector_default))
+} &gt; kseg0_program_mem
+</pre><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">For Bootloaders placed in Program Flash Memory (PIC32MK Devices)</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">The bootloader start address by default will be start of <strong class="+ topic/ph hi-d/b ph b">Boot flash memory (0xBFC00000)</strong>. This is the default startup location for all PIC32M devices</p></li><li class="- topic/li li"><p class="- topic/p p">As the entire bootloader cannot be placed in BFM, Only the bootloader Reset Handler is placed in BFM. Rest of the bootloader code along with exceptions and vector table will be placed from <strong class="+ topic/ph hi-d/b ph b">start of Program Flash memory</strong></p></li><li class="- topic/li li"><p class="- topic/p p">XC32 Compiler calculates offset from the EBASE address and initializes the value of interrupt vector offset (OFFx) register. The offset register is combined with EBASE register using a bitwise OR operator to obtain the interrupt vector address that the CPU will jump to when the corresponding interrupt occurs.</p></li><li class="- topic/li li"><p class="- topic/p p">If the EBASE address is aligned to 4KB, then all the interrupt vectors must be located within the 4KB from base address.</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Example:</strong> When _ebase_address is set to <strong class="+ topic/ph hi-d/b ph b">0x9D001000</strong> and interrupts vectors are not located withing the 4KB boundary from the ebase address <strong class="+ topic/ph hi-d/b ph b">(OFFx &gt; 0x1000)</strong>, then the bitwise OR operator may not provide correct interrupt vector address.</p></li></ul></li><li class="- topic/li li"><p class="- topic/p p">To provide maximum flexibility in placement of interrupt vectors:</p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">The <strong class="+ topic/ph hi-d/b ph b">_ebase_address</strong> is placed at start of Program flash memory <strong class="+ topic/ph hi-d/b ph b">(Example : 0x9D000000)</strong> like the default linker script</p></li></ul></li><li class="- topic/li li"><p class="- topic/p p">Generated linker scripts as explained above is shown here <strong class="+ topic/ph hi-d/b ph b">as an example</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Bootloader length <strong class="+ topic/ph hi-d/b ph b">&lt;bootloader_length&gt;</strong> in the below snippet is auto generated based on the bootloader component added in MCC</p></li></ul></li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock c">PROVIDE(_vector_spacing = <span class="hl-number">0x0001</span>);
+PROVIDE(_ebase_address = <span class="hl-number">0x9D000000</span>);
+
+_RESET_ADDR                    = <span class="hl-number">0xBFC00000</span>;
+_BEV_EXCPT_ADDR                = <span class="hl-number">0xBFC00380</span>;
+_DBG_EXCPT_ADDR                = <span class="hl-number">0xBFC00480</span>;
+_SIMPLE_TLB_REFILL_EXCPT_ADDR  = _ebase_address + <span class="hl-number">0</span>;
+_GEN_EXCPT_ADDR                = _ebase_address + <span class="hl-number">0x180</span>;
+
+kseg0_program_mem  (rx) : ORIGIN = <span class="hl-number">0x9D000000</span>, LENGTH = &lt;bootloader_length&gt;
+
+kseg1_boot_mem              : ORIGIN = <span class="hl-number">0xBFC00000</span>, LENGTH = <span class="hl-number">0x480</span>
+kseg1_boot_mem_<span class="hl-number">4</span>B0          : ORIGIN = <span class="hl-number">0xBFC004B0</span>, LENGTH = <span class="hl-number">0x1000</span> - <span class="hl-number">0x4B0</span>
+...
+config_BFC03F40             : ORIGIN = <span class="hl-number">0xBFC03F40</span>, LENGTH = <span class="hl-number">0x4</span>
+config_BFC03F44             : ORIGIN = <span class="hl-number">0xBFC03F44</span>, LENGTH = <span class="hl-number">0x4</span>
+config_BFC03F48             : ORIGIN = <span class="hl-number">0xBFC03F48</span>, LENGTH = <span class="hl-number">0</span>
+
+SECTIONS
+{
+  .config_BFC03F40 : {
+    KEEP(*(.config_BFC03F40))
+  } &gt; config_BFC03F40
+  .config_BFC03F44 : {
+    KEEP(*(.config_BFC03F44))
+  } &gt; config_BFC03F44
+...
+...
+}
+
+<em class="hl-comment">/* Boot Sections */</em>
+.reset _RESET_ADDR :
+{
+  KEEP(*(.reset))
+  KEEP(*(.reset.startup))
+} &gt; kseg1_boot_mem
+
+...
+
+<em class="hl-comment">/* Interrupt vector table with vector offsets */</em>
+.vectors _ebase_address + <span class="hl-number">0x200</span> :
+{
+  <em class="hl-comment">/*  Symbol __vector_offset_n points to .vector_n if it exists,
+   *  otherwise points to the default handler. The
+   *  vector_offset_init.o module then provides a .data section
+   *  containing values used to initialize the vector-offset SFRs
+   *  in the crt0 startup code.
+   */</em>
+  . = ALIGN(<span class="hl-number">4</span>) ;
+  __vector_offset_<span class="hl-number">0</span> = (DEFINED(__vector_dispatch_<span class="hl-number">0</span>) ? (. - _ebase_address) : __vector_offset_default);
+  KEEP(*(.vector_<span class="hl-number">0</span>))
+  ...
+  ...
+  <em class="hl-comment">/* Default interrupt handler */</em>
+  . = ALIGN(<span class="hl-number">4</span>) ;
+  __vector_offset_default = . - _ebase_address;
+  KEEP(*(.vector_default))
+} &gt; kseg0_program_mem
+</pre><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">For Bootloaders placed in Boot Flash Memory (PIC32MX and PIC32MM Devices)</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">The bootloader start address by default will be start of <strong class="+ topic/ph hi-d/b ph b">Boot flash memory (0xBFC00000)</strong>. This is the default startup location for all PIC32M devices</p></li><li class="- topic/li li"><p class="- topic/p p">The Initial memory from Bootloader start address are used by Reset Handler and then followed by rest of bootloader code.</p></li><li class="- topic/li li"><p class="- topic/p p">Length of the bootloader is calculated based on the bootloader being added to MCC</p></li><li class="- topic/li li"><p class="- topic/p p">The _ebase_address holds the start address of vector table and it must be placed at 4KB boundary after the Reset Handler section</p></li><li class="- topic/li li"><p class="- topic/p p">Generated linker scripts as explained above is shown here <strong class="+ topic/ph hi-d/b ph b">as an example.</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Bootloader length <strong class="+ topic/ph hi-d/b ph b">&lt;bootloader_length&gt;</strong> in the below snippet is auto generated based on the bootloader component added in MCC</p></li></ul></li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock c">PROVIDE(_vector_spacing = <span class="hl-number">0x0001</span>);
+PROVIDE(_ebase_address = <span class="hl-number">0x9FC01000</span>);
+
+_RESET_ADDR                    = <span class="hl-number">0xBFC00000</span>;
+_BEV_EXCPT_ADDR                = <span class="hl-number">0xBFC00380</span>;
+_DBG_EXCPT_ADDR                = <span class="hl-number">0xBFC00480</span>;
+_DBG_CODE_ADDR                 = <span class="hl-number">0xBFC02000</span>;
+_DBG_CODE_SIZE                 = <span class="hl-number">0xFF0</span>;
+_GEN_EXCPT_ADDR                = _ebase_address + <span class="hl-number">0x180</span>;
+
+kseg0_program_mem     (rx)  : ORIGIN = <span class="hl-number">0x9FC00500</span>, LENGTH = &lt;bootloader_length&gt;
+kseg1_boot_mem              : ORIGIN = <span class="hl-number">0xBFC00000</span>, LENGTH = <span class="hl-number">0x490</span>
+...
+config3                     : ORIGIN = <span class="hl-number">0xBFC02FF0</span>, LENGTH = <span class="hl-number">0x4</span>
+config2                     : ORIGIN = <span class="hl-number">0xBFC02FF4</span>, LENGTH = <span class="hl-number">0x4</span>
+
+SECTIONS
+{
+  .config_BFC02FF0 : {
+    KEEP(*(.config_BFC02FF0))
+  } &gt; config3
+  .config_BFC02FF4 : {
+    KEEP(*(.config_BFC02FF4))
+  } &gt; config2
+}
+
+<em class="hl-comment">/* Boot Sections */</em>
+.reset _RESET_ADDR :
+{
+  KEEP(*(.reset))
+  KEEP(*(.reset.startup))
+} &gt; kseg1_boot_mem
+...
+
+.vector_<span class="hl-number">0</span> _ebase_address + <span class="hl-number">0x200</span> + ((_vector_spacing &lt;&lt; <span class="hl-number">5</span>) * <span class="hl-number">0</span>) :
+{
+   KEEP(*(.vector_<span class="hl-number">0</span>))
+} &gt; kseg0_program_mem
+ASSERT (_vector_spacing == <span class="hl-number">0</span> || SIZEOF(.vector_<span class="hl-number">0</span>) &lt;= (_vector_spacing &lt;&lt; <span class="hl-number">5</span>), <span class="hl-string">"function at exception vector 0 too large"</span>)
+
+.vector_<span class="hl-number">1</span> _ebase_address + <span class="hl-number">0x200</span> + ((_vector_spacing &lt;&lt; <span class="hl-number">5</span>) * <span class="hl-number">1</span>) :
+{
+   KEEP(*(.vector_<span class="hl-number">1</span>))
+} &gt; kseg0_program_mem
+ASSERT (_vector_spacing == <span class="hl-number">0</span> || SIZEOF(.vector_<span class="hl-number">1</span>) &lt;= (_vector_spacing &lt;&lt; <span class="hl-number">5</span>), <span class="hl-string">"function at exception vector 1 too large"</span>)
+...
+...
+</pre><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">For Bootloaders placed in Program Flash Memory (PIC32MX and PIC32MM Devices)</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">The bootloader start address by default will be start of <strong class="+ topic/ph hi-d/b ph b">Boot flash memory (0xBFC00000)</strong>. This is the default startup location for all PIC32M devices</p></li><li class="- topic/li li"><p class="- topic/p p">As the entire bootloader cannot be placed in BFM, Only the bootloader Reset Handler is placed in BFM. Rest of the bootloader code will be placed from <strong class="+ topic/ph hi-d/b ph b">start of Program Flash memory</strong></p></li><li class="- topic/li li"><p class="- topic/p p">The <strong class="+ topic/ph hi-d/b ph b">_ebase_address</strong> is placed at start of Program flash memory <strong class="+ topic/ph hi-d/b ph b">(Example : 0x9D000000)</strong></p></li><li class="- topic/li li"><p class="- topic/p p">Generated linker scripts as explained above is shown here <strong class="+ topic/ph hi-d/b ph b">as an example.</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Bootloader length <strong class="+ topic/ph hi-d/b ph b">&lt;bootloader_length&gt;</strong> in the below snippet is auto generated based on the bootloader component added in MCC</p></li></ul></li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock c">PROVIDE(_vector_spacing = <span class="hl-number">0x0001</span>);
+PROVIDE(_ebase_address = <span class="hl-number">0x9D000000</span>);
+
+_RESET_ADDR                    = <span class="hl-number">0xBFC00000</span>;
+_BEV_EXCPT_ADDR                = <span class="hl-number">0xBFC00380</span>;
+_DBG_EXCPT_ADDR                = <span class="hl-number">0xBFC00480</span>;
+_DBG_CODE_ADDR                 = <span class="hl-number">0x9FC00490</span>;
+_DBG_CODE_SIZE                 = <span class="hl-number">0x760</span>;
+_GEN_EXCPT_ADDR                = _ebase_address + <span class="hl-number">0x180</span>;
+
+kseg0_program_mem     (rx)  : ORIGIN = <span class="hl-number">0x9D000000</span>, LENGTH = &lt;bootloader_length&gt;
+kseg1_boot_mem              : ORIGIN = <span class="hl-number">0xBFC00000</span>, LENGTH = <span class="hl-number">0x490</span>
+...
+config3                     : ORIGIN = <span class="hl-number">0xBFC00BF0</span>, LENGTH = <span class="hl-number">0x4</span>
+config2                     : ORIGIN = <span class="hl-number">0xBFC00BF4</span>, LENGTH = <span class="hl-number">0x4</span>
+
+SECTIONS
+{
+  .config_BFC00BF0 : {
+    KEEP(*(.config_BFC00BF0))
+  } &gt; config3
+  .config_BFC00BF4 : {
+    KEEP(*(.config_BFC00BF4))
+  } &gt; config2
+}
+
+<em class="hl-comment">/* Boot Sections */</em>
+.reset _RESET_ADDR :
+{
+  KEEP(*(.reset))
+  KEEP(*(.reset.startup))
+} &gt; kseg1_boot_mem
+...
+
+.vector_<span class="hl-number">0</span> _ebase_address + <span class="hl-number">0x200</span> + ((_vector_spacing &lt;&lt; <span class="hl-number">5</span>) * <span class="hl-number">0</span>) :
+{
+   KEEP(*(.vector_<span class="hl-number">0</span>))
+} &gt; kseg0_program_mem
+ASSERT (_vector_spacing == <span class="hl-number">0</span> || SIZEOF(.vector_<span class="hl-number">0</span>) &lt;= (_vector_spacing &lt;&lt; <span class="hl-number">5</span>), <span class="hl-string">"function at exception vector 0 too large"</span>)
+
+.vector_<span class="hl-number">1</span> _ebase_address + <span class="hl-number">0x200</span> + ((_vector_spacing &lt;&lt; <span class="hl-number">5</span>) * <span class="hl-number">1</span>) :
+{
+   KEEP(*(.vector_<span class="hl-number">1</span>))
+} &gt; kseg0_program_mem
+ASSERT (_vector_spacing == <span class="hl-number">0</span> || SIZEOF(.vector_<span class="hl-number">1</span>) &lt;= (_vector_spacing &lt;&lt; <span class="hl-number">5</span>), <span class="hl-string">"function at exception vector 1 too large"</span>)
+...
+...
+</pre><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Using Both Boot Flash Panels on PIC32MZ device</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">For PIC32MZ devices, with two 80 KB Boot Flash panels, bootloader may or may not fit entirely in one Boot Flash panel.</p></li><li class="- topic/li li"><p class="- topic/p p">In order to fit some of the Bootloaders, the linker script makes the two Boot Flash panels look like one contiguous Boot Flash memory. Unimplemented areas are blocked using a fill command to the linker</p></li></ul><pre class="+ topic/pre pr-d/codeblock pre codeblock c">kseg0_program_mem     (rx)  : ORIGIN = <span class="hl-number">0x9FC01000</span>, LENGTH = <span class="hl-number">0x2FF00</span> - <span class="hl-number">0x1000</span>
+
+<em class="hl-comment">/* Bootloader needs to be placed in both the Boot Flash Panels (lower and upper boot alias).
+   Below region is used to fill 0xFF in reserved space between these two panles.
+*/</em>
+protected_reg               : ORIGIN = <span class="hl-number">0x9FC14000</span>, LENGTH = <span class="hl-number">0x20000</span>-<span class="hl-number">0x14000</span>
+
+...
+...
+
+SECTIONS
+{
+  .fill1 :
+  {
+    FILL(<span class="hl-number">0xFF</span>);
+    . = ORIGIN(protected_reg) + LENGTH(protected_reg) - <span class="hl-number">1</span>;
+    BYTE(<span class="hl-number">0xFF</span>)
+  } &gt; protected_reg
+}
+</pre><p class="- topic/p p"><strong class="+ topic/ph hi-d/b ph b">Note</strong></p><ul class="- topic/ul ul"><li class="- topic/li li"><p class="- topic/p p">Device configuration bits should be updated by bootloader only</p></li><li class="- topic/li li"><p class="- topic/p p">The bootloader linker script is generated using generic templates for the device family. Generated linker script should be modified if there any changes or modifications to the specific device being used.</p></li></ul></div></article></main></div>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        <footer class="navbar navbar-default wh_footer">
+  <div class=" footer-container mx-auto ">
+    <div class="footer">
+  <div class="mchp-wh-footer">
+    <div class="mchp-footer">
+      <div class="mchp-footer-tier1">
+        <div class="spacer"></div>
+        <div class="mchp-footer-container">
+          <div class="mchp-footer-links mchp-social-media-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.facebook.com/pages/Microchip-Technology-Inc/20320981741" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Facebook" src="oxygen-webhelp/template/resources/images/201016-corp-facebook.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.linkedin.com/company/microchip-technology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip LinkedIn" src="oxygen-webhelp/template/resources/images/201016-corp-linkedin.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://twitter.com/MicrochipTech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Twitter" src="oxygen-webhelp/template/resources/images/201016-corp-twitter.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.youtube.com/user/MicrochipTechnology" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip YouTube" src="oxygen-webhelp/template/resources/images/201016-corp-youtube.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.instagram.com/microchiptechnologyinc/" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Instagram" src="oxygen-webhelp/template/resources/images/201016-corp-instagram.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.weibo.com/microchiptech" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Weibo" src="oxygen-webhelp/template/resources/images/201016-corp-weibo.png"/>
+                </a>
+              </div>
+              <div class="mchp-component-item">
+                <a class="cmp-image__link" href="https://www.microchip.com/en-us/about/blog" target="_blank">
+                  <img class="cmp-image__image" alt="Microchip Blog" src="oxygen-webhelp/template/resources/images/201016-corp-blog.png"/>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-links">
+            <div class="mchp-component-items">
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://www.microchip.com/about-us/contact-us" class="mchp-link__link">Contact</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information" class="mchp-link__link">Legal</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/privacy-policy" class="mchp-link__link">Privacy Policy</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item ">
+                <div class="link">
+                  <a href="https://www.microchip.com/en-us/about/legal-information/microchip-cookie-statement" class="mchp-link__link">Cookies</a>
+                  <span class="mchp-link__separator">|</span>
+                </div>
+              </div>
+              <div class="mchp-component-item">
+                <div class="link">
+                  <a href="https://careers.microchip.com/" class="mchp-link__link">Careers</a>
+                  <span class="mchp-link__separator"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mchp-footer-newsletter">
+            <div class="cmp-text">
+              <p>Stay on the leading edge with our blog</p>
+            </div>
+            <div class="mchp-button-wrapper">
+              <a role="button" href="https://www.microchip.com/en-us/about/blog" class="mchp-button mchp-button-regular solid">
+                <span class="mchp-button__span">MicroSolutions</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="graphic">
+          <img src="oxygen-webhelp/template/resources/images/footer-graphic.png"/>
+        </div>
+      </div>
+      <div class="mchp-footer-tier2">
+        <p class="mchp-copyright">© Copyright 1998-2022 Microchip Technology Inc. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async="true" src="https://www.googletagmanager.com/gtag/js?id=UA-2724382-19"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];  
+    function gtag(){dataLayer.push(arguments);}  
+    gtag('js', new Date());   
+    gtag('config', 'UA-2724382-19');
+  </script>
+</div>
+  </div>
+</footer>
+        
+        <div id="go2top" class="d-print-none">
+            <span class="oxy-icon oxy-icon-up"></span>
+        </div>
+        
+        <div id="modal_img_large" class="modal">
+            <span class="close oxy-icon oxy-icon-remove"></span>
+            <div id="modal_img_container"></div>
+            <div id="caption"></div>
+        </div>
+        
+        
+        
+    </body>
+</html>

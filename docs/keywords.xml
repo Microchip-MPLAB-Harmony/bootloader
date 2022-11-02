@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <keywords publicationid="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25"
           language="en-US"
-          version="1"
+          version="2"
           documenttitle="MPLAB® Harmony Bootloader Library"
           pubtype="Online Reference"
           pubsubtype=""
           pubuserguidesubtype=""
           pubproductheirarchy=""
           devices=""
-          revisiondate="07/11/2021 00:00:00"
+          revisiondate="26/05/2022 00:00:00"
           revisionletter="A"
           isbn=""
           pubid=""
           reachid=""
           description=""
-          lastmodified="11/11/2021 18:46:31"
-          covertitle="MPLAB® Harmony Bootloader Library">
-   <keyworditem topicid="GUID-02519565-B72E-496D-8153-E00F011D9130" nocomponent="true">
+          lastmodified="02/11/2022 08:48:46"
+          covertitle="MPLAB® Harmony Bootloader Library"
+          frontcover="">
+   <keyworditem topicid="GUID-02519565-B72E-496D-8153-E00F011D9130"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -25,16 +28,130 @@
       <bitfield/>
       <keyword>mcc_h3_uart_bootloader_configurations</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9" nocomponent="true">
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
-      <register>bootloader_Tasks Function</register>
-      <title>bootloader_Tasks Function</title>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
       <bitfield/>
       <keyword>bootloader_Tasks</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2" nocomponent="true">
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword>bootloader_UART_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword> bootloader_I2C_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword>bootloader_CAN_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword>bootloader_SPI_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword>bootloader_SERIAL_MEM_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword>bootloader_SERIAL_MEMORY_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword>bootloader_SDCARD_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword>bootloader_USB_DEVICE_HID_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword>bootloader_USB_HOST_MSD_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_XXX_Tasks Function</register>
+      <title>bootloader_XXX_Tasks Function</title>
+      <bitfield/>
+      <keyword> bootloader_UDP_Tasks</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -43,7 +160,20 @@
       <bitfield/>
       <keyword>bootloader_Trigger</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-8453780B-E7F1-4D9F-8609-DD333F154CC7" nocomponent="true">
+   <keyworditem topicid="GUID-87E8B395-5626-4FB8-AEDE-F11A0144F675"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>bootloader_GetVersion Function</register>
+      <title>bootloader_GetVersion Function</title>
+      <bitfield/>
+      <keyword>bootloader_GetVersion</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-8453780B-E7F1-4D9F-8609-DD333F154CC7"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -52,7 +182,9 @@
       <bitfield/>
       <keyword>run_Application</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-873813A9-C0F5-477D-A1A9-E25CDA9598DD" nocomponent="true">
+   <keyworditem topicid="GUID-873813A9-C0F5-477D-A1A9-E25CDA9598DD"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -61,7 +193,9 @@
       <bitfield/>
       <keyword>bootloader_ProgramFlashBankSelect</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-B9D22739-DB16-4626-A5E8-05C5DCB1C8DD" nocomponent="true">
+   <keyworditem topicid="GUID-B9D22739-DB16-4626-A5E8-05C5DCB1C8DD"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -70,7 +204,9 @@
       <bitfield/>
       <keyword>mcc_h3_i2c_bootloader_configurations</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-94FBDB48-98DC-4C4B-861D-9327D7076ADE" nocomponent="true">
+   <keyworditem topicid="GUID-94FBDB48-98DC-4C4B-861D-9327D7076ADE"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -79,7 +215,9 @@
       <bitfield/>
       <keyword>mcc_h3_can_bootloader_configurations</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-1FC4D617-90BB-496E-9BDC-A7D91BC7BBA2" nocomponent="true">
+   <keyworditem topicid="GUID-1FC4D617-90BB-496E-9BDC-A7D91BC7BBA2"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -88,7 +226,9 @@
       <bitfield/>
       <keyword>mcc_h3_serial_bootloader_configurations</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-C9AE7919-7F70-4915-B12C-72F6F449C1D2" nocomponent="true">
+   <keyworditem topicid="GUID-C9AE7919-7F70-4915-B12C-72F6F449C1D2"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -97,7 +237,9 @@
       <bitfield/>
       <keyword>mcc_h3_usb_bootloader_configurations</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-B846B0DE-5963-48AC-B030-9767E38A82DB" nocomponent="true">
+   <keyworditem topicid="GUID-B846B0DE-5963-48AC-B030-9767E38A82DB"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -106,7 +248,9 @@
       <bitfield/>
       <keyword>bootloader_SwapAndReset</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-287956CB-1611-412A-955C-6B85F8BA3916" nocomponent="true">
+   <keyworditem topicid="GUID-287956CB-1611-412A-955C-6B85F8BA3916"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -115,7 +259,9 @@
       <bitfield/>
       <keyword>mcc_h3_udp_bootloader_configurations</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-B40F9A07-D16A-42CF-8121-B52B5BDD7685" nocomponent="true">
+   <keyworditem topicid="GUID-B40F9A07-D16A-42CF-8121-B52B5BDD7685"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -124,7 +270,9 @@
       <bitfield/>
       <keyword>mcc_h3_fs_bootloader</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-D70E2C74-59C6-4741-9FCA-CD7EBF5AED80" nocomponent="true">
+   <keyworditem topicid="GUID-D70E2C74-59C6-4741-9FCA-CD7EBF5AED80"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -133,7 +281,9 @@
       <bitfield/>
       <keyword>mcc_h3_fs_bootloader_configurations_usb</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-7325E59D-D429-4305-9AFC-5BE10EE38EE2" nocomponent="true">
+   <keyworditem topicid="GUID-7325E59D-D429-4305-9AFC-5BE10EE38EE2"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
@@ -142,7 +292,9 @@
       <bitfield/>
       <keyword>mcc_h3_fs_bootloader_configurations_sdcard</keyword>
    </keyworditem>
-   <keyworditem topicid="GUID-2A66A563-5A79-49DA-AE0F-90CA19F807EA" nocomponent="true">
+   <keyworditem topicid="GUID-2A66A563-5A79-49DA-AE0F-90CA19F807EA"
+                nocomponent="true"
+                parent="">
       <device/>
       <module/>
       <component/>
