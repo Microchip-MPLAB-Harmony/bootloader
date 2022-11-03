@@ -15,20 +15,18 @@ nav_order: 99
 - This release includes support for
     - **I2C bootloader** for PIC32M family of 32-bit microcontrollers.
     - **SPI bootloader** for SAM and PIC32M family of 32-bit microcontrollers.            
-    - **PIC32CM LE/LS family** of 32-bit microcontrollers
-        - UART Bootloader
-        - I2C Bootloader
-        - CAN Bootloader
-        - SPI Bootloader
-
+    - **PIC32CM LE/LS family** of 32-bit microcontrollers       
     - **PIC32CM JH00/01 family** of 32-bit microcontrollers
-        - UART Bootloader
-        - I2C Bootloader
-        - CAN Bootloader
-        - SPI Bootloader
+    - **PIC32MK MCA family** of 32-bit microcontrollers
 
 - Below are new bootloader application repos added
     - [bootloader_apps_spi](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_spi)
+
+### Bootloaders Supported on different product families
+- The following table provides supported bootloders for different product families
+    <p align="center">
+        <img src = "./docs/supported_bootloaders.jpg"/>
+    </p>
 
 ### Known Issues
 
