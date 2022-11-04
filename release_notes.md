@@ -18,12 +18,14 @@ nav_order: 99
     - **PIC32CM LE/LS family** of 32-bit microcontrollers       
     - **PIC32CM JH00/01 family** of 32-bit microcontrollers
     - **PIC32MK MCA family** of 32-bit microcontrollers
+    - **PIC32MM family** of 32-bit microcontrollers
 
 - Below are new bootloader application repos added
     - [bootloader_apps_spi](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_spi)
+    - Factory programmed bootloader for SAM D20 WLCSP parts is now moved to the [bootloader_apps_sam_d20](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_sam_d20) repository.
 
 ### Bootloaders Supported on different product families
-- The following table provides supported bootloders for different product families
+- The following table provides supported bootloaders for different product families
     <p align="center">
         <img src = "./docs/supported_bootloaders.jpg"/>
     </p>
@@ -38,8 +40,8 @@ The current known issues are as follows:
 
 ### Development Tools
 
-* [MPLAB® X IDE v6.00](https://www.microchip.com/mplab/mplab-x-ide)
-* [MPLAB® XC32 C/C++ Compiler v4.10](https://www.microchip.com/mplab/compilers)
+* [MPLAB® X IDE v6.05](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v4.20](https://www.microchip.com/mplab/compilers)
 * MPLAB® X IDE plug-ins:
     * MPLAB® Code Configurator (MCC) v5.1.17
 
