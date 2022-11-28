@@ -31,6 +31,11 @@
 #include <libpic32c.h>
 #include <sys/cdefs.h>
 #include <stdbool.h>
+<#if core.CoreUseMPU??>
+<#if core.CoreUseMPU>
+#include "peripheral/mpu/plib_mpu.h"
+</#if>
+</#if>
 
 /* MISRAC 2012 deviation block start */
 /* MISRA C-2012 Rule 21.2 deviated 1 times. Deviation record ID -  H3_MISRAC_2012_R_21_2_DR_1 */
@@ -179,6 +184,13 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     <#lt>#endif /* #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U) */
 </#if>
 
+<#if core.CoreUseMPU??>
+<#if core.CoreUseMPU>
+    /* Initialize MPU */
+    MPU_Initialize();
+
+</#if>
+</#if>
      /* Branch to application's main function */
     (void)main();
 

@@ -69,6 +69,7 @@ devices = {
             "SAMHA1"        : [256, 2048, True],
             "SAMRH71"       : [256, 8192, False],
             "SAMRH71EK_PROM": [4096, 8192, False],
+            "SAMRH71TFBGA_PROM": [8192, 8192, False],
             "SAMA5"         : [512, 131072, False],
             "SAMA7"         : [512, 131072, False],
             "SAM9X6"        : [512, 131072, False],
