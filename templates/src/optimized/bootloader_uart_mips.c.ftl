@@ -159,6 +159,8 @@ static void input_task(void)
     /* Check if 100 ms have elapsed */
     if (CORETIMER_CompareHasExpired())
     {
+        ptr = 0;
+        size = 0;
         header_received = false;
         ptr = 0;
     }
