@@ -54,18 +54,18 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define SET_BIT(reg, bits)                      (reg |= (bits))
-#define CLR_BIT(reg, bits)                      (reg &= ~(bits))
-#define IS_BIT_SET(reg, bit)                    ((reg & bit)? true:false)
+#define SET_BIT(reg, bits)                      ((reg) |= (bits))
+#define CLR_BIT(reg, bits)                      ((reg) &= ~(bits))
+#define IS_BIT_SET(reg, bit)                    (((reg) & (bit))? (true):(false))
 
 #define BL_BUFFER_SIZE                          ERASE_BLOCK_SIZE
 
-#define BL_STATUS_BIT_BUSY                      (0x01 << 0)
-#define BL_STATUS_BIT_INVALID_COMMAND           (0x01 << 1)
-#define BL_STATUS_BIT_INVALID_MEM_ADDR          (0x01 << 2)
-#define BL_STATUS_BIT_COMMAND_EXECUTION_ERROR   (0x01 << 3)      //Valid only when BL_STATUS_BIT_BUSY is 0
-#define BL_STATUS_BIT_CRC_ERROR                 (0x01 << 4)
-#define BL_STATUS_BIT_COMM_ERROR                (0x01 << 5)
+#define BL_STATUS_BIT_BUSY                      ((uint8_t)0x01U << 0)
+#define BL_STATUS_BIT_INVALID_COMMAND           ((uint8_t)0x01U << 1)
+#define BL_STATUS_BIT_INVALID_MEM_ADDR          ((uint8_t)0x01U << 2)
+#define BL_STATUS_BIT_COMMAND_EXECUTION_ERROR   ((uint8_t)0x01U << 3)      //Valid only when BL_STATUS_BIT_BUSY is 0
+#define BL_STATUS_BIT_CRC_ERROR                 ((uint8_t)0x01U << 4)
+#define BL_STATUS_BIT_COMM_ERROR                ((uint8_t)0x01U << 5)
 #define BL_STATUS_BIT_ALL                       (BL_STATUS_BIT_BUSY | BL_STATUS_BIT_INVALID_COMMAND | BL_STATUS_BIT_INVALID_MEM_ADDR | \
                                                  BL_STATUS_BIT_COMMAND_EXECUTION_ERROR | BL_STATUS_BIT_CRC_ERROR | BL_STATUS_BIT_COMM_ERROR)
 
@@ -74,23 +74,22 @@
     <#lt>#define DEVCFG_PAGE_ADDRESS                     (DEVCFG_ADDRESS & (~ERASE_BLOCK_SIZE + 1))
 </#if>
 
-typedef enum
-{
-    BL_COMMAND_UNLOCK = 0xA0,
-    BL_COMMAND_ERASE = 0xA1,
-    BL_COMMAND_PROGRAM = 0xA2,
-    BL_COMMAND_VERIFY = 0xA3,
-    BL_COMMAND_RESET = 0xA4,
-    BL_COMMAND_READ_STATUS = 0xA5,
+#define     BL_COMMAND_UNLOCK         0xA0U
+#define     BL_COMMAND_ERASE          0xA1U
+#define     BL_COMMAND_PROGRAM        0xA2U
+#define     BL_COMMAND_VERIFY         0xA3U
+#define     BL_COMMAND_RESET          0xA4U
+#define     BL_COMMAND_READ_STATUS    0xA5U
 <#if BTL_DUAL_BANK == true>
-    BL_COMMAND_BKSWAP_RESET = 0xA6,
+#define     BL_COMMAND_BKSWAP_RESET   0xA6U
 </#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
-    BL_COMMAND_DEVCFG_PROGRAM = 0xA7,
+#define     BL_COMMAND_DEVCFG_PROGRAM  0xA7U
 </#if>
-    BL_COMMAND_READ_VERSION = 0xA8,
-    BL_COMMAND_MAX,
-}BL_COMMAND;
+#define     BL_COMMAND_READ_VERSION    0xA8U
+#define     BL_COMMAND_MAX             0xA9U
+
+typedef uint8_t BL_COMMAND;
 
 typedef enum
 {
@@ -197,15 +196,15 @@ static void BL_I2C_SendResponse(uint8_t command)
         case BL_COMMAND_READ_VERSION:
             btlVersion = bootloader_GetVersion();
 
-            if (numVersionBytesSent == 0)
+            if (numVersionBytesSent == 0U)
             {
-                ${PERIPH_USED}_WriteByte(((btlVersion >> 8) & 0xFF));
+                ${PERIPH_USED}_WriteByte((uint8_t)((btlVersion >> 8) & 0xFFU));
 
                 numVersionBytesSent = 1;
             }
             else
             {
-                ${PERIPH_USED}_WriteByte((btlVersion & 0xFF));
+                ${PERIPH_USED}_WriteByte((uint8_t)(btlVersion & 0xFFU));
 
                 numVersionBytesSent = 0;
             }
@@ -213,6 +212,7 @@ static void BL_I2C_SendResponse(uint8_t command)
             break;
 
         default:
+            /* Do nothing */
             break;
     }
 
@@ -255,7 +255,8 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
             }
             break;
         case BL_I2C_READ_COMMAND_ARGUMENTS:
-            ((uint8_t*)&i2cBLData.cmdProtocol.cmdArg[i2cBLData.nCmdArgWords])[i2cBLData.index--] = rdByte;
+            ((uint8_t*)&i2cBLData.cmdProtocol.cmdArg[i2cBLData.nCmdArgWords])[i2cBLData.index] = rdByte;
+            i2cBLData.index--;
 
             if (i2cBLData.index < 0)
             {
@@ -268,7 +269,7 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
                 if ((i2cBLData.command == BL_COMMAND_UNLOCK) || (i2cBLData.command == BL_COMMAND_PROGRAM))
 </#if>
                 {
-                    if (i2cBLData.nCmdArgWords < 2)
+                    if (i2cBLData.nCmdArgWords < 2U)
                     {
                         i2cBLData.index = 3;
                     }
@@ -362,11 +363,15 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
                    SET_BIT(i2cBLData.status, BL_STATUS_BIT_BUSY);
                    i2cBLData.flashState = BL_FLASH_STATE_VERIFY;
                 }
+                else
+                {
+                    /* Do Nothing */
+                }
             }
             break;
         case BL_I2C_READ_PROGRAM_DATA:
             i2cBLData.cmdProtocol.programCommand.data[i2cBLData.index++] = rdByte;
-            if (i2cBLData.index >= i2cBLData.cmdProtocol.programCommand.nBytes)
+            if (i2cBLData.index >= (int32_t)i2cBLData.cmdProtocol.programCommand.nBytes)
             {
                 SET_BIT(i2cBLData.status, BL_STATUS_BIT_BUSY);
                 i2cBLData.nFlashBytesWritten = 0;
@@ -375,6 +380,7 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
             }
             break;
         default:
+              /* Do Nothing */
             break;
     }
     return true;
@@ -417,6 +423,7 @@ static bool BL_I2C_EventHandler( I2C_SLAVE_TRANSFER_EVENT event, uintptr_t conte
             break;
 
         default:
+             /* Do Nothing */
             break;
     }
 
@@ -444,13 +451,13 @@ static void BL_I2C_FlashTask(void)
             }
 
 </#if>
-            ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(i2cBLData.cmdProtocol.eraseCommand.memAddr);
+            (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(i2cBLData.cmdProtocol.eraseCommand.memAddr);
             i2cBLData.flashState = BL_FLASH_STATE_ERASE_BUSY_POLL;
 
             break;
 
         case BL_FLASH_STATE_WRITE:
-            ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&i2cBLData.cmdProtocol.programCommand.data[i2cBLData.nFlashBytesWritten], (i2cBLData.cmdProtocol.programCommand.memAddr + i2cBLData.nFlashBytesWritten));
+            (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&i2cBLData.cmdProtocol.programCommand.data[i2cBLData.nFlashBytesWritten], (i2cBLData.cmdProtocol.programCommand.memAddr + i2cBLData.nFlashBytesWritten));
             i2cBLData.flashState = BL_FLASH_STATE_WRITE_BUSY_POLL;
             break;
 
@@ -490,7 +497,10 @@ static void BL_I2C_FlashTask(void)
 
         case BL_FLASH_STATE_RESET:
             /* Wait for the I2C transfer to complete */
-            while (${PERIPH_USED}_IsBusy());
+            while (${PERIPH_USED}_IsBusy())
+            {
+                 /* Do Nothing */    
+            }
 
             bootloader_TriggerReset();
             break;
@@ -498,7 +508,10 @@ static void BL_I2C_FlashTask(void)
 
         case BL_FLASH_STATE_BKSWAP_RESET:
             /* Wait for the I2C transfer to complete */
-            while (${PERIPH_USED}_IsBusy());
+            while (${PERIPH_USED}_IsBusy())
+            {
+                /* Do Nothing */ 
+            }
 
             bootloader_UpdateUpperFlashSerial();
 
@@ -511,7 +524,9 @@ static void BL_I2C_FlashTask(void)
             break;
 
         default:
+            /* Do Nothing */ 
             break;
+        
     }
 }
 
