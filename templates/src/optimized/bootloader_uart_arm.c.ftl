@@ -58,38 +58,37 @@
 #define CMD_OFFSET              2
 #define ADDR_OFFSET             0
 #define SIZE_OFFSET             1
-#define DATA_OFFSET             1
+#define DATA_OFFSET             1U
 #define CRC_OFFSET              0
 
-#define CMD_SIZE                1
-#define GUARD_SIZE              4
-#define SIZE_SIZE               4
+#define CMD_SIZE                1U
+#define GUARD_SIZE              4U
+#define SIZE_SIZE               4U
 #define OFFSET_SIZE             4
 #define CRC_SIZE                4
 #define HEADER_SIZE             (GUARD_SIZE + SIZE_SIZE + CMD_SIZE)
 #define DATA_SIZE               ERASE_BLOCK_SIZE
 
-#define WORDS(x)                ((int)((x) / sizeof(uint32_t)))
+#define WORDS(x)                ((uint32_t)((x) / sizeof(uint32_t)))
 
-#define OFFSET_ALIGN_MASK       (~ERASE_BLOCK_SIZE + 1)
-#define SIZE_ALIGN_MASK         (~PAGE_SIZE + 1)
+#define OFFSET_ALIGN_MASK       (~ERASE_BLOCK_SIZE + 1U)
+#define SIZE_ALIGN_MASK         (~PAGE_SIZE + 1U)
 
 #define BTL_GUARD               (0x5048434DUL)
 
-enum
-{
-    BL_CMD_UNLOCK       = 0xa0,
-    BL_CMD_DATA         = 0xa1,
-    BL_CMD_VERIFY       = 0xa2,
-    BL_CMD_RESET        = 0xa3,
+
+#define    BL_CMD_UNLOCK       0xa0U
+#define    BL_CMD_DATA         0xa1U
+#define    BL_CMD_VERIFY       0xa2U
+#define    BL_CMD_RESET        0xa3U
 <#if BTL_DUAL_BANK == true>
-    BL_CMD_BKSWAP_RESET = 0xa4,
+#define    BL_CMD_BKSWAP_RESET 0xa4U
 </#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
-    BL_CMD_DEVCFG_DATA  = 0xa5,
+#define    BL_CMD_DEVCFG_DATA  0xa5U
 </#if>
-    BL_CMD_READ_VERSION = 0xa6,
-};
+#define    BL_CMD_READ_VERSION 0xa6U
+
 
 enum
 {
@@ -132,9 +131,9 @@ typedef bool (*FLASH_WRITE_FPTR)(const DRV_HANDLE, uint32_t*, uint32_t);
 /* Memory Driver Handle */
 static DRV_HANDLE memoryHandle = DRV_HANDLE_INVALID;
 <#else>
-typedef bool (*FLASH_ERASE_FPTR)(uint32_t);
+typedef bool (*FLASH_ERASE_FPTR)(uint32_t address);
 
-typedef bool (*FLASH_WRITE_FPTR)(uint32_t*, uint32_t);
+typedef bool (*FLASH_WRITE_FPTR)(uint32_t* data, uint32_t const address);
 </#if>
 
 <#macro apiHandle>
@@ -166,7 +165,7 @@ static void input_task(void)
         return;
     }
 
-    input_data = ${PERIPH_USED}_ReadByte();
+    input_data = (uint8_t)${PERIPH_USED}_ReadByte();
 
     /* Check if 100 ms have elapsed */
     if (SYSTICK_TimerPeriodHasExpired())
@@ -177,12 +176,13 @@ static void input_task(void)
 
     if (header_received == false)
     {
-        byte_buf[ptr++] = input_data;
+        byte_buf[ptr] = input_data;
+        ptr++;
 
         // Check for each guard byte and discard if mismatch
         if (ptr <= GUARD_SIZE)
         {
-            if (input_data != btl_guard[ptr-1])
+            if (input_data != btl_guard[ptr-1U])
             {
                 ptr = 0;
             }
@@ -203,6 +203,11 @@ static void input_task(void)
 
             ptr = 0;
         }
+        else
+        {
+            /* Nothing to do */
+        }
+           
     }
     else if (header_received == true)
     {
@@ -219,6 +224,10 @@ static void input_task(void)
             packet_received = true;
             header_received = false;
         }
+    }
+    else
+    {
+        /* Nothing to do */
     }
 
     SYSTICK_TimerRestart();
@@ -249,7 +258,7 @@ static void command_task(void)
         }
     }
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
-    else if ((BL_CMD_DATA == input_command) || (BL_CMD_DEVCFG_DATA == input_command))
+    else if ((BL_CMD_DATA == input_command) || ((uint8_t)BL_CMD_DEVCFG_DATA == input_command))
     {
         flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
 
@@ -306,8 +315,8 @@ static void command_task(void)
 
         uint16_t btlVersion = bootloader_GetVersion();
 
-        ${PERIPH_USED}_WriteByte(((btlVersion >> 8) & 0xFF));
-        ${PERIPH_USED}_WriteByte((btlVersion & 0xFF));
+        ${PERIPH_USED}_WriteByte((int)((btlVersion >> 8) & 0xFFU));
+        ${PERIPH_USED}_WriteByte((int)(btlVersion & 0xFFU));
     }
     else if (BL_CMD_VERIFY == input_command)
     {
@@ -329,7 +338,10 @@ static void command_task(void)
     {
         ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 
-        while(${PERIPH_USED}_TransmitComplete() == false);
+        while(${PERIPH_USED}_TransmitComplete() == false)
+        {
+            /* Nothing to do */
+        }
 
         bootloader_TriggerReset();
     }
@@ -338,7 +350,10 @@ static void command_task(void)
     {
         ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 
-        while(${PERIPH_USED}_TransmitComplete() == false);
+        while(${PERIPH_USED}_TransmitComplete() == false)
+        {
+            /* Nothing to do */
+        }
 
         ${MEM_USED}_BankSwap();
     }
@@ -385,7 +400,7 @@ static void flash_task(void)
     uint32_t write_idx  = 0;
 
     // data_size = Actual data bytes to write + Address 4 Bytes
-    uint32_t bytes_to_write = (data_size - 4);
+    uint32_t bytes_to_write = (data_size - 4U);
 
     FLASH_ERASE_FPTR flash_erase_fptr = (FLASH_ERASE_FPTR)${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME};
     FLASH_WRITE_FPTR flash_write_fptr = (FLASH_WRITE_FPTR)${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME};
@@ -450,17 +465,21 @@ static void flash_task(void)
             flash_erase_fptr = (FLASH_ERASE_FPTR)${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME};
             flash_write_fptr = (FLASH_WRITE_FPTR)${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME};
         }
+        else
+        {
+            /* nothing to do */
+        }
     </#if>
     }
 </#if>
     /* Erase the Current sector */
-    flash_erase_fptr(<@apiHandle/>addr);
+    (void) flash_erase_fptr(<@apiHandle/>addr);
 
     <@ReceiveNextByteWhileMemoryIsBusy/>
 
     for (bytes_written = 0; bytes_written < bytes_to_write; bytes_written += PAGE_SIZE)
     {
-        flash_write_fptr(<@apiHandle/>&flash_data[write_idx], addr);
+        (void) flash_write_fptr(<@apiHandle/>&flash_data[write_idx], addr);
 
         <@ReceiveNextByteWhileMemoryIsBusy 4/>
 
@@ -505,6 +524,10 @@ void bootloader_${BTL_TYPE}_Tasks(void)
         else if (packet_received)
         {
             command_task();
+        }
+        else
+        {
+            /* Nothing to do */
         }
     } while (uartBLActive);
 }
