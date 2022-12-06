@@ -103,9 +103,9 @@ typedef struct
 
 } BOOTLOADER_DATA;
 
-uint8_t CACHE_ALIGN fileBuffer[PAGE_SIZE];
+static uint8_t CACHE_ALIGN fileBuffer[PAGE_SIZE];
 
-BOOTLOADER_DATA btlData =
+static BOOTLOADER_DATA btlData =
 {
 <#if BTL_TYPE == "USB_HOST_MSD" >
     .currentState   = BOOTLOADER_BUS_ENABLE,
@@ -124,6 +124,7 @@ BOOTLOADER_DATA btlData =
     <#lt>        case USB_HOST_EVENT_DEVICE_UNSUPPORTED:
     <#lt>            break;
     <#lt>        default:
+    <#lt>            /* Do Nothing */
     <#lt>            break;
     <#lt>    }
 
@@ -131,7 +132,7 @@ BOOTLOADER_DATA btlData =
     <#lt>}
 </#if>
 
-void bootloader_SysFsEventHandler(SYS_FS_EVENT event, void * eventData, uintptr_t context)
+static void bootloader_SysFsEventHandler(SYS_FS_EVENT event, void * eventData, uintptr_t context)
 {
     switch(event)
     {
@@ -151,12 +152,13 @@ void bootloader_SysFsEventHandler(SYS_FS_EVENT event, void * eventData, uintptr_
 
         default:
         {
+            /* Do Nothing */
             break;
         }
     }
 }
 
-void bootloader_NvmAppErase( uint32_t appLength )
+static void bootloader_NvmAppErase( uint32_t appLength )
 {
     uint32_t flashAddr = APP_START_ADDRESS;
 
@@ -164,13 +166,13 @@ void bootloader_NvmAppErase( uint32_t appLength )
     appLength = appLength + (ERASE_BLOCK_SIZE - (appLength % ERASE_BLOCK_SIZE));
 
     while ((flashAddr < (FLASH_START + FLASH_LENGTH)) &&
-           (appLength != 0))
+           (appLength != 0U))
     {
-        ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flashAddr);
+        (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flashAddr);
 
         while(${MEM_USED}_IsBusy() == true)
         {
-
+              /* Do Nothing */
         }
 
         flashAddr += ERASE_BLOCK_SIZE;
@@ -178,13 +180,13 @@ void bootloader_NvmAppErase( uint32_t appLength )
     }
 }
 
-void bootloader_NVMPageWrite(uint8_t* data)
+static void bootloader_NVMPageWrite(uint8_t* data)
 {
-    ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)data, btlData.progAddr);
+    (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)data, btlData.progAddr);
 
     while(${MEM_USED}_IsBusy() == true)
     {
-
+       /* Do Nothing */
     }
 
     btlData.progAddr += PAGE_SIZE;
@@ -210,7 +212,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
         {
             if(USB_HOST_BusIsEnabled(0) == USB_HOST_RESULT_TRUE)
             {
-                SYS_FS_EventHandlerSet(bootloader_SysFsEventHandler, (uintptr_t)NULL);
+                SYS_FS_EventHandlerSet(bootloader_SysFsEventHandler, 0U);
 
                 USB_HOST_EventHandlerSet(bootloader_USBHostEventHandler, 0);
 
@@ -221,7 +223,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 <#else>
         case BOOTLOADER_REGISTER_FS_EVENT_HANDLER:
         {
-            SYS_FS_EventHandlerSet(bootloader_SysFsEventHandler, (uintptr_t)NULL);
+            SYS_FS_EventHandlerSet(bootloader_SysFsEventHandler, 0U);
 
             btlData.currentState = BOOTLOADER_WAIT_FOR_DEVICE_ATTACH;
 
@@ -243,7 +245,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
             if (SYS_FS_FileStat(APP_IMAGE_FILE_PATH, &btlData.fileStat) == SYS_FS_RES_SUCCESS)
             {
                 /* Check if the application binary file has any content */
-                if (btlData.fileStat.fsize <= 0)
+                if (btlData.fileStat.fsize <= 0U)
                 {
                     break;
                 }
@@ -266,7 +268,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 
             btlData.currentState = BOOTLOADER_READ_FILE;
 
-            memset((void *)fileBuffer, 0xFF, PAGE_SIZE);
+            (void) memset((void *)fileBuffer, 0xFF, PAGE_SIZE);
 
             break;
         }
@@ -276,9 +278,9 @@ void bootloader_${BTL_TYPE}_Tasks( void )
             fileReadLength = SYS_FS_FileRead(btlData.fileHandle, (void *)fileBuffer, PAGE_SIZE);
 
             /* Reached End of File */
-            if (fileReadLength <= 0)
+            if (fileReadLength <= 0U)
             {
-                SYS_FS_FileClose(btlData.fileHandle);
+                (void) SYS_FS_FileClose(btlData.fileHandle);
 
                 bootloader_TriggerReset();
             }
@@ -294,7 +296,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
         {
             bootloader_NVMPageWrite(fileBuffer);
 
-            memset((void *)fileBuffer, 0xFF, PAGE_SIZE);
+            (void) memset((void *)fileBuffer, 0xFF, PAGE_SIZE);
 
             btlData.currentState = BOOTLOADER_READ_FILE;
 
@@ -303,7 +305,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 
         case BOOTLOADER_DEVICE_DETACHED:
         {
-            SYS_FS_FileClose(btlData.fileHandle);
+            (void) SYS_FS_FileClose(btlData.fileHandle);
 
             btlData.currentState = BOOTLOADER_WAIT_FOR_DEVICE_ATTACH;
             break;
@@ -311,6 +313,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 
         case BOOTLOADER_ERROR:
         default:
+            /* Do Nothing */
             break;
     }
 }
