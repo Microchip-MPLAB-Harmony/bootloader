@@ -53,7 +53,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define ADDR_OFFSET              1
+#define ADDR_OFFSET              1U
 #define SIZE_OFFSET              2
 #define CRC_OFFSET               1
 
@@ -62,44 +62,43 @@
 #define HEADER_MAGIC_OFFSET      2
 #define HEADER_SIZE_OFFSET       3
 
-#define CRC_SIZE                 4
-#define HEADER_SIZE              4
-#define OFFSET_SIZE              4
-#define SIZE_SIZE                4
-#define MAX_DATA_SIZE            60
+#define CRC_SIZE                 4U
+#define HEADER_SIZE              4U
+#define OFFSET_SIZE              4U
+#define SIZE_SIZE                4U
+#define MAX_DATA_SIZE            60U
 
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
     <#lt>#define DEVCFG_ADDR_OFFSET       1
-    <#lt>#define DEVCFG_ADDR_SIZE         4
-    <#lt>#define DEVCFG_DATA_OFFSET       8
+    <#lt>#define DEVCFG_ADDR_SIZE         4U
+    <#lt>#define DEVCFG_DATA_OFFSET       8U
 </#if>
 
-#define HEADER_MAGIC             0xE2
-#define ${PERIPH_NAME}_FILTER_ID 0x45A
+#define HEADER_MAGIC              0xE2U
+#define ${PERIPH_NAME}_FILTER_ID  0x45AUL
 
 /* Standard identifier id[28:18]*/
-#define WRITE_ID(id)             (id << 18U)
-#define READ_ID(id)              (id >> 18U)
+#define WRITE_ID(id)             ((id) << (18U))
+#define READ_ID(id)              ((id) >> (18U))
 
 #define WORDS(x)                 ((int)((x) / sizeof(uint32_t)))
 
-#define OFFSET_ALIGN_MASK        (~ERASE_BLOCK_SIZE + 1)
-#define SIZE_ALIGN_MASK          (~PAGE_SIZE + 1)
+#define OFFSET_ALIGN_MASK        ((~ERASE_BLOCK_SIZE) + (1U))
+#define SIZE_ALIGN_MASK          ((~PAGE_SIZE) + (1U))
 
-enum
-{
-    BL_CMD_UNLOCK       = 0xa0,
-    BL_CMD_DATA         = 0xa1,
-    BL_CMD_VERIFY       = 0xa2,
-    BL_CMD_RESET        = 0xa3,
+
+#define    BL_CMD_UNLOCK         (0xa0U)
+#define    BL_CMD_DATA           (0xa1U)
+#define    BL_CMD_VERIFY         (0xa2U)
+#define    BL_CMD_RESET          (0xa3U)
 <#if BTL_DUAL_BANK == true>
-    BL_CMD_BKSWAP_RESET = 0xa4,
+#define   BL_CMD_BKSWAP_RESET    (0xa4U)
 </#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
-    BL_CMD_DEVCFG_DATA  = 0xa5,
+#define    BL_CMD_DEVCFG_DATA    (0xa5U)
 </#if>
-    BL_CMD_READ_VERSION = 0xa6,
-};
+#define    BL_CMD_READ_VERSION   (0xa6U)
+
 
 enum
 {
@@ -157,15 +156,18 @@ static uint8_t CANDlcToLengthGet(uint8_t dlc)
 /* Function to program received application firmware data into internal flash */
 static void flash_write(void)
 {
-    if (0 == (flash_addr % ERASE_BLOCK_SIZE))
+    if (0U == (flash_addr % ERASE_BLOCK_SIZE))
     {
         /* Lock region size is always bigger than the row size */
         ${MEM_USED}_RegionUnlock(flash_addr);
 
-        while(${MEM_USED}_IsBusy() == true);
+        while(${MEM_USED}_IsBusy() == true)
+        {
+            /* Do Nothing */
+        }               
 
         /* Erase the Current sector */
-        ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
+        (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
 
         while(${MEM_USED}_IsBusy() == true)
         {
@@ -176,7 +178,7 @@ static void flash_write(void)
     }
 
     /* Write Page */
-    ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)&flash_data[0], flash_addr);
+    (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)&flash_data[0], flash_addr);
 
     while(${MEM_USED}_IsBusy() == true)
     {
@@ -190,15 +192,18 @@ static void flash_write(void)
     <#lt>/* Function to program Device configuration */
     <#lt>static void device_config_write(uint32_t addr)
     <#lt>{
-    <#lt>    if (0 == (addr % ERASE_BLOCK_SIZE))
+    <#lt>    if (0U== (addr % ERASE_BLOCK_SIZE))
     <#lt>    {
     <#lt>        /* Lock region size is always bigger than the row size */
     <#lt>        ${MEM_USED}_RegionUnlock(addr);
 
-    <#lt>        while(${MEM_USED}_IsBusy() == true);
+    <#lt>        while(${MEM_USED}_IsBusy() == true)
+    <#lt>        {
+    <#lt>           /* Do Nothing */
+    <#lt>        }
 
     <#lt>        /* Erase the NVM user row */
-    <#lt>        ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME}(addr);
+    <#lt>        (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME}(addr);
 
     <#lt>        while(${MEM_USED}_IsBusy() == true)
     <#lt>        {
@@ -209,7 +214,7 @@ static void flash_write(void)
     <#lt>    }
 
     <#lt>    /* Write the NVM user row */
-    <#lt>    ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME}((uint32_t *)&flash_data[0], addr);
+    <#lt>    (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME}((uint32_t *)&flash_data[0], addr);
 
     <#lt>    while(${MEM_USED}_IsBusy() == true)
     <#lt>    {
@@ -231,7 +236,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
     uint32_t devcfgAddr = 0;
 </#if>
 
-    memset(txFiFo, 0U, ${PERIPH_USED}_TX_FIFO_BUFFER_ELEMENT_SIZE);
+    (void) memset(txFiFo, 0, ${PERIPH_USED}_TX_FIFO_BUFFER_ELEMENT_SIZE);
     txBuffer = (${PERIPH_NAME}_TX_BUFFER *)txFiFo;
     txBuffer->id = WRITE_ID(${PERIPH_NAME}_FILTER_ID);
     txBuffer->dlc = 1U;
@@ -242,7 +247,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         (rx_messageLength < (HEADER_SIZE + size)) || (HEADER_MAGIC != rx_message[HEADER_MAGIC_OFFSET]))
     {
         txBuffer->data[0] = BL_RESP_ERROR;
-        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+        (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
     }
     else if (BL_CMD_UNLOCK == command)
     {
@@ -250,19 +255,19 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
 
         uint32_t end    = begin + (data[SIZE_OFFSET] & SIZE_ALIGN_MASK);
 
-        if (end > begin && end <= (FLASH_START + FLASH_LENGTH) && size == (OFFSET_SIZE + SIZE_SIZE))
+        if ((end > begin) && (end <= (FLASH_START + FLASH_LENGTH)) && (size == (OFFSET_SIZE + SIZE_SIZE)))
         {
             unlock_begin = begin;
             unlock_end = end;
             txBuffer->data[0] = BL_RESP_OK;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+           (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         else
         {
             unlock_begin = 0;
             unlock_end = 0;
             txBuffer->data[0] = BL_RESP_ERROR;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+            (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         data_seq = 0;
         flash_ptr = 0;
@@ -274,20 +279,21 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         if (rx_message[HEADER_SEQ_OFFSET] != data_seq)
         {
             txBuffer->data[0] = BL_RESP_SEQ_ERROR;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+            (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         else
         {
             for (uint8_t i = 0; i < size; i++)
             {
-                if (0 == flash_size)
+                if (0U == flash_size)
                 {
                     txBuffer->data[0] = BL_RESP_ERROR;
-                    ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+                    (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
                     return;
                 }
 
-                flash_data[flash_ptr++] = rx_message[HEADER_SIZE + i];
+                flash_data[flash_ptr] = rx_message[HEADER_SIZE + i];
+                flash_ptr++;
 
                 if (flash_ptr == PAGE_SIZE)
                 {
@@ -300,7 +306,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
             }
             data_seq++;
             txBuffer->data[0] = BL_RESP_OK;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+            (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
     }
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
@@ -309,7 +315,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         if (rx_message[HEADER_SEQ_OFFSET] != data_seq)
         {
             txBuffer->data[0] = BL_RESP_SEQ_ERROR;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+            (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         else
         {
@@ -327,7 +333,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
                         /* Align to page Boundary */
                         devcfgAddr = devcfgAddr - (devcfgAddr % PAGE_SIZE);
 
-                        device_config_write(devcfgAddr);
+                        (void) device_config_write(devcfgAddr);
 
                         devCfg_ptr = 0;
                     }
@@ -336,13 +342,13 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
             else
             {
                 txBuffer->data[0] = BL_RESP_ERROR;
-                ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+               (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
                 return;
             }
 
             data_seq++;
             txBuffer->data[0] = BL_RESP_OK;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+            (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
     }
 </#if>
@@ -352,10 +358,10 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
 
         txBuffer->data[0] = BL_RESP_OK;
 
-        txBuffer->data[1] = (uint8_t)((btlVersion >> 8) & 0xFF);
-        txBuffer->data[2] = (uint8_t)(btlVersion & 0xFF);
+        txBuffer->data[1] = (uint8_t)((btlVersion >> 8) & 0xFFU);
+        txBuffer->data[2] = (uint8_t)(btlVersion & 0xFFU);
 
-        ${PERIPH_USED}_MessageTransmitFifo(3U, txBuffer);
+        (void) ${PERIPH_USED}_MessageTransmitFifo(3U, txBuffer);
     }
     else if (BL_CMD_VERIFY == command)
     {
@@ -365,7 +371,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         if (size != CRC_SIZE)
         {
             txBuffer->data[0] = BL_RESP_ERROR;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+           (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
 
         crc_gen = bootloader_CRCGenerate(unlock_begin, (unlock_end - unlock_begin));
@@ -373,12 +379,12 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         if (crc == crc_gen)
         {
             txBuffer->data[0] = BL_RESP_CRC_OK;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+            (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
         else
         {
             txBuffer->data[0] = BL_RESP_CRC_FAIL;
-            ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+            (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
         }
     }
 <#if BTL_DUAL_BANK == true>
@@ -390,8 +396,11 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         }
 
         txBuffer->data[0] = BL_RESP_OK;
-        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
-        while (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_TFE_MASK) == false);
+        (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+        while (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_TFE_MASK) == false)
+        {
+           /* Do Nothing */
+        }
 
         ${MEM_USED}_BankSwap();
     }
@@ -404,15 +413,18 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         }
 
         txBuffer->data[0] = BL_RESP_OK;
-        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
-        while (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_TFE_MASK) == false);
+        (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+        while (${PERIPH_USED}_InterruptGet(${PERIPH_NAME}_INTERRUPT_TFE_MASK) == false)
+        {
+           /* Do Nothing */
+        }
 
         NVIC_SystemReset();
     }
     else
     {
         txBuffer->data[0] = BL_RESP_INVALID;
-        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
+        (void) ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
     }
 }
 
@@ -441,7 +453,7 @@ static void ${PERIPH_USED}_task(void)
             {
                 canBLActive = true;
 
-                memset(rxFiFo0, 0U, (numberOfMessage * ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE));
+                (void) memset(rxFiFo0, 0, ((uint32_t)numberOfMessage * ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE));
 
                 if (${PERIPH_USED}_MessageReceiveFifo(${PERIPH_NAME}_RX_FIFO_0, numberOfMessage, (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0) == true)
                 {
