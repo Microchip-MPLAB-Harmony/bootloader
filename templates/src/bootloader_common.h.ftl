@@ -185,8 +185,7 @@ Returns:
 
 Example:
     <code>
-
-    // Bootloader Major and Minor version sent for a Read Version command (MAJOR.MINOR)
+    
     #define BTL_MAJOR_VERSION       3
     #define BTL_MINOR_VERSION       6
 
@@ -336,16 +335,15 @@ Example:
 
         appImageStartAddr = 0x00002000;
         appImageSize = 0x8000;
-
-        // receivedCRC is populated based on the Verify command received from the host
+        
 
         if (bootloader_CRCGenerate(appImageStartAddr, appImageSize) != receivedCRC)
         {
-            // CRC mismatch
+            
         }
         else
         {
-            // CRC matches
+            
         }
 
     </code>
@@ -374,8 +372,7 @@ Returns:
     None
 
 Example:
-    <code>
-        // Make sure all transfers are complete before resetting the device
+    <code>        
 
         bootloader_TriggerReset();
 

@@ -51,11 +51,12 @@
 // *****************************************************************************
 
 /* Bootloader Major and Minor version sent for a Read Version command (MAJOR.MINOR)*/
-#define BTL_MAJOR_VERSION       3
-#define BTL_MINOR_VERSION       6
+#define BTL_MAJOR_VERSION       3U
+#define BTL_MINOR_VERSION       6U
+#define ASM_VECTOR             asm("bx %0"::"r" (reset_vector))
 
 <#if __PROCESSOR?matches("PIC32M.*") == true>
-    <#lt>#define WORD_ALIGN_MASK         (~(sizeof(uint32_t) - 1))
+    <#lt>#define WORD_ALIGN_MASK         (~(sizeof(uint32_t) - 1U))
 
 </#if>
 // *****************************************************************************
@@ -96,7 +97,7 @@ void __WEAK SYS_DeInitialize( void *data )
 uint16_t __WEAK bootloader_GetVersion( void )
 {
     /* Function can be overriden with custom implementation */
-    uint16_t btlVersion = (((BTL_MAJOR_VERSION & 0xFF) << 8) | (BTL_MINOR_VERSION & 0xFF));
+    uint16_t btlVersion = (((BTL_MAJOR_VERSION & (uint16_t)0xFFU) << 8) | (BTL_MINOR_VERSION & (uint16_t)0xFFU));
 
     return btlVersion;
 }
@@ -105,7 +106,8 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#if (__PROCESSOR?matches("PIC32M.*") == true) || (__PROCESSOR?matches("PIC32CX.*") == true) >
         <#lt>void kickdog(void)
         <#lt>{
-        <#lt>    if ((WDT_IsEnabled() == true) && (WDT_IsWindowEnabled() == false))
+        <#lt>    bool check_windowenbaled =  WDT_IsWindowEnabled();   
+        <#lt>    if ((WDT_IsEnabled() == true) && (check_windowenbaled == false))
         <#lt>    {
         <#lt>        WDT_Clear();
         <#lt>    }
@@ -113,11 +115,11 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#else>
         <#lt>void kickdog(void)
         <#lt>{
-        <#lt>    if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
+        <#lt>    if (((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) != 0U) || ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk) != 0U))
         <#lt>    {
-        <#lt>        if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
+        <#lt>        if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk) != 0U)
         <#lt>        {
-        <#lt>            if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
+        <#lt>            if ((WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk) != 0U)
         <#lt>            {
         <#lt>                if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
         <#lt>                {
@@ -149,7 +151,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
     <#lt>uint32_t bootloader_CRCGenerate(uint32_t start_addr, uint32_t size)
     <#lt>{
-    <#lt>    uint32_t crc  = 0xffffffff;
+    <#lt>    uint32_t crc  = 0xffffffffU;
 
 	<#if CRC_PERIPH_USED?? && CRC_PERIPH_USED == "FCR">
 		<#lt>    FCR_CRCCalculate(start_addr, size, 0xFFFFFFFFU, &crc);
@@ -159,20 +161,20 @@ uint16_t __WEAK bootloader_GetVersion( void )
 		<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
 			<#lt>    uint32_t i;
 
-			<#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
-			<#lt>    {
-			<#lt>       DSU_CRCCalculate (
-			<#lt>           start_addr + i,
-			<#lt>           ERASE_BLOCK_SIZE,
-			<#lt>           crc,
-			<#lt>           &crc
-			<#lt>       );
+            <#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
+            <#lt>    {
+            <#lt>       (void) DSU_CRCCalculate (
+            <#lt>           start_addr + i,
+            <#lt>           ERASE_BLOCK_SIZE,
+            <#lt>           crc,
+            <#lt>           &crc
+            <#lt>       );
 
-			<#lt>       kickdog();
-			<#lt>    }
-		<#else>
-			<#lt>    DSU_CRCCalculate (start_addr, size, crc, &crc);
-		</#if>
+            <#lt>       kickdog();
+            <#lt>    }
+        <#else>
+            <#lt>    (void) DSU_CRCCalculate (start_addr, size, crc, &crc);
+        </#if>
 
 		<#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
     </#if>
@@ -185,18 +187,18 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>{
     <#lt>    uint32_t   i, j, value;
     <#lt>    uint32_t   crc_tab[256];
-    <#lt>    uint32_t   crc = 0xffffffff;
+    <#lt>    uint32_t   crc = 0xffffffffU;
     <#lt>    uint8_t    data;
 
-    <#lt>    for (i = 0; i < 256; i++)
+    <#lt>    for (i = 0; i < 256U; i++)
     <#lt>    {
     <#lt>        value = i;
 
-    <#lt>        for (j = 0; j < 8; j++)
+    <#lt>        for (j = 0; j < 8U; j++)
     <#lt>        {
-    <#lt>            if (value & 1)
+    <#lt>            if ((value & 1U) != 0U)
     <#lt>            {
-    <#lt>                value = (value >> 1) ^ 0xEDB88320;
+    <#lt>                value = (value >> 1) ^ 0xEDB88320U;
     <#lt>            }
     <#lt>            else
     <#lt>            {
@@ -219,7 +221,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
             <#lt>            data = *(uint8_t *)KVA0_TO_KVA1((start_addr + (i + j)));
         </#if>
 
-        <#lt>            crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
+        <#lt>            crc = crc_tab[(crc ^ data) & 0xffU] ^ (crc >> 8);
         <#lt>        }
         <#lt>        kickdog();
         <#lt>    }
@@ -232,7 +234,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
             <#lt>        data = *(uint8_t *)KVA0_TO_KVA1((start_addr + i));
         </#if>
 
-        <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
+        <#lt>        crc = crc_tab[(crc ^ data) & 0xffU] ^ (crc >> 8);
         <#lt>    }
     </#if>
 
@@ -253,9 +255,9 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>void run_Application(uint32_t address)
         <#lt>{
         <#lt>    uint32_t msp            = *(uint32_t *)(address);
-        <#lt>    uint32_t reset_vector   = *(uint32_t *)(address + 4);
+        <#lt>    uint32_t reset_vector   = *(uint32_t *)(address + 4U);
 
-        <#lt>    if (msp == 0xffffffff)
+        <#lt>    if (msp == 0xffffffffU)
         <#lt>    {
         <#lt>        return;
         <#lt>    }
@@ -265,7 +267,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
 
         <#lt>    __set_MSP(msp);
 
-        <#lt>    asm("bx %0"::"r" (reset_vector));
+        <#lt>    ASM_VECTOR;
         <#lt>}
     </#if>
 <#else>
@@ -274,7 +276,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>{
     <#lt>    /* Perform system unlock sequence */
     <#lt>    SYSKEY = 0x00000000;
-    <#lt>    SYSKEY = 0xAA996655;
+    <#lt>    SYSKEY = 0xAA996655U;
     <#lt>    SYSKEY = 0x556699AA;
 
     <#lt>    RSWRSTSET = _RSWRST_SWRST_MASK;
@@ -291,7 +293,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
 
         <#lt>    fptr = (void (*)(void))address;
 
-        <#lt>    if (jumpAddrVal == 0xffffffff)
+        <#lt>    if (jumpAddrVal == 0xffffffffU)
         <#lt>    {
         <#lt>        return;
         <#lt>    }
@@ -299,7 +301,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>    /* Call Deinitialize routine to free any resources acquired by Bootloader */
         <#lt>    SYS_DeInitialize(NULL);
 
-        <#lt>    __builtin_disable_interrupts();
+        <#lt>   (void) __builtin_disable_interrupts();
 
         <#lt>    fptr();
         <#lt>}
@@ -328,7 +330,10 @@ uint16_t __WEAK bootloader_GetVersion( void )
 
     <#lt>    ${MEM_USED}_QuadWordWrite((uint32_t *)&update_flash_serial, addr);
 
-    <#lt>    while(${MEM_USED}_IsBusy() == true);
+    <#lt>    while(${MEM_USED}_IsBusy() == true)
+    <#lt>    {
+    <#lt>       /* Nothing to do */
+    <#lt>    }
     <#lt>}
 
     <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
@@ -371,7 +376,10 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>        ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(UPPER_FLASH_SERIAL_SECTOR);
 
         <#lt>        /* Wait for erase to complete */
-        <#lt>        while(${MEM_USED}_IsBusy() == true);
+        <#lt>        while(${MEM_USED}_IsBusy() == true)
+        <#lt>        {
+        <#lt>            /* Nothing to do */
+        <#lt>        }
         <#lt>    }
         <#lt>    else
         <#lt>    {
