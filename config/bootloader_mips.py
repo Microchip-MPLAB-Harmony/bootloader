@@ -67,10 +67,11 @@ for mem_idx in range(0, len(addr_space_children)):
             ram_start   = "0xA0000000"
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
-    if ((btl_type != "UART") and (btl_type != "I2C") and (btl_type != "SPI")):
+    if ((btl_type != "UART") and (btl_type != "I2C") and (btl_type != "SPI") and (btl_type != "CAN")):
         if (("PIC32MX" in Variables.get("__PROCESSOR")) or
             ("PIC32MK" in Variables.get("__PROCESSOR")) or
-            ("PIC32MM" in Variables.get("__PROCESSOR"))):
+            ("PIC32MM" in Variables.get("__PROCESSOR")) or
+            ("PIC32MZ" in Variables.get("__PROCESSOR"))):
             # Bootloader start address is in Program Flash memory as
             # Bootloader size is greater than Boot Flash Memory (3KB and 12KB)
             btl_start = "0x9D000000"

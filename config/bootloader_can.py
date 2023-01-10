@@ -28,14 +28,27 @@ global btl_helpkeyword
 
 btl_type = "CAN"
 btl_helpkeyword = "mcc_h3_can_bootloader_configurations"
+bootloaderCore = ""
 
 # Maximum Size for Bootloader [BYTES]
-bootloaderCore = "bootloader_arm.py"
-btlSizes = {
-            "CORTEX-M0PLUS"     : [4096],
-            "CORTEX-M4"         : [4096],
-            "CORTEX-M7"         : [4096]
-           }
+if ("PIC32M" in Variables.get("__PROCESSOR")):
+    bootloaderCore = "bootloader_mips.py"
+    btlSizes = {
+                "PIC32MX"     : [4096],
+                "PIC32MK"     : [4096],
+                "PIC32MM1324" : [4096],
+                "PIC32MM1387" : [4096],
+                "PIC32MZDA"   : [4096],
+                "PIC32MZEF"   : [4096],
+                "PIC32MZW"    : [4096],
+    }
+else:
+    bootloaderCore = "bootloader_arm.py"   
+    btlSizes = {
+                "CORTEX-M0PLUS"     : [4096],
+                "CORTEX-M4"         : [4096],
+                "CORTEX-M7"         : [4096],
+    }
 
 def getMaxBootloaderSize(arch):
 
@@ -62,11 +75,9 @@ def setupCoreComponentSymbols():
     coreComponent.getSymbolByID("CoreSysStartupFile").setValue(False)
 
     coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
+    coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
 
-    if ("PIC32M" not in Variables.get("__PROCESSOR")):
-        coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
-
-        coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
+    coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
     coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 
@@ -99,10 +110,22 @@ def instantiateComponent(bootloaderComponent):
 
     generateHwCRCGeneratorSymbol(bootloaderComponent)
 
+    btlDualBankEnable = False
+
     if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR"))):
         btlDualBankEnable = True
-    else:
-        btlDualBankEnable = False
+    elif ("PIC32MZ" in Variables.get("__PROCESSOR")):
+        if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MZ.[0-9]*DA", Variables.get("__PROCESSOR"))):
+            btlDualBankEnable = True
+    elif ("PIC32MK" in Variables.get("__PROCESSOR")):
+        if (re.match("PIC32MK.[0-9]*GPG", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*GPH", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*MCJ", Variables.get("__PROCESSOR")) or
+            re.match("PIC32MK.[0-9]*MCA", Variables.get("__PROCESSOR"))):
+            btlDualBankEnable = False
+        else:
+            btlDualBankEnable = True
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
     btlDualBank.setHelp("btl_helpkeyword")
@@ -115,7 +138,7 @@ def instantiateComponent(bootloaderComponent):
     btlDualBankComment.setVisible(False)
     btlDualBankComment.setDependencies(setBtlSymbolVisible, ["BTL_DUAL_BANK"])
 
-    if Database.getSymbolValue("core", "CoreArchitecture") != "CORTEX-M0PLUS":
+    if (("PIC32M" not in Variables.get("__PROCESSOR")) and ("CORTEX-M0PLUS" not in Variables.get("__PROCESSOR"))):
         btlMpuRegionNumber= bootloaderComponent.createComboSymbol("BTL_MPU_REGION_NUMBER", None, list(map(str, list(range(0, Database.getSymbolValue("core", "MPU_NUMBER_REGIONS"))))))
         btlMpuRegionNumber.setHelp("btl_helpkeyword")
         btlMpuRegionNumber.setLabel("Select MPU Region to configure non-cachable memory")
@@ -132,7 +155,10 @@ def instantiateComponent(bootloaderComponent):
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
-    btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_can_arm.c.ftl")
+    if ("CORTEX-M" in Variables.get("__PROCESSOR")):
+        btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_can_arm.c.ftl")
+    else:
+		btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_can_mips.c.ftl")        
     btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
@@ -161,7 +187,10 @@ def instantiateComponent(bootloaderComponent):
 
     # Generate Initialization File
     btlInitFile = bootloaderComponent.createFileSymbol("INITIALIZATION_BOOTLOADER_C", None)
-    btlInitFile.setSourcePath("../bootloader/templates/arm/initialization.c.ftl")
+    if ("PIC32M" in Variables.get("__PROCESSOR")):
+        btlInitFile.setSourcePath("../bootloader/templates/mips/initialization.c.ftl")
+    else:
+        btlInitFile.setSourcePath("../bootloader/templates/arm/initialization.c.ftl")
     btlInitFile.setOutputName("initialization.c")
     btlInitFile.setMarkup(True)
     btlInitFile.setOverwrite(True)
@@ -202,17 +231,27 @@ def onAttachmentConnected(source, target):
     targetID = target["id"]
 
     if (srcID == "btl_CAN_dependency"):
-        localComponent.getSymbolByID("PERIPH_USED").clearValue()
-        localComponent.getSymbolByID("PERIPH_USED").setValue(remoteID.upper())
-        localComponent.getSymbolByID("PERIPH_NAME").setValue(re.sub('[0-9]', '', remoteID.upper()))
-        Database.setSymbolValue(remoteID, "INTERRUPT_MODE", False)
-        Database.setSymbolValue(remoteID, localComponent.getSymbolByID("PERIPH_NAME").getValue() + "_OPMODE", "CAN FD")
-        Database.setSymbolValue(remoteID, "RXF1_USE", False)
-        Database.setSymbolValue(remoteID, "RXF0_ELEMENTS", 5)
-        Database.setSymbolValue(remoteID, "RXF0_BYTES_CFG", 7)
-        Database.setSymbolValue(remoteID, "FILTERS_STD", 1)
-        remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_STD_FILTER1_SFID1").setValue(0x45A)
-        remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_STD_FILTER1_SFID2").setValue(0x45A)
+        if ("PIC32M" in Variables.get("__PROCESSOR")):
+            localComponent.getSymbolByID("PERIPH_USED").clearValue()
+            localComponent.getSymbolByID("PERIPH_USED").setValue(remoteID.upper())
+            localComponent.getSymbolByID("PERIPH_NAME").setValue(re.sub('[0-9]', '', remoteID.upper()))
+            Database.setSymbolValue(remoteID, "INTERRUPT_MODE", False)
+            Database.setSymbolValue(remoteID, localComponent.getSymbolByID("PERIPH_NAME").getValue() + "_OPMODE", 0)
+            Database.setSymbolValue(remoteID, "NUMBER_OF_FILTER", 1)
+            remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_FILTER0_ID").setValue(0x45A)
+            remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_MASK0_ID").setValue(0x45A)
+        else:
+            localComponent.getSymbolByID("PERIPH_USED").clearValue()
+            localComponent.getSymbolByID("PERIPH_USED").setValue(remoteID.upper())
+            localComponent.getSymbolByID("PERIPH_NAME").setValue(re.sub('[0-9]', '', remoteID.upper()))
+            Database.setSymbolValue(remoteID, "INTERRUPT_MODE", False)
+            Database.setSymbolValue(remoteID, localComponent.getSymbolByID("PERIPH_NAME").getValue() + "_OPMODE", "CAN FD")
+            Database.setSymbolValue(remoteID, "RXF1_USE", False)
+            Database.setSymbolValue(remoteID, "RXF0_ELEMENTS", 5)
+            Database.setSymbolValue(remoteID, "RXF0_BYTES_CFG", 7)
+            Database.setSymbolValue(remoteID, "FILTERS_STD", 1)
+            remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_STD_FILTER1_SFID1").setValue(0x45A)
+            remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_STD_FILTER1_SFID2").setValue(0x45A)
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))

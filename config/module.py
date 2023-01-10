@@ -52,7 +52,7 @@ bootloaderComponents = [
     {"name":"spi", "label": "SPI", "dependency":["MEMORY", "SPI"], "condition":'hasPeripheral(SPINames)'},
     {"name":"usb_device_hid", "label": "USB Device HID", "dependency":["MEMORY", "USB_DEVICE_HID"], "condition":'hasPeripheral(USBNames)'},
     {"name":"udp", "label": "UDP", "dependency":["MEMORY"], "condition":'hasPeripheral(EthernetNames)'},
-    {"name":"can", "label": "CAN", "dependency":["MEMORY", "CAN"], "condition":'hasPeripheralAndCoreArchitecture(CANNames, "CORTEX-M")'},
+    {"name":"can", "label": "CAN", "dependency":["MEMORY", "CAN"], "condition":'hasPeripheral(CANNames)'},
     {"name":"serial_mem", "label": "Serial Memory", "dependency":["MEMORY"], "condition":"True"},
     {"name":"file_system", "label": "File System", "dependency":["MEMORY", "SYS_FS"], "condition":"True"},
 ]
