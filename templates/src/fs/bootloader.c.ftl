@@ -105,6 +105,15 @@ typedef struct
 
 static uint8_t CACHE_ALIGN fileBuffer[PAGE_SIZE];
 
+/* MISRA C-2012 Rule 7.2 deviated:1 Deviation record ID -  H3_MISRAC_2012_R_5_2_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block deviate:1 "MISRA C-2012 Rule 7.2" "H3_MISRAC_2012_R_7_2_DR_1"    
+</#if>
+
 static BOOTLOADER_DATA btlData =
 {
 <#if BTL_TYPE == "USB_HOST_MSD" >
@@ -116,8 +125,17 @@ static BOOTLOADER_DATA btlData =
     .progAddr       = APP_START_ADDRESS
 };
 
+
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 7.2"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>    
+</#if>
+/* MISRAC 2012 deviation block end */
+
 <#if BTL_TYPE == "USB_HOST_MSD" >
-    <#lt>USB_HOST_EVENT_RESPONSE bootloader_USBHostEventHandler (USB_HOST_EVENT event, void * eventData, uintptr_t context)
+    <#lt>static USB_HOST_EVENT_RESPONSE bootloader_USBHostEventHandler (USB_HOST_EVENT event, void * eventData, uintptr_t context)
     <#lt>{
     <#lt>    switch (event)
     <#lt>    {
@@ -158,6 +176,18 @@ static void bootloader_SysFsEventHandler(SYS_FS_EVENT event, void * eventData, u
     }
 }
 
+/* MISRA C-2012 Rule 11.3, 11.6 deviated below. Deviation record ID -  
+   H3_MISRAC_2012_R_11_3_DR_1 & H3_MISRAC_2012_R_11_6_DR_1*/
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block \
+(deviate:1 "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1" )\
+(deviate:2 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1" )   
+</#if>
+
 static void bootloader_NvmAppErase( uint32_t appLength )
 {
     uint32_t flashAddr = APP_START_ADDRESS;
@@ -192,6 +222,16 @@ static void bootloader_NVMPageWrite(uint8_t* data)
     btlData.progAddr += PAGE_SIZE;
 }
 
+
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>    
+</#if> 
+/* MISRAC 2012 deviation block end */
+
 void bootloader_${BTL_TYPE}_Tasks( void )
 {
     size_t fileReadLength;
@@ -201,7 +241,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 <#if BTL_TYPE == "USB_HOST_MSD" >
         case BOOTLOADER_BUS_ENABLE:
         {
-            USB_HOST_BusEnable(0);
+            (void) USB_HOST_BusEnable(0);
 
             btlData.currentState = BOOTLOADER_WAIT_FOR_BUS_ENABLE;
 
@@ -210,11 +250,11 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 
         case BOOTLOADER_WAIT_FOR_BUS_ENABLE:
         {
-            if(USB_HOST_BusIsEnabled(0) == USB_HOST_RESULT_TRUE)
+            if((uint32_t)USB_HOST_BusIsEnabled(0) == (uint32_t)USB_HOST_RESULT_TRUE)
             {
                 SYS_FS_EventHandlerSet(bootloader_SysFsEventHandler, 0U);
 
-                USB_HOST_EventHandlerSet(bootloader_USBHostEventHandler, 0);
+                (void) USB_HOST_EventHandlerSet(bootloader_USBHostEventHandler, 0);
 
                 btlData.currentState = BOOTLOADER_WAIT_FOR_DEVICE_ATTACH;
             }

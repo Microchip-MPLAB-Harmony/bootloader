@@ -58,7 +58,7 @@ typedef struct
     DATASTREAM_HandlerType handler;
 } USB_HID_DATA;
 
-USB_HID_DATA usbHIDData;
+static USB_HID_DATA usbHIDData;
 
 static USB_DEVICE_HID_EVENT_RESPONSE DATASTREAM_USBDeviceHIDEventHandler
 (
@@ -85,7 +85,7 @@ static USB_DEVICE_HID_EVENT_RESPONSE DATASTREAM_USBDeviceHIDEventHandler
              * this request using the USB_DEVICE_HID_ControlStatus()
              * function with a USB_DEVICE_CONTROL_STATUS_OK flag */
 
-            USB_DEVICE_ControlStatus(usbHIDData.usbHandle, USB_DEVICE_CONTROL_STATUS_OK);
+            (void) USB_DEVICE_ControlStatus(usbHIDData.usbHandle, USB_DEVICE_CONTROL_STATUS_OK);
 
             break;
 
@@ -117,7 +117,7 @@ static void DATASTREAM_USBDeviceEventHandler(USB_DEVICE_EVENT event, void * even
             usbHIDData.deviceConfigured = true;
 
             /* Register application HID event handler */
-            USB_DEVICE_HID_EventHandlerSet(USB_DEVICE_HID_INDEX_${USB_DEVICE_INDEX}, DATASTREAM_USBDeviceHIDEventHandler, (uintptr_t)&usbHIDData);
+            (void) USB_DEVICE_HID_EventHandlerSet(USB_DEVICE_HID_INDEX_${USB_DEVICE_INDEX}, DATASTREAM_USBDeviceHIDEventHandler, (uintptr_t)&usbHIDData);
             break;
 
         case USB_DEVICE_EVENT_SUSPENDED:
@@ -137,6 +137,7 @@ static void DATASTREAM_USBDeviceEventHandler(USB_DEVICE_EVENT event, void * even
         case USB_DEVICE_EVENT_RESUMED:
         case USB_DEVICE_EVENT_ERROR:
         default:
+            /* Do Nothing */
             break;
     }
 }
@@ -162,10 +163,14 @@ void DATASTREAM_Tasks(void)
             usbHIDData.DataReceived = false;
 
             /* Place a new read request. */
-            USB_DEVICE_HID_ReportReceive (USB_DEVICE_HID_INDEX_${USB_DEVICE_INDEX},
+            (void) USB_DEVICE_HID_ReportReceive (USB_DEVICE_HID_INDEX_${USB_DEVICE_INDEX},
                 &usbHIDData.transferHandle, usbHIDData.rxBuffer, 64 );
 
             usbHIDData.readRequest = true;
+        }
+        else
+        {
+            /* Do Nothing */
         }
     }
     else if (TX == usbHIDData.currDir)
@@ -175,10 +180,10 @@ void DATASTREAM_Tasks(void)
              (usbHIDData.txCurPos < usbHIDData.txMaxSize))
         {
             /* Prepare the USB module to send the data packet to the host */
-            USB_DEVICE_HID_ReportSend (USB_DEVICE_HID_INDEX_${USB_DEVICE_INDEX},
+            (void) USB_DEVICE_HID_ReportSend (USB_DEVICE_HID_INDEX_${USB_DEVICE_INDEX},
                 &usbHIDData.transferHandle, (usbHIDData.txBuffer + usbHIDData.txCurPos), 64);
 
-            usbHIDData.txCurPos += 64;
+            usbHIDData.txCurPos += 64U;
             usbHIDData.readRequest = true;
         }
         else if ( (usbHIDData.DataSent == true) &&
@@ -194,6 +199,14 @@ void DATASTREAM_Tasks(void)
             usbHIDData.readRequest = false;
             usbHIDData.DataSent = false;
         }
+        else
+        {
+            /* Do Nothing */
+        }
+    }
+    else
+    {
+        /* Do Nothing */
     }
 }
 
@@ -251,6 +264,18 @@ int DATASTREAM_Data_Write(DATASTREAM_HANDLE handle, uint8_t *buffer, const uint3
     return(0);
 }
 
+/* MISRA C-2012 Rule 11.1, 11.8 deviated below. Deviation record ID -  
+   H3_MISRAC_2012_R_11_1_DR_1 & H3_MISRAC_2012_R_11_8_DR_1*/
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block \
+(deviate:1 "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1" )\
+(deviate:1 "MISRA C-2012 Rule 11.8" "H3_MISRAC_2012_R_11_8_DR_1" )   
+</#if>
+
 void DATASTREAM_BufferEventHandlerSet
 (
     const DATASTREAM_HANDLE hClient,
@@ -261,3 +286,12 @@ void DATASTREAM_BufferEventHandlerSet
     usbHIDData.handler = (DATASTREAM_HandlerType)eventHandler;
     usbHIDData.context = context;
 }
+
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.8"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>    
+</#if> 
+/* MISRAC 2012 deviation block end */

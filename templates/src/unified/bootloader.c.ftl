@@ -51,9 +51,9 @@
 
 #define BOOTLOADER_BUFFER_SIZE  512
 
-#define SOH                     01 // Start Of Header
-#define EOT                     04 // End Of transmission
-#define DLE                     16 // Data Escape Sequence
+#define SOH                     1U // Start Of Header
+#define EOT                     4U // End Of transmission
+#define DLE                     16U // Data Escape Sequence
 
 typedef enum
 {
@@ -131,9 +131,9 @@ typedef struct
 
 } BOOTLOADER_DATA;
 
-BOOTLOADER_BUFFER CACHE_ALIGN dataBuff;
+static BOOTLOADER_BUFFER CACHE_ALIGN dataBuff;
 
-BOOTLOADER_DATA btlData =
+static BOOTLOADER_DATA btlData =
 {
     .currentState = BOOTLOADER_OPEN_DATASTREAM,
     .usrBufferEventComplete = false
@@ -150,17 +150,30 @@ static uint32_t bootloader_CalculateCrc(uint8_t *data, uint32_t len)
     uint32_t i;
     uint16_t crc = 0;
 
-    while(len--)
+    while(len != 0U)
     {
-        i = (crc >> 12) ^ (*data >> 4);
-        crc = crc_table[i & 0x0F] ^ (crc << 4);
-        i = (crc >> 12) ^ (*data >> 0);
-        crc = crc_table[i & 0x0F] ^ (crc << 4);
+        i = (((uint32_t)crc >> 12) ^ (*data >> 4));
+        crc = crc_table[i & 0x0FU] ^ (crc << 4);
+        i = (((uint32_t)crc >> 12) ^ (*data >> 0));
+        crc = crc_table[i & 0x0FU] ^ (crc << 4);
         data++;
+        len--;
     }
 
-    return (crc & 0xFFFF);
+    return ((uint32_t)crc & 0xFFFFU);
 }
+
+/* MISRA C-2012 Rule 16.1, 16.3 deviated below. Deviation record ID -  
+   H3_MISRAC_2012_R_16_1_DR_1 & H3_MISRAC_2012_R_16_3_DR_1*/
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block \
+(deviate:1 "MISRA C-2012 Rule 16.1" "H3_MISRAC_2012_R_16_1_DR_1" )\
+(deviate:1 "MISRA C-2012 Rule 16.3" "H3_MISRAC_2012_R_16_3_DR_1" )   
+</#if>
 
 static void bootloader_BufferEventHandler
 (
@@ -198,12 +211,12 @@ static void bootloader_BufferEventHandler
             case EOT:   // End of transmission
             {
                 // Calculate CRC and see if this is valid
-                if (btlData.cmdBuffLen > 2)
+                if (btlData.cmdBuffLen > 2U)
                 {
-                    crc = dataBuff.buffers.procBuff[btlData.cmdBuffLen-2];
-                    crc += ((dataBuff.buffers.procBuff[btlData.cmdBuffLen-1])<<8);
+                    crc = dataBuff.buffers.procBuff[btlData.cmdBuffLen-2U];
+                    crc += (((uint16_t)dataBuff.buffers.procBuff[btlData.cmdBuffLen-1U])<<8);
 
-                    if (bootloader_CalculateCrc(dataBuff.buffers.procBuff, btlData.cmdBuffLen-2) == crc)
+                    if (bootloader_CalculateCrc(dataBuff.buffers.procBuff, btlData.cmdBuffLen-2U) == crc)
                     {
                         // CRC matches so frame is valid.
                         btlData.usrBufferEventComplete = true;
@@ -221,7 +234,8 @@ static void bootloader_BufferEventHandler
 
             default:
             {
-                dataBuff.buffers.procBuff[btlData.cmdBuffLen++] = dataBuff.buffers.inputBuff[i];
+                dataBuff.buffers.procBuff[btlData.cmdBuffLen] = dataBuff.buffers.inputBuff[i];
+                btlData.cmdBuffLen++;
                 break;
             }
         }
@@ -229,8 +243,16 @@ static void bootloader_BufferEventHandler
     }
 
     /* We don't have a complete command yet. Continue reading. */
-    DATASTREAM_Data_Read(btlData.streamHandle, dataBuff.buffers.inputBuff, btlData.buffSize);
+    (void) DATASTREAM_Data_Read(btlData.streamHandle, dataBuff.buffers.inputBuff, btlData.buffSize);
 }
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 16.1"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 16.3"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>    
+</#if> 
+/* MISRAC 2012 deviation block end */
 
 static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 {
@@ -249,7 +271,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 
     switch (Cmd)
     {
-        case READ_BOOT_INFO:
+        case (uint8_t)READ_BOOT_INFO:
         {
             btlVersion = bootloader_GetVersion();
 
@@ -257,14 +279,14 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
             dataBuff.buffers.inputBuff[1] = (uint8_t)(btlVersion >> 8);
 
             /* Minor Number */
-            dataBuff.buffers.inputBuff[2] = (uint8_t)(btlVersion & 0xFF);
+            dataBuff.buffers.inputBuff[2] = (uint8_t)(btlVersion & 0xFFU);
 
             handle->buffSize = 2 + 1;
             handle->currentState = BOOTLOADER_SEND_RESPONSE;
             break;
         }
 
-        case ERASE_FLASH:
+        case (uint8_t)ERASE_FLASH:
         {
             bootloader_NvmAppErase();
             handle->currentState = BOOTLOADER_SEND_RESPONSE;
@@ -272,9 +294,9 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
             break;
         }
 
-        case PROGRAM_FLASH:
+        case (uint8_t)PROGRAM_FLASH:
         {
-            if(bootloader_NvmProgramHexRecord(&dataBuff.buffers.procBuff[1], handle->cmdBuffLen-3) != HEX_REC_NORMAL)
+            if(bootloader_NvmProgramHexRecord(&dataBuff.buffers.procBuff[1], handle->cmdBuffLen-3U) != HEX_REC_NORMAL)
             {
                 break;
             }
@@ -283,19 +305,19 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
             break;
         }
 
-        case READ_CRC:
+        case (uint8_t)READ_CRC:
         {
-            memcpy(&Address, &dataBuff.buffers.procBuff[1], sizeof(Address));
-            memcpy(&Length, &dataBuff.buffers.procBuff[5], sizeof(Length));
-            crc = bootloader_CalculateCrc((uint8_t *)(Address), Length);
-            memcpy(&dataBuff.buffers.inputBuff[1], &crc, 2);
+            (void) memcpy((uint8_t *)&Address, &dataBuff.buffers.procBuff[1], sizeof(Address));
+            (void) memcpy((uint8_t *)&Length, &dataBuff.buffers.procBuff[5], sizeof(Length));
+            crc = (uint16_t)bootloader_CalculateCrc((uint8_t *)(Address), Length);
+            (void) memcpy(&dataBuff.buffers.inputBuff[1], (uint8_t *)&crc, 2);
 
             handle->buffSize = 1 + 2;
             handle->currentState = BOOTLOADER_SEND_RESPONSE;
             break;
         }
 
-        case JMP_TO_APP:
+        case (uint8_t)JMP_TO_APP:
         {
             handle->buffSize = 1;
             handle->prevState = BOOTLOADER_ENTER_APPLICATION;
@@ -305,6 +327,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
         }
 
         default:
+            /* Do Nothing */
             break;
     }
 }
@@ -314,15 +337,15 @@ void bootloader_${BTL_TYPE}_Tasks( void )
     uint32_t BuffLen=0;
     uint32_t i;
     uint16_t crc;
+    uint32_t temp_32;
 
     switch ( btlData.currentState )
     {
         case BOOTLOADER_OPEN_DATASTREAM:
         {
             btlData.streamHandle = DATASTREAM_HANDLE_INVALID;
-
-            btlData.streamHandle = DATASTREAM_Open(
-                    DRV_IO_INTENT_READWRITE | DRV_IO_INTENT_NONBLOCKING);
+            temp_32 = (uint32_t)DRV_IO_INTENT_READWRITE | (uint32_t)DRV_IO_INTENT_NONBLOCKING;
+            btlData.streamHandle = DATASTREAM_Open( (DRV_IO_INTENT)temp_32 );
 
             if (btlData.streamHandle != DRV_HANDLE_INVALID )
             {
@@ -346,7 +369,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
             {
                 btlData.buffSize = BOOTLOADER_BUFFER_SIZE;
 
-                 DATASTREAM_Data_Read( btlData.streamHandle, dataBuff.buffers.inputBuff, btlData.buffSize);
+                (void) DATASTREAM_Data_Read( btlData.streamHandle, dataBuff.buffers.inputBuff, btlData.buffSize);
 
                 /* Set the App. state to wait for done */
                 btlData.prevState    = BOOTLOADER_GET_COMMAND;
@@ -387,32 +410,38 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 
         case BOOTLOADER_SEND_RESPONSE:
         {
-            if(btlData.buffSize)
+            if(btlData.buffSize != 0U)
             {
                 /* Calculate the CRC of the response*/
-                crc = bootloader_CalculateCrc(dataBuff.buffers.inputBuff, btlData.buffSize);
+                crc = (uint16_t)bootloader_CalculateCrc(dataBuff.buffers.inputBuff, btlData.buffSize);
 
-                dataBuff.buffers.inputBuff[btlData.buffSize++] = (uint8_t)crc;
+                dataBuff.buffers.inputBuff[btlData.buffSize] = (uint8_t)crc;
+                btlData.buffSize++;                
 
-                dataBuff.buffers.inputBuff[btlData.buffSize++] = (crc>>8);
+                dataBuff.buffers.inputBuff[btlData.buffSize] = (uint8_t)(crc>>8);
+                btlData.buffSize++;
 
-                dataBuff.buffers.procBuff[BuffLen++] = SOH;
+                dataBuff.buffers.procBuff[BuffLen] = SOH;
+                BuffLen++;
 
                 for (i = 0; i < btlData.buffSize; i++)
                 {
                     if ((dataBuff.buffers.inputBuff[i] == EOT) || (dataBuff.buffers.inputBuff[i] == SOH)
                         || (dataBuff.buffers.inputBuff[i] == DLE))
                     {
-                        dataBuff.buffers.procBuff[BuffLen++] = DLE;
+                        dataBuff.buffers.procBuff[BuffLen] = DLE;
+                        BuffLen++;
                     }
 
-                    dataBuff.buffers.procBuff[BuffLen++] = dataBuff.buffers.inputBuff[i];
+                    dataBuff.buffers.procBuff[BuffLen] = dataBuff.buffers.inputBuff[i];
+                    BuffLen++;
                 }
 
-                dataBuff.buffers.procBuff[BuffLen++] = EOT;
+                dataBuff.buffers.procBuff[BuffLen] = EOT;
+                BuffLen++;
                 btlData.buffSize = 0;
 
-                DATASTREAM_Data_Write( btlData.streamHandle, dataBuff.buffers.procBuff, BuffLen);
+                (void) DATASTREAM_Data_Write( btlData.streamHandle, dataBuff.buffers.procBuff, BuffLen);
 
                 if (btlData.prevState != BOOTLOADER_ENTER_APPLICATION)
                 {
