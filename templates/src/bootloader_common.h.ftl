@@ -97,10 +97,10 @@
     <#lt>#define APP_START_ADDRESS                       INACTIVE_BANK_START
 <#else>
     <#if core.CoreArchitecture == "MIPS">
-        <#lt>#define APP_START_ADDRESS                       ((uint32_t)(PA_TO_KVA0(0x${core.APP_START_ADDRESS}UL)))
-        <#lt>#define APP_JUMP_ADDRESS                        ((uint32_t)(PA_TO_KVA0(0x${BTL_APP_JUMP_ADDRESS}UL)))
+        <#lt>#define APP_START_ADDRESS                       ((uint32_t)(PA_TO_KVA0(0x${core.APP_START_ADDRESS}U)))
+        <#lt>#define APP_JUMP_ADDRESS                        ((uint32_t)(PA_TO_KVA0(0x${BTL_APP_JUMP_ADDRESS}U)))
     <#else>
-        <#lt>#define APP_START_ADDRESS                       (0x${core.APP_START_ADDRESS}UL)
+        <#lt>#define APP_START_ADDRESS                       (0x${core.APP_START_ADDRESS}U)
     </#if>
 </#if>
 
@@ -154,6 +154,9 @@
 </#if>
 
 // *****************************************************************************
+
+void SYS_DeInitialize( void *data );
+
 /* Function:
     uint16_t bootloader_GetVersion( void );
 

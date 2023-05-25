@@ -46,6 +46,7 @@
 
 #include <string.h>
 #include "definitions.h"
+#include "bootloader_common.h"
 #include <device.h>
 
 // *****************************************************************************
@@ -205,9 +206,19 @@ typedef struct
 // *****************************************************************************
 // *****************************************************************************
 
-APP_META_DATA CACHE_ALIGN appMetaData;
+static APP_META_DATA CACHE_ALIGN appMetaData;
 
-BOOTLOADER_DATA CACHE_ALIGN btlData =
+<#if __PROCESSOR?matches("PIC32M.*") == true>
+/* MISRA C-2012 Rule 7.2 deviated:4 Deviation record ID -  H3_MISRAC_2012_R_7_2_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block deviate:3 "MISRA C-2012 Rule 7.2" "H3_MISRAC_2012_R_7_2_DR_1"    
+</#if>
+</#if>
+static BOOTLOADER_DATA CACHE_ALIGN btlData =
 {
     .state              = BOOTLOADER_STATE_INIT,
     .flash_addr         = APP_START_ADDRESS,
@@ -218,6 +229,15 @@ BOOTLOADER_DATA CACHE_ALIGN btlData =
     .appJumpAddress     = APP_JUMP_ADDRESS,
 </#if>
 };
+<#if __PROCESSOR?matches("PIC32M.*") == true>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 7.2"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>    
+</#if>
+/* MISRAC 2012 deviation block end */
+</#if>
 
 <#if .vars["${DRIVER_USED?lower_case}"].EEPROM_PAGE_SIZE??>
     <#lt>static uint32_t CACHE_ALIGN clearUpdateRequired[${DRIVER_USED}_EEPROM_PAGE_SIZE / sizeof(uint32_t)];
@@ -241,7 +261,7 @@ static bool BOOTLOADER_WaitForXferComplete( void )
 
     do
     {
-        transferStatus = ${DRIVER_USED}_TransferStatusGet(btlData.handle);
+        transferStatus = (SERIAL_MEM_TRANSFER_STATUS)${DRIVER_USED}_TransferStatusGet(btlData.handle);
 
     } while (transferStatus == SERIAL_MEM_TRANSFER_BUSY);
 
@@ -252,6 +272,18 @@ static bool BOOTLOADER_WaitForXferComplete( void )
 
     return status;
 }
+
+/* MISRA C-2012 Rule 11.3, 11.6 deviated below. Deviation record ID -  
+   H3_MISRAC_2012_R_11_3_DR_1 & H3_MISRAC_2012_R_11_6_DR_1*/
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block \
+(deviate:4 "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1" )\
+(deviate:6 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1" )   
+</#if>
 
 static bool BOOTLOADER_GetMetaData( void )
 {
@@ -287,7 +319,7 @@ static bool BOOTLOADER_CheckForUpdate( void )
     */
     if ((appMetaData.prologue == APP_META_DATA_PROLOGUE) &&
         (appMetaData.epilogue == APP_META_DATA_EPILOGUE) &&
-        (appMetaData.appSize  != 0))
+        (appMetaData.appSize  != 0U))
     {
         if (appMetaData.isAppUpdateRequired == APP_UPDATE_REQUIRED)
         {
@@ -316,7 +348,7 @@ static bool BOOTLOADER_UpdateMetaData( void )
 {
     bool status = false;
 
-    memset((void *)clearUpdateRequired, 0xFF, sizeof(clearUpdateRequired));
+    (void) memset((void *)clearUpdateRequired, 0xFF, sizeof(clearUpdateRequired));
 
     /* Read existing Meta Data to Perform Read-Modify-Write */
     if (${DRIVER_USED}_Read(btlData.handle, clearUpdateRequired, sizeof(appMetaData), btlData.appMetaDataAddress) == false)
@@ -345,8 +377,6 @@ static bool BOOTLOADER_UpdateMetaData( void )
     return status;
 }
 
-extern void SYS_DeInitialize( void *data );
-
 static void BOOTLOADER_ReleaseResources(void)
 {
     SYS_DeInitialize ( NULL );
@@ -370,7 +400,7 @@ static void flash_task(void)
 </#if>
 
     /* Erase the Current sector */
-    ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(addr);
+    (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(addr);
 
     while(${MEM_USED}_IsBusy() == true)
     {
@@ -379,7 +409,7 @@ static void flash_task(void)
 
     for (page = 0; page < PAGES_IN_ERASE_BLOCK; page++)
     {
-        ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)&flash_data[write_idx], addr);
+        (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)&flash_data[write_idx], addr);
 
         while(${MEM_USED}_IsBusy() == true)
         {
@@ -492,7 +522,7 @@ void bootloader_${BTL_TYPE}_Tasks ( void )
 
         case BOOTLOADER_STATE_READ_APP_BINARY:
         {
-            memset((void *)flash_data, 0xFF, DATA_SIZE);
+            (void) memset((void *)flash_data, 0xFF, DATA_SIZE);
 
             if (${DRIVER_USED}_Read(btlData.handle, (uint32_t *)&flash_data[0], DATA_SIZE, (btlData.serialFlashStart + btlData.read_index)) == false)
             {
@@ -548,7 +578,7 @@ void bootloader_${BTL_TYPE}_Tasks ( void )
 
         case BOOTLOADER_STATE_UPDATE_META_DATA:
         {
-            BOOTLOADER_UpdateMetaData();
+            (void) BOOTLOADER_UpdateMetaData();
 
             bootloader_TriggerReset();
 
@@ -557,6 +587,16 @@ void bootloader_${BTL_TYPE}_Tasks ( void )
 
         case BOOTLOADER_STATE_ERROR:
         default:
+            /* Do Nothing */
             break;
     }
 }
+
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>    
+</#if>
+/* MISRAC 2012 deviation block end */

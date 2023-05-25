@@ -65,13 +65,11 @@
 // *****************************************************************************
 // *****************************************************************************
 
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Bootloader Local Functions
 // *****************************************************************************
 // *****************************************************************************
-void __WEAK SYS_DeInitialize( void *data );
 
 // *****************************************************************************
 // *****************************************************************************
@@ -88,11 +86,6 @@ void __WEAK SYS_DeInitialize( void *data );
     <#lt>    return false;
     <#lt>}
 </#if>
-
-void __WEAK SYS_DeInitialize( void *data )
-{
-    /* Function can be overriden with custom implementation */
-}
 
 uint16_t __WEAK bootloader_GetVersion( void )
 {
@@ -146,7 +139,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     </#if>
 </#if>
 
-/* MISRA C-2012 Rule 11.1, 11.3 deviated below. Deviation record ID -  
+/* MISRA C-2012 Rule 10.1, 10.4, 11.1, 11.3 deviated below. Deviation record ID -  
    H3_MISRAC_2012_R_11_1_DR_1 & H3_MISRAC_2012_R_11_3_DR_1*/
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
@@ -154,6 +147,8 @@ uint16_t __WEAK bootloader_GetVersion( void )
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
+(deviate:2 "MISRA C-2012 Rule 10.1" "H3_MISRAC_2012_R_10_1_DR_1" )\
+(deviate:2 "MISRA C-2012 Rule 10.4" "H3_MISRAC_2012_R_10_4_DR_1" )\
 (deviate:2 "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1" )\
 (deviate:2 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1" )   
 </#if>
@@ -493,6 +488,8 @@ uint16_t __WEAK bootloader_GetVersion( void )
 </#if>
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 10.1"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 10.4"
 #pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
 #pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
 <#if core.COMPILER_CHOICE == "XC32">
