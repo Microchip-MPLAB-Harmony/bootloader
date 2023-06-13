@@ -21,8 +21,6 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
-unSupportedFamilies = ["SAM9", "SAMA5"]
-
 I2CNames        = ["SERCOM", "I2C", "TWIHS"]
 SPINames        = ["SERCOM", "SPI"]
 USBNames        = ["USB", "USBHS"]
@@ -41,12 +39,13 @@ def hasPeripheral(peripheralList):
 
     return False
 
-def hasPeripheralAndCoreArchitecture(peripheralList, coreArchitecture):
-    return ((coreArchitecture in ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture")) and
-             hasPeripheral(peripheralList))
+#Define MPU Bootloader component names
+mpuBootloaderComponents = [
+        {"name":"uart", "label": "UART", "dependency":["MEMORY", "SYS_FS", "UART"], "condition":"True"},
+    ]
 
-#Define Bootloader component names
-bootloaderComponents = [
+#Define MCU Bootloader component names
+mcuBootloaderComponents = [
     {"name":"uart", "label": "UART", "dependency":["MEMORY", "UART", "TMR"], "condition":"True"},
     {"name":"i2c", "label": "I2C", "dependency":["MEMORY", "I2C"], "condition":'hasPeripheral(I2CNames)'},
     {"name":"spi", "label": "SPI", "dependency":["MEMORY", "SPI"], "condition":'hasPeripheral(SPINames)'},
@@ -60,12 +59,12 @@ bootloaderComponents = [
 
 def loadModule():
 
-    # Do not add Bootloader Component for unsupported families
-    coreFamily   = ATDF.getNode( "/avr-tools-device-file/devices/device" ).getAttribute( "family" )
-    if ((any(x == coreFamily for x in unSupportedFamilies) == True)):
-        return
-
     print("Load Module: Bootloader")
+
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        bootloaderComponents = mpuBootloaderComponents
+    else:
+        bootloaderComponents = mcuBootloaderComponents
 
     for bootloaderComponent in bootloaderComponents:
 

@@ -40,6 +40,13 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
                 "PIC32MZEF"   : [8192],
                 "PIC32MZW"    : [16384],
     }
+elif (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+    bootloaderCore = "bootloader_mpu.py"
+    btlSizes = {
+                "CORTEX-A5"   : [131072],
+                "CORTEX-A7"   : [131072],
+                "ARM926EJ-S"  : [131072]
+    }
 else:
     bootloaderCore = "bootloader_arm.py"
     btlSizes = {
@@ -79,24 +86,25 @@ def setupCoreComponentSymbols():
 
     coreComponent = Database.getComponentByID("core")
 
-    # Disable core related file generation not required for bootloader
-    coreComponent.getSymbolByID("CoreMainFile").setValue(False)
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        # Disable core related file generation not required for bootloader
+        coreComponent.getSymbolByID("CoreMainFile").setValue(False)
 
-    coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
+        coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
 
-    if (not Database.getSymbolValue("core", "DeviceFamily") == "PIC32CZ_CA80_CA90"):
-        coreComponent.getSymbolByID("CoreSysStartupFile").setValue(False)
+        if (not Database.getSymbolValue("core", "DeviceFamily") == "PIC32CZ_CA80_CA90"):
+            coreComponent.getSymbolByID("CoreSysStartupFile").setValue(False)
 
-    coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
+        coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
 
-    if ("PIC32M" not in Variables.get("__PROCESSOR")) and (not Database.getSymbolValue("core", "DeviceFamily") == "PIC32CZ_CA80_CA90"):
-        coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
+        if ("PIC32M" not in Variables.get("__PROCESSOR")) and (not Database.getSymbolValue("core", "DeviceFamily") == "PIC32CZ_CA80_CA90"):
+            coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
 
-        coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
+            coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
 
-    coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
+        coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
 
-    coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
+        coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
 
     # Disable Cache in core: not enable in startup code
     if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE") != None):
@@ -120,7 +128,8 @@ def instantiateComponent(bootloaderComponent):
 
     generateCommonSymbols(bootloaderComponent)
 
-    generateFuseProgrammingAndWDTSymbols(bootloaderComponent)
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        generateFuseProgrammingAndWDTSymbols(bootloaderComponent)
 
     generateHwCRCGeneratorSymbol(bootloaderComponent)
 
@@ -157,6 +166,8 @@ def instantiateComponent(bootloaderComponent):
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
     if ("PIC32M" in Variables.get("__PROCESSOR")):
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_uart_mips.c.ftl")
+    elif (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        btlSourceFile.setSourcePath("../bootloader/templates/src/mpu/bootloader_uart.c.ftl")
     else:
         btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_uart_arm.c.ftl")
     btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
@@ -175,28 +186,29 @@ def instantiateComponent(bootloaderComponent):
     btlHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
     btlHeaderFile.setType("HEADER")
 
-    # generate main.c file
-    btlmainSourceFile = bootloaderComponent.createFileSymbol("MAIN_BOOTLOADER_C", None)
-    btlmainSourceFile.setSourcePath("../bootloader/templates/src/optimized/main.c.ftl")
-    btlmainSourceFile.setOutputName("main.c")
-    btlmainSourceFile.setMarkup(True)
-    btlmainSourceFile.setOverwrite(False)
-    btlmainSourceFile.setDestPath("../../")
-    btlmainSourceFile.setProjectPath("")
-    btlmainSourceFile.setType("SOURCE")
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        # generate main.c file
+        btlmainSourceFile = bootloaderComponent.createFileSymbol("MAIN_BOOTLOADER_C", None)
+        btlmainSourceFile.setSourcePath("../bootloader/templates/src/optimized/main.c.ftl")
+        btlmainSourceFile.setOutputName("main.c")
+        btlmainSourceFile.setMarkup(True)
+        btlmainSourceFile.setOverwrite(False)
+        btlmainSourceFile.setDestPath("../../")
+        btlmainSourceFile.setProjectPath("")
+        btlmainSourceFile.setType("SOURCE")
 
-    # Generate Initialization File
-    btlInitFile = bootloaderComponent.createFileSymbol("INITIALIZATION_BOOTLOADER_C", None)
-    if ("PIC32M" in Variables.get("__PROCESSOR")):
-        btlInitFile.setSourcePath("../bootloader/templates/mips/initialization.c.ftl")
-    else:
-        btlInitFile.setSourcePath("../bootloader/templates/arm/initialization.c.ftl")
-    btlInitFile.setOutputName("initialization.c")
-    btlInitFile.setMarkup(True)
-    btlInitFile.setOverwrite(True)
-    btlInitFile.setDestPath("")
-    btlInitFile.setProjectPath("config/" + configName + "/")
-    btlInitFile.setType("SOURCE")
+        # Generate Initialization File
+        btlInitFile = bootloaderComponent.createFileSymbol("INITIALIZATION_BOOTLOADER_C", None)
+        if ("PIC32M" in Variables.get("__PROCESSOR")):
+            btlInitFile.setSourcePath("../bootloader/templates/mips/initialization.c.ftl")
+        else:
+            btlInitFile.setSourcePath("../bootloader/templates/arm/initialization.c.ftl")
+        btlInitFile.setOutputName("initialization.c")
+        btlInitFile.setMarkup(True)
+        btlInitFile.setOverwrite(True)
+        btlInitFile.setDestPath("")
+        btlInitFile.setProjectPath("config/" + configName + "/")
+        btlInitFile.setType("SOURCE")
 
     btlSystemDefFile = bootloaderComponent.createFileSymbol("BTL_SYS_DEF_HEADER", None)
     btlSystemDefFile.setType("STRING")
@@ -212,12 +224,13 @@ def instantiateComponent(bootloaderComponent):
         btlInitFile.setSourcePath("../bootloader/templates/arm/initialization_secure.c.ftl")
         btlSystemDefFile.setSecurity("SECURE")
         btlSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_SECURE_H_INCLUDES")
-    
+
     if ("PIC32CZ" in Variables.get("__PROCESSOR")):
         generateCommonFiles(bootloaderComponent)
     else:
-        generateLinkerFileSymbol(bootloaderComponent)
-        generateXC32SettingsAndFileSymbol(bootloaderComponent)
+        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+            generateLinkerFileSymbol(bootloaderComponent)
+            generateXC32SettingsAndFileSymbol(bootloaderComponent)
         generateCommonFiles(bootloaderComponent)
         setOptimizationLevel(bootloaderComponent, "-O2")
 
@@ -248,30 +261,47 @@ def onAttachmentConnected(source, target):
                 # Configure systick period to 100 ms
                 coreComponent.getSymbolByID("SYSTICK_SECURE_PERIOD_MS").setValue(100)
             else:
-                # Enable Systick.
-                coreComponent.getSymbolByID("systickEnable").setValue(True)
+                if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+                    # Enable Systick.
+                    coreComponent.getSymbolByID("systickEnable").setValue(True)
 
-                # Configure systick period to 100 ms
-                coreComponent.getSymbolByID("SYSTICK_PERIOD_MS").setValue(100)
+                    # Configure systick period to 100 ms
+                    coreComponent.getSymbolByID("SYSTICK_PERIOD_MS").setValue(100)
 
     if (srcID == "btl_MEMORY_dependency"):
-        flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
-        if (type(Database.getSymbolValue(remoteID, "FLASH_SIZE")) == int):
-            btlMemUsedSize = Database.getSymbolValue(remoteID, "FLASH_SIZE")
+        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+            localComponent.setDependencyEnabled("btl_SYS_FS_dependency", False)
+            localComponent.getSymbolByID("DRIVER_USED").clearValue()
+            localComponent.getSymbolByID("DRIVER_USED").setValue(remoteID.upper())
+            localComponent.getSymbolByID("DRIVER_USED").setVisible(True)
+            localComponent.getSymbolByID("BOOTLOADER_STORAGE_SOURCE").setSourcePath("../bootloader/templates/src/mpu/bootloader_storage_ext_mem.c.ftl")
         else:
-            btlMemUsedSize = int(Database.getSymbolValue(remoteID, "FLASH_SIZE"), 16)
-
-        localComponent.getSymbolByID("MEM_USED").setValue(remoteID.upper())
-
-        if ("PIC32M" not in Variables.get("__PROCESSOR")):
-            if (type(Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS")) == int):
-                memUsedStartAddrValue = Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS")
+            flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
+            if (type(Database.getSymbolValue(remoteID, "FLASH_SIZE")) == int):
+                btlMemUsedSize = Database.getSymbolValue(remoteID, "FLASH_SIZE")
             else:
-                memUsedStartAddrValue = int(Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS"), 16)
+                btlMemUsedSize = int(Database.getSymbolValue(remoteID, "FLASH_SIZE"), 16)
 
-            localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(int(memUsedStartAddrValue))
+            localComponent.getSymbolByID("MEM_USED").setValue(remoteID.upper())
 
-        Database.setSymbolValue(remoteID, "INTERRUPT_ENABLE", False)
+            if ("PIC32M" not in Variables.get("__PROCESSOR")):
+                if (type(Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS")) == int):
+                    memUsedStartAddrValue = Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS")
+                else:
+                    memUsedStartAddrValue = int(Database.getSymbolValue(remoteID, "FLASH_START_ADDRESS"), 16)
+
+                localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(int(memUsedStartAddrValue))
+
+            Database.setSymbolValue(remoteID, "INTERRUPT_ENABLE", False)
+
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        if (srcID == "btl_SYS_FS_dependency"):
+            localComponent.setDependencyEnabled("btl_MEMORY_dependency", False)
+            localComponent.getSymbolByID("DRIVER_USED").clearValue()
+            localComponent.getSymbolByID("DRIVER_USED").setVisible(False)
+            # Configure SYS_FS Component
+            remoteComponent.getSymbolByID("SYS_FS_AUTO_MOUNT").setValue(True)
+            localComponent.getSymbolByID("BOOTLOADER_STORAGE_SOURCE").setSourcePath("../bootloader/templates/src/mpu/bootloader_storage_fs.c.ftl")
 
 def onAttachmentDisconnected(source, target):
     global flash_erase_size
@@ -292,14 +322,29 @@ def onAttachmentDisconnected(source, target):
                 # Enable Systick.
                 coreComponent.getSymbolByID("systickSecureEnable").setValue(False)
             else:
-                # Disable Systick
-                coreComponent.getSymbolByID("systickEnable").setValue(False)
+                if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+                    # Disable Systick
+                    coreComponent.getSymbolByID("systickEnable").setValue(False)
 
     if (srcID == "btl_MEMORY_dependency"):
-        flash_erase_size = 0
-        localComponent.getSymbolByID("MEM_USED").clearValue()
-        if ("PIC32M" not in Variables.get("__PROCESSOR")):
-            localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(0)
+        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+            localComponent.setDependencyEnabled("btl_SYS_FS_dependency", True)
+            localComponent.getSymbolByID("DRIVER_USED").clearValue()
+            localComponent.getSymbolByID("DRIVER_USED").setVisible(False)
+            localComponent.getSymbolByID("BOOTLOADER_STORAGE_SOURCE").setSourcePath("../bootloader/templates/src/mpu/bootloader_storage_fs.c.ftl")
+        else:
+            flash_erase_size = 0
+            localComponent.getSymbolByID("MEM_USED").clearValue()
+            if ("PIC32M" not in Variables.get("__PROCESSOR")):
+                localComponent.getSymbolByID("BTL_MEM_START_ADDR").setValue(0)
+
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        if (srcID == "btl_SYS_FS_dependency"):
+            localComponent.setDependencyEnabled("btl_MEMORY_dependency", True)
+            localComponent.getSymbolByID("DRIVER_USED").clearValue()
+            localComponent.getSymbolByID("DRIVER_USED").setVisible(False)
+            # Deconfigure SYS_FS Component
+            remoteComponent.getSymbolByID("SYS_FS_AUTO_MOUNT").setValue(False)
 
 def finalizeComponent(bootloaderComponent):
     activateAndConnectDependencies("uart_bootloader")

@@ -69,6 +69,10 @@ devices = {
             "SAMHA1"        : [256, 2048, True],
             "SAMRH71"       : [256, 8192, False],
             "SAMRH71EK_PROM": [4096, 8192, False],
+            "SAMA5"         : [512, 131072, False],
+            "SAMA7"         : [512, 131072, False],
+            "SAM9X6"        : [512, 131072, False],
+            "SAM9X7"        : [512, 131072, False],
             "PIC32MK"       : [4096, 8192, False],
             "PIC32MZ"       : [16384, 16384, False],
             "PIC32MZW"      : [4096, 8192, False],
@@ -274,7 +278,7 @@ def main():
     parser.add_option('-p', '--sectorSize', dest='sectSize', help='Device Sector Size in Bytes', metavar='SectSize')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/pic32mk/pic32mx/pic32mz/pic32mzw/pic32cm/pic32mm)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/sama5/sama7/sam9x6/sam9x7/pic32mk/pic32mx/pic32mz/pic32mzw/pic32cm/pic32mm)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 
@@ -288,7 +292,8 @@ def main():
         error('target device is required (use -d option)')
 
     if options.address is None:
-        error('destination address is required (use -a option)')
+        if (options.device.upper() != "SAMA5") and (options.device.upper() != "SAMA7") and (options.device.upper() != "SAM9X6") and (options.device.upper() != "SAM9X7"):
+            error('destination address is required (use -a option)')
 
     device = options.device.upper()
 
@@ -299,7 +304,13 @@ def main():
 
             ERASE_SIZE    = int(options.sectSize)
         else:
-            ERASE_SIZE    = devices[device][0]
+            if (device == "SAMA5") or (device == "SAMA7") or (device == "SAM9X6") or (device == "SAM9X7"):
+                if options.sectSize is None:
+                    ERASE_SIZE    = devices[device][0]
+                else:
+                    ERASE_SIZE    = int(options.sectSize)
+            else:
+                ERASE_SIZE    = devices[device][0]
 
         BOOTLOADER_SIZE   = devices[device][1]
 
@@ -312,16 +323,20 @@ def main():
             error('Bank Swapping not supported on this device')
 
     try:
-        address = int(options.address, 0)
+        if (device == "SAMA5") or (device == "SAMA7") or (device == "SAM9X6") or (device == "SAM9X7"):
+            address = 0
+        else:
+            address = int(options.address, 0)
     except ValueError as inst:
         error('invalid address value: %s' % options.address)
 
-    if (("SAM" in device) or ("PIC32C" in device)):
-        if address < BOOTLOADER_SIZE and options.boot == False:
-            error('address is within the bootlaoder area, use --boot options to unlock writes')
-    else:
-        if options.boot == True:
-            error('--boot option is not supported on this device')
+    if (device != "SAMA5") and (device != "SAMA7") and (device != "SAM9X6") and (device != "SAM9X7"):
+        if (("SAM" in device) or ("PIC32C" in device)):
+            if address < BOOTLOADER_SIZE and options.boot == False:
+                error('address is within the bootlaoder area, use --boot options to unlock writes')
+        else:
+            if options.boot == True:
+                error('--boot option is not supported on this device')
 
     uart_parity = serial.PARITY_NONE
 
@@ -351,8 +366,9 @@ def main():
     except Exception as inst:
         error(inst)
 
-    while len(data) % ERASE_SIZE > 0:
-        data += [0xff]
+    if (device != "SAMA5") and (device != "SAMA7") and (device != "SAM9X6") and (device != "SAM9X7"):
+        while len(data) % ERASE_SIZE > 0:
+            data += [0xff]
 
     crc32_tab = crc32_tab_gen()
     crc = crc32(crc32_tab, data)
@@ -382,8 +398,13 @@ def main():
     for idx, blk in enumerate(blocks):
         printProgressBar(idx+1, len(blocks), prefix = 'Programming:', suffix = 'Complete', length = 50)
 
-        resp = send_request(port, BL_CMD_DATA, uint32(ERASE_SIZE + 4), uint32(addr) + blk)
-        addr += ERASE_SIZE
+        if ((idx + 1) == len(blocks)) and ((size % ERASE_SIZE) != 0):
+            data_length = size % ERASE_SIZE
+        else:
+            data_length = ERASE_SIZE
+
+        resp = send_request(port, BL_CMD_DATA, uint32(data_length + 4), uint32(addr) + blk)
+        addr += data_length
 
         if resp != BL_RESP_OK:
             error('invalid response code (0x%02x)' % resp)
