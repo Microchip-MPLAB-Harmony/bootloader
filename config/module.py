@@ -55,6 +55,7 @@ bootloaderComponents = [
     {"name":"can", "label": "CAN", "dependency":["MEMORY", "CAN"], "condition":'hasPeripheral(CANNames)'},
     {"name":"serial_mem", "label": "Serial Memory", "dependency":["MEMORY"], "condition":"True"},
     {"name":"file_system", "label": "File System", "dependency":["MEMORY", "SYS_FS"], "condition":"True"},
+    {"name":"ota", "label": "OTA", "dependency":["MEMORY"], "condition":"True"},
 ]
 
 def loadModule():
@@ -71,18 +72,18 @@ def loadModule():
         #check if component should be created
         if eval(bootloaderComponent['condition']):
             Name        = bootloaderComponent['name']
-            Label       = bootloaderComponent['label'] + " Bootloader"
-
-            filePath  = "config/bootloader_" + Name + ".py"
 
             displayPath = "/Bootloader/"
 
+            Label       = bootloaderComponent['label'] + " Bootloader"
+            filePath  = "config/bootloader_" + Name + ".py"
             Component = Module.CreateComponent(Name + "_bootloader", Label, displayPath, filePath )
+            depIdPrefix = "btl_"
 
             if "dependency" in bootloaderComponent:
                 for dep in bootloaderComponent['dependency']:
 
-                    depId           = "btl_" + dep + "_dependency"
+                    depId           = depIdPrefix + dep + "_dependency"
                     depDisplayName  = dep
                     depGeneric      = False
                     depRequired     = True
@@ -105,6 +106,10 @@ def loadModule():
 
                     if ((Name == "serial_mem") and (dep == "MEMORY")):
                         # Requires two Dependencies of same type (MEMORY)
-                        Component.addDependency("btl_" + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
+                        Component.addDependency(depIdPrefix + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
+
+                    if ((Name == "ota") and (dep == "MEMORY")):
+                        # Requires two Dependencies of same type (MEMORY)
+                        Component.addDependency(depIdPrefix + dep + "_dependency_OTA", dep, "MEMORY (OTA)", False, True)
 
         Component.setDisplayType("Bootloader")

@@ -1,4 +1,4 @@
-<#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true>
+<#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) || (OTA_BOOTLOADER_ENABLE?? && OTA_BOOTLOADER_ENABLE == true)>
     <#if (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "BareMetal">
         <#lt>    bootloader_${BTL_TYPE}_Tasks();
     <#elseif (HarmonyCore.SELECT_RTOS)?? && HarmonyCore.SELECT_RTOS == "FreeRTOS">
@@ -15,7 +15,7 @@
         <#lt>       (VOID **) &_bootloader_Task_Stk_Ptr,
         <#lt>        ${BTL_RTOS_STACK_SIZE},
         <#lt>        TX_NO_WAIT);
-    
+
         <#lt>    tx_thread_create(&_bootloder_Task_TCB,
         <#lt>        "BOOTLOADER_${BTL_TYPE}_Tasks",
         <#lt>        _bootloader_${BTL_TYPE}_Tasks,

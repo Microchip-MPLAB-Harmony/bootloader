@@ -28,7 +28,9 @@ def genRtosTask(symbol, event):
     gen_rtos_task = False
 
     if (Database.getSymbolValue("HarmonyCore", "SELECT_RTOS") != "BareMetal"):
-        if (component.getSymbolByID("BTL_LIVE_UPDATE").getValue() == True):
+        if (Database.getSymbolValue("ota_bootloader", "OTA_BOOTLOADER_ENABLE") == True):
+            gen_rtos_task = True
+        elif (component.getSymbolByID("BTL_LIVE_UPDATE").getValue() == True):
             gen_rtos_task = True
 
     symbol.setEnabled(gen_rtos_task)
@@ -39,7 +41,9 @@ def showRTOSMenu(symbol, event):
     show_rtos_menu = False
 
     if (Database.getSymbolValue("HarmonyCore", "SELECT_RTOS") != "BareMetal"):
-        if (component.getSymbolByID("BTL_LIVE_UPDATE").getValue() == True):
+        if (Database.getSymbolValue("ota_bootloader", "OTA_BOOTLOADER_ENABLE") == True):
+            show_rtos_menu = True
+        elif (component.getSymbolByID("BTL_LIVE_UPDATE").getValue() == True):
             show_rtos_menu = True
 
     symbol.setVisible(show_rtos_menu)

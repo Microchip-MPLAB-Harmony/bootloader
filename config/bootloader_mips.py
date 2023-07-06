@@ -67,7 +67,7 @@ for mem_idx in range(0, len(addr_space_children)):
             ram_start   = "0xA0000000"
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
-    if ((btl_type != "UART") and (btl_type != "I2C") and (btl_type != "SPI") and (btl_type != "CAN")):
+    if ((btl_type != "UART") and (btl_type != "I2C") and (btl_type != "SPI") and (btl_type != "CAN") and (btl_type != "OTA")):
         if (("PIC32MX" in Variables.get("__PROCESSOR")) or
             ("PIC32MK" in Variables.get("__PROCESSOR")) or
             ("PIC32MM" in Variables.get("__PROCESSOR"))):

@@ -245,7 +245,7 @@ def generateCommonSymbols(bootloaderComponent):
     btlTriggerLen.setHelp(btl_helpkeyword)
     btlTriggerLen.setLabel("Number Of Bytes To Reserve From Start Of RAM")
     btlTriggerLen.setVisible((btlTriggerEnable.getValue() == True))
-    btlTriggerLen.setDefaultValue("16")
+    btlTriggerLen.setDefaultValue("0")
     btlTriggerLen.setDependencies(setTriggerLenVisible, ["BTL_TRIGGER_ENABLE"])
     btlTriggerLen.setDescription(btlTriggerLenDesc)
 
@@ -304,6 +304,7 @@ def generateHwCRCGeneratorSymbol(bootloaderComponent):
             elif (periphName == "DSU"):
                 res = Database.activateComponents(["dsu"])
                 hwCRC = True
+                crcPeriphName = "DSU"
 
     btlHwCrc = bootloaderComponent.createBooleanSymbol("BTL_HW_CRC_GEN", None)
     btlHwCrc.setHelp(btl_helpkeyword)
