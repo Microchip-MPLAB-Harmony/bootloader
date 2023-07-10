@@ -151,32 +151,32 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>{
     <#lt>    uint32_t crc  = 0xffffffff;
 
-    <#if __PROCESSOR == "PIC32CZ8110CA90208">
+	<#if CRC_PERIPH_USED?? && CRC_PERIPH_USED == "FCR">
 		<#lt>    FCR_CRCCalculate(start_addr, size, 0xFFFFFFFFU, &crc);
-    <#else>
-        <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
+	<#elseif CRC_PERIPH_USED?? && CRC_PERIPH_USED == "DSU">
+		<#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
 
-        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-            <#lt>    uint32_t i;
+		<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+			<#lt>    uint32_t i;
 
-            <#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
-            <#lt>    {
-            <#lt>       DSU_CRCCalculate (
-            <#lt>           start_addr + i,
-            <#lt>           ERASE_BLOCK_SIZE,
-            <#lt>           crc,
-            <#lt>           &crc
-            <#lt>       );
+			<#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
+			<#lt>    {
+			<#lt>       DSU_CRCCalculate (
+			<#lt>           start_addr + i,
+			<#lt>           ERASE_BLOCK_SIZE,
+			<#lt>           crc,
+			<#lt>           &crc
+			<#lt>       );
 
-            <#lt>       kickdog();
-            <#lt>    }
-        <#else>
-            <#lt>    DSU_CRCCalculate (start_addr, size, crc, &crc);
-        </#if>
+			<#lt>       kickdog();
+			<#lt>    }
+		<#else>
+			<#lt>    DSU_CRCCalculate (start_addr, size, crc, &crc);
+		</#if>
 
-        <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
+		<#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
     </#if>
-    
+
     <#lt>    return crc;
     <#lt>}
 <#else>

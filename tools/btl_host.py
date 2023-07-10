@@ -75,7 +75,7 @@ devices = {
             "PIC32MX"       : [1024, 4096, False],
             "PIC32MM"       : [2048, 4096, False],
             "PIC32CM"       : [256, 2048, True],
-            "PIC32CZ"   	: [4096, 8192, False],
+            "PIC32CZ"       : [4096, 8192, False],
 }
 
 #------------------------------------------------------------------------------
@@ -145,9 +145,11 @@ def get_version(port):
 
 #------------------------------------------------------------------------------
 def send_request(port, cmd, size, data):
-    req = uint32(BL_GUARD) + size + [cmd] + data
+    packet = uint32(BL_GUARD) + size + [cmd] + data
+    blocks = [packet[i:i + 10] for i in range(0, len(packet), 10)]
 
-    port.write(bytes(bytearray(req)))
+    for blk in blocks:
+        port.write(bytes(bytearray(blk)))
 
     for i in range(3):
         resp = get_response(port)
@@ -329,7 +331,7 @@ def main():
         uart_parity = serial.PARITY_ODD
 
     try:
-        port = serial.Serial(port=options.port, baudrate=options.baud, parity=uart_parity, timeout=1)
+        port = serial.Serial(port=options.port, baudrate=options.baud, parity=uart_parity, timeout=2,write_timeout=2)
     except serial.serialutil.SerialException as inst:
         error(inst)
 
@@ -385,6 +387,9 @@ def main():
 
         if resp != BL_RESP_OK:
             error('invalid response code (0x%02x)' % resp)
+
+        if device == "PIC32CZ":
+            time.sleep(1)
 
     # Send Verification command
     verbose(options.verbose, 'Verification')

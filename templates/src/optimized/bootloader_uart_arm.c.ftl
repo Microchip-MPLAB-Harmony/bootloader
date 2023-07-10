@@ -427,20 +427,13 @@ static void flash_task(void)
     <#if .vars["${MEM_USED?lower_case}"].REGION_UNLOCK_API_NAME != "None">
     // Lock region size is always bigger than the row size
     ${.vars["${MEM_USED?lower_case}"].REGION_UNLOCK_API_NAME}(<@apiHandle/>addr);
-    
-    <@ReceiveNextByteWhileMemoryIsBusy/>
-    
     </#if>
 <#elseif MEM_USED == "FCW">
-    DCACHE_CLEAN_BY_ADDR(&flash_data[0], sizeof(flash_data));
-    
 <#else>
     // Lock region size is always bigger than the row size
     ${MEM_USED}_RegionUnlock(addr);
-    
-    <@ReceiveNextByteWhileMemoryIsBusy/>
-    
 </#if>
+    <@ReceiveNextByteWhileMemoryIsBusy/>
 </#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
     // Check if the address falls in Device Configuration Space

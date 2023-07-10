@@ -61,8 +61,6 @@ for mem_idx in range(0, len(addr_space_children)):
     if ((any(x == mem_seg for x in RamNames) == True) and (mem_type == "ram")):
         ram_start   = addr_space_children[mem_idx].getAttribute("start")
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
-    else:
-        print("Warning: Valid memory name not found, USB Bootloader will not launch")
 
     btl_start = str(hex(flash_start))
 
@@ -238,7 +236,6 @@ def generateCommonSymbols(bootloaderComponent):
     btlTriggerEnable.setHelp(btl_helpkeyword)
     btlTriggerEnable.setLabel("Enable Bootloader Trigger From Firmware")
     btlTriggerEnable.setDescription("This Option can be used to Force Trigger bootloader from application firmware after a soft reset.")
-    btlTriggerEnable.setValue(True)
 
     btlTriggerLenDesc = "This option adds the provided offset to RAM Start address in bootloader linker script. \
                          Application firmware can store some pattern in the reserved bytes region from RAM start for bootloader \
@@ -278,31 +275,49 @@ def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
 
 def generateHwCRCGeneratorSymbol(bootloaderComponent):
     global btl_helpkeyword
-    crcEnable = False
+    hwCRC = False
+    crcPeriphName = ""
 
     coreComponent = Database.getComponentByID("core")
 
-    # Enable PAC and DSU component if present
+    # Enable FCR if present
     for module in range (0, len(peripherals)):
-        if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
-            crcEnable=False
-            break
-
         periphName = str(peripherals[module].getAttribute("name"))
-        if (periphName == "PAC"):
-            coreComponent.getSymbolByID("PAC_USE").setValue(True)
-            if (Database.getSymbolValue("core", "PAC_INTERRRUPT_MODE") != None):
-                coreComponent.getSymbolByID("PAC_INTERRRUPT_MODE").setValue(False)
-        elif (periphName == "DSU"):
-            res = Database.activateComponents(["dsu"])
-            crcEnable = True
+
+        if(periphName == "FCR"):
+            hwCRC = True
+            crcPeriphName = "FCR"
+            res = Database.activateComponents(["fcr"])
+
+    # Enable PAC and DSU component if present
+    if hwCRC != True:
+        for module in range (0, len(peripherals)):
+            if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
+                hwCRC=False
+                break
+
+            periphName = str(peripherals[module].getAttribute("name"))
+            if (periphName == "PAC"):
+                coreComponent.getSymbolByID("PAC_USE").setValue(True)
+                if (Database.getSymbolValue("core", "PAC_INTERRRUPT_MODE") != None):
+                    coreComponent.getSymbolByID("PAC_INTERRRUPT_MODE").setValue(False)
+            elif (periphName == "DSU"):
+                res = Database.activateComponents(["dsu"])
+                hwCRC = True
 
     btlHwCrc = bootloaderComponent.createBooleanSymbol("BTL_HW_CRC_GEN", None)
     btlHwCrc.setHelp(btl_helpkeyword)
     btlHwCrc.setLabel("Bootloader Hardware CRC Generator")
     btlHwCrc.setReadOnly(True)
     btlHwCrc.setVisible(False)
-    btlHwCrc.setDefaultValue(crcEnable)
+    btlHwCrc.setDefaultValue(hwCRC)
+
+    crcPeriphUsed = bootloaderComponent.createStringSymbol("CRC_PERIPH_USED", None)
+    crcPeriphUsed.setHelp(btl_helpkeyword)
+    crcPeriphUsed.setLabel("CRC Peripheral Used")
+    crcPeriphUsed.setReadOnly(True)
+    crcPeriphUsed.setVisible(False)
+    crcPeriphUsed.setDefaultValue(crcPeriphName)
 
 def generateLinkerFileSymbol(bootloaderComponent):
     # Disable Default linker script generation

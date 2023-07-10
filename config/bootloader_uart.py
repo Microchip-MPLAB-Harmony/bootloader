@@ -78,46 +78,34 @@ def setBtlDualBankCommentVisible(symbol, event):
 def setupCoreComponentSymbols():
 
     coreComponent = Database.getComponentByID("core")
-    
-    if ("PIC32CZ" in Variables.get("__PROCESSOR")):
-        # Disable core related file generation not required for bootloader
-        coreComponent.getSymbolByID("CoreMainFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
-        coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
-    elif ("PIC32M" in Variables.get("__PROCESSOR")):
-        # Disable core related file generation not required for bootloader
-        coreComponent.getSymbolByID("CoreMainFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
-        coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
-        
-        # Disable Cache in core: not enable in startup code
-        if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE") != None):
-            if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE")):
-                Database.setSymbolValue("core", "DATA_CACHE_ENABLE", False)
-        if (Database.getSymbolValue("core", "INSTRUCTION_CACHE_ENABLE") != None):
-            if (Database.getSymbolValue("core", "INSTRUCTION_CACHE_ENABLE")):
-                Database.setSymbolValue("core", "INSTRUCTION_CACHE_ENABLE", False)
-    else:
-        # Disable core related file generation not required for bootloader
-        coreComponent.getSymbolByID("CoreMainFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
+
+    # Disable core related file generation not required for bootloader
+    coreComponent.getSymbolByID("CoreMainFile").setValue(False)
+
+    coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
+
+    if (not Database.getSymbolValue("core", "DeviceFamily") == "PIC32CZ_CA80_CA90"):
+        coreComponent.getSymbolByID("CoreSysStartupFile").setValue(False)
+
+    coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
+
+    if ("PIC32M" not in Variables.get("__PROCESSOR")) and (not Database.getSymbolValue("core", "DeviceFamily") == "PIC32CZ_CA80_CA90"):
         coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
+
         coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
-        coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
-        coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
-        
-        # Disable Cache in core: not enable in startup code
-        if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE") != None):
-            if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE")):
-                Database.setSymbolValue("core", "DATA_CACHE_ENABLE", False)
-        if (Database.getSymbolValue("core", "INSTRUCTION_CACHE_ENABLE") != None):
-            if (Database.getSymbolValue("core", "INSTRUCTION_CACHE_ENABLE")):
-                Database.setSymbolValue("core", "INSTRUCTION_CACHE_ENABLE", False)
+
+    coreComponent.getSymbolByID("CoreSysStdioSyscallsFile").setValue(False)
+
+    coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
+
+    # Disable Cache in core: not enable in startup code
+    if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE") != None):
+        if (Database.getSymbolValue("core", "DATA_CACHE_ENABLE")):
+            Database.setSymbolValue("core", "DATA_CACHE_ENABLE", False)
+    if (Database.getSymbolValue("core", "INSTRUCTION_CACHE_ENABLE") != None):
+        if (Database.getSymbolValue("core", "INSTRUCTION_CACHE_ENABLE")):
+            Database.setSymbolValue("core", "INSTRUCTION_CACHE_ENABLE", False)
+
 
 def instantiateComponent(bootloaderComponent):
     configName = Variables.get("__CONFIGURATION_NAME")
