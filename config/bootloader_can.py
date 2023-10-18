@@ -34,16 +34,16 @@ bootloaderCore = ""
 if ("PIC32M" in Variables.get("__PROCESSOR")):
     bootloaderCore = "bootloader_mips.py"
     btlSizes = {
-                "PIC32MX"     : [4096],
-                "PIC32MK"     : [4096],
-                "PIC32MM1324" : [4096],
-                "PIC32MM1387" : [4096],
-                "PIC32MZDA"   : [4096],
-                "PIC32MZEF"   : [4096],
-                "PIC32MZW"    : [4096],
+                "PIC32MX"     : [8192],
+                "PIC32MK"     : [16384],
+                "PIC32MM1324" : [8192],
+                "PIC32MM1387" : [8192],
+                "PIC32MZDA"   : [8192],
+                "PIC32MZEF"   : [8192],
+                "PIC32MZW"    : [16384],
     }
 else:
-    bootloaderCore = "bootloader_arm.py"   
+    bootloaderCore = "bootloader_arm.py"
     btlSizes = {
                 "CORTEX-M0PLUS"     : [4096],
                 "CORTEX-M4"         : [4096],
@@ -138,7 +138,7 @@ def instantiateComponent(bootloaderComponent):
     btlDualBankComment.setVisible(False)
     btlDualBankComment.setDependencies(setBtlSymbolVisible, ["BTL_DUAL_BANK"])
 
-    if (("PIC32M" not in Variables.get("__PROCESSOR")) and ("CORTEX-M0PLUS" not in Variables.get("__PROCESSOR"))):
+    if (("PIC32M" not in Variables.get("__PROCESSOR")) and (Database.getSymbolValue("core", "CoreArchitecture") != "CORTEX-M0PLUS")):
         btlMpuRegionNumber= bootloaderComponent.createComboSymbol("BTL_MPU_REGION_NUMBER", None, list(map(str, list(range(0, Database.getSymbolValue("core", "MPU_NUMBER_REGIONS"))))))
         btlMpuRegionNumber.setHelp("btl_helpkeyword")
         btlMpuRegionNumber.setLabel("Select MPU Region to configure non-cachable memory")
@@ -152,13 +152,19 @@ def instantiateComponent(bootloaderComponent):
         btlMpuRegionComment.setVisible(Database.getSymbolValue("core", "DATA_CACHE_ENABLE"))
         btlMpuRegionComment.setDependencies(setBtlSymbolVisible, ["core.DATA_CACHE_ENABLE"])
 
+    if ("PIC32M" in Variables.get("__PROCESSOR")):
+        btlPeriphName = bootloaderComponent.createStringSymbol("PERIPH_CANFD_USED", None)
+        btlPeriphName.setHelp("btl_helpkeyword")
+        btlPeriphName.setDefaultValue("CAN")
+        btlPeriphName.setVisible(False)
+
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
-    if ("CORTEX-M" in Variables.get("__PROCESSOR")):
-        btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_can_arm.c.ftl")
+    if ("PIC32M" in Variables.get("__PROCESSOR")):
+        btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_can_mips.c.ftl")
     else:
-		btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_can_mips.c.ftl")        
+        btlSourceFile.setSourcePath("../bootloader/templates/src/optimized/bootloader_can_arm.c.ftl")
     btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
@@ -235,11 +241,18 @@ def onAttachmentConnected(source, target):
             localComponent.getSymbolByID("PERIPH_USED").clearValue()
             localComponent.getSymbolByID("PERIPH_USED").setValue(remoteID.upper())
             localComponent.getSymbolByID("PERIPH_NAME").setValue(re.sub('[0-9]', '', remoteID.upper()))
+            if Database.getSymbolValue(remoteID, "DATA_BITRATE") != None:
+                localComponent.getSymbolByID("PERIPH_CANFD_USED").setValue("CANFD")
+            else:
+                localComponent.getSymbolByID("PERIPH_CANFD_USED").setValue("CAN")
             Database.setSymbolValue(remoteID, "INTERRUPT_MODE", False)
             Database.setSymbolValue(remoteID, localComponent.getSymbolByID("PERIPH_NAME").getValue() + "_OPMODE", 0)
             Database.setSymbolValue(remoteID, "NUMBER_OF_FILTER", 1)
             remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_FILTER0_ID").setValue(0x45A)
-            remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_MASK0_ID").setValue(0x45A)
+            if Database.getSymbolValue(remoteID, localComponent.getSymbolByID("PERIPH_USED").getValue() + "_MASK0_ID") != None:
+                remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_MASK0_ID").setValue(0x45A)
+            else:
+                remoteComponent.getSymbolByID(localComponent.getSymbolByID("PERIPH_USED").getValue() + "_FILTER0_MASK_ID").setValue(0x45A)
         else:
             localComponent.getSymbolByID("PERIPH_USED").clearValue()
             localComponent.getSymbolByID("PERIPH_USED").setValue(remoteID.upper())
@@ -271,6 +284,8 @@ def onAttachmentDisconnected(source, target):
     if (srcID == "btl_CAN_dependency"):
         localComponent.getSymbolByID("PERIPH_USED").clearValue()
         localComponent.getSymbolByID("PERIPH_NAME").clearValue()
+        if ("PIC32M" in Variables.get("__PROCESSOR")):
+            localComponent.getSymbolByID("PERIPH_CANFD_USED").setValue("CAN")
 
     if (srcID == "btl_MEMORY_dependency"):
         flash_erase_size = 0

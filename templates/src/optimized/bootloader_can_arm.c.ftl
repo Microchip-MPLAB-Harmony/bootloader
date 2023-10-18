@@ -164,7 +164,7 @@ static void flash_write(void)
         while(${MEM_USED}_IsBusy() == true)
         {
             /* Do Nothing */
-        }               
+        }
 
         /* Erase the Current sector */
         (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
@@ -178,7 +178,7 @@ static void flash_write(void)
     }
 
     /* Write Page */
-    (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)&flash_data[0], flash_addr);
+    (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&flash_data[0], flash_addr);
 
     while(${MEM_USED}_IsBusy() == true)
     {
@@ -230,14 +230,14 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
 {
     uint32_t command = rx_message[HEADER_CMD_OFFSET];
     uint32_t size = rx_message[HEADER_SIZE_OFFSET];
-    uint32_t *data = (uint32_t *)rx_message;
+    uint32_t *data = (uint32_t *)(uintptr_t)rx_message;
     ${PERIPH_NAME}_TX_BUFFER *txBuffer = NULL;
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
     uint32_t devcfgAddr = 0;
 </#if>
 
     (void) memset(txFiFo, 0, ${PERIPH_USED}_TX_FIFO_BUFFER_ELEMENT_SIZE);
-    txBuffer = (${PERIPH_NAME}_TX_BUFFER *)txFiFo;
+    txBuffer = (${PERIPH_NAME}_TX_BUFFER *)(uintptr_t)txFiFo;
     txBuffer->id = WRITE_ID(${PERIPH_NAME}_FILTER_ID);
     txBuffer->dlc = 1U;
     txBuffer->fdf = 1U;
@@ -453,16 +453,19 @@ static void ${PERIPH_USED}_task(void)
             {
                 canBLActive = true;
 
+                if (numberOfMessage > (${PERIPH_USED}_RX_FIFO0_SIZE / ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE))
+                {
+                    numberOfMessage = ${PERIPH_USED}_RX_FIFO0_SIZE / ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE;
+                }
+
                 (void) memset(rxFiFo0, 0, ((uint32_t)numberOfMessage * ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE));
 
-                if (${PERIPH_USED}_MessageReceiveFifo(${PERIPH_NAME}_RX_FIFO_0, numberOfMessage, (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0) == true)
+                if (${PERIPH_USED}_MessageReceiveFifo(${PERIPH_NAME}_RX_FIFO_0, numberOfMessage, (void *)rxFiFo0) == true)
                 {
-                    rxBuf = (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0;
-
                     for (count = 0U; count < numberOfMessage; count++)
                     {
+                        rxBuf = (${PERIPH_NAME}_RX_BUFFER *)(uintptr_t)(&rxFiFo0[count * ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE]);
                         process_command(rxBuf->data, CANDlcToLengthGet(rxBuf->dlc));
-                        rxBuf += ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE;
                     }
                 }
             }

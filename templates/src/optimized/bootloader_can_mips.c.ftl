@@ -55,7 +55,11 @@
 // *****************************************************************************
 
 #define ADDR_OFFSET              1
+<#if PERIPH_CANFD_USED == "CANFD">
+#define SIZE_OFFSET              2
+<#else>
 #define SIZE_OFFSET              1
+</#if>
 #define CRC_OFFSET               1
 
 #define HEADER_CMD_OFFSET        0
@@ -75,7 +79,7 @@
 </#if>
 
 #define HEADER_MAGIC             0xE2
-#define ${PERIPH_NAME}_FILTER_ID			 0x45A
+#define CAN_FILTER_ID            0x45A
 
 /* Standard identifier id[28:18]*/
 #define WRITE_ID(id)             (id << 18U)
@@ -90,7 +94,7 @@
 #define TIMER_COMPARE_VALUE     (CORE_TIMER_FREQUENCY / 10)
 
 /* CAN Tx FIFO size */
-#define CAN_TX_FIFO_BUFFER_SIZE		16U
+#define CAN_TX_FIFO_BUFFER_SIZE     16U
 
 enum
 {
@@ -123,23 +127,20 @@ enum
 // *****************************************************************************
 // *****************************************************************************
 
-static uint8_t	CACHE_ALIGN flash_data[PAGE_SIZE];
+static uint8_t  CACHE_ALIGN flash_data[PAGE_SIZE];
 static uint32_t flash_addr, flash_size, flash_ptr;
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
 static uint32_t devCfg_ptr;
 </#if>
 
+<#if PERIPH_CANFD_USED != "CANFD">
 static uint32_t begin, end;
+</#if>
 static uint32_t unlock_begin, unlock_end;
 
-static uint8_t rx_message[HEADER_SIZE + MAX_DATA_SIZE];
-static uint8_t txFiFo [CAN_TX_FIFO_BUFFER_SIZE];
-
-CAN_MSG_RX_ATTRIBUTE msgAttr = CAN_MSG_RX_DATA_FRAME;
+static uint8_t rx_msg[HEADER_SIZE + MAX_DATA_SIZE];
 
 static uint8_t data_seq = 0;
-
-static bool canBLInitDone      = false;
 
 static bool canBLActive        = false;
 
@@ -149,79 +150,31 @@ static bool canBLActive        = false;
 // *****************************************************************************
 // *****************************************************************************
 
-<#if BTL_HW_CRC_GEN == true>
-    <#lt>/* Function to Generate CRC using the device service unit peripheral on programmed data */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t addr = unlock_begin;
-    <#lt>    uint32_t size = unlock_end - unlock_begin;
-    <#lt>    uint32_t crc  = 0;
-
-    <#lt>    return crc;
-    <#lt>}
-<#else>
-    <#lt>/* Function to Generate CRC by reading the firmware programmed into internal flash */
-    <#lt>static uint32_t crc_generate(void)
-    <#lt>{
-    <#lt>    uint32_t   i, j, value;
-    <#lt>    uint32_t   crc_tab[256];
-    <#lt>    uint32_t   size    = unlock_end - unlock_begin;
-    <#lt>    uint32_t   crc     = 0xffffffff;
-    <#lt>    uint8_t    data;
-
-    <#lt>    for (i = 0; i < 256; i++)
-    <#lt>    {
-    <#lt>        value = i;
-
-    <#lt>        for (j = 0; j < 8; j++)
-    <#lt>        {
-    <#lt>            if (value & 1)
-    <#lt>            {
-    <#lt>                value = (value >> 1) ^ 0xEDB88320;
-    <#lt>            }
-    <#lt>            else
-    <#lt>            {
-    <#lt>                value >>= 1;
-    <#lt>            }
-    <#lt>        }
-    <#lt>        crc_tab[i] = value;
-    <#lt>    }
-
-    <#lt>    for (i = 0; i < size; i++)
-    <#lt>    {
-    <#lt>        data = *(uint8_t *)KVA0_TO_KVA1(unlock_begin + i);
-    <#lt>
-    <#lt>        crc = crc_tab[(crc ^ data) & 0xff] ^ (crc >> 8);
-    <#lt>    }
-    <#lt>    return crc;
-    <#lt>}
-</#if>
-
 /* Function to program received application firmware data into internal flash */
 static void flash_write(void)
 {
-    if (0 == (flash_addr % ERASE_BLOCK_SIZE))
+    if (0U == (flash_addr % ERASE_BLOCK_SIZE))
     {
         /* Erase the Current sector */
-        ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
+        (void)${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
 
         while(${MEM_USED}_IsBusy() == true)
-		{
+        {
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
             kickdog();
 </#if>
-		}
+        }
     }
 
     /* Write Page */
-    ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)&flash_data[0], flash_addr);
+    (void)${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&flash_data[0], flash_addr);
 
     while(${MEM_USED}_IsBusy() == true)
 {
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-		kickdog();
+        kickdog();
 </#if>
-	}
+    }
 }
 
 /* Function to process command from the received message */
@@ -229,112 +182,140 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
 {
     uint32_t command = rx_message[HEADER_CMD_OFFSET];
     uint32_t size = rx_message[HEADER_SIZE_OFFSET];
-    uint32_t *data = (uint32_t *)rx_message;
-    CAN_TX_RX_MSG_BUFFER *txBuffer = NULL;
+    uint32_t *data = (uint32_t *)(uintptr_t)rx_message;
+    uint8_t  tx_message[3];
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
-    uint32_t devcfgAddr = 0;
+    uint32_t devcfgAddr = 0U;
 </#if>
 
-	memset (txFiFo, 0x00, CAN_TX_FIFO_BUFFER_SIZE);
-	txBuffer = (CAN_TX_RX_MSG_BUFFER *)txFiFo;
-	txBuffer->msgSID = WRITE_ID (CAN_FILTER_ID);
-	
     if ((rx_messageLength < HEADER_SIZE) || (size > MAX_DATA_SIZE) ||
         (rx_messageLength < (HEADER_SIZE + size)) || (HEADER_MAGIC != rx_message[HEADER_MAGIC_OFFSET]))
-	{		
-		txBuffer->msgData[0] = BL_RESP_ERROR;
-        ${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);		
-        while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
+    {
+        tx_message[0] = BL_RESP_ERROR;
+        <#if PERIPH_CANFD_USED == "CANFD">
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+        <#else>
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+        </#if>
     }
     else if (BL_CMD_READ_VERSION == command)
     {
-        uint16_t btlVersion = bootloader_GetVersion ();
-        
-        txBuffer->msgData[0] = BL_RESP_OK;
-        
-        txBuffer->msgData[1] = (uint8_t)((btlVersion >> 8) & 0xFF);
-        txBuffer->msgData[2] = (uint8_t)(btlVersion & 0xFF);        
-        
-        ${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 3, txBuffer->msgData, 0, msgAttr);		
-        while (${PERIPH_USED}_InterruptGet(0, CAN_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
+        uint16_t btlVersion = bootloader_GetVersion();
+
+        tx_message[0] = BL_RESP_OK;
+
+        tx_message[1] = (uint8_t)((btlVersion >> 8) & 0xFFU);
+        tx_message[2] = (uint8_t)(btlVersion & 0xFFU);
+
+        <#if PERIPH_CANFD_USED == "CANFD">
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 3U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+        <#else>
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 3U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+        </#if>
     }
     else if (BL_CMD_UNLOCK == command)
     {
-		if (rx_message[HEADER_SEQ_OFFSET] != data_seq)
-		{			
-			txBuffer->msgData[0] = BL_RESP_SEQ_ERROR;
-			${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);			
-			while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
-		}
-		else
-		{
-			if (data_seq == 0)
-			{				
-				begin = (data[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
-				
-				txBuffer->msgData[0] = BL_RESP_OK;
-				${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);		
-				while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
-			}
-			else if (data_seq == 1)
-			{
-				end = begin + (data[SIZE_OFFSET] & SIZE_ALIGN_MASK);
-				size += size;
-				
-				if (end > begin && end <= (FLASH_START + FLASH_LENGTH) && size == (OFFSET_SIZE + SIZE_SIZE))
-				{					
-					unlock_begin = begin;
-					unlock_end = end;
-				
-					txBuffer->msgData[0] = BL_RESP_OK;
-					${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);
-					while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
-				}
-				else
-				{
-					unlock_begin = 0;
-					unlock_end = 0;
-				
-					txBuffer->msgData[0] = BL_RESP_ERROR;
-					${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);	
-					while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
-				}
-			}
-			else
-			{
-				unlock_begin = 0;
-				unlock_end = 0;
-			
-				txBuffer->msgData[0] = BL_RESP_ERROR;
-				${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);		
-				while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
-			}
-			
-			data_seq++;
-			flash_ptr = 0;
-			flash_addr = unlock_begin;
-			flash_size = unlock_end;
-		}
+<#if PERIPH_CANFD_USED == "CANFD">
+        uint32_t begin  = (data[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
+
+        uint32_t end    = begin + (data[SIZE_OFFSET] & SIZE_ALIGN_MASK);
+
+        if (end > begin && end <= (FLASH_START + FLASH_LENGTH) && size == (OFFSET_SIZE + SIZE_SIZE))
+        {
+            unlock_begin = begin;
+            unlock_end = end;
+            tx_message[0] = BL_RESP_OK;
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+        }
+        else
+        {
+            unlock_begin = 0;
+            unlock_end = 0;
+            tx_message[0] = BL_RESP_ERROR;
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+        }
+        data_seq = 0;
+        flash_ptr = 0;
+        flash_addr = unlock_begin;
+        flash_size = unlock_end;
+<#else>
+        if (rx_message[HEADER_SEQ_OFFSET] != data_seq)
+        {
+            tx_message[0] = BL_RESP_SEQ_ERROR;
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+        }
+        else
+        {
+            if (data_seq == 0)
+            {
+                begin = (data[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
+
+                tx_message[0] = BL_RESP_OK;
+                (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+            }
+            else if (data_seq == 1)
+            {
+                end = begin + (data[SIZE_OFFSET] & SIZE_ALIGN_MASK);
+                size += size;
+
+                if (end > begin && end <= (FLASH_START + FLASH_LENGTH) && size == (OFFSET_SIZE + SIZE_SIZE))
+                {
+                    unlock_begin = begin;
+                    unlock_end = end;
+
+                    tx_message[0] = BL_RESP_OK;
+                    (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+                }
+                else
+                {
+                    unlock_begin = 0;
+                    unlock_end = 0;
+
+                    tx_message[0] = BL_RESP_ERROR;
+                    (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+                }
+            }
+            else
+            {
+                unlock_begin = 0;
+                unlock_end = 0;
+
+                tx_message[0] = BL_RESP_ERROR;
+                (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+            }
+
+            data_seq++;
+            flash_ptr = 0;
+            flash_addr = unlock_begin;
+            flash_size = unlock_end;
+        }
+</#if>
     }
     else if (BL_CMD_DATA == command)
     {
         if (rx_message[HEADER_SEQ_OFFSET] != data_seq)
-        {		
-			txBuffer->msgData[0] = BL_RESP_ERROR;
-			${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);	
-			while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
+        {
+            tx_message[0] = BL_RESP_ERROR;
+            <#if PERIPH_CANFD_USED == "CANFD">
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+            <#else>
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+            </#if>
         }
         else
         {
             for (uint8_t i = 0; i < size; i++)
             {
                 if (0 == flash_size)
-                {				
-					txBuffer->msgData[0] = BL_RESP_ERROR;
-					${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);	
-					while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
-					
-					return;
+                {
+                    tx_message[0] = BL_RESP_ERROR;
+                    <#if PERIPH_CANFD_USED == "CANFD">
+                    (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+                    <#else>
+                    (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+                    </#if>
+
+                    return;
                 }
 
                 flash_data[flash_ptr++] = rx_message[HEADER_SIZE + i];
@@ -349,10 +330,13 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
                 }
             }
             data_seq++;
-			
-            txBuffer->msgData[0] = BL_RESP_OK;
-            ${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);
-			while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
+
+            tx_message[0] = BL_RESP_OK;
+            <#if PERIPH_CANFD_USED == "CANFD">
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+            <#else>
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+            </#if>
         }
     }
     else if (BL_CMD_VERIFY == command)
@@ -361,50 +345,80 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         uint32_t crc_gen    = 0;
 
         if (size != CRC_SIZE)
-        {		
-			txBuffer->msgData[0] = BL_RESP_ERROR;
-			${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);		
-			while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
+        {
+            tx_message[0] = BL_RESP_ERROR;
+            <#if PERIPH_CANFD_USED == "CANFD">
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+            <#else>
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+            </#if>
         }
 
-        crc_gen = crc_generate();
+        crc_gen = bootloader_CRCGenerate(unlock_begin, (unlock_end - unlock_begin));
 
         if (crc == crc_gen)
-        {			
-            txBuffer->msgData[0] = BL_RESP_CRC_OK;
-            ${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);		
-			while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
+        {
+            tx_message[0] = BL_RESP_CRC_OK;
+            <#if PERIPH_CANFD_USED == "CANFD">
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+            <#else>
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+            </#if>
         }
         else
-        {		
-			txBuffer->msgData[0] = BL_RESP_CRC_FAIL;
-			${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);		
-			while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
+        {
+            tx_message[0] = BL_RESP_CRC_FAIL;
+            <#if PERIPH_CANFD_USED == "CANFD">
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+            <#else>
+            (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+            </#if>
         }
     }
 <#if BTL_DUAL_BANK == true>
     else if (BL_CMD_BKSWAP_RESET == command)
     {
-        txBuffer->msgData[0] = BL_RESP_OK;
-            ${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);
-        while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXNFULLIF_MASK) == false);
+        tx_message[0] = BL_RESP_OK;
+        <#if PERIPH_CANFD_USED == "CANFD">
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+        while (${PERIPH_USED}_InterruptGet(1U, CANFD_FIFO_INTERRUPT_TFERFFIF_MASK) == false)
+        {
+        }
+        <#else>
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+        while (${PERIPH_USED}_InterruptGet(0U, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false)
+        {
+        }
+        </#if>
 
         ${MEM_USED}_BankSwap();
     }
 </#if>
     else if (BL_CMD_RESET == command)
     {
-        txBuffer->msgData[0] = BL_RESP_OK;
-		${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);
-        while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXNFULLIF_MASK) == false);
+        tx_message[0] = BL_RESP_OK;
+        <#if PERIPH_CANFD_USED == "CANFD">
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+        while (${PERIPH_USED}_InterruptGet(1U, CANFD_FIFO_INTERRUPT_TFERFFIF_MASK) == false)
+        {
+        }
+        <#else>
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+        while (${PERIPH_USED}_InterruptGet(0U, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false)
+        {
+        }
+        </#if>
 
         bootloader_TriggerReset();
     }
     else
     {
-        txBuffer->msgData[0] = BL_RESP_INVALID;
-        ${PERIPH_USED}_MessageTransmit(txBuffer->msgSID, 1, txBuffer->msgData, 0, msgAttr);
-		while (${PERIPH_USED}_InterruptGet(0, ${PERIPH_NAME}_FIFO_INTERRUPT_TXEMPTYIF_MASK) == false);
+        tx_message[0] = BL_RESP_INVALID;
+        <#if PERIPH_CANFD_USED == "CANFD">
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 1U, CANFD_MODE_NORMAL, CANFD_MSG_TX_DATA_FRAME);
+        <#else>
+        (void)${PERIPH_USED}_MessageTransmit(CAN_FILTER_ID, 1U, tx_message, 0U, CAN_MSG_TX_DATA_FRAME);
+        </#if>
     }
 }
 
@@ -414,38 +428,52 @@ static void ${PERIPH_USED}_task(void)
     uint32_t status = 0;
     uint32_t rx_messageID = 0;
     uint8_t  rx_messageLength = 0;
+    <#if PERIPH_CANFD_USED == "CANFD">
+    CANFD_MSG_RX_ATTRIBUTE msgFrameAttr = CANFD_MSG_RX_DATA_FRAME;
+    <#else>
     ${PERIPH_NAME}_MSG_RX_ATTRIBUTE msgFrameAttr = ${PERIPH_NAME}_MSG_RX_DATA_FRAME;
+    </#if>
 
-    if (${PERIPH_USED}_InterruptGet(1, ${PERIPH_NAME}_FIFO_INTERRUPT_RXNEMPTYIF_MASK))
+    <#if PERIPH_CANFD_USED == "CANFD">
+    if (${PERIPH_USED}_InterruptGet(2U, CANFD_FIFO_INTERRUPT_TFNRFNIF_MASK))
+    <#else>
+    if (${PERIPH_USED}_InterruptGet(1U, ${PERIPH_NAME}_FIFO_INTERRUPT_RXNEMPTYIF_MASK))
+    </#if>
     {
         /* Check ${PERIPH_USED} Status */
-        status = ${PERIPH_USED}_ErrorGet();
-        <#if PERIPH_NAME == "CAN">
-        if (status == ${PERIPH_NAME}_ERROR_NONE)
+        status = (uint32_t)${PERIPH_USED}_ErrorGet();
+        <#if PERIPH_CANFD_USED == "CANFD">
+        if (status == CANFD_ERROR_NONE)
         <#else>
-        if (status & ${PERIPH_NAME}_ERROR_NONE)
+        if (status == ${PERIPH_NAME}_ERROR_NONE)
         </#if>
         {
-			canBLActive = true;
-			
-            memset (rx_message, 0x00, sizeof(rx_message));
+            canBLActive = true;
+
+            (void)memset(rx_msg, 0x00, sizeof(rx_msg));
 
             /* Receive FIFO 1 New Message */
-            if (${PERIPH_USED}_MessageReceive(&rx_messageID, &rx_messageLength, rx_message, 0, 1, &msgFrameAttr) == true)
+            <#if PERIPH_CANFD_USED == "CANFD">
+            if (${PERIPH_USED}_MessageReceive(&rx_messageID, &rx_messageLength, rx_msg, NULL, 2U, &msgFrameAttr) == true)
+            <#else>
+            if (${PERIPH_USED}_MessageReceive(&rx_messageID, &rx_messageLength, rx_msg, NULL, 1U, &msgFrameAttr) == true)
+            </#if>
             {
-				/* Check ${PERIPH_USED} Status */
-				status = ${PERIPH_USED}_ErrorGet();
-				<#if PERIPH_NAME == "CAN">
-				if (status == ${PERIPH_NAME}_ERROR_NONE)
-				<#else>
-				if (status & ${PERIPH_NAME}_ERROR_NONE)
-				</#if>
-				{
-					process_command(rx_message, rx_messageLength);
-					(void)rx_messageID;
-				}
-				else
-					canBLActive = false;
+                /* Check ${PERIPH_USED} Status */
+                status = (uint32_t)${PERIPH_USED}_ErrorGet();
+                <#if PERIPH_CANFD_USED == "CANFD">
+                if (status == CANFD_ERROR_NONE)
+                <#else>
+                if (status == ${PERIPH_NAME}_ERROR_NONE)
+                </#if>
+                {
+                    process_command(rx_msg, rx_messageLength);
+                    (void)rx_messageID;
+                }
+                else
+                {
+                    canBLActive = false;
+                }
             }
         }
     }
@@ -459,11 +487,6 @@ static void ${PERIPH_USED}_task(void)
 
 void bootloader_${BTL_TYPE}_Tasks(void)
 {
-    if (canBLInitDone == false)
-    {		
-        canBLInitDone = true;
-    }
-
     do
     {
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
