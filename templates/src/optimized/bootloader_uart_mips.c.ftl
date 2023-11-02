@@ -291,9 +291,11 @@ static void command_task(void)
         ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 
         uint16_t btlVersion = bootloader_GetVersion();
+        uint16_t btlVer = ((btlVersion >> 8U) & 0xFFU);
 
-        ${PERIPH_USED}_WriteByte((int)((btlVersion >> 8) & 0xFFU));
-        ${PERIPH_USED}_WriteByte((int)(btlVersion & 0xFFU));
+        ${PERIPH_USED}_WriteByte((int)btlVer);
+        btlVer = (btlVersion & 0xFFU);
+        ${PERIPH_USED}_WriteByte((int)btlVer);
     }
     else if (BL_CMD_VERIFY == input_command)
     {

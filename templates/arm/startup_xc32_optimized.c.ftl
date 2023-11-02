@@ -31,6 +31,16 @@
 #include <sys/cdefs.h>
 #include <stdbool.h>
 
+/* MISRAC 2012 deviation block start */
+/* MISRA C-2012 Rule 21.2 deviated 1 times. Deviation record ID -  H3_MISRAC_2012_R_21_2_DR_1 */
+/* MISRA C-2012 Rule 8.6 deviated 7 times.  Deviation record ID -  H3_MISRAC_2012_R_8_6_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#pragma coverity compliance block \
+(deviate:1 "MISRA C-2012 Rule 21.2" "H3_MISRAC_2012_R_21_2_DR_1")\
+(deviate:7 "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1")
+</#if>
 /* Initialize segments */
 extern uint32_t _sfixed;
 extern void _ram_end_(void);
@@ -41,6 +51,7 @@ extern int main(void);
 
     <#lt>/* Declaration of Reset handler (may be custom) */
     <#lt>void __attribute__((noinline)) Reset_Handler(void);
+    <#lt>extern void (* const vectors[])(void);
 
     <#lt>__attribute__ ((used, section(".vectors")))
     <#lt>void (* const vectors[])(void) =
@@ -61,6 +72,12 @@ extern uint32_t _sbss, _ebss;
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
     <#lt>extern uint32_t _vectors_loadaddr;
 </#if>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 8.6"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 21.2"
+#pragma GCC diagnostic pop
+</#if>
+/* MISRAC 2012 deviation block end */
 
 void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
 {
@@ -104,6 +121,7 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
 </#if>
 
     uint32_t *pSrc, *pDst;
+    uintptr_t src, dst;
 
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
     uint32_t i;
@@ -113,21 +131,33 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     /* Copy .vectors section from flash to RAM */
     for (i = 0; i < sizeof(H3DeviceVectors)/4; i++)
     {
-        *pDst++ = *pSrc++;
+        *pDst = *pSrc;
+        pSrc++;
+        pDst++;
     }
 </#if>
 
-    pSrc = (uint32_t *) &_etext; /* flash functions start after .text */
-    pDst = (uint32_t *) &_sdata;  /* boundaries of .data area to init */
+    src = (uintptr_t)&_etext;
+    pSrc = (uint32_t *)src;      /* flash functions start after .text */
+    dst = (uintptr_t)&_sdata;
+    pDst = (uint32_t *)dst;      /* boundaries of .data area to init */
 
     /* Init .data */
-    while (pDst < &_edata)
-        *pDst++ = *pSrc++;
+    for (uint32_t count = 0U; count < (((uint32_t)&_edata - (uint32_t)dst) / 4U); count++)
+    {
+        pDst[count] = pSrc[count];
+        pSrc++;
+        pDst++;
+    }
 
     /* Init .bss */
-    pDst = &_sbss;
-    while (pDst < &_ebss)
-      *pDst++ = 0;
+    dst = (uintptr_t)&_sbss;
+    pDst = (uint32_t *)dst;
+    for (uint32_t count = 0U; count < (((uint32_t)&_ebss - (uint32_t)dst) / 4U); count++)
+    {
+        pDst[count] = 0U;
+        pDst++;
+    }
 
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
     <#lt>#if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
@@ -138,7 +168,7 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
 </#if>
 
      /* Branch to application's main function */
-    main();
+    (void)main();
 
 #if (defined(__DEBUG) || defined(__DEBUG_D)) && defined(__XC32)
     __builtin_software_breakpoint();

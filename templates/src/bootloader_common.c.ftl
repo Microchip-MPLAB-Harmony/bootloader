@@ -77,7 +77,16 @@
 // *****************************************************************************
 // *****************************************************************************
 
-
+/* MISRA C-2012 Rule 8.6 deviated below. Deviation record ID -
+   H3_MISRAC_2012_R_8_6_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block \
+(deviate "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1" )
+</#if>
 <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
      (!BTL_LIVE_UPDATE??) >
     <#lt>bool __WEAK bootloader_Trigger(void)
@@ -87,6 +96,11 @@
     <#lt>}
 </#if>
 
+void __WEAK SYS_DeInitialize( void *data )
+{
+    /* Function can be overriden with custom implementation */
+}
+
 uint16_t __WEAK bootloader_GetVersion( void )
 {
     /* Function can be overriden with custom implementation */
@@ -94,12 +108,18 @@ uint16_t __WEAK bootloader_GetVersion( void )
 
     return btlVersion;
 }
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 8.6"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
+</#if>
 
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
     <#if (__PROCESSOR?matches("PIC32M.*") == true) || (__PROCESSOR?matches("PIC32CX.*") == true) >
         <#lt>void kickdog(void)
         <#lt>{
-        <#lt>    bool check_windowenbaled =  WDT_IsWindowEnabled();   
+        <#lt>    bool check_windowenbaled =  WDT_IsWindowEnabled();
         <#lt>    if ((WDT_IsEnabled() == true) && (check_windowenbaled == false))
         <#lt>    {
         <#lt>        WDT_Clear();
@@ -139,8 +159,8 @@ uint16_t __WEAK bootloader_GetVersion( void )
     </#if>
 </#if>
 
-/* MISRA C-2012 Rule 10.1, 10.4, 11.1, 11.3 deviated below. Deviation record ID -  
-   H3_MISRAC_2012_R_11_1_DR_1 & H3_MISRAC_2012_R_11_3_DR_1*/
+/* MISRA C-2012 Rule 10.1, 10.4, 11.1, 11.6 deviated below. Deviation record ID -
+   H3_MISRAC_2012_R_10_1_DR_1, H3_MISRAC_2012_R_10_4_DR_1, H3_MISRAC_2012_R_11_1_DR_1 & H3_MISRAC_2012_R_11_6_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
@@ -150,7 +170,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
 (deviate:2 "MISRA C-2012 Rule 10.1" "H3_MISRAC_2012_R_10_1_DR_1" )\
 (deviate:2 "MISRA C-2012 Rule 10.4" "H3_MISRAC_2012_R_10_4_DR_1" )\
 (deviate:2 "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1" )\
-(deviate:2 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1" )   
+(deviate:2 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1" )
 </#if>
 
 
@@ -160,13 +180,13 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>{
     <#lt>    uint32_t crc  = 0xffffffffU;
 
-	<#if CRC_PERIPH_USED?? && CRC_PERIPH_USED == "FCR">
-		<#lt>    FCR_CRCCalculate(start_addr, size, 0xFFFFFFFFU, &crc);
-	<#elseif CRC_PERIPH_USED?? && CRC_PERIPH_USED == "DSU">
-		<#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
+    <#if CRC_PERIPH_USED?? && CRC_PERIPH_USED == "FCR">
+        <#lt>    (void)FCR_CRCCalculate(start_addr, size, 0xFFFFFFFFU, &crc);
+    <#elseif CRC_PERIPH_USED?? && CRC_PERIPH_USED == "DSU">
+        <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);
 
-		<#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-			<#lt>    uint32_t i;
+        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+            <#lt>    uint32_t i;
 
             <#lt>    for (i = 0; i < size; i += ERASE_BLOCK_SIZE)
             <#lt>    {
@@ -183,7 +203,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
             <#lt>    (void) DSU_CRCCalculate (start_addr, size, crc, &crc);
         </#if>
 
-		<#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
+        <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_SET);
     </#if>
 
     <#lt>    return crc;
@@ -318,7 +338,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
 <#if (core.CoreArchitecture == "MIPS") &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
       (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
-    <#lt>T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
+    <#lt>static T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
 
     <#lt>/* Function to read the Serial number from Flash bank mapped to lower region */
     <#lt>uint32_t bootloader_GetLowerFlashSerial(void)
@@ -335,7 +355,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>    update_flash_serial.prologue       = FLASH_SERIAL_PROLOGUE;
     <#lt>    update_flash_serial.epilogue       = FLASH_SERIAL_EPILOGUE;
 
-    <#lt>    ${MEM_USED}_QuadWordWrite((uint32_t *)&update_flash_serial, addr);
+    <#lt>    (void)${MEM_USED}_QuadWordWrite((void *)&update_flash_serial, addr);
 
     <#lt>    while(${MEM_USED}_IsBusy() == true)
     <#lt>    {
@@ -357,7 +377,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>    bootloader_UpdateFlashSerial(upper_flash_serial, UPPER_FLASH_SERIAL_START);
         <#lt>}
     <#elseif BTL_DUAL_BANK?? && BTL_DUAL_BANK == true >
-        <#lt>volatile uint32_t   dummy_read;
+        <#lt>static volatile uint32_t   dummy_read;
 
         <#lt>static bool         upper_flash_serial_erased   = false;
 
@@ -380,7 +400,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>    if (upper_flash_serial_erased == false)
         <#lt>    {
         <#lt>        /* Erase the Sector in which Flash Serial Resides */
-        <#lt>        ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(UPPER_FLASH_SERIAL_SECTOR);
+        <#lt>        (void)${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(UPPER_FLASH_SERIAL_SECTOR);
 
         <#lt>        /* Wait for erase to complete */
         <#lt>        while(${MEM_USED}_IsBusy() == true)
@@ -405,9 +425,9 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>    NVMCONCLR = _NVMCON_WREN_MASK;
 
         <#lt>    /* Write the unlock key sequence */
-        <#lt>    NVMKEY = 0x0;
-        <#lt>    NVMKEY = 0xAA996655;
-        <#lt>    NVMKEY = 0x556699AA;
+        <#lt>    NVMKEY = 0x0U;
+        <#lt>    NVMKEY = 0xAA996655U;
+        <#lt>    NVMKEY = 0x556699AAU;
 
         <#lt>    if (flash_bank == PROGRAM_FLASH_BANK_1)
         <#lt>    {
@@ -419,6 +439,10 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>        /* Map Program Flash Memory Bank 2 to lower region */
         <#lt>        NVMCONSET = _NVMCON_PFSWAP_MASK;
         <#lt>    }
+		<#lt>    else
+		<#lt>    {
+		<#lt>        /* Do Nothing */
+		<#lt> 	 }
         <#lt>}
 
         <#lt>/* Function to Select Appropriate program flash bank based on the serial number */
@@ -468,6 +492,10 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>         */
         <#lt>        dummy_read = *(uint32_t *)(UPPER_FLASH_START);
         <#lt>    }
+		<#lt>    else
+		<#lt>    {
+		<#lt>        /* Do Nothing */
+		<#lt> 	 }
         <#lt>}
     </#if>
 </#if>
@@ -494,6 +522,6 @@ uint16_t __WEAK bootloader_GetVersion( void )
 #pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
-</#if>    
-</#if> 
+</#if>
+</#if>
 /* MISRAC 2012 deviation block end */

@@ -359,6 +359,15 @@ def generateCommonFiles(bootloaderComponent):
     btlCommonHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
     btlCommonHeaderFile.setType("HEADER")
 
+    btlInterruptHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_INTERRUPT_HEADER", None)
+    btlInterruptHeaderFile.setSourcePath("../bootloader/templates/arm/bootloader_interrupt.h")
+    btlInterruptHeaderFile.setOutputName("bootloader_interrupt.h")
+    btlInterruptHeaderFile.setMarkup(False)
+    btlInterruptHeaderFile.setOverwrite(True)
+    btlInterruptHeaderFile.setDestPath("/bootloader/")
+    btlInterruptHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
+    btlInterruptHeaderFile.setType("HEADER")
+
     if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
         btlCommonSourceFile.setSecurity("SECURE")
         btlCommonHeaderFile.setSecurity("SECURE")

@@ -50,6 +50,9 @@
 <#if core.CoreArchitecture == "MIPS">
     <#lt>#include "sys/kmem.h"
 </#if>
+<#if core.CoreArchitecture != "MIPS" && core.DeviceFamily != "PIC32CZ_CA80_CA90">
+#include "bootloader_interrupt.h"
+</#if>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -116,9 +119,9 @@
     <#lt>#define UPPER_FLASH_SERIAL_START                (FLASH_END_ADDRESS - PAGE_SIZE)
     <#lt>#define UPPER_FLASH_SERIAL_SECTOR               (FLASH_END_ADDRESS - ERASE_BLOCK_SIZE)
 
-    <#lt>#define FLASH_SERIAL_PROLOGUE                   0xDEADBEEF
-    <#lt>#define FLASH_SERIAL_EPILOGUE                   0xBEEFDEAD
-    <#lt>#define FLASH_SERIAL_CLEAR                      0xFFFFFFFF
+    <#lt>#define FLASH_SERIAL_PROLOGUE                   0xDEADBEEFU
+    <#lt>#define FLASH_SERIAL_EPILOGUE                   0xBEEFDEADU
+    <#lt>#define FLASH_SERIAL_CLEAR                      0xFFFFFFFFU
 
     <#lt>#define LOWER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(LOWER_FLASH_SERIAL_START))
     <#lt>#define UPPER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(UPPER_FLASH_SERIAL_START))

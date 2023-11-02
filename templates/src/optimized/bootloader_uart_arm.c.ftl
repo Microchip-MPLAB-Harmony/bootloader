@@ -133,7 +133,15 @@ static DRV_HANDLE memoryHandle = DRV_HANDLE_INVALID;
 <#else>
 typedef bool (*FLASH_ERASE_FPTR)(uint32_t address);
 
-typedef bool (*FLASH_WRITE_FPTR)(uint32_t* data, uint32_t const address);
+<#if MEM_USED == "NVMCTRL">
+  <#if core.CoreArchitecture == "CORTEX-M4">
+    <#lt>typedef bool (*FLASH_WRITE_FPTR)(const uint32_t* data, const uint32_t address);
+  <#else>
+    <#lt>typedef bool (*FLASH_WRITE_FPTR)(uint32_t* data, const uint32_t address);
+  </#if>
+<#else>
+  <#lt>typedef bool (*FLASH_WRITE_FPTR)(uint32_t* data, uint32_t address);
+</#if>
 </#if>
 
 <#macro apiHandle>
@@ -207,7 +215,7 @@ static void input_task(void)
         {
             /* Nothing to do */
         }
-           
+
     }
     else if (header_received == true)
     {
@@ -314,9 +322,19 @@ static void command_task(void)
         ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 
         uint16_t btlVersion = bootloader_GetVersion();
+        uint16_t btlVer = ((btlVersion >> 8U) & 0xFFU);
 
-        ${PERIPH_USED}_WriteByte((int)((btlVersion >> 8) & 0xFFU));
-        ${PERIPH_USED}_WriteByte((int)(btlVersion & 0xFFU));
+        <#if PERIPH_USED?contains("FLEXCOM")>
+        ${PERIPH_USED}_WriteByte((uint8_t)btlVer);
+		<#else>
+        ${PERIPH_USED}_WriteByte((int)btlVer);
+		</#if>
+        btlVer = (btlVersion & 0xFFU);
+        <#if PERIPH_USED?contains("FLEXCOM")>
+        ${PERIPH_USED}_WriteByte((uint8_t)btlVer);
+		<#else>
+        ${PERIPH_USED}_WriteByte((int)btlVer);
+		</#if>
     }
     else if (BL_CMD_VERIFY == input_command)
     {
