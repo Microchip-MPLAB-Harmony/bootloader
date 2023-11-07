@@ -26,6 +26,7 @@
 #include "definitions.h" /* for potential custom handler names */
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
     <#lt>#include "device_vectors.h"
+    <#lt>#include "interrupts.h"
 </#if>
 #include <libpic32c.h>
 #include <sys/cdefs.h>
@@ -125,15 +126,15 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
 
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
     uint32_t i;
-    pSrc = (uint32_t *) &_vectors_loadaddr; /* flash address */
-    pDst = (uint32_t *) &_sfixed;
+    src = (uintptr_t)&_vectors_loadaddr; /* flash address */
+    pSrc = (uint32_t *)src;
+    dst = (uintptr_t)&_sfixed;
+    pDst = (uint32_t *)dst;
 
     /* Copy .vectors section from flash to RAM */
-    for (i = 0; i < sizeof(H3DeviceVectors)/4; i++)
+    for (i = 0U; i < sizeof(H3DeviceVectors)/4U; i++)
     {
-        *pDst = *pSrc;
-        pSrc++;
-        pDst++;
+        pDst[i] = pSrc[i];
     }
 </#if>
 
@@ -146,8 +147,6 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     for (uint32_t count = 0U; count < (((uint32_t)&_edata - (uint32_t)dst) / 4U); count++)
     {
         pDst[count] = pSrc[count];
-        pSrc++;
-        pDst++;
     }
 
     /* Init .bss */
@@ -156,7 +155,6 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     for (uint32_t count = 0U; count < (((uint32_t)&_ebss - (uint32_t)dst) / 4U); count++)
     {
         pDst[count] = 0U;
-        pDst++;
     }
 
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >

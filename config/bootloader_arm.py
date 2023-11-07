@@ -360,9 +360,9 @@ def generateCommonFiles(bootloaderComponent):
     btlCommonHeaderFile.setType("HEADER")
 
     btlInterruptHeaderFile = bootloaderComponent.createFileSymbol("BOOTLOADER_INTERRUPT_HEADER", None)
-    btlInterruptHeaderFile.setSourcePath("../bootloader/templates/arm/bootloader_interrupt.h")
+    btlInterruptHeaderFile.setSourcePath("../bootloader/templates/arm/bootloader_interrupt.h.ftl")
     btlInterruptHeaderFile.setOutputName("bootloader_interrupt.h")
-    btlInterruptHeaderFile.setMarkup(False)
+    btlInterruptHeaderFile.setMarkup(True)
     btlInterruptHeaderFile.setOverwrite(True)
     btlInterruptHeaderFile.setDestPath("/bootloader/")
     btlInterruptHeaderFile.setProjectPath("config/" + configName + "/bootloader/")

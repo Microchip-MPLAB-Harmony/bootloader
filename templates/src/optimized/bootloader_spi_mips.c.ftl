@@ -319,7 +319,7 @@ static void BL_SPI_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_WRITE:
-            (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&spiBLData.cmd.programCommand.data[spiBLData.dataBufferAlignOffset + spiBLData.nFlashBytesWritten], (spiBLData.cmd.programCommand.memAddr + spiBLData.nFlashBytesWritten));
+            (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&spiBLData.cmd.programCommand.data[spiBLData.dataBufferAlignOffset + spiBLData.nFlashBytesWritten], (spiBLData.cmd.programCommand.memAddr + spiBLData.nFlashBytesWritten));
             spiBLData.flashState = BL_FLASH_STATE_WRITE_BUSY_POLL;
             break;
 
@@ -389,6 +389,16 @@ static void BL_SPI_FlashTask(void)
     }
 }
 
+/* MISRA C-2012 Rule 11.8 deviated below. Deviation record ID -
+   H3_MISRAC_2012_R_11_8_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block \
+(deviate:1 "MISRA C-2012 Rule 11.8" "H3_MISRAC_2012_R_11_8_DR_1" )
+</#if>
 static void BL_SPI_EventHandler(uintptr_t context )
 {
     if (${PERIPH_USED}_ErrorGet() == SPI_SLAVE_ERROR_NONE)
@@ -405,6 +415,13 @@ static void BL_SPI_EventHandler(uintptr_t context )
         ${PERIPH_USED}_Ready();
     }
 }
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.8"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
+</#if>
+/* MISRAC 2012 deviation block end */
 
 // *****************************************************************************
 // *****************************************************************************

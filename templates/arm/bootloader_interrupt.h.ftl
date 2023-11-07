@@ -45,7 +45,9 @@
 #ifndef BOOTLOADER_INTERRUPT_H
 #define BOOTLOADER_INTERRUPT_H
 
+<#if core.CoreSysIntFile?? && core.CoreSysIntFile == false>
 void NonMaskableInt_Handler(void);
 void HardFault_Handler(void);
+</#if>
 
 #endif      //BOOTLOADER_INTERRUPT_H
