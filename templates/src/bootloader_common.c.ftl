@@ -85,7 +85,7 @@
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
-(deviate "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1" )
+(deviate "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1" )\
 (deviate "MISRA C-2012 Rule 5.8" "H3_MISRAC_2012_R_5_8_DR_1" )
 </#if>
 <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
