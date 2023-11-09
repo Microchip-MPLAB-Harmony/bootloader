@@ -598,13 +598,13 @@ static void BL_I2C_FlashTask(void)
                 if ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && (blProtocol.cmdProtocol.programCommand.memAddr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
                 {
                     /* Write the NVM user row */
-                    (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                    (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
                 }
     <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
                 else if ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (blProtocol.cmdProtocol.programCommand.memAddr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
                 {
                     /* Write the NVM user row */
-                    (void) ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                    (void) ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
                 }
                 else
                 {
@@ -614,10 +614,10 @@ static void BL_I2C_FlashTask(void)
             }
             else
             {
-                (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
             }
 <#else>
-            (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t*)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+            (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
 </#if>
             blProtocol.flashState = BL_FLASH_STATE_WRITE_BUSY_POLL;
             break;
