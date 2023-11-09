@@ -52,8 +52,8 @@
 </#if>
 #include "definitions.h"
 #include "device.h"
-<#if COVERITY_SUPPRESS_DEVIATION?? && COVERITY_SUPPRESS_DEVIATION>
-    <#if COMPILER_CHOICE == "XC32">
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+    <#if core.COMPILER_CHOICE == "XC32">
 
 
 #pragma GCC diagnostic push
@@ -84,7 +84,7 @@ ${core.LIST_SYSTEM_INIT_C_CONFIG_BITS_INITIALIZATION}
 /* MISRA C-2012 Rule 11.1 */
 /* MISRA C-2012 Rule 11.3 */
 /* MISRA C-2012 Rule 11.8 */
-<#if COVERITY_SUPPRESS_DEVIATION?? && COVERITY_SUPPRESS_DEVIATION>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 #pragma coverity compliance block deviate "MISRA C-2012 Rule 7.2"  "H3_MISRAC_2012_R_7_2_DR_1"
 #pragma coverity compliance block deviate "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1"
 #pragma coverity compliance block deviate "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1"
@@ -168,7 +168,7 @@ void SYS_Initialize ( void* data )
     /* Following MISRA-C rules deviated in this block  */
     /* MISRA C-2012 Rule 11.3 - Deviation record ID - H3_MISRAC_2012_R_11_3_DR_1 */
     /* MISRA C-2012 Rule 11.8 - Deviation record ID - H3_MISRAC_2012_R_11_8_DR_1 */
-<#if COVERITY_SUPPRESS_DEVIATION?? && COVERITY_SUPPRESS_DEVIATION>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
      #pragma coverity compliance block \
      (deviate "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1" )\
      (deviate "MISRA C-2012 Rule 11.8" "H3_MISRAC_2012_R_11_8_DR_1" )
@@ -176,7 +176,7 @@ void SYS_Initialize ( void* data )
     <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_DRIVERS}
     <#lt>${core.LIST_SYSTEM_INIT_C_INITIALIZE_SYSTEM_SERVICES}
     <#lt>${core.LIST_SYSTEM_INIT_C_INITIALIZE_MIDDLEWARE}
-<#if COVERITY_SUPPRESS_DEVIATION?? && COVERITY_SUPPRESS_DEVIATION>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
     #pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
     #pragma coverity compliance end_block "MISRA C-2012 Rule 11.8"
 </#if>
