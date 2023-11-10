@@ -126,7 +126,13 @@ ${core.LIST_SYSTEM_INIT_C_SYSTEM_INITIALIZATION}
 // *****************************************************************************
 // *****************************************************************************
 ${core.LIST_SYSTEM_INIT_C_INITIALIZER_STATIC_FUNCTIONS}
-
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 7.2"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.8"
+</#if>
+/* MISRAC 2012 deviation block end */
 
 /*******************************************************************************
   Function:
