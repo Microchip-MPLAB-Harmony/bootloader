@@ -85,7 +85,7 @@
 <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
      (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true) >
     <#lt>/* Starting location of Bootloader in Inactive bank */
-    <#lt>#define INACTIVE_BANK_OFFSET                    (FLASH_LENGTH / 2)
+    <#lt>#define INACTIVE_BANK_OFFSET                    (FLASH_LENGTH / 2U)
 
     <#lt>#define INACTIVE_BANK_START                     (FLASH_START + INACTIVE_BANK_OFFSET)
 
@@ -112,8 +112,8 @@
      (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
 
     <#lt>#define LOWER_FLASH_START                       (FLASH_START)
-    <#lt>#define LOWER_FLASH_SERIAL_START                (LOWER_FLASH_START + (FLASH_LENGTH / 2) - PAGE_SIZE)
-    <#lt>#define LOWER_FLASH_SERIAL_SECTOR               (LOWER_FLASH_START + (FLASH_LENGTH / 2) - ERASE_BLOCK_SIZE)
+    <#lt>#define LOWER_FLASH_SERIAL_START                (LOWER_FLASH_START + (FLASH_LENGTH / 2U) - PAGE_SIZE)
+    <#lt>#define LOWER_FLASH_SERIAL_SECTOR               (LOWER_FLASH_START + (FLASH_LENGTH / 2U) - ERASE_BLOCK_SIZE)
 
     <#lt>#define UPPER_FLASH_START                       INACTIVE_BANK_START
     <#lt>#define UPPER_FLASH_SERIAL_START                (FLASH_END_ADDRESS - PAGE_SIZE)

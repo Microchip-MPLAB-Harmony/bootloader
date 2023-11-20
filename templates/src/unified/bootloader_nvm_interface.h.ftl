@@ -35,8 +35,8 @@
 *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef _BOOTLOADER_NVM_INTERFACE_H
-#define _BOOTLOADER_NVM_INTERFACE_H
+#ifndef BOOTLOADER_NVM_INTERFACE_H
+#define BOOTLOADER_NVM_INTERFACE_H
 
 #ifdef __cplusplus
     extern "C" {
@@ -79,4 +79,4 @@ bool bootloader_NvmIsBusy(void);
 }
 #endif
 
-#endif //_BOOTLOADER_NVM_INTERFACE_H
+#endif //BOOTLOADER_NVM_INTERFACE_H

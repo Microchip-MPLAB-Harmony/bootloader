@@ -65,11 +65,29 @@ typedef struct {
     uint8_t CACHE_ALIGN buff[PAGE_SIZE];
 } T_NVM_DATA;
 
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+</#if>
+<#if __PROCESSOR?matches("PIC32M.*") == true>
+/* MISRA C-2012 Rule 7.2 deviated:2, Rule 11.6 deviated:8  Deviation record ID -  H3_MISRAC_2012_R_7_2_DR_1 & H3_MISRAC_2012_R_11_6_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance block deviate:8 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1"
+#pragma coverity compliance block deviate:2 "MISRA C-2012 Rule 7.2" "H3_MISRAC_2012_R_7_2_DR_1"
+</#if>
+</#if>
 static T_NVM_DATA CACHE_ALIGN nvm_data =
 {
     .progAddr = APP_START_ADDRESS,
     .prevAddr = APP_START_ADDRESS
 };
+<#if __PROCESSOR?matches("PIC32M.*") == true>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 7.2"
+</#if>
+</#if>
 
 static bool nvmDataInitDone = false;
 
@@ -84,7 +102,7 @@ void bootloader_NvmAppErase( void )
 
     while (flashAddr < FLASH_END_ADDRESS)
     {
-        ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flashAddr);
+        (void)${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flashAddr);
 
         while(bootloader_NvmIsBusy() == true)
         {
@@ -97,7 +115,7 @@ void bootloader_NvmAppErase( void )
 
 void bootloader_NVMPageWrite(uint32_t address, uint8_t* data)
 {
-    ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((uint32_t *)data, address);
+    (void)${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)data, address);
 
     while(bootloader_NvmIsBusy() == true)
     {
@@ -108,13 +126,13 @@ void bootloader_NVMPageWrite(uint32_t address, uint8_t* data)
 static void bootloader_AlignProgAddress(uint32_t curAddress)
 {
     /* Program the pending bytes if any in the buffer */
-    if (nvm_data.buffIndex != 0)
+    if (nvm_data.buffIndex != 0U)
     {
-        nvm_data.buffIndex = 0;
+        nvm_data.buffIndex = 0U;
 
         bootloader_NVMPageWrite(nvm_data.progAddr, nvm_data.buff);
 
-        memset((void *)nvm_data.buff, 0xFF, PAGE_SIZE);
+        (void)memset((void *)nvm_data.buff, 0xFF, PAGE_SIZE);
     }
 
     /* Update the program address to start of page in which curAddress Falls */
@@ -134,12 +152,12 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
     if (nvmDataInitDone == false)
     {
         /* Set the nvm buffer to 0xFF for first record data if less than PAGE_SIZE */
-        memset((void *)nvm_data.buff, 0xFF, PAGE_SIZE);
+        (void)memset((void *)nvm_data.buff, 0xFF, PAGE_SIZE);
 
         nvmDataInitDone = true;
     }
 
-    while(totalLen >= 5) // A hex record must be at-least 5 bytes. (1 Data Len byte + 1 rec type byte+ 2 address bytes + 1 crc)
+    while(totalLen >= 5U) // A hex record must be at-least 5 bytes. (1 Data Len byte + 1 rec type byte+ 2 address bytes + 1 crc)
     {
         HexRecord = &HexRecord[nextRecStartPt];
         HexRecordSt.RecDataLen = HexRecord[0];
@@ -147,19 +165,19 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
         HexRecordSt.Data = &HexRecord[4];
 
         //Determine next record starting point.
-        nextRecStartPt = HexRecordSt.RecDataLen + 5;
+        nextRecStartPt = (uint32_t)HexRecordSt.RecDataLen + 5U;
 
         // Decrement total hex record length by length of current record.
         totalLen = totalLen - nextRecStartPt;
 
         // Hex Record checksum check.
-        Checksum = 0;
-        for(i = 0; i < HexRecordSt.RecDataLen + 5; i++)
+        Checksum = 0U;
+        for(i = 0U; i < ((uint32_t)HexRecordSt.RecDataLen + 5U); i++)
         {
             Checksum += HexRecord[i];
         }
 
-        if(Checksum != 0)
+        if(Checksum != 0U)
         {
             return HEX_REC_CRC_ERROR;
         }
@@ -169,12 +187,12 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
             switch(HexRecordSt.RecType)
             {
                 case DATA_RECORD:  //Record Type 00, data record.
-                    HexRecordSt.Address = (HexRecord[1]<<8) + HexRecord[2];
+                    HexRecordSt.Address = ((uint32_t)HexRecord[1] << 8U) + (uint32_t)HexRecord[2];
 
                     // Derive the address.
                     HexRecordSt.Address = HexRecordSt.Address + HexRecordSt.ExtLinAddress + HexRecordSt.ExtSegAddress;
 
-                    while(HexRecordSt.RecDataLen) // Loop till all bytes are done.
+                    while(HexRecordSt.RecDataLen != 0U) // Loop till all bytes are done.
                     {
 <#if core.CoreArchitecture == "MIPS">
                         curAddress = (uint32_t)(PA_TO_KVA0(HexRecordSt.Address));
@@ -224,7 +242,10 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
                                 curDataLen = PAGE_SIZE - nvm_data.buffIndex;
                             }
 
-                            memcpy((void *)&nvm_data.buff[nvm_data.buffIndex], HexRecordSt.Data, curDataLen);
+                            if (curDataLen > 0U)
+                            {
+                                (void)memcpy(&nvm_data.buff[nvm_data.buffIndex], HexRecordSt.Data, curDataLen);
+                            }
 
                             nvm_data.buffIndex += curDataLen;
                             nvm_data.prevAddr = curAddress;
@@ -232,36 +253,36 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
 
                             HexRecordSt.Address += curDataLen;
                             HexRecordSt.Data += curDataLen;
-                            HexRecordSt.RecDataLen -= curDataLen;
+                            HexRecordSt.RecDataLen -= (uint8_t)curDataLen;
                         }
                         else    // Out of boundaries. Adjust and move on.
                         {
                             // Increment the address.
-                            HexRecordSt.Address += 4;
+                            HexRecordSt.Address += 4U;
                             // Increment the data pointer.
-                            HexRecordSt.Data += 4;
+                            HexRecordSt.Data += 4U;
                             // Decrement data len.
-                            if(HexRecordSt.RecDataLen > 3)
+                            if(HexRecordSt.RecDataLen > 3U)
                             {
-                                HexRecordSt.RecDataLen -= 4;
+                                HexRecordSt.RecDataLen -= 4U;
                             }
                             else
                             {
-                                HexRecordSt.RecDataLen = 0;
+                                HexRecordSt.RecDataLen = 0U;
                             }
                         }
                     }
                     break;
 
                 case EXT_SEG_ADRS_RECORD:  // Record Type 02, defines 4th to 19th bits of the data address.
-                    HexRecordSt.ExtSegAddress = (HexRecordSt.Data[0]<<12) + (HexRecordSt.Data[1]<<4);
+                    HexRecordSt.ExtSegAddress = ((uint32_t)HexRecordSt.Data[0] << 12U) + ((uint32_t)HexRecordSt.Data[1] << 4U);
 
                     // Reset linear address.
                     HexRecordSt.ExtLinAddress = 0;
                     break;
 
                 case EXT_LIN_ADRS_RECORD:   // Record Type 04, defines 16th to 31st bits of the data address.
-                    HexRecordSt.ExtLinAddress = (HexRecordSt.Data[0]<<24) + (HexRecordSt.Data[1]<<16);
+                    HexRecordSt.ExtLinAddress = ((uint32_t)HexRecordSt.Data[0] << 24U) + ((uint32_t)HexRecordSt.Data[1] << 16U);
 
                     // Reset segment address.
                     HexRecordSt.ExtSegAddress = 0;
@@ -269,7 +290,7 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
 
                 case END_OF_FILE_RECORD:  //Record Type 01, defines the end of file record.
                     /* Program the remaining bytes if any */
-                    if(nvm_data.buffIndex > 0)
+                    if(nvm_data.buffIndex > 0U)
                     {
                         bootloader_NVMPageWrite(nvm_data.progAddr, nvm_data.buff);
 
@@ -277,7 +298,7 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
 
                         nvm_data.progAddr = nvm_data.prevAddr = APP_START_ADDRESS;
 
-                        memset((void *)nvm_data.buff, 0xFF, PAGE_SIZE);
+                        (void)memset((void *)nvm_data.buff, 0xFF, PAGE_SIZE);
                     }
 
                     HexRecordSt.ExtSegAddress = 0;
@@ -294,9 +315,9 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
         }
     }
 
-    if ( (HexRecordSt.RecType == DATA_RECORD) || (HexRecordSt.RecType == EXT_SEG_ADRS_RECORD)
-            || (HexRecordSt.RecType == EXT_LIN_ADRS_RECORD) || (HexRecordSt.RecType == START_LIN_ADRS_RECORD)
-            || (HexRecordSt.RecType == END_OF_FILE_RECORD))
+    if ( (HexRecordSt.RecType == (uint8_t)DATA_RECORD) || (HexRecordSt.RecType == (uint8_t)EXT_SEG_ADRS_RECORD)
+            || (HexRecordSt.RecType == (uint8_t)EXT_LIN_ADRS_RECORD) || (HexRecordSt.RecType == (uint8_t)START_LIN_ADRS_RECORD)
+            || (HexRecordSt.RecType == (uint8_t)END_OF_FILE_RECORD))
     {
         return HEX_REC_NORMAL;
     }
@@ -305,3 +326,14 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
         return HEX_REC_UNKNOW_TYPE;
     }
 }
+<#if __PROCESSOR?matches("PIC32M.*") == true>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+</#if>
+/* MISRAC 2012 deviation block end */
+</#if>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
+</#if>
