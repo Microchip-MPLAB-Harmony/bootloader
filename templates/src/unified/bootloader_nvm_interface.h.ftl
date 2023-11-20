@@ -71,7 +71,7 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
 
 void bootloader_NvmAppErase(void);
 
-void bootloader_NvmPageWrite(uint32_t address, uint32_t* data);
+void bootloader_NVMPageWrite(uint32_t address, uint8_t* data);
 
 bool bootloader_NvmIsBusy(void);
 
