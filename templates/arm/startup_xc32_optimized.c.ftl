@@ -83,21 +83,22 @@ extern uint32_t _sbss, _ebss;
 void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
 {
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CM_JH00_JH01">
-    register uint32_t *pRam;
+    register uint32_t *pRam = (uint32_t*)(uintptr_t)&_sdata;
+    register uint32_t count;
 
     // MCRAMC initialization loop (to handle ECC properly)
     // Write to entire RAM (leaving initial 16 bytes) to initialize ECC checksum
-    for (pRam = (uint32_t*)&_sdata ; pRam < (uint32_t*)&_ram_end_; pRam++)
+    for (count = 0U; count < (((uint32_t)&_ram_end_ - (uint32_t)&_sdata) / 4U); count++)
     {
-        *pRam = 0;
+        pRam[count] = 0U;
 
-        if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) || (WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk))
+        if (((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) != 0U) || ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk) != 0U))
         {
-            if (WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk)
+            if ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_WEN_Msk) != 0U)
             {
-                if (WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk)
+                if ((WDT_REGS->WDT_INTFLAG & WDT_INTFLAG_EW_Msk) == WDT_INTFLAG_EW_Msk)
                 {
-                    if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+                    if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) == 0U)
                     {
 
                         /* Clear WDT and reset the WDT timer before the
@@ -110,7 +111,7 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
             }
             else
             {
-                if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) != WDT_SYNCBUSY_CLEAR_Msk)
+                if ((WDT_REGS->WDT_SYNCBUSY & WDT_SYNCBUSY_CLEAR_Msk) == 0U)
                 {
 
                     /* Clear WDT and reset the WDT timer before the timeout occurs */
