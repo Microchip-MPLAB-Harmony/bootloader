@@ -163,7 +163,7 @@ static uint32_t bootloader_CalculateCrc(uint8_t *data, uint32_t len)
     return ((uint32_t)crc & 0xFFFFU);
 }
 
-/* MISRA C-2012 Rule 16.1, 16.3 deviated below. Deviation record ID -  
+/* MISRA C-2012 Rule 16.1, 16.3 deviated below. Deviation record ID -
    H3_MISRAC_2012_R_16_1_DR_1 & H3_MISRAC_2012_R_16_3_DR_1*/
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
@@ -172,7 +172,7 @@ static uint32_t bootloader_CalculateCrc(uint8_t *data, uint32_t len)
 </#if>
 #pragma coverity compliance block \
 (deviate:1 "MISRA C-2012 Rule 16.1" "H3_MISRAC_2012_R_16_1_DR_1" )\
-(deviate:1 "MISRA C-2012 Rule 16.3" "H3_MISRAC_2012_R_16_3_DR_1" )   
+(deviate:1 "MISRA C-2012 Rule 16.3" "H3_MISRAC_2012_R_16_3_DR_1" )
 </#if>
 
 static void bootloader_BufferEventHandler
@@ -250,8 +250,8 @@ static void bootloader_BufferEventHandler
 #pragma coverity compliance end_block "MISRA C-2012 Rule 16.3"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
-</#if>    
-</#if> 
+</#if>
+</#if>
 /* MISRAC 2012 deviation block end */
 
 static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
@@ -275,6 +275,10 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
         {
             btlVersion = bootloader_GetVersion();
 
+        <#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+            bootloader_EraseRecInit();
+        </#if>
+
             /* Major Number */
             dataBuff.buffers.inputBuff[1] = (uint8_t)(btlVersion >> 8);
 
@@ -288,7 +292,9 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 
         case (uint8_t)ERASE_FLASH:
         {
-            bootloader_NvmAppErase();
+        <#if core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
+            <#lt>bootloader_NvmAppErase(APP_START_ADDRESS, FLASH_END_ADDRESS);
+        </#if>
             handle->currentState = BOOTLOADER_SEND_RESPONSE;
             handle->buffSize = 1;
             break;
@@ -416,7 +422,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
                 crc = (uint16_t)bootloader_CalculateCrc(dataBuff.buffers.inputBuff, btlData.buffSize);
 
                 dataBuff.buffers.inputBuff[btlData.buffSize] = (uint8_t)crc;
-                btlData.buffSize++;                
+                btlData.buffSize++;
 
                 dataBuff.buffers.inputBuff[btlData.buffSize] = (uint8_t)(crc>>8);
                 btlData.buffSize++;

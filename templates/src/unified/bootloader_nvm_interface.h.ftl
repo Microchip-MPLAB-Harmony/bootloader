@@ -68,12 +68,22 @@ typedef enum
 } HEX_RECORD_STATUS;
 
 HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t totalLen);
+<#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
 
-void bootloader_NvmAppErase(void);
+<#lt>void bootloader_BlockErase(uint32_t curAddress);
 
+<#lt>void bootloader_EraseRecInit(void);
+
+<#else>
+
+<#lt>void bootloader_NvmAppErase(uint32_t startAddr, uint32_t endAddr);
+
+</#if>
 void bootloader_NVMPageWrite(uint32_t address, uint8_t* data);
 
 bool bootloader_NvmIsBusy(void);
+
+
 
 #ifdef  __cplusplus
 }

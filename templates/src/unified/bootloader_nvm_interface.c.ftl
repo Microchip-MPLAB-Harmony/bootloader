@@ -46,6 +46,18 @@
 #include "peripheral/${MEM_USED?lower_case}/plib_${MEM_USED?lower_case}.h"
 #include "system/int/sys_int.h"
 
+<#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+<#lt>#define NUM_ERASE_RECORDS  4
+
+typedef struct {
+    uint32_t startAddr;
+    uint32_t endAddr;
+    bool blockEraseStatus;
+}ERASE_RECORD;
+
+ERASE_RECORD eraseBlocks[NUM_ERASE_RECORDS];
+</#if>
+
 typedef struct
 {
     uint8_t RecDataLen;
@@ -96,11 +108,41 @@ bool bootloader_NvmIsBusy(void)
     return (${MEM_USED}_IsBusy());
 }
 
-void bootloader_NvmAppErase( void )
+<#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+void bootloader_EraseRecInit(void)
 {
-    uint32_t flashAddr = APP_START_ADDRESS;
+  uint32_t blockSize = FLASH_LENGTH / NUM_ERASE_RECORDS;
 
-    while (flashAddr < FLASH_END_ADDRESS)
+  for (int i = 0; i < NUM_ERASE_RECORDS; i++) {
+        eraseBlocks[i].startAddr = APP_START_ADDRESS + (i * blockSize);
+        eraseBlocks[i].endAddr = eraseBlocks[i].startAddr + (blockSize-1);
+        eraseBlocks[i].blockEraseStatus = false;
+  }
+}
+
+void bootloader_BlockErase(uint32_t curAddress)
+{
+  for (int i = 0; i < NUM_ERASE_RECORDS; i++)
+    {
+        if(curAddress >= eraseBlocks[i].startAddr && curAddress <= eraseBlocks[i].endAddr)
+        {
+            if(!eraseBlocks[i].blockEraseStatus)
+            {
+                bootloader_NvmAppErase(eraseBlocks[i].startAddr, eraseBlocks[i].endAddr);
+                eraseBlocks[i].blockEraseStatus = true;
+                break;
+            }
+        }
+    }
+}
+
+</#if>
+
+void bootloader_NvmAppErase( uint32_t startAddr, uint32_t endAddr )
+{
+    uint32_t flashAddr = startAddr;
+
+    while (flashAddr < endAddr)
     {
         (void)${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flashAddr);
 
@@ -129,6 +171,10 @@ static void bootloader_AlignProgAddress(uint32_t curAddress)
     if (nvm_data.buffIndex != 0U)
     {
         nvm_data.buffIndex = 0U;
+
+        <#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+        <#lt>bootloader_BlockErase(curAddress);
+        </#if>
 
         bootloader_NVMPageWrite(nvm_data.progAddr, nvm_data.buff);
 
