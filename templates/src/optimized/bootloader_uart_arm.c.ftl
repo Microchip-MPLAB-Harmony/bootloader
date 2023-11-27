@@ -326,15 +326,15 @@ static void command_task(void)
 
         <#if PERIPH_USED?contains("FLEXCOM")>
         ${PERIPH_USED}_WriteByte((uint8_t)btlVer);
-		<#else>
+        <#else>
         ${PERIPH_USED}_WriteByte((int)btlVer);
-		</#if>
+        </#if>
         btlVer = (btlVersion & 0xFFU);
         <#if PERIPH_USED?contains("FLEXCOM")>
         ${PERIPH_USED}_WriteByte((uint8_t)btlVer);
-		<#else>
+        <#else>
         ${PERIPH_USED}_WriteByte((int)btlVer);
-		</#if>
+        </#if>
     }
     else if (BL_CMD_VERIFY == input_command)
     {
@@ -429,6 +429,13 @@ static void flash_task(void)
         if (flash_addr < APP_START_ADDRESS)
         {
             ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
+            while(${MEM_USED}_IsBusy() == true)
+            {
+                input_task();
+            <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                kickdog();
+            </#if>
+            }
         }
         else
         {
@@ -444,28 +451,25 @@ static void flash_task(void)
             }
 
     </#if>
-            ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
+            <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+            ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(NVMCTRL_MEMORY_REGION_APPLICATION);
+
+            while(${MEM_USED}_IsBusy() == true)
+            {
+                input_task();
+            <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                kickdog();
+            </#if>
+            }
+            </#if>
         }
 
-        while(${MEM_USED}_IsBusy() == true)
-        {
-            input_task();
-        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-            kickdog();
-        </#if>
-        }
+
     }
 <#else>
-<#if .vars["${MEM_USED?lower_case}"].REGION_UNLOCK_API_NAME?? >
-    <#if .vars["${MEM_USED?lower_case}"].REGION_UNLOCK_API_NAME != "None">
-    // Lock region size is always bigger than the row size
-    ${.vars["${MEM_USED?lower_case}"].REGION_UNLOCK_API_NAME}(<@apiHandle/>addr);
+    <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+    ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(addr);
     </#if>
-<#elseif MEM_USED == "FCW">
-<#else>
-    // Lock region size is always bigger than the row size
-    ${MEM_USED}_RegionUnlock(addr);
-</#if>
     <@ReceiveNextByteWhileMemoryIsBusy/>
 </#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
