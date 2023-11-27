@@ -346,6 +346,12 @@ static void BL_SPI_FlashTask(void)
                 if (spiBLData.cmd.eraseCommand.memAddr < APP_START_ADDRESS)
                 {
                     ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
+                    while(${MEM_USED}_IsBusy() == true)
+                    {
+                        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                        kickdog();
+                        </#if>
+                    }
                 }
                 else
                 {
@@ -360,24 +366,27 @@ static void BL_SPI_FlashTask(void)
                     }
 
     </#if>
-                    ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
-                }
-
-                while(${MEM_USED}_IsBusy() == true)
-                {
-        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-                    kickdog();
-        </#if>
+                    <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+                    ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(NVMCTRL_MEMORY_REGION_APPLICATION);
+                    while(${MEM_USED}_IsBusy() == true)
+                    {
+                        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                        kickdog();
+                        </#if>
+                    }
+                    </#if>
                 }
             }
 <#else>
             // Lock region size is always bigger than the row size
-            ${MEM_USED}_RegionUnlock(spiBLData.cmd.eraseCommand.memAddr);
+            <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+            ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(spiBLData.cmd.eraseCommand.memAddr);
 
             while(${MEM_USED}_IsBusy() == true)
             {
                 /* Nothing to do */
             }
+            </#if>
 </#if>
 
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
