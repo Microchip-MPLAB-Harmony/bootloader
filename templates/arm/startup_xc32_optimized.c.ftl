@@ -121,6 +121,19 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
         }
     }
 </#if>
+<#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+    register uint64_t *pFlexRam;
+   
+    // FlexRAM initialization loop (to handle ECC properly)
+    // we need to initialize all of RAM with 64 bit aligned writes
+    for (pFlexRam = (uint64_t*)&_sdata ; pFlexRam < ((uint64_t*)(&_ram_end_)) ; pFlexRam++)
+    {
+        *pFlexRam = 0;
+    }
+    
+    __DSB();
+    __ISB();
+</#if>
 
     uint32_t *pSrc, *pDst;
     uintptr_t src, dst;

@@ -42,6 +42,7 @@ devices = {
             "PIC32CM"   : [256, 2048],
             "PIC32MK"   : [16384, 8192],
             "PIC32MZ"   : [16384, 8192],
+            "PIC32CZ"   : [4096, 8192],
 }
 
 def bin_hex_convert(bin_file, dest_file, erase_page_size):
