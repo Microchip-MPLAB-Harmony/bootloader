@@ -159,12 +159,14 @@ static void flash_write(void)
     if (0U == (flash_addr % ERASE_BLOCK_SIZE))
     {
         /* Lock region size is always bigger than the row size */
-        ${MEM_USED}_RegionUnlock(flash_addr);
+        <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+        ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(flash_addr);
 
         while(${MEM_USED}_IsBusy() == true)
         {
             /* Do Nothing */
         }
+        </#if>
 
         /* Erase the Current sector */
         (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(flash_addr);
@@ -195,12 +197,15 @@ static void flash_write(void)
     <#lt>    if (0U== (addr % ERASE_BLOCK_SIZE))
     <#lt>    {
     <#lt>        /* Lock region size is always bigger than the row size */
-    <#lt>        ${MEM_USED}_RegionUnlock(addr);
+    <#lt>        <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+    <#lt>        ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(addr);
 
     <#lt>        while(${MEM_USED}_IsBusy() == true)
     <#lt>        {
     <#lt>           /* Do Nothing */
     <#lt>        }
+
+    <#lt>        </#if>
 
     <#lt>        /* Erase the NVM user row */
     <#lt>        (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME}(addr);
