@@ -33,15 +33,17 @@ global btl_start
 
 global btlMemUsedStartAddr
 global btlMemUsedSize
+global place_btl_in_bfm
 
 flash_start         = 0
 flash_size          = 0
 flash_erase_size    = 0
+btl_start_addr      = 0
 
 btl_start           = "0x0"
 
 NvmMemoryNames      = ["NVM", "NVMCTRL", "EFC", "HEFC", "FCW"]
-FlashNames          = ["FLASH", "IFLASH", "FCR_PFM"]
+FlashNames          = ["FLASH", "IFLASH", "FCR_PFM", "FCR_BFM", "BOOT_FLASH"]
 RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM", "FlexRAM", "DRAM", "FLEXRAM"]
 
 addr_space          = ATDF.getNode("/avr-tools-device-file/devices/device/address-spaces/address-space")
@@ -50,19 +52,36 @@ addr_space_children = addr_space.getChildren()
 periphNode          = ATDF.getNode("/avr-tools-device-file/devices/device/peripherals")
 peripherals         = periphNode.getChildren()
 
+place_btl_in_bfm = False
+
+
+
 for mem_idx in range(0, len(addr_space_children)):
     mem_seg     = addr_space_children[mem_idx].getAttribute("name")
     mem_type    = addr_space_children[mem_idx].getAttribute("type")
+    mem_size    = int(addr_space_children[mem_idx].getAttribute("size"), 16)
+
+    # Get the Maximum bootloader size value defined in bootloader protocol python file
+    max_btl_size = getMaxBootloaderSize(Database.getSymbolValue("core", "CoreArchitecture"))
 
     if ((any(x == mem_seg for x in FlashNames) == True) and (mem_type == "flash")):
-        flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
-        flash_size  = int(addr_space_children[mem_idx].getAttribute("size"), 16)
+        # If BFM region is available and its size is sufficiently large, then place the bootloader in BFM region.
+        if (mem_seg == "FCR_BFM" or mem_seg == "BOOT_FLASH"):
+            if (max_btl_size != 0 and max_btl_size <= mem_size and place_btl_in_bfm == False):
+                btl_start_addr = int(addr_space_children[mem_idx].getAttribute("start"), 16)
+                place_btl_in_bfm = True
+        else:
+            flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
+            flash_size  = int(addr_space_children[mem_idx].getAttribute("size"), 16)
 
     if ((any(x == mem_seg for x in RamNames) == True) and (mem_type == "ram")):
         ram_start   = addr_space_children[mem_idx].getAttribute("start")
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
 
-    btl_start = str(hex(flash_start))
+    if place_btl_in_bfm == True:
+        btl_start = str(hex(btl_start_addr))
+    else:
+        btl_start = str(hex(flash_start))
 
 def activateAndConnectDependencies(component):
     nvmMemoryName = ""
@@ -120,10 +139,14 @@ def setAppStartAndCommentVisible(symbol, event):
     global flash_size
     global flash_erase_size
     global btlMemUsedStartAddr
+    global place_btl_in_bfm
 
     memUsed_addr = btlMemUsedStartAddr.getValue()
 
-    if (event["id"] == "BTL_SIZE"):
+    if (place_btl_in_bfm == True):
+        custom_app_start_addr = str(hex(flash_start))
+        Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
+    elif (event["id"] == "BTL_SIZE"):
         btlSize = int(event["value"],10)
 
         if ( (memUsed_addr != 0) and (memUsed_addr != flash_start) ):

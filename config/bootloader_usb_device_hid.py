@@ -65,6 +65,7 @@ execfile(Module.getPath() + "/config/bootloader_live_update.py")
 def getLinkerParams(btlLength, triggerLength):
     global ram_start
     global ram_size
+    global place_btl_in_bfm
 
     romLen      = str(hex(btlLength))
 
@@ -74,8 +75,12 @@ def getLinkerParams(btlLength, triggerLength):
     rom_length  = "ROM_LENGTH=" + romLen
     ram_origin  = "RAM_ORIGIN=" + ramStart
     ram_length  = "RAM_LENGTH=" + ramLen
-
-    return (rom_length + ";" + ram_origin + ";" + ram_length)
+    
+    if place_btl_in_bfm == True:
+        rom_origin  = "ROM_ORIGIN=BOOT_ROM_ORIGIN"
+        return (rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length)
+    else:
+        return (rom_length + ";" + ram_origin + ";" + ram_length)
 
 def setLinkerParams(symbol, event):
     component = symbol.getComponent()
