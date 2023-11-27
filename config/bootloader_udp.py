@@ -73,7 +73,7 @@ def getLinkerParams(btlLength, triggerLength):
     ram_length  = "RAM_LENGTH=" + ramLen
     
     if place_btl_in_bfm == True:
-        rom_origin  = "ROM_ORIGIN=BOOT_ROM_ORIGIN"
+        rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN + 1024\""
         return (rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length)
     else:
         return (rom_length + ";" + ram_origin + ";" + ram_length)
