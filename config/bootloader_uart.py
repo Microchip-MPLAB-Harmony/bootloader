@@ -87,17 +87,17 @@ def setupCoreComponentSymbols():
     coreComponent = Database.getComponentByID("core")
 
     if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+
         # Disable core related file generation not required for bootloader
         coreComponent.getSymbolByID("CoreMainFile").setValue(False)
 
         coreComponent.getSymbolByID("CoreSysInitFile").setValue(False)
 
-        if (not Database.getSymbolValue("core", "DeviceFamily") == "PIC32CZ_CA80_CA90"):
-            coreComponent.getSymbolByID("CoreSysStartupFile").setValue(False)
+        coreComponent.getSymbolByID("CoreSysStartupFile").setValue(False)
 
         coreComponent.getSymbolByID("CoreSysCallsFile").setValue(False)
 
-        if ("PIC32M" not in Variables.get("__PROCESSOR")) and (not Database.getSymbolValue("core", "DeviceFamily") == "PIC32CZ_CA80_CA90"):
+        if ("PIC32M" not in Variables.get("__PROCESSOR")):
             coreComponent.getSymbolByID("CoreSysIntFile").setValue(False)
 
             coreComponent.getSymbolByID("CoreSysExceptionFile").setValue(False)
@@ -225,14 +225,12 @@ def instantiateComponent(bootloaderComponent):
         btlSystemDefFile.setSecurity("SECURE")
         btlSystemDefFile.setOutputName("core.LIST_SYSTEM_DEFINITIONS_SECURE_H_INCLUDES")
 
-    if ("PIC32CZ" in Variables.get("__PROCESSOR")):
-        generateCommonFiles(bootloaderComponent)
-    else:
-        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
-            generateLinkerFileSymbol(bootloaderComponent)
-            generateXC32SettingsAndFileSymbol(bootloaderComponent)
-        generateCommonFiles(bootloaderComponent)
-        setOptimizationLevel(bootloaderComponent, "-O2")
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        generateLinkerFileSymbol(bootloaderComponent)
+        generateXC32SettingsAndFileSymbol(bootloaderComponent)
+
+    generateCommonFiles(bootloaderComponent)
+    setOptimizationLevel(bootloaderComponent, "-O2")
 
 def onAttachmentConnected(source, target):
     global flash_erase_size
