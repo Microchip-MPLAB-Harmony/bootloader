@@ -205,7 +205,7 @@ static void BL_I2C_SendResponse(uint8_t command)
             break;
 
         default:
-            /* Do Nothing */            
+            /* Do Nothing */
             break;
     }
 }
@@ -356,7 +356,7 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
                 }
                 else
                 {
-                   /* Do Nothing */                    
+                   /* Do Nothing */
                 }
             }
             break;
@@ -525,6 +525,12 @@ static void BL_I2C_FlashTask(void)
                 if (blProtocol.cmdProtocol.eraseCommand.memAddr < APP_START_ADDRESS)
                 {
                     ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
+                    while(${MEM_USED}_IsBusy() == true)
+                    {
+                        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                        kickdog();
+                        </#if>
+                    }
                 }
                 else
                 {
@@ -539,23 +545,29 @@ static void BL_I2C_FlashTask(void)
                     }
 
     </#if>
-                    ${MEM_USED}_RegionUnlock(NVMCTRL_MEMORY_REGION_APPLICATION);
-                }
+                    <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+                    ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(NVMCTRL_MEMORY_REGION_APPLICATION);
+                    while(${MEM_USED}_IsBusy() == true)
+                    {
+                        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
+                        kickdog();
+                        </#if>
+                    }
+                    </#if>
 
-                while(${MEM_USED}_IsBusy() == true)
-                {
-        <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
-                    kickdog();
-        </#if>
                 }
             }
 <#else>
             // Lock region size is always bigger than the row size
-            ${MEM_USED}_RegionUnlock(blProtocol.cmdProtocol.eraseCommand.memAddr);
+            <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+            ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
 
             while(${MEM_USED}_IsBusy() == true)
             {
             }
+
+            </#if>
+
 </#if>
 
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
@@ -579,7 +591,7 @@ static void BL_I2C_FlashTask(void)
                 }
                 else
                {
-                  /* Do Nothing */                    
+                  /* Do Nothing */
                }
     </#if>
             }
@@ -608,7 +620,7 @@ static void BL_I2C_FlashTask(void)
                 }
                 else
                 {
-                   /* Do Nothing */                    
+                   /* Do Nothing */
                 }
     </#if>
             }
@@ -661,12 +673,12 @@ static void BL_I2C_FlashTask(void)
 <#if PERIPH_USED?starts_with("TWIHS")>
             while ((uint8_t)(${PERIPH_USED}_REGS->TWIHS_SR & (uint8_t)TWIHS_SR_SVACC_Msk) == TWIHS_SR_SVACC_Msk)
             {
-                /* Do Nothing */                    
+                /* Do Nothing */
             }
 <#else>
             while (((uint8_t)${PERIPH_USED}_InterruptFlagsGet() & (uint8_t)SERCOM_I2C_SLAVE_INTFLAG_PREC) == 0U)
             {
-                /* Do Nothing */                    
+                /* Do Nothing */
             }
 </#if>
 
@@ -678,7 +690,7 @@ static void BL_I2C_FlashTask(void)
             /* Wait for the I2C transfer to complete */
             while (((uint8_t)${PERIPH_USED}_InterruptFlagsGet() & (uint8_t)SERCOM_I2C_SLAVE_INTFLAG_PREC) == 0U)
             {
-                /* Do Nothing */                    
+                /* Do Nothing */
             }
             ${MEM_USED}_BankSwap();
             break;
