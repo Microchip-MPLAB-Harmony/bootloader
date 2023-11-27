@@ -391,12 +391,16 @@ static void flash_task(void)
 
 <#if core.CoreArchitecture != "MIPS">
     // Lock region size is always bigger than the row size
-    ${MEM_USED}_RegionUnlock(addr);
-
+    <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+    ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(addr);
+    
     while(${MEM_USED}_IsBusy() == true)
     {
 
     }
+
+    </#if>
+
 </#if>
 
     /* Erase the Current sector */
