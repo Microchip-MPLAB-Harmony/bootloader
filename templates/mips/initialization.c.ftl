@@ -169,6 +169,7 @@ void SYS_Initialize ( void* data )
         run_Application(APP_JUMP_ADDRESS);
     }
 
+    <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_PERIPHERALS1}
     <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_PERIPHERALS}
     /* MISRAC 2012 deviation block start */
     /* Following MISRA-C rules deviated in this block  */
