@@ -130,7 +130,7 @@ MEMORY
      * serial number used by switcher in boot flash memory to decide which program flash bank to
      * run.
     */
-    kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize} - 0x1200 - 2048
+    kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize} - 0x1200 - (${.vars["${MEM_USED?lower_case}"].FLASH_ERASE_SIZE})
 
     kseg0_data_mem       (w!x)  : ORIGIN = ${btlRamStartAddress}, LENGTH = ${btlRamSize}
     sfrs                        : ORIGIN = 0xBF800000, LENGTH = 0x100000
