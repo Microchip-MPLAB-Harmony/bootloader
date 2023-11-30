@@ -273,9 +273,9 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
     {
         case (uint8_t)READ_BOOT_INFO:
         {
-            btlVersion = bootloader_GetVersion();
+            btlVersion = bootloader_GetVersion(); 
 
-        <#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+        <#if core.CoreSeries?contains("PIC32CZCA") >
             bootloader_EraseRecInit();
         </#if>
 
@@ -292,7 +292,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 
         case (uint8_t)ERASE_FLASH:
         {
-        <#if core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
+        <#if core.CoreSeries?contains("PIC32CZCA") >
             <#lt>bootloader_NvmAppErase(APP_START_ADDRESS, FLASH_END_ADDRESS);
         </#if>
             handle->currentState = BOOTLOADER_SEND_RESPONSE;

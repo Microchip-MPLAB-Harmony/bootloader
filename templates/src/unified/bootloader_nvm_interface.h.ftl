@@ -68,7 +68,7 @@ typedef enum
 } HEX_RECORD_STATUS;
 
 HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t totalLen);
-<#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+<#if core.CoreSeries?contains("PIC32CZCA") >
 
 <#lt>void bootloader_BlockErase(uint32_t curAddress);
 

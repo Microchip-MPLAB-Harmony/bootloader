@@ -46,7 +46,7 @@
 #include "peripheral/${MEM_USED?lower_case}/plib_${MEM_USED?lower_case}.h"
 #include "system/int/sys_int.h"
 
-<#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+<#if core.CoreSeries?contains("PIC32CZCA") >
 <#lt>#define NUM_ERASE_RECORDS  4
 
 typedef struct {
@@ -108,7 +108,7 @@ bool bootloader_NvmIsBusy(void)
     return (${MEM_USED}_IsBusy());
 }
 
-<#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+<#if core.CoreSeries?contains("PIC32CZCA") >
 void bootloader_EraseRecInit(void)
 {
   uint32_t blockSize = FLASH_LENGTH / NUM_ERASE_RECORDS;
@@ -172,7 +172,7 @@ static void bootloader_AlignProgAddress(uint32_t curAddress)
     {
         nvm_data.buffIndex = 0U;
 
-        <#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+        <#if core.CoreSeries?contains("PIC32CZCA") >
         <#lt>bootloader_BlockErase(curAddress);
         </#if>
 
