@@ -87,9 +87,9 @@ extern uint32_t _sbss, _ebss;
 
 void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
 {
+    register uint32_t count;
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CM_JH00_JH01">
     register uint32_t *pRam = (uint32_t*)(uintptr_t)&_sdata;
-    register uint32_t count;
 
     // MCRAMC initialization loop (to handle ECC properly)
     // Write to entire RAM (leaving initial 16 bytes) to initialize ECC checksum
@@ -127,15 +127,15 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     }
 </#if>
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
-    register uint64_t *pFlexRam;
-   
+    register uint64_t *pFlexRam = (uint64_t*)(uintptr_t)&_sdata;
+
     // FlexRAM initialization loop (to handle ECC properly)
     // we need to initialize all of RAM with 64 bit aligned writes
-    for (pFlexRam = (uint64_t*)&_sdata ; pFlexRam < ((uint64_t*)(&_ram_end_)) ; pFlexRam++)
+    for (count = 0U; count < (((uint32_t)&_ram_end_ - (uint32_t)&_sdata) / 8U); count++)
     {
-        *pFlexRam = 0;
+        pFlexRam[count] = 0U;
     }
-    
+
     __DSB();
     __ISB();
 </#if>
@@ -163,7 +163,7 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     pDst = (uint32_t *)dst;      /* boundaries of .data area to init */
 
     /* Init .data */
-    for (uint32_t count = 0U; count < (((uint32_t)&_edata - (uint32_t)dst) / 4U); count++)
+    for (count = 0U; count < (((uint32_t)&_edata - (uint32_t)dst) / 4U); count++)
     {
         pDst[count] = pSrc[count];
     }
@@ -171,7 +171,7 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     /* Init .bss */
     dst = (uintptr_t)&_sbss;
     pDst = (uint32_t *)dst;
-    for (uint32_t count = 0U; count < (((uint32_t)&_ebss - (uint32_t)dst) / 4U); count++)
+    for (count = 0U; count < (((uint32_t)&_ebss - (uint32_t)dst) / 4U); count++)
     {
         pDst[count] = 0U;
     }
