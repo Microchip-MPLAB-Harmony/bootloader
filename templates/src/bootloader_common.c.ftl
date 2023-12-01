@@ -304,9 +304,9 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>void bootloader_TriggerReset(void)
     <#lt>{
     <#lt>    /* Perform system unlock sequence */
-    <#lt>    SYSKEY = 0x00000000;
+    <#lt>    SYSKEY = 0x00000000U;
     <#lt>    SYSKEY = 0xAA996655U;
-    <#lt>    SYSKEY = 0x556699AA;
+    <#lt>    SYSKEY = 0x556699AAU;
 
     <#lt>    RSWRSTSET = _RSWRST_SWRST_MASK;
     <#lt>    (void)RSWRST;

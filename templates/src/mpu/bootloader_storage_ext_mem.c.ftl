@@ -46,6 +46,7 @@
 #include <string.h>
 #include "configuration.h"
 #include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"
+#include "bootloader_storage.h"
 
 <#if DRIVER_USED != "DRV_NAND_FLASH">
 typedef enum
@@ -155,9 +156,9 @@ void bootloader_Storage_Read(void)
     blockNum = btlData.extMemoryMetaDataAddr / btlData.geometry.blockSize;
     pageNum = ((btlData.extMemoryMetaDataAddr / btlData.geometry.pageSize) % (btlData.geometry.blockSize / btlData.geometry.pageSize));
 
-    ${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, blockNum, pageNum, fileBuffer, 0, false);
+    (void)${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, fileBuffer, NULL, false);
 
-    imageSize = *((uint32_t *)fileBuffer);
+    imageSize = *((uint32_t *)(uintptr_t)fileBuffer);
 
     if (imageSize != 0xFFFFFFFFU)
     {
@@ -166,9 +167,9 @@ void bootloader_Storage_Read(void)
 
         do
         {
-            status = ${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, blockNum, pageNum, fileBuffer, 0, false);
+            status = ${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, fileBuffer, NULL, false);
 
-            memcpy((void *)btlData.progAddr, fileBuffer, btlData.geometry.pageSize);
+            (void)memcpy((uint8_t *)btlData.progAddr, fileBuffer, btlData.geometry.pageSize);
 
             btlData.progAddr += btlData.geometry.pageSize;
             readLen += btlData.geometry.pageSize;
@@ -186,7 +187,7 @@ void bootloader_Storage_Read(void)
     (void)${DRIVER_USED}_Read(btlData.handle, fileBuffer, PAGE_SIZE, btlData.extMemoryMetaDataAddr);
     (void)bootloader_WaitForXferComplete();
 
-    imageSize = *((uint32_t *)fileBuffer);
+    imageSize = *((uint32_t *)(uintptr_t)fileBuffer);
 
     if (imageSize != 0xFFFFFFFFU)
     {
@@ -196,7 +197,7 @@ void bootloader_Storage_Read(void)
         {
             status = ${DRIVER_USED}_Read(btlData.handle, fileBuffer, PAGE_SIZE, memoryAddr);
             (void)bootloader_WaitForXferComplete();
-            memcpy((void *)btlData.progAddr, fileBuffer, PAGE_SIZE);
+            (void)memcpy((uint8_t *)btlData.progAddr, fileBuffer, PAGE_SIZE);
 
             btlData.progAddr += PAGE_SIZE;
             readLen += PAGE_SIZE;
@@ -231,10 +232,10 @@ bool bootloader_Storage_Write(bool imageStartFlag, void *buffer, size_t size)
 
     if ((memoryAddr % btlData.geometry.blockSize) == 0U)
     {
-        ${DRIVER_USED}_SkipBlock_BlockErase(btlData.handle, blockNum, false);
+        (void)${DRIVER_USED}_SkipBlock_BlockErase(btlData.handle, (uint16_t)blockNum, false);
     }
 
-    status = ${DRIVER_USED}_SkipBlock_PageWrite(btlData.handle, blockNum, pageNum, buffer, 0, false);
+    status = ${DRIVER_USED}_SkipBlock_PageWrite(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, buffer, NULL, false);
 
     memoryAddr += btlData.geometry.pageSize;
 <#else>
@@ -277,7 +278,7 @@ bool bootloader_Storage_CRC_Verify(uint32_t crc)
     imageSize = btlData.extMemoryImageSize;
     do
     {
-        ${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, blockNum, pageNum, fileBuffer, 0, false);
+        (void)${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, fileBuffer, NULL, false);
 
         if (imageSize >= btlData.geometry.pageSize)
         {
@@ -299,13 +300,13 @@ bool bootloader_Storage_CRC_Verify(uint32_t crc)
             blockNum = btlData.extMemoryMetaDataAddr / btlData.geometry.blockSize;
             pageNum = ((btlData.extMemoryMetaDataAddr / btlData.geometry.pageSize) % (btlData.geometry.blockSize / btlData.geometry.pageSize));
 
-            memcpy(fileBuffer, (uint8_t *)&btlData.extMemoryImageSize, sizeof(btlData.extMemoryImageSize));
+            (void)memcpy(fileBuffer, (uint8_t *)&btlData.extMemoryImageSize, sizeof(btlData.extMemoryImageSize));
 
             if ((btlData.extMemoryMetaDataAddr % btlData.geometry.blockSize) == 0U)
             {
-                ${DRIVER_USED}_SkipBlock_BlockErase(btlData.handle, blockNum, false);
+                (void)${DRIVER_USED}_SkipBlock_BlockErase(btlData.handle, (uint16_t)blockNum, false);
             }
-            ${DRIVER_USED}_SkipBlock_PageWrite(btlData.handle, blockNum, pageNum, fileBuffer, 0, false);
+            (void)${DRIVER_USED}_SkipBlock_PageWrite(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, fileBuffer, NULL, false);
             break;
         }
 
@@ -344,7 +345,7 @@ bool bootloader_Storage_CRC_Verify(uint32_t crc)
             status = true;
             memoryAddr = btlData.extMemoryMetaDataAddr;
 
-            memcpy(fileBuffer, (uint8_t *)&btlData.extMemoryImageSize, sizeof(btlData.extMemoryImageSize));
+            (void)memcpy(fileBuffer, (uint8_t *)&btlData.extMemoryImageSize, sizeof(btlData.extMemoryImageSize));
 
             if ((memoryAddr % btlData.geometry.erase_blockSize) == 0U)
             {

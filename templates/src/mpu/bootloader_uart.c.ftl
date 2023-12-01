@@ -55,34 +55,33 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define GUARD_OFFSET            0
-#define CMD_OFFSET              2
-#define ADDR_OFFSET             0
-#define SIZE_OFFSET             1
-#define DATA_OFFSET             1
-#define CRC_OFFSET              0
+#define GUARD_OFFSET            0U
+#define CMD_OFFSET              2U
+#define ADDR_OFFSET             0U
+#define SIZE_OFFSET             1U
+#define DATA_OFFSET             1U
+#define CRC_OFFSET              0U
 
-#define CMD_SIZE                1
-#define GUARD_SIZE              4
-#define SIZE_SIZE               4
-#define OFFSET_SIZE             4
-#define CRC_SIZE                4
+#define CMD_SIZE                1U
+#define GUARD_SIZE              4U
+#define SIZE_SIZE               4U
+#define OFFSET_SIZE             4U
+#define CRC_SIZE                4U
 #define HEADER_SIZE             (GUARD_SIZE + SIZE_SIZE + CMD_SIZE)
 
 #define DATA_SIZE               PAGE_SIZE
 
-#define WORDS(x)                ((int)((x) / sizeof(uint32_t)))
+#define WORDS(x)                ((uint32_t)((x) / sizeof(uint32_t)))
 
 #define BTL_GUARD               (0x5048434DUL)
 
-enum
-{
-    BL_CMD_UNLOCK       = 0xa0,
-    BL_CMD_DATA         = 0xa1,
-    BL_CMD_VERIFY       = 0xa2,
-    BL_CMD_RESET        = 0xa3,
-    BL_CMD_READ_VERSION = 0xa6
-};
+
+#define    BL_CMD_UNLOCK       0xa0U
+#define    BL_CMD_DATA         0xa1U
+#define    BL_CMD_VERIFY       0xa2U
+#define    BL_CMD_RESET        0xa3U
+#define    BL_CMD_READ_VERSION 0xa6U
+
 
 enum
 {
@@ -96,11 +95,11 @@ enum
 typedef enum
 {
 <#if DRIVER_USED != "">
-    BOOTLOADER_STATE_INIT = 0,
+    BOOTLOADER_STATE_INIT = 0U,
 
     BOOTLOADER_CHECK_IMAGE,
 <#else>
-    BOOTLOADER_REGISTER_EVENT_HANDLER = 0,
+    BOOTLOADER_REGISTER_EVENT_HANDLER = 0U,
 
     BOOTLOADER_WAIT_FOR_DEVICE_ATTACH,
 </#if>
@@ -136,9 +135,9 @@ static bool     uartBLActive        = false;
 static bool     imageStartFlag      = false;
 
 <#if DRIVER_USED != "">
-BOOTLOADER_STATES btl_state = BOOTLOADER_STATE_INIT;
+static BOOTLOADER_STATES btl_state = BOOTLOADER_STATE_INIT;
 <#else>
-BOOTLOADER_STATES btl_state = BOOTLOADER_REGISTER_EVENT_HANDLER;
+static BOOTLOADER_STATES btl_state = BOOTLOADER_REGISTER_EVENT_HANDLER;
 </#if>
 
 // *****************************************************************************
@@ -166,18 +165,19 @@ static void input_task(void)
         return;
     }
 
-    input_data = ${PERIPH_USED}_ReadByte();
+    input_data = (uint8_t)${PERIPH_USED}_ReadByte();
 
     if (header_received == false)
     {
-        byte_buf[ptr++] = input_data;
+        byte_buf[ptr] = input_data;
+        ptr++;
 
         // Check for each guard byte and discard if mismatch
         if (ptr <= GUARD_SIZE)
         {
-            if (input_data != btl_guard[ptr-1])
+            if (input_data != btl_guard[ptr-1U])
             {
-                ptr = 0;
+                ptr = 0U;
             }
         }
         else if (ptr == HEADER_SIZE)
@@ -196,6 +196,11 @@ static void input_task(void)
 
             ptr = 0;
         }
+        else
+        {
+            /* Nothing to do */
+        }
+
     }
     else if (header_received == true)
     {
@@ -212,6 +217,10 @@ static void input_task(void)
             packet_received = true;
             header_received = false;
         }
+    }
+    else
+    {
+        /* Nothing to do */
     }
 }
 
@@ -259,7 +268,7 @@ static void command_task(void)
                 media_write_data[i] = input_buffer[i + DATA_OFFSET];
             }
 
-            remaining_byte = data_size % sizeof(uint32_t);
+            remaining_byte = (uint8_t)(data_size % sizeof(uint32_t));
 
             if (remaining_byte != 0U)
             {
@@ -281,9 +290,19 @@ static void command_task(void)
         ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 
         uint16_t btlVersion = bootloader_GetVersion();
+        uint16_t btlVer = ((btlVersion >> 8U) & 0xFFU);
 
-        ${PERIPH_USED}_WriteByte(((btlVersion >> 8) & 0xFF));
-        ${PERIPH_USED}_WriteByte((btlVersion & 0xFF));
+        <#if PERIPH_USED?contains("FLEXCOM") || PERIPH_USED?contains("DBGU")>
+        ${PERIPH_USED}_WriteByte((uint8_t)btlVer);
+        <#else>
+        ${PERIPH_USED}_WriteByte((int)btlVer);
+        </#if>
+        btlVer = (btlVersion & 0xFFU);
+        <#if PERIPH_USED?contains("FLEXCOM") || PERIPH_USED?contains("DBGU")>
+        ${PERIPH_USED}_WriteByte((uint8_t)btlVer);
+        <#else>
+        ${PERIPH_USED}_WriteByte((int)btlVer);
+        </#if>
     }
     else if (BL_CMD_VERIFY == input_command)
     {
@@ -300,7 +319,10 @@ static void command_task(void)
     {
         ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 
-        while(${PERIPH_USED}_TransmitComplete() == false);
+        while(${PERIPH_USED}_TransmitComplete() == false)
+		{
+            // Wait for transmission complete
+		}
 
         bootloader_TriggerReset();
     }
@@ -343,7 +365,7 @@ void bootloader_${BTL_TYPE}_Tasks(void)
 <#else>
         case BOOTLOADER_REGISTER_EVENT_HANDLER:
         {
-            SYS_FS_EventHandlerSet(bootloader_SysFsEventHandler, (uintptr_t)NULL);
+            SYS_FS_EventHandlerSet(bootloader_SysFsEventHandler, 0);
             btl_state = BOOTLOADER_WAIT_FOR_DEVICE_ATTACH;
             break;
         }
@@ -385,6 +407,11 @@ void bootloader_${BTL_TYPE}_Tasks(void)
                     command_task();
                 }
             } while(uartBLActive);
+            break;
+        }
+        default:
+        {
+            // default
             break;
         }
     }

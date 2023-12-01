@@ -47,6 +47,7 @@
 #include "configuration.h"
 #include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"
 #include "system/fs/sys_fs.h"
+#include "bootloader_storage.h"
 
 #define BOOTLOADER_MOUNT_NAME   SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0
 #define BOOTLOADER_DEV_NAME     SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0
@@ -69,9 +70,9 @@ typedef struct
 
 } BOOTLOADER_DATA;
 
-uint8_t CACHE_ALIGN fileBuffer[PAGE_SIZE];
+static uint8_t CACHE_ALIGN fileBuffer[PAGE_SIZE];
 
-BOOTLOADER_DATA btlData =
+static BOOTLOADER_DATA btlData =
 {
     .deviceAttached = false,
     .progAddr       = APP_START_ADDRESS,
@@ -96,6 +97,7 @@ void bootloader_SysFsEventHandler(SYS_FS_EVENT event, void * eventData, uintptr_
 
         default:
         {
+            // default
             break;
         }
     }
@@ -117,7 +119,7 @@ void bootloader_Storage_Read(void)
         if (SYS_FS_FileStat(APP_IMAGE_FILE_PATH, &btlData.fileStat) == SYS_FS_RES_SUCCESS)
         {
             /* Check if the application binary file has any content */
-            if (btlData.fileStat.fsize > 0)
+            if (btlData.fileStat.fsize > 0U)
             {
                 btlData.fileHandle = SYS_FS_FileOpen(APP_IMAGE_FILE_PATH, (SYS_FS_FILE_OPEN_READ));
 
@@ -139,20 +141,20 @@ void bootloader_Storage_Read(void)
                         fileReadLength = SYS_FS_FileRead(btlData.fileHandle, (void *)fileBuffer, fileBufferSize);
 
                         /* Reached End of File */
-                        if (fileReadLength <= 0)
+                        if (fileReadLength <= 0U)
                         {
-                            SYS_FS_FileClose(btlData.fileHandle);
+                            (void)SYS_FS_FileClose(btlData.fileHandle);
 
                             run_Application(APP_START_ADDRESS);
                         }
                         else
                         {
-                            memcpy((void *)btlData.progAddr, fileBuffer, fileReadLength);
+                            (void)memcpy((uint8_t *)btlData.progAddr, fileBuffer, fileReadLength);
 
                             btlData.progAddr += fileBufferSize;
                             fileSize -= fileBufferSize;
                         }
-                    } while(fileReadLength > 0);
+                    } while(fileReadLength > 0U);
                 }
             }
         }
@@ -176,7 +178,7 @@ bool bootloader_Storage_Write(bool imageStartFlag, void *buffer, size_t size)
         {
             if (SYS_FS_FileWrite(btlData.fileHandle, buffer, size) != 0xFFFFFFFFU)
             {
-                SYS_FS_FileClose(btlData.fileHandle);
+                (void)SYS_FS_FileClose(btlData.fileHandle);
                 status = true;
             }
         }
@@ -198,7 +200,7 @@ bool bootloader_Storage_CRC_Verify(uint32_t crc)
         if (SYS_FS_FileStat(APP_IMAGE_FILE_PATH, &btlData.fileStat) == SYS_FS_RES_SUCCESS)
         {
             /* Check if the application binary file has any content */
-            if (btlData.fileStat.fsize > 0)
+            if (btlData.fileStat.fsize > 0U)
             {
                 btlData.fileHandle = SYS_FS_FileOpen(APP_IMAGE_FILE_PATH, (SYS_FS_FILE_OPEN_READ));
 
@@ -219,20 +221,19 @@ bool bootloader_Storage_CRC_Verify(uint32_t crc)
                         fileReadLength = SYS_FS_FileRead(btlData.fileHandle, (void *)fileBuffer, fileBufferSize);
 
                         /* Reached End of File */
-                        if (fileReadLength <= 0)
+                        if (fileReadLength <= 0U)
                         {
                             if (crc == crcGenerate)
                             {
                                 status = true;
                             }
-                            break;
                         }
                         else
                         {
                             crcGenerate = bootloader_CRCGenerate(fileBuffer, fileBufferSize, crcGenerate);
                             fileSize -= fileBufferSize;
                         }
-                    } while(fileReadLength > 0);
+                    } while(fileReadLength > 0U);
                 }
             }
         }
