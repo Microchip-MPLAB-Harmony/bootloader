@@ -47,7 +47,7 @@
 #include "system/int/sys_int.h"
 
 <#if core.CoreSeries?contains("PIC32CZCA") >
-<#lt>#define NUM_ERASE_RECORDS  4
+<#lt>#define NUM_ERASE_RECORDS  4U
 
 typedef struct {
     uint32_t startAddr;
@@ -55,7 +55,7 @@ typedef struct {
     bool blockEraseStatus;
 }ERASE_RECORD;
 
-ERASE_RECORD eraseBlocks[NUM_ERASE_RECORDS];
+static ERASE_RECORD eraseBlocks[NUM_ERASE_RECORDS];
 </#if>
 
 typedef struct
@@ -113,7 +113,7 @@ void bootloader_EraseRecInit(void)
 {
   uint32_t blockSize = FLASH_LENGTH / NUM_ERASE_RECORDS;
 
-  for (int i = 0; i < NUM_ERASE_RECORDS; i++) {
+  for (uint32_t i = 0; i < NUM_ERASE_RECORDS; i++) {
         eraseBlocks[i].startAddr = APP_START_ADDRESS + (i * blockSize);
         eraseBlocks[i].endAddr = eraseBlocks[i].startAddr + (blockSize-1);
         eraseBlocks[i].blockEraseStatus = false;
@@ -122,7 +122,7 @@ void bootloader_EraseRecInit(void)
 
 void bootloader_BlockErase(uint32_t curAddress)
 {
-  for (int i = 0; i < NUM_ERASE_RECORDS; i++)
+  for (uint32_t i = 0; i < NUM_ERASE_RECORDS; i++)
     {
         if(curAddress >= eraseBlocks[i].startAddr && curAddress <= eraseBlocks[i].endAddr)
         {
