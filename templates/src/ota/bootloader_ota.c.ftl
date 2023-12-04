@@ -160,7 +160,17 @@ static uint8_t CACHE_ALIGN controlBlockBuffer[OTA_CONTROL_BLOCK_BUFFER_SIZE];
 static uint8_t CACHE_ALIGN flash_data[DATA_SIZE];
 </#if>
 static uint32_t ctrlBlkSize = OTA_CONTROL_BLOCK_BUFFER_SIZE;
-
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+    <#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+    </#if>
+</#if>
+/* Following MISRA-C rules are deviated in the below code block */
+/* MISRA C-2012 Rule 7.2 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance block deviate "MISRA C-2012 Rule 7.2"  "H3_MISRAC_2012_R_7_2_DR_1"
+</#if>
 static BTL_DATA btlData =
 {
     .state              = BTL_STATE_INIT,
@@ -171,6 +181,10 @@ static BTL_DATA btlData =
 </#if>
     .controlBlock       = (OTA_CONTROL_BLOCK *)controlBlockBuffer,
 };
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 7.2"
+</#if>
+/* MISRAC 2012 deviation block end */
 
 // *****************************************************************************
 // *****************************************************************************
@@ -260,7 +274,7 @@ static bool bootloader_${BTL_TYPE}_CtrlBlkRead(OTA_CONTROL_BLOCK *controlBlock, 
 
         appMetaDataAddress  = ((otaMemoryStart + otaMemorySize) - BUFFER_SIZE(blockSize, ctrlBlkSize));
 
-        for (count = 0; count < length; count += OTA_CONTROL_BLOCK_PAGE_SIZE)
+        for (count = 0U; count < length; count += OTA_CONTROL_BLOCK_PAGE_SIZE)
         {
             if (${DRIVER_USED}_Read(btlData.handle, ptrBuffer, OTA_CONTROL_BLOCK_PAGE_SIZE, appMetaDataAddress) != true)
             {
@@ -315,7 +329,7 @@ static bool bootloader_${BTL_TYPE}_CtrlBlkWrite(OTA_CONTROL_BLOCK *controlBlock,
         status = bootloader_${BTL_TYPE}_WaitForXferComplete();
 </#if>
 
-        for (count = 0; count < length; count += OTA_CONTROL_BLOCK_PAGE_SIZE)
+        for (count = 0U; count < length; count += OTA_CONTROL_BLOCK_PAGE_SIZE)
         {
             if (${DRIVER_USED}_PageWrite(btlData.handle, ptrBuffer, appMetaDataAddress) != true)
             {
@@ -393,7 +407,11 @@ static void bootloader_${BTL_TYPE}_ProgramFlashSwapBank(T_FLASH_BANK flash_bank)
         /* Do nothing */
     }
 }
-
+/* Following MISRA-C rules are deviated in the below code block */
+/* MISRA C-2012 Rule 11.6 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance block deviate "MISRA C-2012 Rule 11.6"  "H3_MISRAC_2012_R_11_6_DR_1"
+</#if>
 static uint32_t bootloader_${BTL_TYPE}_FlashSerialGet(T_FLASH_BANK flash_bank)
 {
     uint32_t serialNum;
@@ -416,6 +434,15 @@ static uint32_t bootloader_${BTL_TYPE}_FlashSerialGet(T_FLASH_BANK flash_bank)
 
     return serialNum;
 }
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+</#if>
+/* MISRAC 2012 deviation block end */
+</#if>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+    <#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+    </#if>
 </#if>
 
 static bool bootloader_${BTL_TYPE}_CheckForUpdate(OTA_CONTROL_BLOCK *controlBlock)
