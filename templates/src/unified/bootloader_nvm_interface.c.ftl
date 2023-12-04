@@ -115,7 +115,7 @@ void bootloader_EraseRecInit(void)
 
   for (uint32_t i = 0; i < NUM_ERASE_RECORDS; i++) {
         eraseBlocks[i].startAddr = APP_START_ADDRESS + (i * blockSize);
-        eraseBlocks[i].endAddr = eraseBlocks[i].startAddr + (blockSize-1);
+        eraseBlocks[i].endAddr = eraseBlocks[i].startAddr + (blockSize-1U);
         eraseBlocks[i].blockEraseStatus = false;
   }
 }
