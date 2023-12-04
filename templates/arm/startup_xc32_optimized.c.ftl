@@ -127,6 +127,14 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     }
 </#if>
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+/* MISRAC 2012 deviation block start */
+/* MISRA C-2012 Rule 18.1 deviated 1 times. Deviation record ID -  H3_MISRAC_2012_R_18_1_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#pragma coverity compliance block \
+(deviate:1 "MISRA C-2012 Rule 18.1" "H3_MISRAC_2012_R_18_1_DR_1")
+</#if>
     register uint64_t *pFlexRam = (uint64_t*)(uintptr_t)&_sdata;
 
     // FlexRAM initialization loop (to handle ECC properly)
@@ -138,6 +146,11 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
 
     __DSB();
     __ISB();
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 18.1"
+#pragma GCC diagnostic pop
+</#if>
+/* MISRAC 2012 deviation block end */
 </#if>
 
     uint32_t *pSrc, *pDst;
