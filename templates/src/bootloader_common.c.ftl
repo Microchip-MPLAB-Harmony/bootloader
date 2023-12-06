@@ -52,8 +52,8 @@
 
 /* Bootloader Major and Minor version sent for a Read Version command (MAJOR.MINOR)*/
 #define BTL_MAJOR_VERSION       3U
-#define BTL_MINOR_VERSION       6U
-#define ASM_VECTOR             asm("bx %0"::"r" (reset_vector))
+#define BTL_MINOR_VERSION       7U
+#define ASM_VECTOR              asm("bx %0"::"r" (reset_vector))
 
 <#if __PROCESSOR?matches("PIC32M.*") == true>
     <#lt>#define WORD_ALIGN_MASK         (~(sizeof(uint32_t) - 1U))

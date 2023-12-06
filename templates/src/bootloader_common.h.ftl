@@ -202,8 +202,8 @@ Returns:
 Example:
     <code>
     
-    #define BTL_MAJOR_VERSION       3
-    #define BTL_MINOR_VERSION       6
+    #define BTL_MAJOR_VERSION       3U
+    #define BTL_MINOR_VERSION       7U
 
     uint16_t bootloader_GetVersion( void )
     {
