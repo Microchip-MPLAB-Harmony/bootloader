@@ -302,7 +302,7 @@ static void BL_SPI_CommandParser(void)
             break;
     }
 
-    if (IS_BIT_SET(spiBLData.status, BL_STATUS_BIT_BUSY) == 0U)
+    if (IS_BIT_SET(spiBLData.status, BL_STATUS_BIT_BUSY) == false)
     {
         ${PERIPH_USED}_Ready();
     }
