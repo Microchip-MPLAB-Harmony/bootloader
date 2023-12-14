@@ -339,8 +339,9 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
                 else if (command == BL_COMMAND_ERASE)
                 {
                     uint32_t appImageEndAddr = i2cBLData.appImageEndAddr;
+					uint32_t erasememAddr = i2cBLData.cmdProtocol.eraseCommand.memAddr;
 <#if BTL_DUAL_BANK == true>
-                    if (memAddr == LOWER_FLASH_SERIAL_SECTOR)
+                    if (erasememAddr == LOWER_FLASH_SERIAL_SECTOR)
                     {
                         /* Send error response if active Flash Panels (Lower Flash)
                          * Serial Sector is being erased.
@@ -351,11 +352,11 @@ static bool BL_I2C_CommandParser(uint8_t rdByte)
 
 </#if>
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
-                    if (((memAddr >= i2cBLData.appImageStartAddr) && ((memAddr + ERASE_BLOCK_SIZE) <= appImageEndAddr))
-                        || (memAddr >= DEVCFG_PAGE_ADDRESS)
+                    if (((erasememAddr >= i2cBLData.appImageStartAddr) && ((erasememAddr + ERASE_BLOCK_SIZE) <= appImageEndAddr))
+                        || (erasememAddr >= DEVCFG_PAGE_ADDRESS)
                        )
 <#else>
-                    if ((memAddr >= i2cBLData.appImageStartAddr) && ((memAddr + ERASE_BLOCK_SIZE) <= appImageEndAddr))
+                    if ((erasememAddr >= i2cBLData.appImageStartAddr) && ((erasememAddr + ERASE_BLOCK_SIZE) <= appImageEndAddr))
 </#if>
                     {
                         SET_BIT(i2cBLData.status, BL_STATUS_BIT_BUSY);
