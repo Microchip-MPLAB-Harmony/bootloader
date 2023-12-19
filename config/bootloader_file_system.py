@@ -134,7 +134,7 @@ def getLinkerParams(btlLength, triggerLength):
     rom_length  = "ROM_LENGTH=" + romLen
     ram_origin  = "RAM_ORIGIN=" + ramStart
     ram_length  = "RAM_LENGTH=" + ramLen
-    
+
     if place_btl_in_bfm == True:
         rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN + 1024\""
         return (rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length)
@@ -150,6 +150,24 @@ def setLinkerParams(symbol, event):
     linkerParams = getLinkerParams(btlLength, triggerLength)
 
     symbol.setValue(linkerParams)
+
+def setXc32RamStartAddr(symbol, event):
+    component = symbol.getComponent()
+
+    ram_startAddr = int(component.getSymbolByID("BTL_RAM_START").getValue(), 16)
+    if component.getSymbolByID("BTL_TRIGGER_ENABLE").getValue():
+        ram_startAddr = ram_startAddr + int(component.getSymbolByID("BTL_TRIGGER_LEN").getValue())
+
+    symbol.setValue("RAM_START_ADDR=" + str(hex(ram_startAddr)))
+
+def setXc32RamSize(symbol, event):
+    component = symbol.getComponent()
+
+    ramSize = int(component.getSymbolByID("BTL_RAM_SIZE").getValue(), 16)
+    if component.getSymbolByID("BTL_TRIGGER_ENABLE").getValue():
+        ramSize = ramSize - int(component.getSymbolByID("BTL_TRIGGER_LEN").getValue())
+
+    symbol.setValue("RAM_SIZE=" + str(hex(ramSize)))
 
 def setMediaInformation(symbol, event):
     global btl_type
@@ -258,6 +276,27 @@ def instantiateComponent(bootloaderComponent):
         xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
         xc32LdPreprocessroMacroSym.setAppend(True, ";=")
         xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
+
+    if "PIC32CZCA" in Database.getSymbolValue("core", "CoreSeries"):
+        xc32PreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_RAM_START_ADDR", None)
+        xc32PreprocessroMacroSym.setCategory("C32")
+        xc32PreprocessroMacroSym.setKey("preprocessor-macros")
+        bootloader_ramStartAddr = int(Database.getSymbolValue("file_system_bootloader", "BTL_RAM_START"), 16)
+        if Database.getSymbolValue("file_system_bootloader", "BTL_TRIGGER_ENABLE"):
+            bootloader_ramStartAddr = bootloader_ramStartAddr + int(Database.getSymbolValue("file_system_bootloader", "BTL_TRIGGER_LEN"))
+        xc32PreprocessroMacroSym.setValue("RAM_START_ADDR=" + str(hex(bootloader_ramStartAddr)))
+        xc32PreprocessroMacroSym.setAppend(True, ";")
+        xc32PreprocessroMacroSym.setDependencies(setXc32RamStartAddr, ["BTL_TRIGGER_ENABLE", "BTL_RAM_START", "BTL_TRIGGER_LEN"])
+
+        xc32PreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_RAM_SIZE", None)
+        xc32PreprocessroMacroSym.setCategory("C32")
+        xc32PreprocessroMacroSym.setKey("preprocessor-macros")
+        bootloader_ramSize = int(Database.getSymbolValue("file_system_bootloader", "BTL_RAM_SIZE"), 16)
+        if Database.getSymbolValue("file_system_bootloader", "BTL_TRIGGER_ENABLE"):
+            bootloader_ramSize = bootloader_ramSize - int(Database.getSymbolValue("file_system_bootloader", "BTL_TRIGGER_LEN"))
+        xc32PreprocessroMacroSym.setValue("RAM_SIZE=" + str(hex(bootloader_ramSize)))
+        xc32PreprocessroMacroSym.setAppend(True, ";")
+        xc32PreprocessroMacroSym.setDependencies(setXc32RamSize, ["BTL_TRIGGER_ENABLE", "BTL_RAM_START", "BTL_TRIGGER_LEN"])
 
     generateCommonFiles(bootloaderComponent)
 
