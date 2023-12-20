@@ -63,8 +63,8 @@ ENTRY(__XC32_RESET_HANDLER_NAME)
  */
 #define ROM_SIZE  ${BTL_SIZE}
 
-#if (ROM_SIZE > ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE})
-    #  error ROM_SIZE is greater than the max size of ${.vars["${MEM_USED?lower_case}"].FLASH_SIZE}
+#if (ROM_SIZE > ${BTL_FLASH_SIZE})
+    #  error ROM_SIZE is greater than the max size ${BTL_FLASH_SIZE}
 #endif
 
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >

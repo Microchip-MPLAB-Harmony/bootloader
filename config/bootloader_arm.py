@@ -30,6 +30,7 @@ global flash_size
 global flash_erase_size
 
 global btl_start
+global btl_flash_size
 
 global btlMemUsedStartAddr
 global btlMemUsedSize
@@ -40,6 +41,7 @@ flash_size          = 0
 flash_erase_size    = 0
 btl_start_addr      = 0
 
+btl_flash_size      = "0x0"
 btl_start           = "0x0"
 
 NvmMemoryNames      = ["NVM", "NVMCTRL", "EFC", "HEFC", "FCW"]
@@ -69,10 +71,12 @@ for mem_idx in range(0, len(addr_space_children)):
         if (mem_seg == "FCR_BFM" or mem_seg == "BOOT_FLASH"):
             if (max_btl_size != 0 and max_btl_size <= mem_size and place_btl_in_bfm == False):
                 btl_start_addr = int(addr_space_children[mem_idx].getAttribute("start"), 16)
+                btl_flash_size = addr_space_children[mem_idx].getAttribute("size")
                 place_btl_in_bfm = True
         else:
             flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
             flash_size  = int(addr_space_children[mem_idx].getAttribute("size"), 16)
+            btl_flash_size = addr_space_children[mem_idx].getAttribute("size")
 
     if ((any(x == mem_seg for x in RamNames) == True) and (mem_type == "ram")):
         ram_start   = addr_space_children[mem_idx].getAttribute("start")
@@ -281,6 +285,10 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setDefaultValue(ram_size)
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
+
+    btlFlashSize = bootloaderComponent.createStringSymbol("BTL_FLASH_SIZE", None)
+    btlFlashSize.setVisible(False)
+    btlFlashSize.setDefaultValue(btl_flash_size)
 
 def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
     btlFuseProgramEnable = bootloaderComponent.createBooleanSymbol("BTL_FUSE_PROGRAM_ENABLE", None)
