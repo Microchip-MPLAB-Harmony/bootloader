@@ -273,7 +273,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
     {
         case (uint8_t)READ_BOOT_INFO:
         {
-            btlVersion = bootloader_GetVersion(); 
+            btlVersion = bootloader_GetVersion();
 
         <#if core.CoreSeries?contains("PIC32CZCA") >
             bootloader_EraseRecInit();
@@ -292,9 +292,25 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 
         case (uint8_t)ERASE_FLASH:
         {
-			<#if core.CoreSeries?contains("PIC32CZCA") == false>
+<#if core.CoreSeries?contains("PIC32CZCA") == false>
+            /* Following MISRA-C rules are deviated in the below code block */
+            /* MISRA C-2012 Rule 11.6 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block deviate "MISRA C-2012 Rule 11.6"  "H3_MISRAC_2012_R_11_6_DR_1"
+</#if>
             bootloader_NvmAppErase(APP_START_ADDRESS, FLASH_END_ADDRESS);
-			</#if>
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
+</#if>
+            /* MISRAC 2012 deviation block end */
+</#if>
             handle->currentState = BOOTLOADER_SEND_RESPONSE;
             handle->buffSize = 1;
             break;
