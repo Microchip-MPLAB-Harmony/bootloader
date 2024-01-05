@@ -445,12 +445,10 @@ static void ${PERIPH_USED}_task(void)
 
                 if (${PERIPH_USED}_MessageReceiveFifo(${PERIPH_NAME}_RX_FIFO_0, numberOfMessage, (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0) == true)
                 {
-                    rxBuf = (${PERIPH_NAME}_RX_BUFFER *)rxFiFo0;
-
                     for (count = 0U; count < numberOfMessage; count++)
                     {
+                        rxBuf = (${PERIPH_NAME}_RX_BUFFER *) (rxFiFo0 + count * ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE);
                         process_command(rxBuf->data, CANDlcToLengthGet(rxBuf->dlc));
-                        rxBuf += ${PERIPH_USED}_RX_FIFO0_ELEMENT_SIZE;
                     }
                 }
             }
