@@ -40,7 +40,6 @@ body {
  */
 .wh_publication_title > a {
   padding: 0.1em 0;
-  text-transform: uppercase;
   font-weight: bold;
   line-height: 1em;
   font-size: 1.8em;
@@ -50,6 +49,22 @@ body {
     padding: 0;
   }
 }
+
+/* 
+ * Edit/Comment button in webhelp
+ */
+
+.editbutton {
+  border: 2px solid green;
+  border-radius: 5px;
+  width: 200px;
+  text-align: center;
+  padding: 7px;
+  background-color: #04aa6d;
+  color: #ffffff;
+  font-weight: bold;
+  }
+
 
 /*
  * ------------------------------------------------------------------
@@ -338,10 +353,168 @@ body {
 }
 .tablecap {
   width: 100%;
+  font-weight: bold;
 }
 p.compact {
   margin-bottom: auto;
 }
+
+/* From atmel.css table styling */
+
+table.table,
+table.simpletable.dataTable.bitFieldValues {
+  border-color: #a7a9ab;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+table.table td > p, table.table th > p,
+table.simpletable.dataTable.bitFieldValues td > p,
+table.simpletable.dataTable.bitFieldValues th > p {
+  margin: 0;
+}
+
+table.table td span.rotate, table.table th span.rotate,
+table.simpletable.dataTable.bitFieldValues td span.rotate,
+table.simpletable.dataTable.bitFieldValues th span.rotate {
+  display: inline-block;
+  -webkit-writing-mode: tb-rl;
+      -ms-writing-mode: tb-rl;
+          writing-mode: tb-rl;
+  -webkit-transform: rotate(-180deg);
+          transform: rotate(-180deg);
+  white-space: nowrap;
+}
+
+table.table th,
+table.simpletable.dataTable.bitFieldValues th {
+  background-color: #585858;
+  color: #fff;
+}
+
+table.table tbody tr:nth-child(odd),
+table.simpletable.dataTable.bitFieldValues tbody tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
+
+table.table tbody tr:nth-child(even),
+table.simpletable.dataTable.bitFieldValues tbody tr:nth-child(even) {
+  background-color: #d9d9d9;
+}
+
+.cellrowborder {
+  border-left: none;
+  border-top: none;
+  border-right: solid 1px #a7a9ab;
+  border-bottom: solid 1px #a7a9ab;
+}
+
+.nocellnorowborder {
+  border: none;
+  border-right: hidden;
+  border-bottom: hidden;
+}
+
+.row-nocellborder {
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-right: hidden;
+  border-bottom: solid 1px #a7a9ab;
+}
+
+.cell-norowborder {
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  border-bottom: hidden;
+  border-right: solid 1px #a7a9ab;
+}
+
+table.nozebra tbody tr:nth-child(odd),
+table.nozebra tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+table.nocolor tbody tr:nth-child(odd),
+table.nocolor tbody tr:nth-child(even) {
+  background-color: white;
+}
+
+table.table.transparent-table.transparent-border-table {
+  width: 60%;
+}
+table.table.transparent-table.transparent-border-table td {
+  vertical-align: middle !important;
+}
+
+table.transparent-table tbody tr {
+  background-color: transparent !important;
+}
+
+table.transparent-border-table tbody tr {
+  border-left: hidden;
+  border-right: hidden;
+  border-top: hidden;
+  border-bottom: hidden;
+}
+
+table.table.registersummary tbody tr:nth-child(even),
+table.table.registersummary tbody tr:nth-child(odd) {
+  background-color: transparent;
+}
+
+.table.register {
+  position: relative;
+}
+
+.table.register tr {
+  height: 20px;
+}
+
+.table.register tbody tr:nth-child(even),
+.table.register tbody tr:nth-child(odd) {
+  background-color: transparent;
+}
+
+.table.register td {
+  min-width: 5em;
+  text-align: center;
+  width: calc(100%/8);
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.table.register .rowname {
+  left: -60px;
+  position: absolute;
+  text-align: right;
+  width: 50px;
+}
+
+.table.register tr:nth-child(2) td {
+  border: 1px solid #000;
+}
+
+.table.register tbody ~ tbody tr:first-child td {
+  padding-top: 2em;
+}
+
+.registersummary p {
+  margin: 0;
+}
+
+table.register td.reserved,
+table.registersummary td.reserved {
+  background-color: #dcdcdc;
+}
+
+table.bitFieldValues {
+  background-color: lightblue;
+}
+
+/* end: atmel.css table styling */
+
 table.bitFieldValues {
   border: 1px solid #000;
 }
@@ -357,6 +530,9 @@ table.bitFieldValues th {
 table.table .vertical-left span, table.table .vertical-center span, table.table .vertical-right span, span.rotate {
   writing-mode: tb;
   transform: rotate(180deg);
+}
+.entry.rotate {
+  writing-mode: initial;
 }
 table.table .vertical-left {
   vertical-align: bottom;
@@ -423,7 +599,7 @@ table.registersummary {
 }
 table.registersummary th {
   text-align: center;
-  background-color: #e0e0e0;
+  background-color: #585858;
 }
 table.registersummary th, table.registersummary td {
   border: 1px solid;
@@ -433,6 +609,17 @@ table.registersummary th, table.registersummary td {
 table.register td.reserved,
 table.registersummary td.reserved {
   background-color: #dcdcdc;
+}
+
+td.rowsep-0 {
+  border-top: 0;
+  border-bottom: 0;
+}
+
+table.headercolumn > tbody tr > td:first-child {
+    background: #585858;
+    color: #fff;
+    font-weight: bold;
 }
 
 ol.horizontal {
@@ -455,4 +642,141 @@ ol.horizontal > li:before {
 code {
   color: inherit !important;
   background-color: inherit !important;
+}
+
+ul.custom_list, .custom_list ul {
+  list-style: none !important;
+}
+
+/* Note icons override - using proper casing */
+
+/*notes-colors-colorful*/
+*[class~="topic/note"]:not([class~="hazard-d/hazardstatement"]) {
+}
+*[class~="topic/note"].note_attention {
+  background-image: url('resources/notes/Attention.svg') !important;  
+}
+*[class~="topic/note"].note_caution {
+  background-image: url('resources/notes/Caution.svg') !important;
+  background-size: 100px;
+  min-height: 62px;
+}
+*[class~="topic/note"].note_danger {
+  background-image: url('resources/notes/Danger.svg') !important;
+  background-size: 100px;
+  min-height: 62px;
+}
+*[class~="topic/note"].note_execute {
+  background-image: url('resources/notes/Execute.svg') !important;
+}
+*[class~="topic/note"].note_important {
+  background-image: url('resources/notes/Important.svg') !important;
+}
+*[class~="topic/note"].note_info {
+  background-image: url('resources/notes/Info.svg') !important;
+}
+*[class~="topic/note"].note_notype {
+  background-image: none;  
+  border-top: none;
+  border-bottom: none;
+  background-size: initial;
+  background-repeat: initial;
+  background-position: initial;
+  min-height: unset;
+  padding: initial;
+}
+*[class~="topic/note"].note_note {
+  background-image: url('resources/notes/Info.svg') !important;
+}
+*[class~="topic/note"].note_notice {
+  background-image: url('resources/notes/Notice.svg') !important;
+  background-size: 100px;
+  min-height: 62px;
+}
+*[class~="topic/note"].note_restriction {
+  background-image: url('resources/notes/Restriction.svg') !important;
+}
+*[class~="topic/note"].note_result {
+  background-image: url('resources/notes/Result.svg') !important;
+}
+*[class~="topic/note"].note_tip {
+  background-image: url('resources/notes/Tip.svg') !important;
+}
+*[class~="topic/note"].note_todo {
+  background-image: url('resources/notes/Todo.svg') !important;
+}
+*[class~="topic/note"].note_warning {
+  background-image: url('resources/notes/Warning.svg') !important;
+  background-size: 100px;
+  min-height: 62px;
+}
+
+/* Feedback Url styling from webhelp */
+.feedback {
+  display: inline;
+  font-size: 9pt;
+  margin-left: 0.5em;
+  color: #0000EE;
+  cursor: pointer;
+}
+
+/* options style */
+kbd {
+  padding: inherit;
+  font-size: 87.5%;
+  color: inherit;
+  background-color: inherit;
+  border-radius: inherit;
+}
+
+.keyword.option {
+  font-style: italic;
+}
+
+/* Styling for custom list */
+.custom_list li > p:nth-child(2) {
+    margin-left: 2.5em;
+    color: #555 !important;
+}
+
+/* Styling for noboldlist */
+
+dl.noboldlist dt {
+  float: left;
+  clear: left;
+  /* width: 100px; */
+  font-weight: normal;
+}
+dl.noboldlist dd {
+  margin: 0 0 0 100px;
+  padding: 0 0 0.5em 0;
+}
+
+/* Disclaimer */
+.mchp_disclaimer {
+  padding: 0 10px;
+  text-align: center;
+}
+.mchp_disclaimer > .mchp_disclaimer_text {
+  font-size: .8em;
+  margin: 0;
+  color: #000;
+}
+.wh_footer {
+  margin-top: 0 !important;
+}
+
+.table-container{
+  max-height: 500px;
+  overflow: auto !important;
+}
+
+.table-container tr:nth-child(1) th{
+  position: sticky;
+  top: 0;
+}
+
+.table-container tr:nth-child(2) th{
+  position: sticky;
+  top: 29px;
 }

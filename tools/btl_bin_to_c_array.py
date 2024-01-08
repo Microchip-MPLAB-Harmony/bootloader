@@ -43,6 +43,7 @@ devices = {
             "PIC32MK"   : [16384, 8192],
             "PIC32MZ"   : [16384, 8192],
             "PIC32CZ"   : [4096, 8192],
+            "WBZ451"    : [4096, 4096],
 }
 
 def bin_hex_convert(bin_file, dest_file, erase_page_size):
@@ -102,7 +103,7 @@ def main():
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')
     parser.add_option('-b', '--binfile', dest='binfile', help='binary file to convert', metavar='FILE')
     parser.add_option('-o', '--outputHexfile', dest='hexfile', help='output hex file', metavar='FILE')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x/pic32cm/pic32mk/pic32mz)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x/pic32cm/pic32cz/pic32mk/pic32mz/wbz451)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 

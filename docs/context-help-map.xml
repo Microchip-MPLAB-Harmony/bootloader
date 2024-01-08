@@ -6,7 +6,7 @@
                path="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9.html"/>
    <appContext helpID="bootloader_UART_Tasks"
                path="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9.html"/>
-   <appContext helpID=" bootloader_I2C_Tasks"
+   <appContext helpID="bootloader_I2C_Tasks"
                path="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9.html"/>
    <appContext helpID="bootloader_CAN_Tasks"
                path="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9.html"/>
@@ -22,7 +22,7 @@
                path="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9.html"/>
    <appContext helpID="bootloader_USB_HOST_MSD_Tasks"
                path="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9.html"/>
-   <appContext helpID=" bootloader_UDP_Tasks"
+   <appContext helpID="bootloader_UDP_Tasks"
                path="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9.html"/>
    <appContext helpID="bootloader_Trigger"
                path="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2.html"/>
@@ -34,6 +34,8 @@
                path="GUID-873813A9-C0F5-477D-A1A9-E25CDA9598DD.html"/>
    <appContext helpID="mcc_h3_i2c_bootloader_configurations"
                path="GUID-B9D22739-DB16-4626-A5E8-05C5DCB1C8DD.html"/>
+   <appContext helpID="mcc_h3_spi_bootloader_configurations"
+               path="GUID-E032DE1F-C543-4251-ACD3-C3625D466841.html"/>
    <appContext helpID="mcc_h3_can_bootloader_configurations"
                path="GUID-94FBDB48-98DC-4C4B-861D-9327D7076ADE.html"/>
    <appContext helpID="mcc_h3_serial_bootloader_configurations"
@@ -52,4 +54,6 @@
                path="GUID-7325E59D-D429-4305-9AFC-5BE10EE38EE2.html"/>
    <appContext helpID="mcc_h3_fs_bootloader_configurations_serial"
                path="GUID-2A66A563-5A79-49DA-AE0F-90CA19F807EA.html"/>
+   <appContext helpID="mcc_h3_serial_bootloader_configurations"
+               path="GUID-A42AC60C-F720-4053-92C3-D54AE7B948FE.html"/>
 </map>

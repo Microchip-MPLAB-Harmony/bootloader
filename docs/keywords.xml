@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <keywords publicationid="GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25"
           language="en-US"
-          version="2"
+          version="3"
           documenttitle="MPLAB® Harmony Bootloader Library"
           pubtype="Online Reference"
           pubsubtype=""
           pubuserguidesubtype=""
-          pubproductheirarchy=""
+          pubproducthierarchy=""
           devices=""
-          revisiondate="26/05/2022 00:00:00"
+          revisiondate="03/01/2024 00:00:00"
           revisionletter="A"
           isbn=""
           pubid=""
           reachid=""
           description=""
-          lastmodified="02/11/2022 08:48:46"
+          lastmodified="08/01/2024 08:23:03"
           covertitle="MPLAB® Harmony Bootloader Library"
           frontcover="">
    <keyworditem topicid="GUID-02519565-B72E-496D-8153-E00F011D9130"
@@ -59,7 +59,7 @@
       <register>bootloader_XXX_Tasks Function</register>
       <title>bootloader_XXX_Tasks Function</title>
       <bitfield/>
-      <keyword> bootloader_I2C_Tasks</keyword>
+      <keyword>bootloader_I2C_Tasks</keyword>
    </keyworditem>
    <keyworditem topicid="GUID-145B7BD5-2EBD-4A08-8574-BE3103D234C9"
                 nocomponent="true"
@@ -147,7 +147,7 @@
       <register>bootloader_XXX_Tasks Function</register>
       <title>bootloader_XXX_Tasks Function</title>
       <bitfield/>
-      <keyword> bootloader_UDP_Tasks</keyword>
+      <keyword>bootloader_UDP_Tasks</keyword>
    </keyworditem>
    <keyworditem topicid="GUID-52D245E1-C639-46E3-97B2-EB864CECF0B2"
                 nocomponent="true"
@@ -203,6 +203,17 @@
       <title>I2C Bootloader Configurations</title>
       <bitfield/>
       <keyword>mcc_h3_i2c_bootloader_configurations</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-E032DE1F-C543-4251-ACD3-C3625D466841"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>SPI Bootloader Configurations</register>
+      <title>SPI Bootloader Configurations</title>
+      <bitfield/>
+      <keyword>mcc_h3_spi_bootloader_configurations</keyword>
    </keyworditem>
    <keyworditem topicid="GUID-94FBDB48-98DC-4C4B-861D-9327D7076ADE"
                 nocomponent="true"
@@ -302,5 +313,16 @@
       <title>Serial Memory Bootloader Configurations</title>
       <bitfield/>
       <keyword>mcc_h3_fs_bootloader_configurations_serial</keyword>
+   </keyworditem>
+   <keyworditem topicid="GUID-A42AC60C-F720-4053-92C3-D54AE7B948FE"
+                nocomponent="true"
+                parent="">
+      <device/>
+      <module/>
+      <component/>
+      <register>OTA Bootloader Configurations</register>
+      <title>OTA Bootloader Configurations</title>
+      <bitfield/>
+      <keyword>mcc_h3_serial_bootloader_configurations</keyword>
    </keyworditem>
 </keywords>
