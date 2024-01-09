@@ -8,6 +8,37 @@ nav_order: 99
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Bootloader Release v3.7.0
+
+### New Features
+
+- This release includes support for
+    - **OTA bootloader with RNBD451 BLE module** for SAM, PIC32C and PIC32M family of 32-bit microcontrollers
+    - **UART, I2C, SPI, CAN, Serial Memory, USB and Ethernet UDP bootloaders** for PIC32CZ CA family of 32-bit microcontrollers
+    - **CAN bootloader** for PIC32M family of 32-bit microcontrollers
+    - **UART, I2C, SPI and Serial Memory bootloaders** for PIC32CX-BZ2 and WBZ45 family of 32-bit microcontrollers
+    - **UART bootloader** for SAMA5D2, SAM9X60, SAM9X7 and SAMA7G5 family of 32-bit microprocessors
+
+- Below are new bootloader application repos added
+    - [bootloader_apps_ota](https://github.com/Microchip-MPLAB-Harmony/bootloader_apps_ota)
+
+### Bootloaders Supported on different product families
+- The following table provides supported bootloaders for different product families
+    <p align="center">
+        <img src = "./docs/supported_bootloaders.jpg"/>
+    </p>
+
+### Known Issues
+- No changes from v3.6.0
+
+### Development Tools
+
+* [MPLAB® X IDE v6.15](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v4.35](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * MPLAB® Code Configurator (MCC) v5.4.1
+
+
 ## Bootloader Release v3.6.0
 
 ### New Features
