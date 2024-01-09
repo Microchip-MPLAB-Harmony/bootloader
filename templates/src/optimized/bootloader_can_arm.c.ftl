@@ -355,7 +355,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         txBuffer->data[1] = (uint8_t)((btlVersion >> 8) & 0xFF);
         txBuffer->data[2] = (uint8_t)(btlVersion & 0xFF);
 
-        ${PERIPH_USED}_MessageTransmitFifo(3U, txBuffer);
+        ${PERIPH_USED}_MessageTransmitFifo(1U, txBuffer);
     }
     else if (BL_CMD_VERIFY == command)
     {
