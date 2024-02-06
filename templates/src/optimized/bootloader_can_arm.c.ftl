@@ -277,7 +277,7 @@ static void process_command(uint8_t *rx_message, uint8_t rx_messageLength)
         data_seq = 0;
         flash_ptr = 0;
         flash_addr = unlock_begin;
-        flash_size = unlock_end;
+        flash_size = unlock_end - unlock_begin;
     }
     else if (BL_CMD_DATA == command)
     {
