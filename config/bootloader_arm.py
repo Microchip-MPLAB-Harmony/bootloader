@@ -403,6 +403,7 @@ def generateCommonFiles(bootloaderComponent):
     if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
         btlCommonSourceFile.setSecurity("SECURE")
         btlCommonHeaderFile.setSecurity("SECURE")
+        btlInterruptHeaderFile.setSecurity("SECURE")
 
 # Used by Optimized Bootloaders
 def generateXC32SettingsAndFileSymbol(bootloaderComponent):
