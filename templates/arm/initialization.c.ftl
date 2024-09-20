@@ -160,6 +160,7 @@ void SYS_Initialize ( void* data )
           * before accessing any PIN's */
     -->
 <#if (__PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == true) ||
+     (__PROCESSOR?matches(".*PIC32CZ*.[CA70]*.[MC70]*.*") == true) ||
      (__PROCESSOR?matches(".*SAMG5.[0-9]*.*") == true) >
     CLOCK_Initialize();
 </#if>
@@ -182,6 +183,7 @@ void SYS_Initialize ( void* data )
 
     <#-- /* Check if device is other than SAME70/SAMV70/SAMV71/SAMS70 */ -->
 <#if (__PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == false) &&
+     (__PROCESSOR?matches(".*PIC32CZ*.[CA70]*.[MC70]*.*") == false) &&
      (__PROCESSOR?matches(".*SAMG5.[0-9]*.*") == false) &&
      (__PROCESSOR?matches(".*SAMRH7.*") == false) >
     CLOCK_Initialize();
