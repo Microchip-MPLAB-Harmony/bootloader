@@ -308,9 +308,12 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
                 {
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
                     if (((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
-                        || ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+                        || ((blProtocol.cmdProtocol.eraseCommand.memAddr >= NVM_USER_ROW_START) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (NVM_USER_ROW_START + NVM_USER_ROW_SIZE)))
     <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
                         || ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+    </#if>
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS_1??>
+                        || ((blProtocol.cmdProtocol.eraseCommand.memAddr >= NVM_USER_ROW_START_1) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= (NVM_USER_ROW_START_1 + NVM_USER_ROW_SIZE_1)))
     </#if>
                        )
 <#else>
@@ -329,15 +332,18 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
 <#if BTL_FUSE_PROGRAM_ENABLE == true>
                 else if (blProtocol.command == BL_COMMAND_DEVCFG_PROGRAM)
                 {
-                    if (((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS)
-                          && (blProtocol.cmdProtocol.programCommand.nBytes <= BL_BUFFER_SIZE)
-                          && ((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.cmdProtocol.programCommand.nBytes) <= (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
-    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
-                        || ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS)
-                          && (blProtocol.cmdProtocol.programCommand.nBytes <= BL_BUFFER_SIZE)
-                          && ((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.cmdProtocol.programCommand.nBytes) <= (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+                    if ( (blProtocol.cmdProtocol.programCommand.nBytes <= BL_BUFFER_SIZE) &&
+                        (( (blProtocol.cmdProtocol.programCommand.memAddr >= NVM_USER_ROW_START) &&
+                          ((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.cmdProtocol.programCommand.nBytes) <= (NVM_USER_ROW_START + NVM_USER_ROW_SIZE)))
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS_1??>
+                        || ((blProtocol.cmdProtocol.programCommand.memAddr >= NVM_USER_ROW_START_1) &&
+                          ((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.cmdProtocol.programCommand.nBytes) <= (NVM_USER_ROW_START_1 + NVM_USER_ROW_SIZE_1)))
     </#if>
-                        )
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
+                        || ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) &&
+                          ((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.cmdProtocol.programCommand.nBytes) <= (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+    </#if>
+                    ))
                     {
                         blProtocol.index = 0;
                         blProtocol.rdState = BL_I2C_READ_PROGRAM_DATA;
@@ -516,6 +522,9 @@ static void BL_I2C_EventsProcess(void)
 
 static void BL_I2C_FlashTask(void)
 {
+<#if .vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME??>
+    static uint32_t pwp_regions_disabled;
+</#if>
     switch(blProtocol.flashState)
     {
         case BL_FLASH_STATE_ERASE:
@@ -558,8 +567,8 @@ static void BL_I2C_FlashTask(void)
                 }
             }
 <#else>
-            // Lock region size is always bigger than the row size
             <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
+            // Lock region size is always bigger than the row size
             ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
 
             while(${MEM_USED}_IsBusy() == true)
@@ -567,68 +576,97 @@ static void BL_I2C_FlashTask(void)
             }
 
             </#if>
-
 </#if>
 
-<#if BTL_FUSE_PROGRAM_ENABLE == true>
+<#if BTL_FUSE_PROGRAM_ENABLE?? && BTL_FUSE_PROGRAM_ENABLE == true && ((.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME??) || (.vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME??) || (.vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME??))>
+
             if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= blProtocol.appImageStartAddr) && ((blProtocol.cmdProtocol.eraseCommand.memAddr + ERASE_BLOCK_SIZE) <= blProtocol.appImageEndAddr))
             {
-                /* Erase the Current row */
+                <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME??>
+                /* Unlock the program flash memory page */
+                ${.vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr, (uint32_t*)&pwp_regions_disabled);
+                </#if>
                 (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
             }
             else
             {
-                if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && (blProtocol.cmdProtocol.eraseCommand.memAddr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+            <#if .vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME?? || .vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME??>
+                <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS_1??>
+                if (((blProtocol.cmdProtocol.eraseCommand.memAddr >= NVM_USER_ROW_START) && (blProtocol.cmdProtocol.eraseCommand.memAddr < (NVM_USER_ROW_START + NVM_USER_ROW_SIZE))) || ((blProtocol.cmdProtocol.eraseCommand.memAddr >= NVM_USER_ROW_START_1) && (blProtocol.cmdProtocol.eraseCommand.memAddr < (NVM_USER_ROW_START_1 + NVM_USER_ROW_SIZE_1))))
+                <#elseif .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+                if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= NVM_USER_ROW_START) && (blProtocol.cmdProtocol.eraseCommand.memAddr < (NVM_USER_ROW_START + NVM_USER_ROW_SIZE)))
+                </#if>
                 {
-                    /* Erase the NVM user row */
-                     (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
+                    <#if .vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME??>
+                    /* Unlock the configuration/user memory page */
+                    (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME}();
+                    </#if>
+                    <#if .vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME??>
+                    (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
+                    <#else>
+                    (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
+                    </#if>
                 }
-    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
-                else if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (blProtocol.cmdProtocol.eraseCommand.memAddr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+            </#if>
+            <#if .vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME??>
+                if ((blProtocol.cmdProtocol.eraseCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (blProtocol.cmdProtocol.eraseCommand.memAddr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
                 {
                     /* Erase the NVM BOCOR row */
                      (void) ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
                 }
-                else
-               {
-                  /* Do Nothing */
-               }
-    </#if>
+            </#if>
             }
 <#else>
             /* Erase the Current row */
             (void) ${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
 </#if>
-
             blProtocol.flashState = BL_FLASH_STATE_ERASE_BUSY_POLL;
             break;
 
         case BL_FLASH_STATE_WRITE:
-<#if BTL_FUSE_PROGRAM_ENABLE == true>
+<#if BTL_FUSE_PROGRAM_ENABLE?? && BTL_FUSE_PROGRAM_ENABLE == true && ((.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME??) || (.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME??) || (.vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME??))>
+
             if (blProtocol.command == BL_COMMAND_DEVCFG_PROGRAM)
             {
-                if ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_USERROW_START_ADDRESS) && (blProtocol.cmdProtocol.programCommand.memAddr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+            <#if .vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME?? || .vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME??>
+                <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS_1??>
+                if (((blProtocol.cmdProtocol.programCommand.memAddr >= NVM_USER_ROW_START) && (blProtocol.cmdProtocol.programCommand.memAddr < (NVM_USER_ROW_START + NVM_USER_ROW_SIZE))) || ((blProtocol.cmdProtocol.programCommand.memAddr >= NVM_USER_ROW_START_1) && (blProtocol.cmdProtocol.programCommand.memAddr < (NVM_USER_ROW_START_1 + NVM_USER_ROW_SIZE_1))))
+                <#elseif .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+                if ((blProtocol.cmdProtocol.programCommand.memAddr >= NVM_USER_ROW_START) && (blProtocol.cmdProtocol.programCommand.memAddr < (NVM_USER_ROW_START + NVM_USER_ROW_SIZE)))
+                </#if>
                 {
-                    /* Write the NVM user row */
+                    <#if .vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME??>
+                    /* Unlock the configuration/user memory page */
+                    (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME}();
+                    </#if>
+                    <#if .vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME?? >
                     (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                    <#else>
+                    (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                    </#if>
                 }
-    <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
-                else if ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (blProtocol.cmdProtocol.programCommand.memAddr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+            </#if>
+            <#if .vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME??>
+                if ((blProtocol.cmdProtocol.programCommand.memAddr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (blProtocol.cmdProtocol.programCommand.memAddr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
                 {
-                    /* Write the NVM user row */
-                    (void) ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
+                /* Write the NVM user row */
+                (void) ${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
                 }
-                else
-                {
-                   /* Do Nothing */
-                }
-    </#if>
+            </#if>
             }
             else
             {
+                <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME??>
+                /* Unlock the program flash memory page */
+                ${.vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME}((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten), (uint32_t*)&pwp_regions_disabled);
+                </#if>
                 (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
             }
 <#else>
+            <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME??>
+            /* Unlock the program flash memory page */
+            ${.vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME}((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten), (uint32_t*)&pwp_regions_disabled);
+            </#if>
             (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
 </#if>
             blProtocol.flashState = BL_FLASH_STATE_WRITE_BUSY_POLL;
@@ -645,7 +683,14 @@ static void BL_I2C_FlashTask(void)
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
             if(${MEM_USED}_IsBusy() == false)
-            {
+            {                
+                <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME??>
+                if (pwp_regions_disabled != 0U)
+                {
+                    ${.vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME}((uint32_t*)&pwp_regions_disabled);
+                    pwp_regions_disabled = 0U;
+                }
+                </#if>
                 CLR_BIT(blProtocol.status, BL_STATUS_BIT_BUSY);
                 blProtocol.flashState = BL_FLASH_STATE_IDLE;
             }
@@ -653,7 +698,15 @@ static void BL_I2C_FlashTask(void)
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
             if(${MEM_USED}_IsBusy() == false)
-            {
+            {                
+                <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME??>
+                if (pwp_regions_disabled != 0U)
+                {
+                    ${.vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME}((uint32_t*)&pwp_regions_disabled);
+                    pwp_regions_disabled = 0U;
+                }
+                </#if>
+
                 blProtocol.nFlashBytesWritten += PAGE_SIZE;
 
                 if (blProtocol.nFlashBytesWritten < blProtocol.cmdProtocol.programCommand.nBytes)
