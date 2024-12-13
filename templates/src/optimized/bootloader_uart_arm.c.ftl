@@ -117,6 +117,7 @@ static uint32_t unlock_end          = 0;
 static uint32_t data_size           = 0;
 
 static uint8_t  input_command       = 0;
+static uint8_t  current_command     = 0;
 
 static bool     packet_received     = false;
 static bool     flash_data_ready    = false;
@@ -246,6 +247,8 @@ static void command_task(void)
 {
     uint32_t i;
 
+    current_command = input_command;
+
     if (BL_CMD_UNLOCK == input_command)
     {
         uint32_t begin  = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
@@ -265,13 +268,18 @@ static void command_task(void)
             ${PERIPH_USED}_WriteByte(BL_RESP_ERROR);
         }
     }
-<#if BTL_FUSE_PROGRAM_ENABLE == true>
+<#if BTL_FUSE_PROGRAM_ENABLE?? && BTL_FUSE_PROGRAM_ENABLE == true>
     else if ((BL_CMD_DATA == input_command) || ((uint8_t)BL_CMD_DEVCFG_DATA == input_command))
     {
         flash_addr = (input_buffer[ADDR_OFFSET] & OFFSET_ALIGN_MASK);
 
         if (((BL_CMD_DATA == input_command) && (unlock_begin <= flash_addr && flash_addr < unlock_end))
-            || ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= ${MEM_USED}_USERROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE))))
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+            || ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= NVM_USER_ROW_START) && (flash_addr < (NVM_USER_ROW_START + NVM_USER_ROW_SIZE))))
+    </#if>
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS_1??>
+            || ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= NVM_USER_ROW_START_1) && (flash_addr < (NVM_USER_ROW_START_1 + NVM_USER_ROW_SIZE_1))))
+    </#if>
     <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
             || ((BL_CMD_DEVCFG_DATA == input_command) && ((flash_addr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE))))
     </#if>
@@ -420,6 +428,10 @@ static void flash_task(void)
     // data_size = Actual data bytes to write + Address 4 Bytes
     uint32_t bytes_to_write = (data_size - 4U);
 
+<#if .vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME??>
+    static uint32_t pwp_regions_disabled;
+</#if>
+
     FLASH_ERASE_FPTR flash_erase_fptr = (FLASH_ERASE_FPTR)${.vars["${MEM_USED?lower_case}"].ERASE_API_NAME};
     FLASH_WRITE_FPTR flash_write_fptr = (FLASH_WRITE_FPTR)${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME};
 
@@ -472,28 +484,48 @@ static void flash_task(void)
     </#if>
     <@ReceiveNextByteWhileMemoryIsBusy/>
 </#if>
-<#if BTL_FUSE_PROGRAM_ENABLE == true>
+<#if BTL_FUSE_PROGRAM_ENABLE?? && BTL_FUSE_PROGRAM_ENABLE == true && (.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME?? || .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS?? || .vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME?? || .vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME??)>
     // Check if the address falls in Device Configuration Space
-    if (!(flash_addr >= unlock_begin && flash_addr < unlock_end))
+    if (BL_CMD_DEVCFG_DATA == current_command)
     {
-        if ((flash_addr >= ${MEM_USED}_USERROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_USERROW_START_ADDRESS + ${MEM_USED}_USERROW_SIZE)))
+    <#if .vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME?? || .vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME??>
+        <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS_1??>
+        if (((flash_addr >= NVM_USER_ROW_START) && (flash_addr < (NVM_USER_ROW_START + NVM_USER_ROW_SIZE))) || ((flash_addr >= NVM_USER_ROW_START_1) && (flash_addr < (NVM_USER_ROW_START + NVM_USER_ROW_SIZE_1))))
+        <#elseif .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS??>
+        if ((flash_addr >= NVM_USER_ROW_START) && (flash_addr < (NVM_USER_ROW_START + NVM_USER_ROW_SIZE)))
+        </#if>
         {
+            <#if .vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME??>
             flash_erase_fptr = (FLASH_ERASE_FPTR)${.vars["${MEM_USED?lower_case}"].USER_ROW_ERASE_API_NAME};
+            </#if>
+            <#if .vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME??>
             flash_write_fptr = (FLASH_WRITE_FPTR)${.vars["${MEM_USED?lower_case}"].USER_ROW_WRITE_API_NAME};
+            </#if>
         }
+    </#if>
     <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
-        else if ((flash_addr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
+        if ((flash_addr >= ${MEM_USED}_BOCORROW_START_ADDRESS) && (flash_addr < (${MEM_USED}_BOCORROW_START_ADDRESS + ${MEM_USED}_BOCORROW_SIZE)))
         {
             flash_erase_fptr = (FLASH_ERASE_FPTR)${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_ERASE_API_NAME};
             flash_write_fptr = (FLASH_WRITE_FPTR)${.vars["${MEM_USED?lower_case}"].BOCOR_ROW_WRITE_API_NAME};
         }
-        else
-        {
-            /* nothing to do */
-        }
+    </#if>
+    <#if .vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME??>
+        (void) ${.vars["${MEM_USED?lower_case}"].USER_ROW_UNLOCK_API_NAME}();
     </#if>
     }
+    else
+    {
+        <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME??>
+        ${.vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME}(addr, (uint32_t*)&pwp_regions_disabled);
+        </#if>
+    }
+<#else>
+    <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME??>
+    ${.vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME}(addr, (uint32_t*)&pwp_regions_disabled);
+    </#if>
 </#if>
+
     /* Erase the Current sector */
     (void) flash_erase_fptr(<@apiHandle/>addr);
 
@@ -508,6 +540,14 @@ static void flash_task(void)
         addr += PAGE_SIZE;
         write_idx += WORDS(PAGE_SIZE);
     }
+
+    <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME??>
+    if (pwp_regions_disabled != 0U)
+    {
+        ${.vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME}((uint32_t*)&pwp_regions_disabled);
+        pwp_regions_disabled = 0U;
+    }
+    </#if>
 
 <#if .vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME?? && .vars["${MEM_USED?lower_case}"].IS_BUSY_API_NAME == "None">
     ${PERIPH_USED}_WriteByte(BL_RESP_OK);

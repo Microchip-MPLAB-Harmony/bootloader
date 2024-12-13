@@ -73,6 +73,11 @@
         <#lt>#define NVM_USER_PAGE_SIZE                      (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_PROGRAM_SIZE}UL)
     </#if>
 
+    <#if .vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS_1??>
+        <#lt>#define NVM_USER_ROW_START_1                      (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_START_ADDRESS_1}UL)
+        <#lt>#define NVM_USER_ROW_SIZE_1                       (${.vars["${MEM_USED?lower_case}"].FLASH_USERROW_SIZE_1}UL)
+    </#if>
+
     <#if .vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS??>
         <#lt>#define NVM_BOCOR_ROW_START                      (${.vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_START_ADDRESS}UL)
         <#lt>#define NVM_BOCOR_ROW_SIZE                       (${.vars["${MEM_USED?lower_case}"].FLASH_BOCORROW_SIZE}UL)
@@ -147,6 +152,8 @@
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
     <#if core.CoreArchitecture == "MIPS">
         <#lt>#define BTL_TRIGGER_RAM_START                   KVA0_TO_KVA1(${BTL_RAM_START})
+    <#elseif core.DeviceFamily == "PIC32CM_GC_SG">
+        <#lt>#define BTL_TRIGGER_RAM_START                   (${BTL_RAM_START}U + (${BTL_RAM_SIZE}U - ${BTL_TRIGGER_LEN}U))
     <#elseif core.CoreArchitecture == "CORTEX-M23">
         <#lt>#define BTL_TRIGGER_RAM_START                   (${BTL_RAM_START} + 0x1000)
     <#else>
@@ -201,7 +208,7 @@ Returns:
 
 Example:
     <code>
-    
+
     #define BTL_MAJOR_VERSION       3U
     #define BTL_MINOR_VERSION       7U
 
@@ -357,15 +364,15 @@ Example:
 
         appImageStartAddr = 0x00002000;
         appImageSize = 0x8000;
-        
+
 
         if (bootloader_CRCGenerate(appImageStartAddr, appImageSize) != receivedCRC)
         {
-            
+
         }
         else
         {
-            
+
         }
 
     </code>
@@ -394,7 +401,7 @@ Returns:
     None
 
 Example:
-    <code>        
+    <code>
 
         bootloader_TriggerReset();
 
