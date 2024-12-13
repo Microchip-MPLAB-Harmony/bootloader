@@ -85,17 +85,19 @@ extern uint32_t _sbss, _ebss;
 </#if>
 /* MISRAC 2012 deviation block end */
 
-void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
+<#if core.RAM_INIT?? && ((core.DeviceFamily == "PIC32CM_JH00_JH01") || (core.DeviceFamily == "PIC32CM_GC_SG"))>
+__STATIC_INLINE void  __attribute__((optimize("-O1")))  RAM_Initialize(void)
 {
-    register uint32_t count;
-<#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CM_JH00_JH01">
-    register uint32_t *pRam = (uint32_t*)(uintptr_t)&_sdata;
+    register uint32_t *pSRam;
 
-    // MCRAMC initialization loop (to handle ECC properly)
-    // Write to entire RAM (leaving initial 16 bytes) to initialize ECC checksum
-    for (count = 0U; count < (((uint32_t)&_ram_end_ - (uint32_t)&_sdata) / 4U); count++)
+    __DSB();
+    __ISB();
+
+    // SRAM initialization loop (to handle ECC properly)
+    // We need to initialize all of SRAM with 32 bit aligned writes
+    for (pSRam = (uint32_t*)(uintptr_t)&_sdata; pSRam < (uint32_t*)(uintptr_t)_ram_end_ ; pSRam++)
     {
-        pRam[count] = 0U;
+        *pSRam = 0;
 
         if (((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ALWAYSON_Msk) != 0U) || ((WDT_REGS->WDT_CTRLA & WDT_CTRLA_ENABLE_Msk) != 0U))
         {
@@ -125,7 +127,15 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
             }
         }
     }
+
+    __DSB();
+    __ISB();
+}
 </#if>
+
+void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
+{
+    register uint32_t count;
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
 /* MISRAC 2012 deviation block start */
 /* MISRA C-2012 Rule 18.1 deviated 1 times. Deviation record ID -  H3_MISRAC_2012_R_18_1_DR_1 */
@@ -155,6 +165,10 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
 
     uint32_t *pSrc, *pDst;
     uintptr_t src, dst;
+
+<#if core.RAM_INIT?? && ((core.DeviceFamily == "PIC32CM_JH00_JH01") || (core.DeviceFamily == "PIC32CM_GC_SG"))>
+    RAM_Initialize();
+</#if>
 
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
     uint32_t i;
