@@ -378,7 +378,11 @@ def generateLinkerFileSymbol(bootloaderComponent):
     btlLinkerFile.setType("LINKER")
 
     if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
-        btlLinkerFile.setSourcePath("../bootloader/templates/arm/bootloader_linker_optimized_secure.ld.ftl")
+        deviceFamily = Database.getSymbolValue("core", "DeviceFamily")
+        if deviceFamily == "PIC32CM_GC_SG":
+            btlLinkerFile.setSourcePath("../bootloader/templates/arm/bootloader_linker_optimized_secure_pic32cm.ld.ftl")
+        else:
+            btlLinkerFile.setSourcePath("../bootloader/templates/arm/bootloader_linker_optimized_secure.ld.ftl")
         btlLinkerFile.setSecurity("SECURE")
 
 def generateCommonFiles(bootloaderComponent):

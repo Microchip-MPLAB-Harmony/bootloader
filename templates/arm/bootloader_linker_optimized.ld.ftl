@@ -68,7 +68,7 @@ ENTRY(__XC32_RESET_HANDLER_NAME)
 #endif
 
 <#if BTL_TRIGGER_ENABLE == true && BTL_TRIGGER_LEN != "0" >
-    <#if core.CoreArchitecture == "CORTEX-M23">
+    <#if core.CoreArchitecture == "CORTEX-M23" && core.DeviceFamily != "PIC32CM_GC_SG">
         <#lt>/* Bootloader Trigger pattern of length ${BTL_TRIGGER_LEN} Bytes needs to be stored
         <#lt> * at 0x1000 offset from starting of RAM by the application if it wants to
         <#lt> * run bootloader at startup without any external trigger.
