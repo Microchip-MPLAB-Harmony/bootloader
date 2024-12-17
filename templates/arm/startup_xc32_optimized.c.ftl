@@ -86,7 +86,7 @@ extern uint32_t _sbss, _ebss;
 /* MISRAC 2012 deviation block end */
 
 <#if core.RAM_INIT?? && ((core.DeviceFamily == "PIC32CM_JH00_JH01") || (core.DeviceFamily == "PIC32CM_GC_SG"))>
-__STATIC_INLINE void  __attribute__((optimize("-O1")))  RAM_Initialize(void)
+__STATIC_INLINE void  __attribute__((optimize("-O1"))) __attribute__((always_inline)) RAM_Initialize(void)
 {
     register uint32_t *pSRam;
 
