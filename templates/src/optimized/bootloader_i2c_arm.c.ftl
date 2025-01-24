@@ -153,7 +153,7 @@ typedef struct
     BL_COMMAND_PROTOCOL                     cmdProtocol;
 }BL_PROTOCOL;
 
-
+<#assign IS_BUSY_ARG = "">
 
 // *****************************************************************************
 // *****************************************************************************
@@ -384,14 +384,23 @@ static bool BL_I2C_MasterWriteHandler(uint8_t rdByte)
     return true;
 }
 
+<#if PERIPH_USED?starts_with("TWIHS") || PERIPH_USED?starts_with("FLEXCOM")>
 <#if PERIPH_USED?starts_with("TWIHS")>
+    <#assign PERIPH_REG_MACROS_PREFIX = "TWIHS">
+<#else>
+    <#assign PERIPH_REG_MACROS_PREFIX = "FLEX_TWI">
+</#if>
 static void BL_I2C_EventsProcess(void)
 {
+<#if PERIPH_USED?starts_with("TWIHS")>
     TWIHS_SLAVE_STATUS_FLAG statusRegister;
+<#else>
+    FLEXCOM_TWI_SLAVE_STATUS_FLAG statusRegister;
+</#if>
 
     statusRegister = ${PERIPH_USED}_StatusGet();
 
-    if (((uint32_t)statusRegister & TWIHS_SR_SVACC_Msk) != 0U)//host is accessing our client address
+    if (((uint32_t)statusRegister & ${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk) != 0U)//host is accessing our client address
     {
         i2cBLActive   = true;
 
@@ -401,17 +410,24 @@ static void BL_I2C_EventsProcess(void)
         }
         else //client is not busy
         {
-            if (((uint32_t)statusRegister & TWIHS_SR_SVREAD_Msk) != 0U) //if host is reading
+            if (((uint32_t)statusRegister & ${PERIPH_REG_MACROS_PREFIX}_SR_SVREAD_Msk) != 0U) //if host is reading
             {
                 BL_I2C_SendResponse(blProtocol.command);
             }
             else //if host is writing
             {
-                if (((uint32_t)statusRegister & TWIHS_SR_RXRDY_Msk) != 0U) //we have received a character from the host
+                if (((uint32_t)statusRegister & ${PERIPH_REG_MACROS_PREFIX}_SR_RXRDY_Msk) != 0U) //we have received a character from the host
                 {
                     if (BL_I2C_MasterWriteHandler(${PERIPH_USED}_ReadByte()) == true) //reading the byte will clear the RXRDY bit
                     {
-                        ${PERIPH_USED}_NACKDataPhase(false);
+                        if (IS_BIT_SET(blProtocol.status, BL_STATUS_BIT_BUSY)) //if client is busy, set up NACK to be sent for next data bytes from the host
+                        {
+                            ${PERIPH_USED}_NACKDataPhase(true);
+                        }
+                        else
+                        {
+                            ${PERIPH_USED}_NACKDataPhase(false);
+                        }
                     }
                     else
                     {
@@ -425,7 +441,7 @@ static void BL_I2C_EventsProcess(void)
             }
         }
     }
-    else if (((uint32_t)statusRegister & TWIHS_SR_SVACC_Msk) == 0U) //if SVCACC=0, that is end of access
+    else if (((uint32_t)statusRegister & ${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk) == 0U) //if SVCACC=0, that is end of access
     {
         /* Reset the I2C read state machine */
         blProtocol.rdState = BL_I2C_READ_COMMAND;
@@ -534,7 +550,7 @@ static void BL_I2C_FlashTask(void)
                 if (blProtocol.cmdProtocol.eraseCommand.memAddr < APP_START_ADDRESS)
                 {
                     ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
-                    while(${MEM_USED}_IsBusy() == true)
+                    while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
                     {
                         <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
                         kickdog();
@@ -546,7 +562,7 @@ static void BL_I2C_FlashTask(void)
     <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
                     ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
 
-                    while(${MEM_USED}_IsBusy() == true)
+                    while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
                     {
         <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
                     kickdog();
@@ -556,7 +572,7 @@ static void BL_I2C_FlashTask(void)
     </#if>
                     <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
                     ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(NVMCTRL_MEMORY_REGION_APPLICATION);
-                    while(${MEM_USED}_IsBusy() == true)
+                    while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
                     {
                         <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
                         kickdog();
@@ -571,7 +587,7 @@ static void BL_I2C_FlashTask(void)
             // Lock region size is always bigger than the row size
             ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
 
-            while(${MEM_USED}_IsBusy() == true)
+            while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
             {
             }
 
@@ -682,7 +698,10 @@ static void BL_I2C_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
-            if(${MEM_USED}_IsBusy() == false)
+            <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
+            <#assign IS_BUSY_ARG = "blProtocol.cmdProtocol.eraseCommand.memAddr">
+            </#if>
+            if(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == false)
             {                
                 <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME??>
                 if (pwp_regions_disabled != 0U)
@@ -697,7 +716,10 @@ static void BL_I2C_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
-            if(${MEM_USED}_IsBusy() == false)
+            <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
+            <#assign IS_BUSY_ARG = "blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten">
+            </#if>
+            if(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == false)
             {                
                 <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME??>
                 if (pwp_regions_disabled != 0U)
@@ -723,8 +745,8 @@ static void BL_I2C_FlashTask(void)
 
         case BL_FLASH_STATE_RESET:
             /* Wait for the I2C transfer to complete */
-<#if PERIPH_USED?starts_with("TWIHS")>
-            while ((uint8_t)(${PERIPH_USED}_REGS->TWIHS_SR & (uint8_t)TWIHS_SR_SVACC_Msk) == TWIHS_SR_SVACC_Msk)
+<#if PERIPH_USED?starts_with("TWIHS") || PERIPH_USED?starts_with("FLEXCOM")>
+            while (((uint8_t)${PERIPH_USED}_StatusGet() & (uint8_t)${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk) == ${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk)
             {
                 /* Do Nothing */
             }
@@ -741,11 +763,22 @@ static void BL_I2C_FlashTask(void)
 <#if BTL_DUAL_BANK == true>
         case BL_FLASH_STATE_BKSWAP_RESET:
             /* Wait for the I2C transfer to complete */
+            <#if PERIPH_USED?starts_with("TWIHS") || PERIPH_USED?starts_with("FLEXCOM")>
+            while (((uint8_t)${PERIPH_USED}_StatusGet() & (uint8_t)${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk) == ${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk)
+            {
+                /* Do Nothing */
+            }
+<#else>
             while (((uint8_t)${PERIPH_USED}_InterruptFlagsGet() & (uint8_t)SERCOM_I2C_SLAVE_INTFLAG_PREC) == 0U)
             {
                 /* Do Nothing */
             }
-            ${MEM_USED}_BankSwap();
+</#if>
+            ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
+            <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
+            bootloader_TriggerReset();
+            </#if>
+            
             break;
 </#if>
 

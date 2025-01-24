@@ -24,6 +24,8 @@ global btlSizes
 global btl_type
 global btl_helpkeyword
 
+import re
+
 btl_type = "I2C"
 btl_helpkeyword = "mcc_h3_i2c_bootloader_configurations"
 bootloaderCore = ""
@@ -155,6 +157,8 @@ def instantiateComponent(bootloaderComponent):
             btlDualBankEnable = False
         else:
             btlDualBankEnable = True
+    elif re.search(r"(?=.*PIC32CX)(?=.*MT)", Variables.get("__PROCESSOR")):
+        btlDualBankEnable = True
 
     btlDualBank = bootloaderComponent.createBooleanSymbol("BTL_DUAL_BANK", None)
     btlDualBank.setHelp(btl_helpkeyword)
