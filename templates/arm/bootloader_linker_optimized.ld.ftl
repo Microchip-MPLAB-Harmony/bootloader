@@ -215,6 +215,7 @@ SECTIONS
         *(.text.*)
         *(.rodata)
         *(.rodata.*)
+        *(.ramfunc.*)
         . = ALIGN(4);
         __data_end__ = .;
         _edata = .;

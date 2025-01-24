@@ -21,8 +21,8 @@
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 *****************************************************************************"""
 
-I2CNames        = ["SERCOM", "I2C", "TWIHS"]
-SPINames        = ["SERCOM", "SPI"]
+I2CNames        = ["SERCOM", "I2C", "TWIHS", "FLEXCOM"]
+SPINames        = ["SERCOM", "SPI", "FLEXCOM"]
 USBNames        = ["USB", "USBHS"]
 EthernetNames   = ["ETH", "GMAC"]
 CANNames        = ["CAN", "MCAN"]
@@ -100,15 +100,18 @@ def loadModule():
                     elif (dep == "SYS_FS"):
                         # Generic Dependency
                         depGeneric = True
+                        
+                    if ((Name == "uart" or Name == "i2c" or Name == "spi") and (dep == "MEMORY")) and hasPeripheral(["SEFC"]):
+                        Component.addMultiDependency(depId, dep, dep, True)
+                    else:
+                        Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
 
-                    Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
+                        if ((Name == "serial_mem") and (dep == "MEMORY")):
+                            # Requires two Dependencies of same type (MEMORY)
+                            Component.addDependency(depIdPrefix + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
 
-                    if ((Name == "serial_mem") and (dep == "MEMORY")):
-                        # Requires two Dependencies of same type (MEMORY)
-                        Component.addDependency(depIdPrefix + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
-
-                    if ((Name == "ota") and (dep == "MEMORY")):
-                        # Requires two Dependencies of same type (MEMORY)
-                        Component.addDependency(depIdPrefix + dep + "_dependency_OTA", dep, "MEMORY (OTA)", False, True)
+                        if ((Name == "ota") and (dep == "MEMORY")):
+                            # Requires two Dependencies of same type (MEMORY)
+                            Component.addDependency(depIdPrefix + dep + "_dependency_OTA", dep, "MEMORY (OTA)", False, True)
 
         Component.setDisplayType("Bootloader")

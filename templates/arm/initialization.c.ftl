@@ -154,14 +154,21 @@ void SYS_Initialize ( void* data )
 <#if (__PROCESSOR?matches(".*SAMRH7.*") == true) >
     <#lt>${core.LIST_SYSTEM_INIT_C_SYS_INITIALIZE_CORE}
 <#else>
-    ${MEM_USED}_Initialize();
+    <#if (__PROCESSOR?matches("(?=.*PIC32CX)(?=.*MT).*") == true)>
+        <#lt>   DWDT_Initialize();
+        <#lt>   SEFC0_Initialize();
+        <#lt>   SEFC1_Initialize();
+    <#else>
+        ${MEM_USED}_Initialize();
+    </#if>
 
-    <#-- /* For SAME70/SAMV70/SAMV71/SAMS70 and SAMG5x devices clock needs to be initialized
+    <#-- /* For SAME70/SAMV70/SAMV71/SAMS70, SAMG5x, PIC32CZ and PIC32CX-MT devices clock needs to be initialized
           * before accessing any PIN's */
     -->
 <#if (__PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == true) ||
      (__PROCESSOR?matches(".*PIC32CZ.[0-9]*.[CA70]*.[MC70]*.*") == true) ||
-     (__PROCESSOR?matches(".*SAMG5.[0-9]*.*") == true) >
+     (__PROCESSOR?matches(".*SAMG5.[0-9]*.*") == true) ||
+     (__PROCESSOR?matches("(?=.*PIC32CX)(?=.*MT).*") == true)>
     CLOCK_Initialize();
 </#if>
 
@@ -185,7 +192,8 @@ void SYS_Initialize ( void* data )
 <#if (__PROCESSOR?matches(".*SAM.[ESV]*7.[0-1]*.*") == false) &&
      (__PROCESSOR?matches(".*PIC32CZ.[0-9]*.[CA70]*.[MC70]*.*") == false) &&
      (__PROCESSOR?matches(".*SAMG5.[0-9]*.*") == false) &&
-     (__PROCESSOR?matches(".*SAMRH7.*") == false) >
+     (__PROCESSOR?matches(".*SAMRH7.*") == false) &&
+     (__PROCESSOR?matches("(?=.*PIC32CX)(?=.*MT).*") == false)>
     CLOCK_Initialize();
 </#if>
 

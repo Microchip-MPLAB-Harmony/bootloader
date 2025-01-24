@@ -124,6 +124,12 @@ static bool     flash_data_ready    = false;
 
 static bool     uartBLActive        = false;
 
+<#assign IS_BUSY_ARG = "">
+
+<#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
+<#assign IS_BUSY_ARG = "addr">
+</#if>
+
 <#if .vars["${MEM_USED?lower_case}"].USES_DRV_API?? && .vars["${MEM_USED?lower_case}"].USES_DRV_API == true>
 typedef bool (*FLASH_ERASE_FPTR)(const DRV_HANDLE, uint32_t);
 
@@ -381,7 +387,11 @@ static void command_task(void)
             /* Nothing to do */
         }
 
-        ${MEM_USED}_BankSwap();
+        ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
+        
+        <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
+        bootloader_TriggerReset();
+        </#if>
     }
 </#if>
     else
@@ -408,7 +418,7 @@ static void command_task(void)
     </#if>
 <#else>
 <@addIndentSpaces indentSpaces/>   /* Receive Next Bytes while waiting for memory to be ready */
-<@addIndentSpaces indentSpaces/>   while(${MEM_USED}_IsBusy() == true)
+<@addIndentSpaces indentSpaces/>   while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
 <@addIndentSpaces indentSpaces/>   {
 <@addIndentSpaces indentSpaces/>       input_task();
 <@addIndentSpaces indentSpaces/>   <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
@@ -441,7 +451,7 @@ static void flash_task(void)
         if (flash_addr < APP_START_ADDRESS)
         {
             ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
-            while(${MEM_USED}_IsBusy() == true)
+            while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
             {
                 input_task();
             <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
@@ -454,7 +464,7 @@ static void flash_task(void)
     <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
             ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
 
-            while(${MEM_USED}_IsBusy() == true)
+            while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
             {
                 input_task();
             <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
@@ -466,7 +476,7 @@ static void flash_task(void)
             <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
             ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(NVMCTRL_MEMORY_REGION_APPLICATION);
 
-            while(${MEM_USED}_IsBusy() == true)
+            while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
             {
                 input_task();
             <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
