@@ -159,6 +159,7 @@ typedef struct
     uint16_t                                btlVersion;
 }SPI_BL_DATA;
 
+<#assign IS_BUSY_ARG = "">
 
 
 // *****************************************************************************
@@ -459,7 +460,10 @@ static void BL_SPI_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
-            if(${MEM_USED}_IsBusy() == false)
+            <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
+            <#assign IS_BUSY_ARG = "spiBLData.cmd.eraseCommand.memAddr">
+            </#if>
+            if(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == false)
             {
                 CLR_BIT(spiBLData.status, BL_STATUS_BIT_BUSY);
                 ${PERIPH_USED}_Ready();
@@ -468,7 +472,10 @@ static void BL_SPI_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
-            if(${MEM_USED}_IsBusy() == false)
+            <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
+            <#assign IS_BUSY_ARG = "spiBLData.cmd.programCommand.memAddr + spiBLData.nFlashBytesWritten">
+            </#if>
+            if(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == false)
             {
                 spiBLData.nFlashBytesWritten += PAGE_SIZE;
 
@@ -506,7 +513,10 @@ static void BL_SPI_FlashTask(void)
 
 <#if BTL_DUAL_BANK == true>
         case BL_FLASH_STATE_BKSWAP_RESET:
-            ${MEM_USED}_BankSwap();
+            ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
+            <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
+            bootloader_TriggerReset();
+            </#if>
             break;
 </#if>
 

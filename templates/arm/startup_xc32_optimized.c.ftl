@@ -204,11 +204,11 @@ void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(
     }
 
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == true >
-    <#lt>#if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
+    <#lt>#ifdef SCB_VTOR_TBLOFF_Msk
     <#lt>    /*  Set the vector-table base address in RAM */
     <#lt>    pSrc = (uint32_t *) & _sfixed;
     <#lt>    SCB->VTOR = ((uint32_t) pSrc & SCB_VTOR_TBLOFF_Msk);
-    <#lt>#endif /* #if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U) */
+    <#lt>#endif /* #ifdef SCB_VTOR_TBLOFF_Msk */
 </#if>
 
 <#if core.CoreUseMPU??>
