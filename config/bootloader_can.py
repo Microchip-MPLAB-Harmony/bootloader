@@ -138,7 +138,7 @@ def instantiateComponent(bootloaderComponent):
     btlDualBankComment.setVisible(False)
     btlDualBankComment.setDependencies(setBtlSymbolVisible, ["BTL_DUAL_BANK"])
 
-    if (("PIC32M" not in Variables.get("__PROCESSOR")) and (Database.getSymbolValue("core", "CoreArchitecture") != "CORTEX-M0PLUS")):
+    if ( ( Database.getSymbolValue("core", "CoreUseMPU") != None ) and ( Database.getSymbolValue("core", "CoreUseMPU") == True) and (Database.getSymbolValue("core", "DATA_CACHE_ENABLE") != None) ):
         btlMpuRegionNumber= bootloaderComponent.createComboSymbol("BTL_MPU_REGION_NUMBER", None, list(map(str, list(range(0, Database.getSymbolValue("core", "MPU_NUMBER_REGIONS"))))))
         btlMpuRegionNumber.setHelp("btl_helpkeyword")
         btlMpuRegionNumber.setLabel("Select MPU Region to configure non-cachable memory")

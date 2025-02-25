@@ -182,7 +182,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>{
     <#lt>    uint32_t crc  = 0xffffffffU;
 
-    <#if CRC_PERIPH_USED?? && CRC_PERIPH_USED == "FCR">
+    <#if CRC_PERIPH_USED?? && CRC_PERIPH_USED == "DSU" || CRC_PERIPH_USED == "FCR">
         <#lt>    (void)FCR_CRCCalculate(start_addr, size, 0xFFFFFFFFU, &crc);
     <#elseif CRC_PERIPH_USED?? && CRC_PERIPH_USED == "DSU">
         <#lt>    PAC_PeripheralProtectSetup (PAC_PERIPHERAL_DSU, PAC_PROTECTION_CLEAR);

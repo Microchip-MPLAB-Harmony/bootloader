@@ -221,7 +221,9 @@ static void bootloader_${BTL_TYPE}_FlashWrite(void *data, uint32_t address)
     {
 <#if core.CoreArchitecture != "MIPS">
         // Lock region size is always bigger than the row size
+<#if __PROCESSOR?matches("PIC32CM.*") == false>
         ${MEM_USED}_RegionUnlock(address);
+</#if>
 
         while(${MEM_USED}_IsBusy() == true)
         {
