@@ -216,6 +216,8 @@ SECTIONS
         *(.text.*)
         *(.rodata)
         *(.rodata.*)
+        *(.data)
+        *(.data.*)
         . = ALIGN(4);
         __data_end__ = .;
         _edata = .;
