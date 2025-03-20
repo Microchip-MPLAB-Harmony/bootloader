@@ -39,17 +39,22 @@
 
 /* MISRAC 2012 deviation block start */
 /* MISRA C-2012 Rule 21.2 deviated 1 times. Deviation record ID -  H3_MISRAC_2012_R_21_2_DR_1 */
-/* MISRA C-2012 Rule 8.6 deviated 7 times.  Deviation record ID -  H3_MISRAC_2012_R_8_6_DR_1 */
+/* MISRA C-2012 Rule 8.6 deviated 8 times.  Deviation record ID -  H3_MISRAC_2012_R_8_6_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma coverity compliance block \
 (deviate:1 "MISRA C-2012 Rule 21.2" "H3_MISRAC_2012_R_21_2_DR_1")\
-(deviate:7 "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1")
+(deviate:8 "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1")
 </#if>
 /* Initialize segments */
 extern uint32_t _sfixed;
+<#if core.CoreSysIntFile?? && core.CoreSysIntFile == false >
+extern void _stack(void);
+</#if>
+<#if core.RAM_INIT?? && (core.DeviceFamily == "PIC32CM_JH00_JH01" || core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91")>
 extern void _ram_end_(void);
+</#if>
 
 extern int main(void);
 
@@ -62,7 +67,7 @@ extern int main(void);
     <#lt>__attribute__ ((used, section(".vectors")))
     <#lt>void (* const vectors[])(void) =
     <#lt>{
-    <#lt>    &_ram_end_,
+    <#lt>    &_stack,
     <#lt>    Reset_Handler,
     <#lt>};
 </#if>
