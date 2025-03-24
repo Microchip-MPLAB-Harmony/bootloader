@@ -127,12 +127,6 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 MEMORY
 {
   kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize}
-<#if BTL_TYPE == "USB_HOST_MSD" || BTL_TYPE == "UDP">
-  /* Bootloader needs to be placed in both the Boot Flash Panels (lower and upper boot alias).
-     Below region is used to fill 0xFF in reserved space between these two panles.
-   */
-  protected_reg               : ORIGIN = 0x9FC14000, LENGTH = 0x20000-0x14000
-</#if>
   kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x480
   kseg1_boot_mem_4B0          : ORIGIN = 0xBFC004B0, LENGTH = 0x1000 - 0x4B0
   config_BFC0FF3C             : ORIGIN = 0xBFC0FF3C, LENGTH = 0x4
@@ -2083,12 +2077,17 @@ SECTIONS
   } > kseg1_boot_mem_4B0
 <#if BTL_TYPE == "USB_HOST_MSD" || BTL_TYPE == "UDP">
 
-  .fill1 :
+  .protected_reg 0x9FC14000:
   {
     FILL(0xFF);
-    . = ORIGIN(protected_reg) + LENGTH(protected_reg) - 1;
-    BYTE(0xFF)
-  } > protected_reg
+    . = . + 0xC000;
+  } > kseg0_program_mem
+
+  .configuration_bits 0x9FC0FF00:
+  {
+    FILL(0xFF);
+    . = . + 0x100;
+  } > kseg0_program_mem
 </#if>
 }
 
