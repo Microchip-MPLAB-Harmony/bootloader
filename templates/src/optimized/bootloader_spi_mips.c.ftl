@@ -161,7 +161,7 @@ typedef struct
 // *****************************************************************************
 // *****************************************************************************
 
-static SPI_BL_DATA                          spiBLData;
+static SPI_BL_DATA CACHE_ALIGN    spiBLData;
 
 static bool spiBLInitDone   = false;
 
