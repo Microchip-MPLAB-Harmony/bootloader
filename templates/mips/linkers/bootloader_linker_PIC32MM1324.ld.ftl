@@ -71,7 +71,11 @@ OPTIONAL("processor.o")
  *   xc32-gcc src.c -Wl,--defsym=_ebase_address=0x9D001000
  *************************************************************************/
 PROVIDE(_vector_spacing = 0x0001);
-PROVIDE(_ebase_address = 0x9D000000);
+<#if BTL_START == "0x9D000000" >
+    <#lt>PROVIDE(_ebase_address = 0x9D000000);
+<#else>
+    <#lt>PROVIDE(_ebase_address = 0x9FC01000);
+</#if>
 
 /*************************************************************************
  * Memory Address Equates
@@ -116,7 +120,11 @@ _GEN_EXCPT_ADDR                = _ebase_address + 0x180;
 
 MEMORY
 {
+<#if BTL_START != "0x9D000000">
+  kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = 0x1700 - 0xBF0 /* All C files will be located here */
+<#else>
   kseg0_program_mem     (rx)  : ORIGIN = ${btlFlashStartAddress}, LENGTH = ${btlFlashSize} /* All C files will be located here */
+</#if>
   kseg1_boot_mem              : ORIGIN = 0xBFC00000, LENGTH = 0x490
   debug_exec_mem              : ORIGIN = 0x9FC00490, LENGTH = 0x760
   config_BFC01744             : ORIGIN = 0xBFC01744, LENGTH = 0x4
