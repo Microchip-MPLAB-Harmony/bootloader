@@ -76,9 +76,13 @@ def getLinkerParams(btlLength, triggerLength):
     ram_origin  = "RAM_ORIGIN=" + ramStart
     ram_length  = "RAM_LENGTH=" + ramLen
     
-    if place_btl_in_bfm and "PIC32CM" not in Variables.get("__PROCESSOR"):
-        rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN + 1024\""
-        return (rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length)
+    if place_btl_in_bfm: 
+        if (Database.getSymbolValue("core", "CoreArchitecture") == "CORTEX-M23"):
+            rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN\""
+            return (rom_length + ";" + ram_origin + ";" + ram_length)
+        else:
+            rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN + 1024\""
+            return (rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length)
     else:
         return (rom_length + ";" + ram_origin + ";" + ram_length)
 
