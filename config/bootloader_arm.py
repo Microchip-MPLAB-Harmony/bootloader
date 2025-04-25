@@ -30,7 +30,6 @@ global flash_size
 global flash_erase_size
 
 global btl_start
-global btl_flash_size
 
 global btlMemUsedStartAddr
 global btlMemUsedSize
@@ -41,12 +40,12 @@ flash_size          = 0
 flash_erase_size    = 0
 btl_start_addr      = 0
 
-btl_flash_size      = "0x0"
 btl_start           = "0x0"
 
 NvmMemoryNames      = ["NVM", "NVMCTRL", "EFC", "HEFC", "FCW"]
-FlashNames          = ["FLASH", "IFLASH", "FCR_PFM", "FCR_BFM", "BOOT_FLASH"]
-RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM", "FlexRAM", "DRAM", "FLEXRAM"]
+FlashNames          = ["FLASH", "IFLASH", "FCR_PFM", "FCR_BFM", "BOOT_FLASH", "IFLASH0", "FLASH_BFM"]
+RamNames            = ["HSRAM", "HRAMC0", "HMCRAMC0", "IRAM", "FlexRAM", "DRAM", "FLEXRAM", "MCRAMC_RET", "IRAM0", "HSRAM_RET", "RAM_SYSTEM_RAM"]
+DeviceExceptions    = ["WBZ35", "PIC32WM_BZ6"]
 
 addr_space          = ATDF.getNode("/avr-tools-device-file/devices/device/address-spaces/address-space")
 addr_space_children = addr_space.getChildren()
@@ -65,18 +64,21 @@ for mem_idx in range(0, len(addr_space_children)):
 
     # Get the Maximum bootloader size value defined in bootloader protocol python file
     max_btl_size = getMaxBootloaderSize(Database.getSymbolValue("core", "CoreArchitecture"))
+    device_series = Database.getSymbolValue("core", "CoreSeries")
 
     if ((any(x == mem_seg for x in FlashNames) == True) and (mem_type == "flash")):
         # If BFM region is available and its size is sufficiently large, then place the bootloader in BFM region.
-        if (mem_seg == "FCR_BFM" or mem_seg == "BOOT_FLASH"):
-            if (max_btl_size != 0 and max_btl_size <= mem_size and place_btl_in_bfm == False):
+        if ((mem_seg == "FCR_BFM" or mem_seg == "BOOT_FLASH") ):
+            if (max_btl_size != 0 and max_btl_size <= mem_size and place_btl_in_bfm == False and (device_series not in DeviceExceptions)):
                 btl_start_addr = int(addr_space_children[mem_idx].getAttribute("start"), 16)
-                btl_flash_size = addr_space_children[mem_idx].getAttribute("size")
                 place_btl_in_bfm = True
         else:
             flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
             flash_size  = int(addr_space_children[mem_idx].getAttribute("size"), 16)
-            btl_flash_size = addr_space_children[mem_idx].getAttribute("size")
+            if device_series in DeviceExceptions:
+                flash_start += 0x200
+                flash_size -= 0x200
+
 
     if ((any(x == mem_seg for x in RamNames) == True) and (mem_type == "ram")):
         ram_start   = addr_space_children[mem_idx].getAttribute("start")
@@ -145,16 +147,22 @@ def setAppStartAndCommentVisible(symbol, event):
     global btlMemUsedStartAddr
     global place_btl_in_bfm
 
+    device_series = Database.getSymbolValue("core", "CoreSeries")
+    app_start_offset = 0
+
+    if device_series in DeviceExceptions:
+        app_start_offset = -512
+
     memUsed_addr = btlMemUsedStartAddr.getValue()
 
     if (place_btl_in_bfm == True):
-        custom_app_start_addr = str(hex(flash_start))
+        custom_app_start_addr = str(hex(flash_start + app_start_offset))
         Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
     elif (event["id"] == "BTL_SIZE"):
         btlSize = int(event["value"],10)
 
         if ( (memUsed_addr != 0) and (memUsed_addr != flash_start) ):
-            custom_app_start_addr = str(hex(memUsed_addr))
+            custom_app_start_addr = str(hex(memUsed_addr + app_start_offset))
         else:
             if ((btlSize != 0) and (flash_erase_size != 0)):
                 appStartAligned = btlSize
@@ -163,15 +171,14 @@ def setAppStartAndCommentVisible(symbol, event):
                 if ((btlSize % flash_erase_size) != 0):
                     appStartAligned = btlSize + (flash_erase_size - (btlSize % flash_erase_size))
 
-                custom_app_start_addr = str(hex(flash_start + appStartAligned))
+                custom_app_start_addr = str(hex(flash_start + appStartAligned + app_start_offset))
             else:
-                custom_app_start_addr = str(hex(flash_start))
+                custom_app_start_addr = str(hex(flash_start + app_start_offset))
 
         Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
     elif (event["id"] == "BTL_MEM_START_ADDR"):
         if ( (memUsed_addr != 0) and (memUsed_addr != flash_start) ):
-            custom_app_start_addr = str(hex(memUsed_addr))
-
+            custom_app_start_addr = str(hex(memUsed_addr + app_start_offset))
             Database.setSymbolValue("core", "APP_START_ADDRESS", custom_app_start_addr[2:])
     else:
         comment_enable      = True
@@ -286,10 +293,6 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
 
-    btlFlashSize = bootloaderComponent.createStringSymbol("BTL_FLASH_SIZE", None)
-    btlFlashSize.setVisible(False)
-    btlFlashSize.setDefaultValue(btl_flash_size)
-
 def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
     btlFuseProgramEnable = bootloaderComponent.createBooleanSymbol("BTL_FUSE_PROGRAM_ENABLE", None)
     btlFuseProgramEnable.setLabel("Enable Fuse Programming")
@@ -403,7 +406,6 @@ def generateCommonFiles(bootloaderComponent):
     if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
         btlCommonSourceFile.setSecurity("SECURE")
         btlCommonHeaderFile.setSecurity("SECURE")
-        btlInterruptHeaderFile.setSecurity("SECURE")
 
 # Used by Optimized Bootloaders
 def generateXC32SettingsAndFileSymbol(bootloaderComponent):
@@ -445,4 +447,3 @@ def setOptimizationLevel(bootloaderComponent, optimizationLevel):
 
     if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
         xc32Optimization.setSecurity("SECURE")
-
