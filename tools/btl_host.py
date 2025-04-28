@@ -84,9 +84,13 @@ devices = {
             "WBZ451"        : [4096, 4096, False],
             "PIC32CXBZ2"    : [4096, 4096, False],
             "WBZ45X"        : [4096, 4096, False],
+            "WBZ351"        : [4096, 4096, False],
             "PIC32CZCA70"   : [8192, 8192, False],
             "PIC32CM_GC00_SG00" : [4096, 8192, True, [{"start":0xA000000, "size":0x1000}, {"start":0xA002000, "size":0x1000}]],
-            "PIC32CX_MT"    : [8192, 8192, False]
+            "PIC32CK_GC01_SG01" : [4096, 4096, True, [{"start":0xA000000, "size":0x1000}, {"start":0xA002000, "size":0x1000}, {"start":0xA008000, "size":0x1000}, {"start":0xA00A000, "size":0x1000}]],
+            "PIC32CX_MT"    : [8192, 8192, False],
+            "PIC32WM_BZ6"    : [4096, 4096, False],
+            
 }
 
 #------------------------------------------------------------------------------
@@ -126,7 +130,6 @@ def crc32(tab, data):
 
     for d in data:
         crc = tab[(crc ^ d) & 0xff] ^ (crc >> 8)
-
     return crc
 
 #------------------------------------------------------------------------------
@@ -161,6 +164,7 @@ def send_request(port, cmd, size, data):
 
     for blk in blocks:
         port.write(bytes(bytearray(blk)))
+        #print (bytes(bytearray(blk)))
 
     for i in range(3):
         resp = get_response(port)
@@ -172,6 +176,9 @@ def send_request(port, cmd, size, data):
             return resp
 
     error('no response received, giving up')
+
+    return BL_RESP_OK
+
 
 # Print iterations progress
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '|'):
@@ -280,20 +287,25 @@ def main():
     parser.add_option('-t', '--tune', dest='tune', help='auto-tune UART baudrate', default=False, action='store_true')
     parser.add_option('-i', '--interface', dest='port', help='communication interface', metavar='PATH')
     parser.add_option('-f', '--file', dest='file', help='binary file to program', metavar='FILE')
+    parser.add_option('-g', '--devCfgBinfile', dest='devCfgBinfile', help='binary file to program device configuration', metavar='DEVCFGBINFILE')
     parser.add_option('-c', '--devcfgfile', dest='devcfgfile', help='device configuration text file', metavar='DEVCFGFILE')
     parser.add_option('-a', '--address', dest='address', help='destination address', metavar='ADDR')
+    parser.add_option('-e', '--devCfgAddress', dest='devCfgAddress', help='device configuration address', metavar='ADDR')
     parser.add_option('-p', '--sectorSize', dest='sectSize', help='Device Sector Size in Bytes', metavar='SectSize')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/sama5/sama7/sam9x6/sam9x7/pic32cz/pic32mk/pic32mx/pic32mz/pic32mzw/pic32cm/pic32mm/wbz451/pic32cxbz2/wbz45x)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/sama5/sama7/sam9x6/sam9x7/pic32cz/pic32mk/pic32mx/pic32mz/pic32mzw/pic32cm/pic32mm/wbz451/pic32cxbz2/wbz45x/pic32cm_gc00_sg00)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 
     if options.port is None:
         error('communication port is required (try -h option)')
 
-    if options.file is None:
-        error('file name is required (use -f option)')
+    if options.file is None and options.devCfgBinfile is None:
+       error('File name is required (use -f or -g option)')
+
+    if options.devCfgBinfile is not None and options.devCfgAddress is None:
+       error('device configuration address is required (use -e option)')
 
     if options.device is None:
         error('target device is required (use -d option)')
@@ -326,7 +338,7 @@ def main():
         error('invalid device')
 
     if (options.swap == True):
-        if ((device != "SAME5X") and (device != "SAMD5X") and (device != "PIC32MZ") and (device != "PIC32MK")):
+        if ((device != "SAME5X") and (device != "SAMD5X") and (device != "PIC32MZ") and (device != "PIC32MK") and (device != "PIC32CX_MT")):
             error('Bank Swapping not supported on this device')
 
     try:
@@ -363,24 +375,8 @@ def main():
         port.write(chr(0x55))
 
     data = []
-
-    if ("PIC32MK" in device) or ("PIC32MZ" in device):
-        # Move the start address to start of Exceptions region (_ebase_address)
-        address = (address & (~(ERASE_SIZE - 1)))
-
-    try:
-        data += [(x) for x in open(options.file, 'rb').read()]
-    except Exception as inst:
-        error(inst)
-
-    if (device != "SAMA5") and (device != "SAMA7") and (device != "SAM9X6") and (device != "SAM9X7"):
-        while len(data) % ERASE_SIZE > 0:
-            data += [0xff]
-
-    crc32_tab = crc32_tab_gen()
-    crc = crc32(crc32_tab, data)
-
-    size = len(data)
+    data1 = []
+    data2 = []
 
     verbose(options.verbose, 'Reading Bootloader Version')
 
@@ -391,65 +387,132 @@ def main():
 
     verbose(options.verbose, 'Bootloader version : %s' % get_version(port))
 
-    verbose(options.verbose, 'Unlocking\n')
-    resp = send_request(port, BL_CMD_UNLOCK, uint32(8), uint32(address) + uint32(size))
+    if ("PIC32MK" in device) or ("PIC32MZ" in device):
+        # Move the start address to start of Exceptions region (_ebase_address)
+        address = (address & (~(ERASE_SIZE - 1)))
 
-    if resp != BL_RESP_OK:
-        error('invalid response code (0x%02x). Check that your file size and address are correct.' % resp)
+    appAddr = address
+    count = 0
+    if (options.devCfgBinfile is not None):
+        count += 1
+    if (options.file is not None):
+        count += 1
+             
 
-    # Create data blocks of ERASE_SIZE each
-    blocks = [data[i:i + ERASE_SIZE] for i in range(0, len(data), ERASE_SIZE)]
+    for cnt in range(0, count):
+        if (options.devCfgBinfile is not None) and count == 2 and cnt == 0:
+            data1 += [(x) for x in open(options.devCfgBinfile, 'rb').read()]
+            address = int(options.devCfgAddress, 0)
+            data = data1
+        if (options.file is not None) and ((count == 2 and cnt == 1) or (count == 1 and cnt == 0)) :
+            data2 += [(x) for x in open(options.file, 'rb').read()]
+            address = appAddr
+            data = data2
 
-    addr = address
+        if device not in ["SAMA5", "SAMA7", "SAM9X6", "SAM9X7"]:
+            while len(data) % ERASE_SIZE > 0:
+                data += [0xff]
 
-    for idx, blk in enumerate(blocks):
-        printProgressBar(idx+1, len(blocks), prefix = 'Programming:', suffix = 'Complete', length = 50)
+        crc32_tab = crc32_tab_gen()
+        crc = crc32(crc32_tab, data)
 
-        if ((idx + 1) == len(blocks)) and ((size % ERASE_SIZE) != 0):
-            data_length = size % ERASE_SIZE
-        else:
-            data_length = ERASE_SIZE
+        size = len(data)
 
-        resp = send_request(port, BL_CMD_DATA, uint32(data_length + 4), uint32(addr) + blk)
-        addr += data_length
+        if (options.file and (count == 2 and cnt == 1 or count == 1 and cnt == 0)):
+            verbose(options.verbose, 'Unlocking\n')
+            resp = send_request(port, BL_CMD_UNLOCK, uint32(8), uint32(address) + uint32(size))
 
         if resp != BL_RESP_OK:
-            error('invalid response code (0x%02x)' % resp)
+            error('invalid response code (0x%02x). Check that your file size and address are correct.' % resp)
 
-        if device == "PIC32CZ":
-            time.sleep(1)
+        # Create data blocks of ERASE_SIZE each
+        blocks = [data[i:i + ERASE_SIZE] for i in range(0, len(data), ERASE_SIZE)]
 
-    # Send Verification command
-    verbose(options.verbose, 'Verification')
+        addr = address
 
-    resp = send_request(port, BL_CMD_VERIFY, uint32(4), uint32(crc))
+        for idx, blk in enumerate(blocks):
+            if ((idx + 1) == len(blocks)) and ((size % ERASE_SIZE) != 0):
+                data_length = size % ERASE_SIZE
+            else:
+                data_length = ERASE_SIZE
+            if (options.devCfgBinfile is not None) and count == 2 and cnt == 0:
+                # Unlock data for the chunk
+                verbose(options.verbose, 'Unlocking address range: 0x%08X - 0x%08X' % (addr, addr + data_length))
+                resp = send_request(port, BL_CMD_UNLOCK, uint32(8), uint32(addr) + uint32(data_length))
+            if resp != BL_RESP_OK:
+                error('Unlock failed for address range: 0x%08X - 0x%08X' % (addr, addr + data_length))
+                break
+            printProgressBar(idx+1, len(blocks), prefix = 'Programming:', suffix = 'Complete', length = 50)
+            if (options.devCfgBinfile is not None) and count == 2 and cnt == 0:
+                addr_range_list = devices[device][3]
+                resp = BL_RESP_OK
+                for x in addr_range_list:
+                    devCfgStartAddr = x["start"]
+                    devCfgEndAddr = x["start"] + x["size"]
+                    if (addr >= devCfgStartAddr and addr < devCfgEndAddr):
+                        # Send data for the chunk
+                        resp = send_request(port, BL_CMD_DEVCFG_DATA, uint32(data_length + 4), uint32(addr) + blk)
+                        break
+            # Perform CRC Verification immediately after writing data
+            if (options.devCfgBinfile is not None) and count == 2 and cnt == 0:
+                verbose(options.verbose, 'Verifying CRC for address range: 0x%08X - 0x%08X' % (addr, addr + data_length))
+                crc_chunk = crc32(crc32_tab, blk)
+                    
+                resp = send_request(port, BL_CMD_VERIFY, uint32(4), uint32(crc_chunk))
 
-    if resp == BL_RESP_CRC_OK:
-        verbose(options.verbose, '... success')
-    else:
-        error('... fail (status = 0x%02x)' % resp)
+                if resp == BL_RESP_CRC_OK:
+                    verbose(options.verbose, '... CRC success for address range 0x%08X - 0x%08X' % (addr, addr + data_length))
+                else:
+                    error('... CRC failed for address range 0x%08X - 0x%08X' % (addr, addr + data_length))
+                verbose(options.verbose, 'Rebooting MCU after processing address range: 0x%08X - 0x%08X' % (addr, addr + data_length))
+                resp = send_request(port, BL_CMD_RESET, uint32(0), uint32(0))
+                time.sleep(1)  # Adjust time if needed
+                if resp != BL_RESP_OK:
+                    error('Reboot failed after processing address range: 0x%08X - 0x%08X' % (addr, addr + data_length))
+                else:
+                    verbose(options.verbose, 'Reboot successful.')
 
-    # Send Device Configuration Command
-    if (options.devcfgfile != None):
-        if (DEV_CFG_SUPPORT == False):
-            warning('Device configuration programming is not supported for this device')
+            if (options.file is not None) and ((count == 2 and cnt == 1) or (count == 1 and cnt == 0)) :
+                resp = send_request(port, BL_CMD_DATA, uint32(data_length + 4), uint32(addr) + blk)
+
+            addr += data_length
+
+            if resp != BL_RESP_OK:
+                error('invalid response code (0x%02x)' % resp)
+
+            if device == "PIC32CZ":
+                time.sleep(1)
+
+        if (options.file and (count == 2 and cnt == 1 or count == 1 and cnt == 0)):
+            # Send Verification command
+            verbose(options.verbose, 'Verification')
+            resp = send_request(port, BL_CMD_VERIFY, uint32(4), uint32(crc))
+            if resp == BL_RESP_CRC_OK:
+                verbose(options.verbose, '... success')
+            else:
+                error('... fail (status = 0x%02x)' % resp)
+
+        # Send Device Configuration Command
+        if (options.devcfgfile != None):
+            if (DEV_CFG_SUPPORT == False):
+                warning('Device configuration programming is not supported for this device')
+            else:
+                verbose(options.verbose, 'Sending Device Configuration Bits')
+
+                send_device_configurations(options.devcfgfile, port, ERASE_SIZE)
+
+        # Send Reboot Command
+        if (options.swap == True):
+            verbose(options.verbose, 'Swapping Bank And Rebooting')
+            resp = send_request(port, BL_CMD_BKSWAP_RESET, uint32(16), uint32(0) * 4)
         else:
-            verbose(options.verbose, 'Sending Device Configuration Bits')
+            verbose(options.verbose, 'Rebooting')
+            resp = send_request(port, BL_CMD_RESET, uint32(16), uint32(0) * 4)
 
-            send_device_configurations(options.devcfgfile, port, ERASE_SIZE)
-
-    # Send Reboot Command
-    if (options.swap == True):
-        verbose(options.verbose, 'Swapping Bank And Rebooting')
-        resp = send_request(port, BL_CMD_BKSWAP_RESET, uint32(16), uint32(0) * 4)
-    else:
-        verbose(options.verbose, 'Rebooting')
-        resp = send_request(port, BL_CMD_RESET, uint32(16), uint32(0) * 4)
-
-    if resp == BL_RESP_OK:
-        verbose(options.verbose, 'Reboot Done')
-    else:
-        error('... Reset fail (status = 0x%02x)' % resp)
+        if resp == BL_RESP_OK:
+            verbose(options.verbose, 'Reboot Done')
+        else:
+            error('... Reset fail (status = 0x%02x)' % resp)
 
     port.close()
 
