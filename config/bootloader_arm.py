@@ -30,6 +30,7 @@ global flash_size
 global flash_erase_size
 
 global btl_start
+global btl_flash_size
 
 global btlMemUsedStartAddr
 global btlMemUsedSize
@@ -41,6 +42,7 @@ flash_erase_size    = 0
 btl_start_addr      = 0
 
 btl_start           = "0x0"
+btl_flash_size      = "0x0"
 
 NvmMemoryNames      = ["NVM", "NVMCTRL", "EFC", "HEFC", "FCW"]
 FlashNames          = ["FLASH", "IFLASH", "FCR_PFM", "FCR_BFM", "BOOT_FLASH", "IFLASH0", "FLASH_BFM"]
@@ -75,6 +77,8 @@ for mem_idx in range(0, len(addr_space_children)):
         else:
             flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
             flash_size  = int(addr_space_children[mem_idx].getAttribute("size"), 16)
+            if place_btl_in_bfm == False:
+                btl_flash_size = addr_space_children[mem_idx].getAttribute("size")
             if device_series in DeviceExceptions:
                 flash_start += 0x200
                 flash_size -= 0x200
@@ -292,6 +296,10 @@ def generateCommonSymbols(bootloaderComponent):
     btlRamSize.setDefaultValue(ram_size)
     btlRamSize.setReadOnly(True)
     btlRamSize.setVisible(False)
+    
+    btlFlashSize = bootloaderComponent.createStringSymbol("BTL_FLASH_SIZE", None)
+    btlFlashSize.setVisible(False)
+    btlFlashSize.setDefaultValue(btl_flash_size)
 
 def generateFuseProgrammingAndWDTSymbols(bootloaderComponent):
     btlFuseProgramEnable = bootloaderComponent.createBooleanSymbol("BTL_FUSE_PROGRAM_ENABLE", None)
@@ -406,6 +414,7 @@ def generateCommonFiles(bootloaderComponent):
     if Variables.get("__TRUSTZONE_ENABLED") != None and Variables.get("__TRUSTZONE_ENABLED") == "true":
         btlCommonSourceFile.setSecurity("SECURE")
         btlCommonHeaderFile.setSecurity("SECURE")
+        btlInterruptHeaderFile.setSecurity("SECURE")
 
 # Used by Optimized Bootloaders
 def generateXC32SettingsAndFileSymbol(bootloaderComponent):
