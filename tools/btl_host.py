@@ -89,7 +89,8 @@ devices = {
             "PIC32CM_GC00_SG00" : [4096, 8192, True, [{"start":0xA000000, "size":0x1000}, {"start":0xA002000, "size":0x1000}]],
             "PIC32CK_GC01_SG01" : [4096, 4096, True, [{"start":0xA000000, "size":0x1000}, {"start":0xA002000, "size":0x1000}, {"start":0xA008000, "size":0x1000}, {"start":0xA00A000, "size":0x1000}]],
             "PIC32CX_MT"    : [8192, 8192, False],
-            "PIC32WM_BZ6"    : [4096, 4096, False],
+            "PIC32WM_BZ6"   : [4096, 4096, False],
+            "PIC32CX_SG41"  : [8192, 8192, True],
             
 }
 
@@ -292,7 +293,7 @@ def main():
     parser.add_option('-p', '--sectorSize', dest='sectSize', help='Device Sector Size in Bytes', metavar='SectSize')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/sama5/sama7/sam9x6/sam9x7/pic32cz/pic32mk/pic32mx/pic32mz/pic32mzw/pic32cm/pic32mm/wbz451/pic32cxbz2/wbz45x/pic32cm_gc00_sg00)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/sama5/sama7/sam9x6/sam9x7/pic32cz/pic32mk/pic32mx/pic32mz/pic32mzw/pic32cm/pic32mm/wbz451/pic32cxbz2/wbz45x/pic32cm_gc00_sg00/pic32ck_gc01_sg01/pic32cx_mt/pic32wm_bz6/pic32cx_sg41)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 
@@ -336,7 +337,7 @@ def main():
         error('invalid device')
 
     if (options.swap == True):
-        if ((device != "SAME5X") and (device != "SAMD5X") and (device != "PIC32MZ") and (device != "PIC32MK") and (device != "PIC32CX_MT")):
+        if ((device != "SAME5X") and (device != "SAMD5X") and (device != "PIC32MZ") and (device != "PIC32CX_SG41") and (device != "PIC32MK") and (device != "PIC32CX_MT")):
             error('Bank Swapping not supported on this device')
 
     try:
@@ -464,7 +465,7 @@ def main():
                     error('... CRC failed for address range 0x%08X - 0x%08X' % (addr, addr + data_length))
                 verbose(options.verbose, 'Rebooting MCU after processing address range: 0x%08X - 0x%08X' % (addr, addr + data_length))
                 resp = send_request(port, BL_CMD_RESET, uint32(0), uint32(0))
-                time.sleep(1)  # Adjust time if needed
+                time.sleep(1)  
                 if resp != BL_RESP_OK:
                     error('Reboot failed after processing address range: 0x%08X - 0x%08X' % (addr, addr + data_length))
                 else:
