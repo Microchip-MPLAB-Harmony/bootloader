@@ -460,10 +460,16 @@ static void BL_SPI_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
+			<#if core.DeviceFamily == "PIC32CX_MT">
             <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
             <#assign IS_BUSY_ARG = "spiBLData.cmd.eraseCommand.memAddr">
             </#if>
+			</#if>
+			<#if core.DeviceFamily == "PIC32CX_MT">
             if(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == false)
+			<#else>
+			if(${MEM_USED}_IsBusy() == false)
+			</#if>
             {
                 CLR_BIT(spiBLData.status, BL_STATUS_BIT_BUSY);
                 ${PERIPH_USED}_Ready();
@@ -472,10 +478,16 @@ static void BL_SPI_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
+			<#if core.DeviceFamily == "PIC32CX_MT">
             <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
             <#assign IS_BUSY_ARG = "spiBLData.cmd.programCommand.memAddr + spiBLData.nFlashBytesWritten">
             </#if>
+			</#if>
+			<#if core.DeviceFamily == "PIC32CX_MT">
             if(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == false)
+			<#else>
+			if(${MEM_USED}_IsBusy() == false)
+			</#if>
             {
                 spiBLData.nFlashBytesWritten += PAGE_SIZE;
 
@@ -513,10 +525,14 @@ static void BL_SPI_FlashTask(void)
 
 <#if BTL_DUAL_BANK == true>
         case BL_FLASH_STATE_BKSWAP_RESET:
+			<#if core.DeviceFamily == "PIC32CX_MT">
             ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
             <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
             bootloader_TriggerReset();
             </#if>
+			<#else>
+			${MEM_USED}_BankSwap();
+			</#if>
             break;
 </#if>
 

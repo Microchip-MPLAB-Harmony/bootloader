@@ -512,10 +512,14 @@ uint16_t __WEAK bootloader_GetVersion( void )
             <#lt>    bootloader_TriggerReset();
         <#else>
             <#lt>    /* Swap bank and Reset */
+                     <#if core.DeviceFamily == "PIC32CX_MT">
                      ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
         
                      <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
                      bootloader_TriggerReset();
+                     </#if>
+                     <#else>
+                     ${MEM_USED}_BankSwap();
                      </#if>
         </#if>
     <#lt>}

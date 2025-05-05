@@ -550,7 +550,11 @@ static void BL_I2C_FlashTask(void)
                 if (blProtocol.cmdProtocol.eraseCommand.memAddr < APP_START_ADDRESS)
                 {
                     ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
-                    while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+                    <#if core.DeviceFamily == "PIC32CX_MT">
+					while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+					<#else>
+					while(${MEM_USED}_IsBusy() == true)
+					</#if>
                     {
                         <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
                         kickdog();
@@ -562,7 +566,11 @@ static void BL_I2C_FlashTask(void)
     <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
                     ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
 
-                    while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+                    <#if core.DeviceFamily == "PIC32CX_MT">
+					while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+					<#else>
+					while(${MEM_USED}_IsBusy() == true)
+					</#if>
                     {
         <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
                     kickdog();
@@ -572,7 +580,11 @@ static void BL_I2C_FlashTask(void)
     </#if>
                     <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
                     ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(NVMCTRL_MEMORY_REGION_APPLICATION);
-                    while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+                    <#if core.DeviceFamily == "PIC32CX_MT">
+					while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+					<#else>
+					while(${MEM_USED}_IsBusy() == true)
+					</#if>
                     {
                         <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
                         kickdog();
@@ -587,7 +599,11 @@ static void BL_I2C_FlashTask(void)
             // Lock region size is always bigger than the row size
             ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(blProtocol.cmdProtocol.eraseCommand.memAddr);
 
-            while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+            <#if core.DeviceFamily == "PIC32CX_MT">
+			while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+			<#else>
+			while(${MEM_USED}_IsBusy() == true)
+			</#if>
             {
             }
 
@@ -698,10 +714,16 @@ static void BL_I2C_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_ERASE_BUSY_POLL:
+			<#if core.DeviceFamily == "PIC32CX_MT">
             <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
             <#assign IS_BUSY_ARG = "blProtocol.cmdProtocol.eraseCommand.memAddr">
             </#if>
+			</#if>
+			<#if core.DeviceFamily == "PIC32CX_MT">
             if(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == false)
+			<#else>
+			if(${MEM_USED}_IsBusy() == false)
+			</#if>
             {                
                 <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME??>
                 if (pwp_regions_disabled != 0U)
@@ -716,10 +738,16 @@ static void BL_I2C_FlashTask(void)
             break;
 
         case BL_FLASH_STATE_WRITE_BUSY_POLL:
+			<#if core.DeviceFamily == "PIC32CX_MT">
             <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
             <#assign IS_BUSY_ARG = "blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten">
             </#if>
+			</#if>
+			<#if core.DeviceFamily == "PIC32CX_MT">
             if(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == false)
+			<#else>
+			if(${MEM_USED}_IsBusy() == false)
+			</#if>
             {                
                 <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_LOCK_RESTORE_API_NAME??>
                 if (pwp_regions_disabled != 0U)
@@ -774,11 +802,14 @@ static void BL_I2C_FlashTask(void)
                 /* Do Nothing */
             }
 </#if>
+			<#if core.DeviceFamily == "PIC32CX_MT">
             ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
             <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
             bootloader_TriggerReset();
             </#if>
-            
+			<#else>
+			${MEM_USED}_BankSwap();
+            </#if>
             break;
 </#if>
 

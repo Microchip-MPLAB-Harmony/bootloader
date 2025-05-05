@@ -646,11 +646,15 @@ void bootloader_${BTL_TYPE}_Tasks (void)
             bootloader_TriggerReset();
         <#else>
             /* Swap bank and Reset */
+			<#if core.DeviceFamily == "PIC32CX_MT">
             ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
         
             <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
             bootloader_TriggerReset();
             </#if>
+			<#else>
+			${MEM_USED}_BankSwap();
+			</#if>
         </#if>
 </#if>
 
