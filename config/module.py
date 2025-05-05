@@ -109,12 +109,12 @@ def loadModule():
                     else:
                         Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
 
-                        if ((Name == "serial_mem") and (dep == "MEMORY")):
-                            # Requires two Dependencies of same type (MEMORY)
-                            Component.addDependency(depIdPrefix + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
+                    if ((Name == "serial_mem") and (dep == "MEMORY")):
+                        # Requires two Dependencies of same type (MEMORY)
+                        Component.addDependency(depIdPrefix + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
 
-                        if ((Name == "ota") and (dep == "MEMORY")):
-                            # Requires two Dependencies of same type (MEMORY)
-                            Component.addDependency(depIdPrefix + dep + "_dependency_OTA", dep, "MEMORY (OTA)", False, True)
+                    if ((Name == "ota") and (dep == "MEMORY")):
+                        # Requires two Dependencies of same type (MEMORY)
+                        Component.addDependency(depIdPrefix + dep + "_dependency_OTA", dep, "MEMORY (OTA)", False, True)
 
         Component.setDisplayType("Bootloader")

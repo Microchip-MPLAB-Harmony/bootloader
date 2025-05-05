@@ -88,15 +88,16 @@ for mem_idx in range(0, len(addr_space_children)):
     if ((any(x == mem_seg for x in RamNames) == True) and (mem_type == "ram")):
         ram_start   = addr_space_children[mem_idx].getAttribute("start")
         ram_size    = addr_space_children[mem_idx].getAttribute("size")
-
+        
+    if place_btl_in_bfm == True:
+        btl_start = str(hex(btl_start_addr))
+    else:
+        btl_start = str(hex(flash_start))
+    
 if deviceFamily == "PIC32CX_MT":
     iflash1_node = ATDF.getNode("/avr-tools-device-file/devices/device/address-spaces/address-space/memory-segment@[name=\"IFLASH1\"]")        
     if iflash1_node != None:
         btl_flash_size = hex(int(btl_flash_size, 0) + int(btl_flash_size, 0))
-if place_btl_in_bfm == True:
-    btl_start = str(hex(btl_start_addr))
-else:
-    btl_start = str(hex(flash_start))
 
 def activateAndConnectDependencies(component):
     nvmMemoryName = ""
