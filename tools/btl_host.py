@@ -164,7 +164,6 @@ def send_request(port, cmd, size, data):
 
     for blk in blocks:
         port.write(bytes(bytearray(blk)))
-        #print (bytes(bytearray(blk)))
 
     for i in range(3):
         resp = get_response(port)
@@ -177,7 +176,6 @@ def send_request(port, cmd, size, data):
 
     error('no response received, giving up')
 
-    return BL_RESP_OK
 
 
 # Print iterations progress

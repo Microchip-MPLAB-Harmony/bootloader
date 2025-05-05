@@ -102,7 +102,10 @@ def loadModule():
                         depGeneric = True
                         
                     if ((Name == "uart" or Name == "i2c" or Name == "spi") and (dep == "MEMORY")) and hasPeripheral(["SEFC"]):
-                        Component.addMultiDependency(depId, dep, dep, True)
+                        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+                            Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
+                        else:    
+                            Component.addMultiDependency(depId, dep, dep, True)
                     else:
                         Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
 

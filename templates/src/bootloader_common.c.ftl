@@ -512,7 +512,11 @@ uint16_t __WEAK bootloader_GetVersion( void )
             <#lt>    bootloader_TriggerReset();
         <#else>
             <#lt>    /* Swap bank and Reset */
-            <#lt>    ${MEM_USED}_BankSwap();
+                     ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
+        
+                     <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
+                     bootloader_TriggerReset();
+                     </#if>
         </#if>
     <#lt>}
 </#if>
