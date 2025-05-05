@@ -126,8 +126,10 @@ static bool     uartBLActive        = false;
 
 <#assign IS_BUSY_ARG = "">
 
+<#if core.DeviceFamily == "PIC32CX_MT">
 <#if .vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME == "SEFC_IsBusy">
 <#assign IS_BUSY_ARG = "addr">
+</#if>
 </#if>
 
 <#if .vars["${MEM_USED?lower_case}"].USES_DRV_API?? && .vars["${MEM_USED?lower_case}"].USES_DRV_API == true>
@@ -387,10 +389,14 @@ static void command_task(void)
             /* Nothing to do */
         }
 
+        <#if core.DeviceFamily == "PIC32CX_MT">
         ${.vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_NAME}();
-        
+
         <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
         bootloader_TriggerReset();
+        </#if>
+        <#else>
+        ${MEM_USED}_BankSwap();
         </#if>
     }
 </#if>
@@ -418,7 +424,11 @@ static void command_task(void)
     </#if>
 <#else>
 <@addIndentSpaces indentSpaces/>   /* Receive Next Bytes while waiting for memory to be ready */
+<#if core.DeviceFamily == "PIC32CX_MT">
 <@addIndentSpaces indentSpaces/>   while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+<#else>
+<@addIndentSpaces indentSpaces/>   while(${MEM_USED}_IsBusy() == true)
+</#if>
 <@addIndentSpaces indentSpaces/>   {
 <@addIndentSpaces indentSpaces/>       input_task();
 <@addIndentSpaces indentSpaces/>   <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
@@ -451,7 +461,11 @@ static void flash_task(void)
         if (flash_addr < APP_START_ADDRESS)
         {
             ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_BOOTLOADER);
+            <#if core.DeviceFamily == "PIC32CX_MT">
             while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+            <#else>
+            while(${MEM_USED}_IsBusy() == true)
+            </#if>
             {
                 input_task();
             <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
@@ -464,7 +478,11 @@ static void flash_task(void)
     <#if __TRUSTZONE_ENABLED?? && __TRUSTZONE_ENABLED == "true">
             ${MEM_USED}_SecureRegionUnlock(NVMCTRL_SECURE_MEMORY_REGION_APPLICATION);
 
+            <#if core.DeviceFamily == "PIC32CX_MT">
             while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+            <#else>
+            while(${MEM_USED}_IsBusy() == true)
+            </#if>
             {
                 input_task();
             <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
@@ -476,7 +494,11 @@ static void flash_task(void)
             <#if .vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME?? >
             ${.vars["${MEM_USED?lower_case}"].UNLOCK_API_NAME}(NVMCTRL_MEMORY_REGION_APPLICATION);
 
+            <#if core.DeviceFamily == "PIC32CX_MT">
             while(${.vars["${MEM_USED?lower_case}"].ISBUSY_API_NAME}(${IS_BUSY_ARG}) == true)
+            <#else>
+            while(${MEM_USED}_IsBusy() == true)
+            </#if>
             {
                 input_task();
             <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
