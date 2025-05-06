@@ -74,6 +74,7 @@ for mem_idx in range(0, len(addr_space_children)):
         if ((mem_seg == "FCR_BFM" or mem_seg == "BOOT_FLASH") ):
             if (max_btl_size != 0 and max_btl_size <= mem_size and place_btl_in_bfm == False and (device_series not in DeviceExceptions)):
                 btl_start_addr = int(addr_space_children[mem_idx].getAttribute("start"), 16)
+                btl_flash_size = addr_space_children[mem_idx].getAttribute("size")
                 place_btl_in_bfm = True
         else:
             flash_start = int(addr_space_children[mem_idx].getAttribute("start"), 16)
