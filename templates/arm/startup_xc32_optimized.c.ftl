@@ -52,7 +52,7 @@ extern uint32_t _sfixed;
 <#if core.CoreSysIntFile?? && core.CoreSysIntFile == false >
 extern void _stack(void);
 </#if>
-<#if core.RAM_INIT?? && (core.DeviceFamily == "PIC32CM_JH00_JH01" || core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91")>
+<#if core.RAM_INIT?? && (core.DeviceFamily == "PIC32CM_JH00_JH01" || core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91" || core.DeviceFamily == "PIC32CM_GC_SG")>
 extern void _ram_end_(void);
 </#if>
 
