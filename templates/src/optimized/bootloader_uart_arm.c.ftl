@@ -132,6 +132,18 @@ static bool     uartBLActive        = false;
 </#if>
 </#if>
 
+/* MISRA C-2012 Rule 8.2, 11.1 deviated below. Deviation record ID -
+   H3_MISRAC_2012_R_8_2_DR_1 & H3_MISRAC_2012_R_11_1_DR_1 */
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+</#if>
+#pragma coverity compliance block \
+(deviate: "MISRA C-2012 Rule 8.2" "H3_MISRAC_2012_R_8_2_DR_1" )\
+(deviate: "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1" )
+</#if>
+
 <#if .vars["${MEM_USED?lower_case}"].USES_DRV_API?? && .vars["${MEM_USED?lower_case}"].USES_DRV_API == true>
 typedef bool (*FLASH_ERASE_FPTR)(const DRV_HANDLE, uint32_t);
 
@@ -625,3 +637,12 @@ void bootloader_${BTL_TYPE}_Tasks(void)
         }
     } while (uartBLActive);
 }
+
+<#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#pragma coverity compliance end_block "MISRA C-2012 Rule 8.2"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
+</#if>
+/* MISRAC 2012 deviation block end */
