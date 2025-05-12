@@ -635,8 +635,11 @@ void bootloader_${BTL_TYPE}_Tasks(void)
     } while (uartBLActive);
 }
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 8.2"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 17.1"
 #pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 17.7"
+#pragma coverity compliance end_block "MISRA C-2012 Rule 8.2"
+<#if core.COMPILER_CHOICE == "XC32">
+#pragma GCC diagnostic pop
+</#if>
 </#if>
 /* MISRAC 2012 deviation block end */
