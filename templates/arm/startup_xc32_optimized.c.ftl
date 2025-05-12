@@ -100,7 +100,7 @@ __STATIC_INLINE void  __attribute__((optimize("-O1"))) __attribute__((always_inl
 
     // SRAM initialization loop (to handle ECC properly)
     // We need to initialize all of SRAM with 32 bit aligned writes
-    for (pSRam = (uint32_t*)(uintptr_t)&_sdata; pSRam < (uint32_t*)(uintptr_t)_ram_end_ ; pSRam++)
+    for (pSRam = (uint32_t*)(uintptr_t)&_sdata; (uintptr_t)pSRam < (uintptr_t)_ram_end_ ; pSRam++)
     {
         *pSRam = 0;
 
