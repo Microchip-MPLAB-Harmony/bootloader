@@ -136,9 +136,11 @@ static bool     uartBLActive        = false;
 /* MISRA C-2012 Rule 11.1 */
 /* MISRA C-2012 Rule 17.7 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
+#ifdef __COVERITY__
 #pragma coverity compliance block deviate "MISRA C-2012 Rule 8.2"  "H3_MISRAC_2012_R_8_2_DR_1"
 #pragma coverity compliance block deviate "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1"
 #pragma coverity compliance block deviate "MISRA C-2012 Rule 17.7" "H3_MISRAC_2012_R_17_7_DR_1"
+#endif
 </#if>
 
 <#if .vars["${MEM_USED?lower_case}"].USES_DRV_API?? && .vars["${MEM_USED?lower_case}"].USES_DRV_API == true>
@@ -635,9 +637,11 @@ void bootloader_${BTL_TYPE}_Tasks(void)
     } while (uartBLActive);
 }
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 17.1"
+#ifdef __COVERITY__
+#pragma coverity compliance end_block "MISRA C-2012 Rule 17.7"
 #pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
 #pragma coverity compliance end_block "MISRA C-2012 Rule 8.2"
+#endif
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
