@@ -697,7 +697,7 @@ static void BL_I2C_FlashTask(void)
 <#else>
             <#if .vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME??>
             /* Unlock the program flash memory page */
-            ${.vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME}((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten), (uint32_t*)&pwp_regions_disabled);
+            (void) ${.vars["${MEM_USED?lower_case}"].PFM_ROW_UNLOCK_API_NAME}((blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten), (uint32_t*)&pwp_regions_disabled);
             </#if>
             (void) ${.vars["${MEM_USED?lower_case}"].WRITE_API_NAME}((void *)&blProtocol.cmdProtocol.programCommand.data[blProtocol.nFlashBytesWritten], (blProtocol.cmdProtocol.programCommand.memAddr + blProtocol.nFlashBytesWritten));
 </#if>
@@ -779,7 +779,7 @@ static void BL_I2C_FlashTask(void)
                 /* Do Nothing */
             }
 <#else>
-            while (((uint8_t)${PERIPH_USED}_InterruptFlagsGet() & (uint8_t)SERCOM_I2C_SLAVE_INTFLAG_PREC) == 0U)
+            while ((${PERIPH_USED}_InterruptFlagsGet() & SERCOM_I2C_SLAVE_INTFLAG_PREC) == 0U)
             {
                 /* Do Nothing */
             }
