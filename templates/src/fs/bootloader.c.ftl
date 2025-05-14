@@ -45,7 +45,7 @@
 
 #include <string.h>
 #include "configuration.h"
-#include "peripheral/${MEM_USED?lower_case}/plib_${MEM_USED?lower_case}.h"
+#include "peripheral/${(MEM_USED?matches(".*[01]$"))?then(MEM_USED?substring(0, MEM_USED?length - 1), MEM_USED)?lower_case}/plib_${MEM_USED?lower_case}.h"
 #include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"
 #include "system/fs/sys_fs.h"
 <#if BTL_TYPE == "USB_HOST_MSD" >
