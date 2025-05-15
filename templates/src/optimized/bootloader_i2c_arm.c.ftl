@@ -792,7 +792,7 @@ static void BL_I2C_FlashTask(void)
         case BL_FLASH_STATE_BKSWAP_RESET:
             /* Wait for the I2C transfer to complete */
             <#if PERIPH_USED?starts_with("TWIHS") || PERIPH_USED?starts_with("FLEXCOM")>
-            while (((uint8_t)${PERIPH_USED}_StatusGet() & (uint8_t)${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk) == ${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk)
+            while (((uint32_t)${PERIPH_USED}_StatusGet() & ${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk) == ${PERIPH_REG_MACROS_PREFIX}_SR_SVACC_Msk)
             {
                 /* Do Nothing */
             }
