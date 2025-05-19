@@ -484,6 +484,8 @@ def main():
 
         if (options.file and (count == 2 and cnt == 1 or count == 1 and cnt == 0)):
             # Send Verification command
+            if device == "PIC32CX_MT":
+                time.sleep(1)
             verbose(options.verbose, 'Verification')
             resp = send_request(port, BL_CMD_VERIFY, uint32(4), uint32(crc))
             if resp == BL_RESP_CRC_OK:
