@@ -112,3 +112,17 @@ Site: https://www.peak-system.com/PCAN-ISO-TP-API.369.0.html?&L=1
 	If a third-party supplier develops software based on the 
 	PCAN-ISO-TP API and problems occur during the use of this 
 	software, consult the software provider. 
+	
+PLIN-API is licensed under the below terms:
+Site: https://www.peak-system.com/PLIN-API.444.0.html?&L=1
+
+	PEAK-System Technik GmbH grants the right to the customer to use the files in
+	this software package as long as this is done in connection with original
+	hardware by PEAK-System or OEM hardware coming from PEAK-System. It is NOT
+	allowed to use any of these files (even not parts) with third-party hardware.
+
+	If you are not sure whether you have acquired an appropriate license with the
+	used hardware, please contact our technical support team (support@peak-system.com).
+
+The MCP2221 DLL is covered by the "MCP2221 DLL License Agreement.pdf" file
+located in this directory.  

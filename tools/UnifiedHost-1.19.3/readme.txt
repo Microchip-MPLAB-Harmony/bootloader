@@ -37,9 +37,16 @@ v 1.15.0:   Release version to support dsPIC33 family of devices. Release suppor
 v 1.15.1:   Fixed bugs to support PIC-IOT WG Development Board, phantom byte for degenerate blocks and restrict data packet size to MAX_PACKET_SIZE - HEADER_SIZE.
 v 1.16.0:   AVR code protocol modified to handle large future devices.
 v 1.16.1:   Updated HID4JAVA library used for USB communication. Updates to AVR support to support MCC generated code. Extended PIC32 timeout(s) to 20s (from 8) UDP, USB
-v 1.16.2:   32-bit devices no longer wait for responds from Reset Command. Bugfixes for 16-bit support: 1) Self Verify issue with larger parts with 2) no report, 3) End Address corruption on read properties, 4) Exception thrown on UART disconnect.
+v 1.16.2:   32-bit devices no longer wait for responds from Reset Command. Bug fixes for 16-bit support: 1) Self Verify issue with larger parts with 2) no report, 3) End Address corruption on read properties, 4) Exception thrown on UART disconnect.
 v 1.16.3:   Corrects an issue with 16-bit devices where flash data was unable to be written if located at the end of the last flash page.
-v 1.17.0:   Add CAN and CAN-FD support for PIC24/dsPIC devices.  Expand console logging capabilty for PIC24/dsPIC devices.
+v 1.17.0:   Add CAN and CAN-FD support for PIC24/dsPIC devices.  Expand console logging capability for PIC24/dsPIC devices.
+v 1.17.1:   Improved console logging messages. Added provision to package the dependencies as a hotfix.
+v 1.18.0:   Add I2C support for PIC24/dsPIC devices. Added support for select PIC18F Q device families (Q40, Q41, Q43, Q83, Q84).
+v 1.19.0:   Add LIN support for PIC24/dsPIC devices. Fix issue causing readback errors when only a partial instruction worth of data is specified in the .hex file.
+v 1.19.1:   Fix CAN DLL issue with latest USB drivers
+v 1.19.2:   Fix MCP2221 DLL issue with latest drivers
+v 1.19.3:   Robustness improvements to 16-bit UI implementation when UART driver loading fails.
+            Fix issue of CAN BRS setting option being ignored.
 
 # NEWS	A basic changelog, intended for users
 -Incremented version information; see Changelog
@@ -55,26 +62,15 @@ v 1.17.0:   Add CAN and CAN-FD support for PIC24/dsPIC devices.  Expand console 
 # Known Issues
 - When using a version of java greater than v1.8.0_251, selecting a UART COM port and selecting "Apply" causes the Unified Bootloader Host Application to crash. In order to avoid this please ensure to use
 a version of java at or below version 1.8.0_251. 
+- The warning 'Application Offset exist between ROWS/PAGE boundaries' might be shown incorrectly, even though the application offset is at the start of a page. Please make sure that the application start adress is at the beginning of a page by referring to the device datasheet.
 
 # Debug Log
 The UBHA supports the ability to view Debug Logger message through use of the packaged logging.properties file.
 i.e.: To Launch from Command Prompt
+>java -Djava.util.logging.config.file="<Drive: e.g. C>:\<MyDirectory>\<UnifiedHost-version>\logging.properties" -jar UnifiedHost-<version>.jar
 
 # INSTALL	Installation instructions
-Requires Installation of Java JRE (with JavaFX) or the Java JRE provided with MPLAB X v5.40(or Later)
-
-# Usage:
-To Launch from Command Prompt using your system's Java JRE:
-
-> cd \<Harmony3_Path>\bootloader\tools\UnifiedHost-<version>\
-
-> java -Djava.util.logging.config.file="logging.properties" -jar UnifiedHost-<version>.jar
-
-To Launch from Command Prompt using MPLAB X's Java JRE (Recommended for Linux):
-
-> cd /<Harmony3_Path>/bootloader/tools/UnifiedHost-<version>/
-
-> /opt/microchip/mplabx/<MPLAB X Version>/sys/java/zulu8.40.0.25-ca-fx-jre8.0.222-linux_x64/bin/java -Djava.util.logging.config.file="logging.properties" -jar UnifiedHost-<version>.jar
+Installation of Java JRE
 
 # COPYING / LICENSE	Copyright and licensing information
 See LICENSE.txt for licensing information.
