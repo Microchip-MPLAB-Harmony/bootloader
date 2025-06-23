@@ -41,6 +41,7 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
 else:
     bootloaderCore = "bootloader_arm.py"
     btlSizes = {
+                "CORTEX-M33"        : [57344],
                 "CORTEX-M4"         : [57344],
                 "CORTEX-M7"         : [57344],
     }
@@ -71,7 +72,7 @@ def getLinkerParams(btlLength, triggerLength):
     rom_length  = "ROM_LENGTH=" + romLen
     ram_origin  = "RAM_ORIGIN=" + ramStart
     ram_length  = "RAM_LENGTH=" + ramLen
-    
+
     if place_btl_in_bfm == True:
         rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN + 1024\""
         return (rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length)

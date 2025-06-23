@@ -11,7 +11,8 @@ output_hex_file = "devcfg.hex"  # Intermediate Intel HEX file
 
 # Define the device configuration address ranges as a list of tuples
 devices_dict = {
-    "PIC32CM_GC00_SG00": [(0xA000000, 0xA001000), (0xA002000, 0xA003000)]
+    "PIC32CM_GC00_SG00": [(0xA000000, 0xA001000), (0xA002000, 0xA003000)],
+    "PIC32CK_GC01_SG01": [(0xA000000, 0xA001000), (0xA002000, 0xA003000), (0xA008000, 0xA009000), (0xA00A000, 0xA00B000)],
 }
 
 def error(text):

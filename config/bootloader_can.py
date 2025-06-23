@@ -46,6 +46,8 @@ else:
     bootloaderCore = "bootloader_arm.py"
     btlSizes = {
                 "CORTEX-M0PLUS"     : [4096],
+                "CORTEX-M23"        : [4096],
+                "CORTEX-M33"        : [4096],
                 "CORTEX-M4"         : [4096],
                 "CORTEX-M7"         : [4096],
     }

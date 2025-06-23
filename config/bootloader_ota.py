@@ -46,6 +46,7 @@ else:
     btlSizes = {
                 "CORTEX-M0PLUS"     : [8192],
                 "CORTEX-M23"        : [8192],
+                "CORTEX-M33"        : [8192],
                 "CORTEX-M4"         : [8192],
                 "CORTEX-M7"         : [8192],
     }

@@ -83,6 +83,7 @@ else:
     sdcard_btlSizes = {
                 "CORTEX-M0PLUS"     : [29696],
                 "CORTEX-M23"        : [29696],
+                "CORTEX-M33"        : [32768],
                 "CORTEX-M4"         : [32768],
                 "CORTEX-M7"         : [32768],
     }
@@ -90,6 +91,7 @@ else:
     serial_memory_btlSizes = {
                 "CORTEX-M0PLUS"     : [21504],
                 "CORTEX-M23"        : [21504],
+                "CORTEX-M33"        : [24576],
                 "CORTEX-M4"         : [24576],
                 "CORTEX-M7"         : [24576],
     }
@@ -97,6 +99,7 @@ else:
     usb_host_msd_btlSizes = {
                 "CORTEX-M0PLUS"     : [43008],
                 "CORTEX-M23"        : [43008],
+                "CORTEX-M33"        : [40960],
                 "CORTEX-M4"         : [40960],
                 "CORTEX-M7"         : [40960],
     }
