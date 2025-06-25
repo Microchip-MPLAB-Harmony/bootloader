@@ -304,7 +304,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 
         case BOOTLOADER_ERASE_APPLICATION_SPACE:
         {
-            bootloader_NvmAppErase(btlData.fileStat.fsize);
+            bootloader_NvmAppErase((uint32_t)btlData.fileStat.fsize);
 
             btlData.currentState = BOOTLOADER_READ_FILE;
 

@@ -120,11 +120,11 @@ DATASTREAM_HANDLE DATASTREAM_Open(const DRV_IO_INTENT ioIntent)
     }
 
     // now that the stack is ready we can check the available interfaces
-    nNets = TCPIP_STACK_NumberOfNetworksGet();
+    nNets = (int)TCPIP_STACK_NumberOfNetworksGet();
 
     for (i = 0; i < nNets; i++)
     {
-        netH = TCPIP_STACK_IndexToNet(i);
+        netH = (TCPIP_NET_HANDLE)TCPIP_STACK_IndexToNet(i);
 
         ipAddr.Val = TCPIP_STACK_NetAddress(netH);
 
