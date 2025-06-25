@@ -63,7 +63,7 @@ def extract_ranges(input_hex, output_hex, output_bin, address_ranges):
 def main():
     parser = optparse.OptionParser(usage = 'usage: %prog [options]')
 
-    parser.add_option('-d', '--device', dest='device', help='target device (PIC32CM_GC00_SG00)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (pic32cm_gc00_sg00/pic32ck_gc01_sg01)', metavar='DEV')
     parser.add_option('-f', '--inhexfile', dest='inhexfile', help='Input Hex file with fuse information', metavar='INHEXFILE')
     parser.add_option('-o', '--outbinfile', dest='outbinfile', help='Output binary file containing only fuse information (optional, default devcfg.bin)', metavar='OUTBINFILE')
 

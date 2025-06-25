@@ -293,7 +293,7 @@ def main():
     parser.add_option('-p', '--sectorSize', dest='sectSize', help='Device Sector Size in Bytes', metavar='SectSize')
     parser.add_option('-b', '--boot', dest='boot', help='enable write to the bootloader area', default=False, action='store_true')
     parser.add_option('-s', '--swap', dest='swap', help='swap banks after programming', default=False, action='store_true')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/sama5/sama7/sam9x6/sam9x7/pic32cz/pic32mk/pic32mx/pic32mz/pic32mzw/pic32cm/pic32mm/wbz451/pic32cxbz2/wbz45x/pic32cm_gc00_sg00/pic32ck_gc01_sg01/pic32cx_mt/pic32wm_bz6/pic32cx_sg41)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samd5x/samda1/same7x/same5x/samg5x/saml2x/samha1/sama5/sama7/sam9x6/sam9x7/pic32cz/pic32mk/pic32mx/pic32mz/pic32mzw/pic32cm/pic32mm/wbz451/pic32cxbz2/wbz45x/wbz351/pic32cz_ca70/pic32cm_gc00_sg00/pic32ck_gc01_sg01/pic32cx_mt/pic32wm_bz6/pic32cx_sg41)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 

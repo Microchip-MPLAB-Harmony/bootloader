@@ -36,9 +36,10 @@ destinationFile     = "btl_app_merged.bin"
 
 # Supported Devices [ERASE_SIZE, BOOTLOADER_SIZE]
 devices = {
-            "SAME5X"    : [8192, 8192],
-            "SAMD5X"    : [8192, 8192],
-}
+            "SAME5X"        : [8192, 8192],
+            "SAMD5X"        : [8192, 8192],
+            "PIC32CX_MT"    : [8192, 8192],
+}           "PIC32CX_SG41"  : [8192, 8192],
 
 #------------------------------------------------------------------------------
 def error(text):
@@ -61,7 +62,7 @@ def main():
     parser.add_option('-b', '--btl_file', dest='btl_file', help='bootloader binary file to program', metavar='BTL_FILE')
     parser.add_option('-a', '--app_file', dest='app_file', help='application binary file to program', metavar='APP_FILE')
     parser.add_option('-o', '--offset', dest='offset', help='application start offset (default 0x2000)', default='0x2000', metavar='OFFS')
-    parser.add_option('-d', '--device', dest='device', help='target device (same5x/samd5x)', default="same5x", metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (same5x/samd5x/pic32cx_mt/pic32x_sg41)', default="same5x", metavar='DEV')
 
     (options, args) = parser.parse_args()
 

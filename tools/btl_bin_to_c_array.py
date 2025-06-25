@@ -46,6 +46,7 @@ devices = {
             "WBZ451"    : [4096, 4096],
             "PIC32CZ_CA70"    : [8192, 8192],
             "PIC32CM_GC00_SG00" : [4096, 4096],
+            "PIC32CK_GC01_SG01" : [4096, 4096],
             "PIC32WM_BZ6" : [4096, 4096],
 }
 
@@ -106,7 +107,7 @@ def main():
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')
     parser.add_option('-b', '--binfile', dest='binfile', help='binary file to convert', metavar='FILE')
     parser.add_option('-o', '--outputHexfile', dest='hexfile', help='output hex file', metavar='FILE')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x/pic32cm/pic32cz/pic32mk/pic32mz/wbz451)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x/pic32cm/pic32cz/pic32mk/pic32mz/wbz451/pic32cz_ca70/pic32cm_gc00_sg00/pic32wm_bz6/pic32ck_gc01_sg01)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 
