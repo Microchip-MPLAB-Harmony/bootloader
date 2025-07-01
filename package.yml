@@ -4,7 +4,7 @@ package:
   type: "api"
   status: "production"
   required: false
-  version: "v3.7.0"
+  version: "v3.8.0"
 
   dependencies:
     - name: "bsp"
@@ -12,13 +12,13 @@ package:
       version: "v3.22.0"
     - name: "csp"
       type: "package"
-      version: "dev"
+      version: "v3.22.5"
     - name: "core"
       type: "package"
       version: "v3.15.2"
     - name: "net"
       type: "package"
-      version: "dev"
+      version: "v3.14.1"
     - name: "usb"
       type: "package"
       version: "v3.16.0"

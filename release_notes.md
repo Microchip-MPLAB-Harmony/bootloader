@@ -8,6 +8,36 @@ nav_order: 99
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Bootloader Release v3.8.0
+
+### New Features
+
+- This release includes support for
+    - **UART, I2C, SPI, CAN, Serial Memory, OTA, USB and Ethernet UDP bootloaders** for PIC32CK GC/SG family of 32-bit microcontrollers
+    - **UART, I2C, SPI, CAN, Serial Memory, OTA and USB bootloaders** for PIC32CM GC/SG family of 32-bit microcontrollers
+    - **UART, I2C, SPI and Serial Memory bootloaders** for PIC32CX-BZ3 and WBZ35 family of 32-bit microcontrollers
+    - **UART, I2C, SPI, CAN, Serial Memory and USB bootloaders** for PIC32WM-BZ6 family of 32-bit microcontrollers
+    - **UART, I2C, SPI, CAN, Serial Memory, OTA, USB and Ethernet UDP bootloaders** for PIC32CZ-CA70 family of 32-bit microcontrollers
+    - **UART, I2C, SPI, Serial Memory and OTA bootloaders** for PIC32CX-MT family of 32-bit microcontrollers
+    - **UART bootloader** for PIC32CX-SG41 family of 32-bit microcontrollers
+
+### Bootloaders Supported on different product families
+- The following table provides supported bootloaders for different product families
+    <p align="center">
+        <img src = "./docs/supported_bootloaders_3_8.jpg"/>
+    </p>
+
+### Known Issues
+- No changes from v3.7.0
+
+### Development Tools
+
+* [MPLAB® X IDE v6.25](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v4.60](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * MPLAB® Code Configurator (MCC) v5.5.2
+
+
 ## Bootloader Release v3.7.0
 
 ### New Features
