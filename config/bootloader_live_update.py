@@ -103,7 +103,7 @@ def setupLiveUpdateSymbols(bootloaderComponent):
 
     btlLiveUpdateEnable = False
 
-    if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR")) or ("PIC32CX" in Variables.get("__PROCESSOR") and "SG41" in Variables.get("__PROCESSOR"))):
+    if (("SAME5" in Variables.get("__PROCESSOR")) or ("SAMD5" in Variables.get("__PROCESSOR")) or ("PIC32CX" in Variables.get("__PROCESSOR") and "SG41" in Variables.get("__PROCESSOR")) or ("PIC32CZ" in Variables.get("__PROCESSOR") and "CA80" in Variables.get("__PROCESSOR"))):
         btlLiveUpdateEnable = True
     elif ("PIC32MZ" in Variables.get("__PROCESSOR")):
         if (re.match("PIC32MZ.[0-9]*EF", Variables.get("__PROCESSOR")) or
