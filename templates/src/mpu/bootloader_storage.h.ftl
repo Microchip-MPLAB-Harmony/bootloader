@@ -48,6 +48,30 @@
 #include "definitions.h"
 #include <device.h>
 
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true && (DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26")>
+#define DATA_RECORD             0
+#define END_OF_FILE_RECORD      1
+#define EXT_SEG_ADRS_RECORD     2
+#define EXT_LIN_ADRS_RECORD     4
+#define START_LIN_ADRS_RECORD   5
+
+typedef enum
+{
+    // indicates that the CRC value between the calculated value and the
+    // value received from data stream did not match
+    HEX_REC_CRC_ERROR   = -10,
+
+    // programming error
+    HEX_REC_PGM_ERROR   = -5,
+
+    // An unspecified hex record tyype is received
+    HEX_REC_UNKNOW_TYPE = -1,
+
+    // the record type is a valid hex record
+    HEX_REC_NORMAL      = 0,
+} HEX_RECORD_STATUS;
+
+</#if>
 <#if DRIVER_USED != "">
 void bootloader_ImageSizeSet(uint32_t size);
 bool bootloader_IsDeviceReady(void);
@@ -56,7 +80,12 @@ void bootloader_SysFsEventHandler(SYS_FS_EVENT event, void * eventData, uintptr_
 bool bootloader_IsDeviceAttached(void);
 </#if>
 void bootloader_Storage_Read(void);
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true && (DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26")>
+HEX_RECORD_STATUS bootloader_Storage_ProgramHexRecord(uint8_t *HexRecord, size_t size);
+bool bootloader_Storage_Erase(void);
+<#else>
 bool bootloader_Storage_Write(bool imageStartFlag, void *buffer, size_t size);
+</#if>
 bool bootloader_Storage_CRC_Verify(uint32_t crc);
 
 #endif    //BOOTLOADER_STORAGE_H

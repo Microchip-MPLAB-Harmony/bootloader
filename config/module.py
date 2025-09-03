@@ -23,7 +23,7 @@
 
 I2CNames        = ["SERCOM", "I2C", "TWIHS", "FLEXCOM"]
 SPINames        = ["SERCOM", "SPI", "FLEXCOM"]
-USBNames        = ["USB", "USBHS"]
+USBNames        = ["USB", "USBHS", "DRV_UDPHS"]
 EthernetNames   = ["ETH", "GMAC"]
 CANNames        = ["CAN", "MCAN"]
 
@@ -43,7 +43,8 @@ def hasPeripheral(peripheralList):
 mpuBootloaderComponents = [
         {"name":"uart", "label": "UART", "dependency":["MEMORY", "SYS_FS", "UART"], "condition":"True"},
         {"name":"can", "label": "CAN", "dependency":["MEMORY", "SYS_FS", "CAN"], "condition":"True"},
-        {"name":"ota", "label": "OTA", "dependency":["MEMORY", "SYS_FS"], "condition":"True"}
+        {"name":"ota", "label": "OTA", "dependency":["MEMORY", "SYS_FS"], "condition":"True"},
+        {"name":"usb_device_hid", "label": "USB Device HID", "dependency":["MEMORY", "SYS_FS", "USB_DEVICE_HID"], "condition":"True"}
     ]
 
 #Define MCU Bootloader component names

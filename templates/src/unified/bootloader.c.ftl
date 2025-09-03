@@ -47,7 +47,11 @@
 #include "device.h"
 #include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"
 #include "bootloader/datastream/datastream.h"
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
 #include "bootloader/bootloader_nvm_interface.h"
+<#else>
+#include "bootloader_storage.h"
+</#if>
 
 #define BOOTLOADER_BUFFER_SIZE  512
 
@@ -66,9 +70,31 @@ typedef enum
 
 typedef enum
 {
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
     /* If we need to program, then open the datastream. */
     BOOTLOADER_OPEN_DATASTREAM = 0,
 
+<#else>
+<#if DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26">
+    /* Initial state, waits for nvm device to be ready*/
+    BOOTLOADER_STATE_INIT = 0,
+
+    /* Check/read image if bootloader mode is not triggered */
+    BOOTLOADER_CHECK_IMAGE,
+
+    /* If we need to program, then open the datastream. */
+    BOOTLOADER_OPEN_DATASTREAM,
+
+<#else>
+    BOOTLOADER_REGISTER_EVENT_HANDLER = 0,
+
+    BOOTLOADER_WAIT_FOR_DEVICE_ATTACH,
+
+    /* If we need to program, then open the datastream. */
+    BOOTLOADER_OPEN_DATASTREAM,
+
+</#if>
+</#if>
     /* The Bootloader gets a command from the host application. */
     BOOTLOADER_GET_COMMAND,
 
@@ -135,7 +161,15 @@ static BOOTLOADER_BUFFER CACHE_ALIGN dataBuff;
 
 static BOOTLOADER_DATA btlData =
 {
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
     .currentState = BOOTLOADER_OPEN_DATASTREAM,
+<#else>
+<#if DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26">
+    .currentState = BOOTLOADER_STATE_INIT,
+<#else>
+    .currentState = BOOTLOADER_REGISTER_EVENT_HANDLER,
+</#if>
+</#if>
     .usrBufferEventComplete = false
 };
 
@@ -145,6 +179,10 @@ static const uint16_t crc_table[16] =
     0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef
 };
 
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true>
+static bool imageStartFlag = false;
+
+</#if>
 static uint32_t bootloader_CalculateCrc(uint8_t *data, uint32_t len)
 {
     uint32_t i;
@@ -292,6 +330,13 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 
         case (uint8_t)ERASE_FLASH:
         {
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true && (DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26")>
+            /* Following MISRA-C rules are deviated in the below code block */
+            /* MISRA C-2012 Rule 11.6 */
+           bootloader_Storage_Erase();
+            /* MISRAC 2012 deviation block end */
+</#if>
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
 <#if core.CoreSeries?contains("PIC32CZCA") == false>
             /* Following MISRA-C rules are deviated in the below code block */
             /* MISRA C-2012 Rule 11.6 */
@@ -311,6 +356,9 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 </#if>
             /* MISRAC 2012 deviation block end */
 </#if>
+<#else>
+            imageStartFlag = true;
+</#if>
             handle->currentState = BOOTLOADER_SEND_RESPONSE;
             handle->buffSize = 1;
             break;
@@ -318,10 +366,21 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 
         case (uint8_t)PROGRAM_FLASH:
         {
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
             if(bootloader_NvmProgramHexRecord(&dataBuff.buffers.procBuff[1], handle->cmdBuffLen-3U) != HEX_REC_NORMAL)
+<#else>
+<#if DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26">
+            if(bootloader_Storage_ProgramHexRecord(&dataBuff.buffers.procBuff[1], handle->cmdBuffLen-3U) != HEX_REC_NORMAL)
+<#else>
+            if(bootloader_Storage_Write( imageStartFlag, (void *)&dataBuff.buffers.procBuff[1], handle->cmdBuffLen-3U) == false)
+</#if>
+</#if>
             {
                 break;
             }
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true>
+            imageStartFlag = false;
+</#if>
             handle->buffSize = 1;
             handle->currentState = BOOTLOADER_SEND_RESPONSE;
             break;
@@ -363,6 +422,52 @@ void bootloader_${BTL_TYPE}_Tasks( void )
 
     switch ( btlData.currentState )
     {
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true>
+<#if DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26">
+        case BOOTLOADER_STATE_INIT:
+        {
+            if (bootloader_IsDeviceReady() == true)
+            {
+                btlData.prevState = btlData.currentState;
+                btlData.currentState = BOOTLOADER_CHECK_IMAGE;
+            }
+            break;
+        }
+        case BOOTLOADER_CHECK_IMAGE:
+        {
+            if (bootloader_Trigger() == false)
+            {
+                bootloader_Storage_Read();
+            }
+            
+            btlData.prevState = btlData.currentState;
+            btlData.currentState = BOOTLOADER_OPEN_DATASTREAM;
+            break;
+        }
+<#else>
+        case BOOTLOADER_REGISTER_EVENT_HANDLER:
+        {
+            SYS_FS_EventHandlerSet(bootloader_SysFsEventHandler, 0);
+            btlData.prevState = btlData.currentState;
+            btlData.currentState = BOOTLOADER_WAIT_FOR_DEVICE_ATTACH;
+            break;
+        }
+        case BOOTLOADER_WAIT_FOR_DEVICE_ATTACH:
+        {
+            if (bootloader_IsDeviceAttached() == true)
+            {
+                if (bootloader_Trigger() == false)
+                {
+                    bootloader_Storage_Read();
+                }
+                btlData.prevState = btlData.currentState;
+                btlData.currentState = BOOTLOADER_OPEN_DATASTREAM;
+            }
+            break;
+        }
+</#if>
+</#if>
+
         case BOOTLOADER_OPEN_DATASTREAM:
         {
             btlData.streamHandle = DATASTREAM_HANDLE_INVALID;
@@ -374,6 +479,7 @@ void bootloader_${BTL_TYPE}_Tasks( void )
                 DATASTREAM_BufferEventHandlerSet(btlData.streamHandle,
                         bootloader_BufferEventHandler, APP_USR_CONTEXT);
 
+                btlData.prevState = btlData.currentState;
                 btlData.currentState = BOOTLOADER_GET_COMMAND;
             }
             break;

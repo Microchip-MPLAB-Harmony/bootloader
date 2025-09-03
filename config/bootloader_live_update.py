@@ -121,14 +121,15 @@ def setupLiveUpdateSymbols(bootloaderComponent):
     btlLiveUpdate.setLabel("Use Dual Bank For Live Update")
     btlLiveUpdate.setVisible(btlLiveUpdateEnable)
 
-    length = str((flash_size / 2))
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        length = str((flash_size / 2))
 
-    btlLiveUpdateSize = bootloaderComponent.createStringSymbol("BTL_LIVE_UPDATE_SIZE", btlLiveUpdate)
-    btlLiveUpdateSize.setHelp(btl_helpkeyword)
-    btlLiveUpdateSize.setLabel("Live Update Flash Bank Size (Bytes)")
-    btlLiveUpdateSize.setVisible(btlLiveUpdate.getValue())
-    btlLiveUpdateSize.setDefaultValue(length)
-    btlLiveUpdateSize.setDependencies(setBtlLiveUpdateSize, ["BTL_LIVE_UPDATE"])
+        btlLiveUpdateSize = bootloaderComponent.createStringSymbol("BTL_LIVE_UPDATE_SIZE", btlLiveUpdate)
+        btlLiveUpdateSize.setHelp(btl_helpkeyword)
+        btlLiveUpdateSize.setLabel("Live Update Flash Bank Size (Bytes)")
+        btlLiveUpdateSize.setVisible(btlLiveUpdate.getValue())
+        btlLiveUpdateSize.setDefaultValue(length)
+        btlLiveUpdateSize.setDependencies(setBtlLiveUpdateSize, ["BTL_LIVE_UPDATE"])
 
     btlLiveUpdateReset = bootloaderComponent.createBooleanSymbol("BTL_LIVE_UPDATE_RESET", btlLiveUpdate)
     btlLiveUpdateReset.setHelp(btl_helpkeyword)

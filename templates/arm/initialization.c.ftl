@@ -159,7 +159,9 @@ void SYS_Initialize ( void* data )
         <#lt>   SEFC0_Initialize();
         <#lt>   SEFC1_Initialize();
     <#else>
-        ${MEM_USED}_Initialize();
+        <#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
+        <#lt>    ${MEM_USED}_Initialize();
+        </#if>
     </#if>
 
     <#-- /* For SAME70/SAMV70/SAMV71/SAMS70, SAMG5x, PIC32CZ and PIC32CX-MT devices clock needs to be initialized
