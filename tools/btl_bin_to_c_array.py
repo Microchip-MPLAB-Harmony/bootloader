@@ -48,6 +48,10 @@ devices = {
             "PIC32CM_GC00_SG00" : [4096, 4096],
             "PIC32CK_GC01_SG01" : [4096, 4096],
             "PIC32WM_BZ6" : [4096, 4096],
+            "SAMA5"         : [512, 131072],
+            "SAMA7"         : [512, 131072],
+            "SAM9X6"        : [512, 131072],
+            "SAM9X7"        : [512, 131072],
 }
 
 def bin_hex_convert(bin_file, dest_file, erase_page_size):
@@ -64,7 +68,11 @@ def bin_hex_convert(bin_file, dest_file, erase_page_size):
 
         fstat = os.stat(bin_file)
 
-        delta_size = erase_page_size - (fstat.st_size % erase_page_size)
+        global device
+        if (device == "SAMA5") or (device == "SAMA7") or (device == "SAM9X6") or (device == "SAM9X7"):
+            delta_size = 0
+        else:
+            delta_size = erase_page_size - (fstat.st_size % erase_page_size)
 
         size = fstat.st_size + delta_size
 
@@ -107,7 +115,7 @@ def main():
     parser.add_option('-v', '--verbose', dest='verbose', help='enable verbose output', default=False, action='store_true')
     parser.add_option('-b', '--binfile', dest='binfile', help='binary file to convert', metavar='FILE')
     parser.add_option('-o', '--outputHexfile', dest='hexfile', help='output hex file', metavar='FILE')
-    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x/pic32cm/pic32cz/pic32mk/pic32mz/wbz451/pic32cz_ca70/pic32cm_gc00_sg00/pic32wm_bz6/pic32ck_gc01_sg01)', metavar='DEV')
+    parser.add_option('-d', '--device', dest='device', help='target device (samc2x/samd1x/samd2x/samda1/samd5x/same5x/same7x/samha1/saml1x/saml2x/samv7x/sama5/sama7/sam9x6/sam9x7/pic32cm/pic32cz/pic32mk/pic32mz/wbz451/pic32cz_ca70/pic32cm_gc00_sg00/pic32wm_bz6/pic32ck_gc01_sg01)', metavar='DEV')
 
     (options, args) = parser.parse_args()
 
@@ -120,6 +128,7 @@ def main():
     if options.device is None:
         error('target device is required (use -d option)')
 
+    global device
     device = options.device.upper()
 
     if (device in devices):

@@ -85,7 +85,12 @@ typedef struct
 
 } BOOTLOADER_DATA;
 
+<#if DRIVER_USED == "DRV_NAND_FLASH">
+#define SPARE_SIZE    224U
+static uint8_t CACHE_ALIGN fileBuffer[PAGE_SIZE + SPARE_SIZE];
+<#else>
 static uint8_t CACHE_ALIGN fileBuffer[PAGE_SIZE];
+</#if>
 static uint32_t memoryAddr;
 
 static BOOTLOADER_DATA btlData =

@@ -40,8 +40,8 @@ def calcBootloaderSize():
     return btl_size
 
 def setBtlStartCommentVisible(symbol, event):
-    if (int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16) != int(Database.getSymbolValue("uart_bootloader", "BTL_START"), 16)):
-        symbol.setLabel("WARNING!!! Bootloader Start Address Should be set to " + Database.getSymbolValue("uart_bootloader", "BTL_START") + " !!!")
+    if (int(Database.getSymbolValue("core", "APP_START_ADDRESS"), 16) != int(symbol.getComponent().getSymbolByID("BTL_START").getValue(), 16)):
+        symbol.setLabel("WARNING!!! Bootloader Start Address Should be set to " + symbol.getComponent().getSymbolByID("BTL_START").getValue() + " !!!")
         symbol.setVisible(True)
     else:
         symbol.setVisible(False)

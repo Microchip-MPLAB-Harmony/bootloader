@@ -42,6 +42,7 @@ def hasPeripheral(peripheralList):
 #Define MPU Bootloader component names
 mpuBootloaderComponents = [
         {"name":"uart", "label": "UART", "dependency":["MEMORY", "SYS_FS", "UART"], "condition":"True"},
+        {"name":"can", "label": "CAN", "dependency":["MEMORY", "SYS_FS", "CAN"], "condition":"True"}
     ]
 
 #Define MCU Bootloader component names
@@ -100,11 +101,11 @@ def loadModule():
                     elif (dep == "SYS_FS"):
                         # Generic Dependency
                         depGeneric = True
-                        
+
                     if ((Name == "uart" or Name == "i2c" or Name == "spi") and (dep == "MEMORY")) and hasPeripheral(["SEFC"]):
                         if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
                             Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
-                        else:    
+                        else:
                             Component.addMultiDependency(depId, dep, dep, True)
                     else:
                         Component.addDependency(depId, dep, depDisplayName, depGeneric, depRequired)
