@@ -337,7 +337,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     </#if>
 </#if>
 
-<#if (core.CoreArchitecture == "MIPS") &&
+<#if (core.CoreArchitecture == "MIPS") || (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
       (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
     <#lt>static T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
@@ -350,6 +350,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>    return (lower_flash_serial->serial);
     <#lt>}
 
+<#if core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
     <#lt>/* Function to update the serial number based on address */
     <#lt>void bootloader_UpdateFlashSerial(uint32_t serial, uint32_t addr)
     <#lt>{
@@ -364,7 +365,22 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>       /* Nothing to do */
     <#lt>    }
     <#lt>}
+<#else>
+	<#lt>void bootloader_UpdateFlashSerial(uint32_t serial, uint32_t addr)
+	<#lt>{
+	<#lt>    update_flash_serial.serial    = serial;
+    <#lt>    update_flash_serial.prologue  = FLASH_SERIAL_PROLOGUE;
+	<#lt>    update_flash_serial.epilogue  = FLASH_SERIAL_EPILOGUE;
 
+	<#lt>    while (${MEM_USED}_IsBusy()) { /* Nothing to do */ }
+
+    <#lt>    ${MEM_USED}_PageErase( addr );
+
+	<#lt>    (void)${MEM_USED}_RowWrite((uint32_t *)&update_flash_serial, addr);
+
+	<#lt>    while (${MEM_USED}_IsBusy()) { /* Nothing to do */ }
+	<#lt>}
+</#if>
     <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
         <#lt>/* Function to update the serial number in upper flash panel (Inactive Panel) */
         <#lt>void bootloader_UpdateUpperFlashSerial(void)
@@ -421,6 +437,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>/* Function to swap the banks.
         <#lt> * This function has to be removed once NVM PLIB has the support
         <#lt> */
+<#if core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
         <#lt>static void bootloader_ProgramFlashSwapBank( T_FLASH_BANK flash_bank )
         <#lt>{
         <#lt>    /* NVMOP can be written only when WREN is zero. So, clear WREN */
@@ -446,6 +463,24 @@ uint16_t __WEAK bootloader_GetVersion( void )
 		<#lt>        /* Do Nothing */
 		<#lt> 	 }
         <#lt>}
+<#else>
+        <#lt>static void bootloader_ProgramFlashSwapBank( PROGRAM_FLASH_BANK flash_bank )
+        <#lt>{
+		<#lt>    PROGRAM_FLASH_BANK currentBank;
+
+		<#lt>    // Read the actual active bank using PC
+		<#lt>    currentBank = FCW_ProgramFlashBankGet();
+
+		<#lt>    if (currentBank == PROGRAM_FLASH_BANK_1)
+		<#lt>    {
+		<#lt>        FCW_ProgramFlashBankSelect(PROGRAM_FLASH_BANK_2);
+		<#lt>    }
+		<#lt>    else
+		<#lt>    {
+		<#lt>        FCW_ProgramFlashBankSelect(PROGRAM_FLASH_BANK_1);
+		<#lt>    }
+        <#lt>}
+</#if>
 
         <#lt>/* Function to Select Appropriate program flash bank based on the serial number */
         <#lt>void bootloader_ProgramFlashBankSelect( void )
@@ -505,7 +540,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
 <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
     <#lt>void bootloader_SwapAndReset( void )
     <#lt>{
-        <#if core.CoreArchitecture == "MIPS" >
+        <#if core.CoreArchitecture == "MIPS" || core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
             <#lt>    /* Update Serial number of Inactive bank */
             <#lt>    bootloader_UpdateUpperFlashSerial();
 

@@ -112,7 +112,8 @@
     </#if>
 </#if>
 
-<#if (core.CoreArchitecture == "MIPS") &&
+<#if (core.CoreArchitecture == "MIPS") ||
+     (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
      (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
 
@@ -128,6 +129,7 @@
     <#lt>#define FLASH_SERIAL_EPILOGUE                   0xBEEFDEADU
     <#lt>#define FLASH_SERIAL_CLEAR                      0xFFFFFFFFU
 
+<#if core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
     <#lt>#define LOWER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(LOWER_FLASH_SERIAL_START))
     <#lt>#define UPPER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(UPPER_FLASH_SERIAL_START))
 
@@ -136,7 +138,11 @@
     <#lt>    PROGRAM_FLASH_BANK_1,
     <#lt>    PROGRAM_FLASH_BANK_2,
     <#lt>} T_FLASH_BANK;
-
+<#else>
+    <#lt>#define LOWER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)LOWER_FLASH_SERIAL_START)
+    <#lt>#define UPPER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)UPPER_FLASH_SERIAL_START)
+</#if>
+	
     <#lt>/* Structure to validate the Flash serial and its checksum
     <#lt> * Note: The order of the members should not be changed
     <#lt> */
@@ -409,7 +415,8 @@ Example:
 */
 void bootloader_TriggerReset(void);
 
-<#if (core.CoreArchitecture == "MIPS") &&
+<#if (core.CoreArchitecture == "MIPS") ||
+	 (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
       (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
     <#lt>/* Function to read the Serial number from Flash bank mapped to lower region */
@@ -430,6 +437,11 @@ void bootloader_TriggerReset(void);
 <#if BTL_WDOG_ENABLE?? &&  BTL_WDOG_ENABLE == true>
 /* Function to refresh watchdog timer */
 void kickdog(void);
+</#if>
+<#if (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
+     ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
+      (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
+    <#lt>void bootloader_ProgramFlashBankSelect( void );
 </#if>
 
 #endif      //BOOTLOADER_COMMON_H

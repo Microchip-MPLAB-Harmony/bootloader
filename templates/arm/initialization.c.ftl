@@ -175,6 +175,10 @@ void SYS_Initialize ( void* data )
     ${core.PORT_API_PREFIX}_Initialize();
 </#if>
 
+<#if ((BTL_DUAL_BANK?? && BTL_DUAL_BANK == true) && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91")>
+    bootloader_ProgramFlashBankSelect();
+</#if>
+
     if (bootloader_Trigger() == false)
     {
         run_Application(APP_START_ADDRESS);

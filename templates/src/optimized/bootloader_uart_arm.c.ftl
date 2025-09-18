@@ -393,6 +393,10 @@ static void command_task(void)
 <#if BTL_DUAL_BANK == true>
     else if (BL_CMD_BKSWAP_RESET == input_command)
     {
+	    <#if core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+		bootloader_UpdateUpperFlashSerial();
+		</#if>
+	
         ${PERIPH_USED}_WriteByte(BL_RESP_OK);
 
         while(${PERIPH_USED}_TransmitComplete() == false)
@@ -406,8 +410,10 @@ static void command_task(void)
         <#if .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS?? && .vars["${MEM_USED?lower_case}"].PANEL_SWAP_API_RESETS == false>
         bootloader_TriggerReset();
         </#if>
-        <#else>
+        <#elseif core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
         ${MEM_USED}_BankSwap();
+		<#else>
+		bootloader_TriggerReset();
         </#if>
     }
 </#if>

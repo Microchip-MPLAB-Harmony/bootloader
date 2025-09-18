@@ -337,7 +337,7 @@ def main():
         error('invalid device')
 
     if (options.swap == True):
-        if ((device != "SAME5X") and (device != "SAMD5X") and (device != "PIC32MZ") and (device != "PIC32CX_SG41") and (device != "PIC32MK") and (device != "PIC32CX_MT")):
+        if ((device != "SAME5X") and (device != "SAMD5X") and (device != "PIC32MZ") and (device != "PIC32CX_SG41") and (device != "PIC32MK") and (device != "PIC32CX_MT") and (device != "PIC32CZ")):
             error('Bank Swapping not supported on this device')
 
     try:
