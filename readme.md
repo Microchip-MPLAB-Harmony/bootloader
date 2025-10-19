@@ -31,7 +31,7 @@ and interface reference information.
 
 ## Documentation
 
-Click [here](https://onlinedocs.microchip.com/v2/keyword-lookup?keyword=MH3_bootloader&redirect=true) to view the online documentation of csp repository.
+Click [here](https://onlinedocs.microchip.com/v2/keyword-lookup?keyword=MH3_bootloader&redirect=true) to view the online documentation of bootloader repository.
 
 To view the documentation offline, follow these steps:
  - Download the publication as a zip file from [here](https://onlinedocs.microchip.com/download/GUID-742B1A75-BF5F-43A6-AD92-42EFEFCF6E25?type=webhelp).
