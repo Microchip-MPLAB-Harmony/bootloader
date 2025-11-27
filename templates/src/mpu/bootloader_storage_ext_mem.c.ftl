@@ -47,6 +47,23 @@
 #include "configuration.h"
 #include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"
 #include "bootloader_storage.h"
+<#if OTA_BOOTLOADER_ENABLE?? && OTA_BOOTLOADER_ENABLE == true>
+#include "ota_service_control_block.h"
+
+#define BUFFER_SIZE(x, y)                ((y) > (x)? ((((y) % (x)) != 0U)?((((y) / (x)) + 1U) * (x)) : (((y) / (x)) * (x))) : (x))
+#define OTA_CONTROL_BLOCK_SIZE           sizeof(OTA_CONTROL_BLOCK)
+#define OTA_CONTROL_BLOCK_PAGE_SIZE      ${DRIVER_USED}_PAGE_SIZE
+#define OTA_CONTROL_BLOCK_BUFFER_SIZE    BUFFER_SIZE(OTA_CONTROL_BLOCK_PAGE_SIZE, OTA_CONTROL_BLOCK_SIZE)
+
+static uint32_t ctrlBlkSize = OTA_CONTROL_BLOCK_BUFFER_SIZE;
+<#if DRIVER_USED == "DRV_NAND_FLASH">
+#define OTA_CTRL_SPARE_SIZE    224U
+static uint8_t CACHE_ALIGN controlBlockBuffer[OTA_CONTROL_BLOCK_BUFFER_SIZE + OTA_CTRL_SPARE_SIZE];
+<#else>
+static uint8_t CACHE_ALIGN controlBlockBuffer[OTA_CONTROL_BLOCK_BUFFER_SIZE];
+</#if>
+static OTA_CONTROL_BLOCK *controlBlock = (OTA_CONTROL_BLOCK *)controlBlockBuffer;
+</#if>
 
 <#if DRIVER_USED != "DRV_NAND_FLASH">
 typedef enum
@@ -147,6 +164,54 @@ void bootloader_ImageSizeSet(uint32_t size)
     btlData.extMemoryImageSize = size;
 }
 
+<#if OTA_BOOTLOADER_ENABLE?? && OTA_BOOTLOADER_ENABLE == true>
+bool OTA_SERVICE_FH_CtrlBlkRead(OTA_CONTROL_BLOCK *controlBlock, uint32_t length)
+{
+    uint32_t count;
+<#if DRIVER_USED == "DRV_NAND_FLASH">
+    uint32_t pageNum;
+    uint32_t blockNum;
+</#if>
+    uint32_t appMetaDataAddress;
+    bool     status = false;
+    uint8_t  *ptrBuffer = (uint8_t *)controlBlock;
+
+    if ((ptrBuffer != NULL) && (length == ctrlBlkSize))
+    {
+        appMetaDataAddress  = btlData.extMemoryMetaDataAddr;
+
+        for (count = 0U; count < length; count += OTA_CONTROL_BLOCK_PAGE_SIZE)
+        {
+<#if DRIVER_USED == "DRV_NAND_FLASH">
+            blockNum = appMetaDataAddress / btlData.geometry.blockSize;
+            pageNum = ((appMetaDataAddress / btlData.geometry.pageSize) % (btlData.geometry.blockSize / btlData.geometry.pageSize));
+
+            if (${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, ptrBuffer, NULL, false) != true)
+            {
+                status = false;
+                break;
+            }
+
+            status = true;
+<#else>
+            if (${DRIVER_USED}_Read(btlData.handle, ptrBuffer, OTA_CONTROL_BLOCK_PAGE_SIZE, appMetaDataAddress) != true)
+            {
+                status = false;
+                break;
+            }
+
+            (void)bootloader_WaitForXferComplete();
+            status = true;
+</#if>
+            appMetaDataAddress += OTA_CONTROL_BLOCK_PAGE_SIZE;
+            ptrBuffer += OTA_CONTROL_BLOCK_PAGE_SIZE;
+        }
+    }
+
+    return status;
+}
+</#if>
+
 void bootloader_Storage_Read(void)
 {
 <#if DRIVER_USED == "DRV_NAND_FLASH">
@@ -158,12 +223,17 @@ void bootloader_Storage_Read(void)
     bool status = false;
 
 <#if DRIVER_USED == "DRV_NAND_FLASH">
+<#if OTA_BOOTLOADER_ENABLE?? && OTA_BOOTLOADER_ENABLE == true>
+    (void)OTA_SERVICE_FH_CtrlBlkRead(controlBlock, ctrlBlkSize);
+    imageSize = controlBlock->appImageInfo[0].imageSize;
+<#else>
     blockNum = btlData.extMemoryMetaDataAddr / btlData.geometry.blockSize;
     pageNum = ((btlData.extMemoryMetaDataAddr / btlData.geometry.pageSize) % (btlData.geometry.blockSize / btlData.geometry.pageSize));
 
     (void)${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, fileBuffer, NULL, false);
 
     imageSize = *((uint32_t *)(uintptr_t)fileBuffer);
+</#if>
 
     if (imageSize != 0xFFFFFFFFU)
     {
@@ -172,7 +242,7 @@ void bootloader_Storage_Read(void)
 
         do
         {
-            status = ${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, fileBuffer, NULL, false);
+            (void)${DRIVER_USED}_SkipBlock_PageRead(btlData.handle, (uint16_t)blockNum, (uint16_t)pageNum, fileBuffer, NULL, false);
 
             (void)memcpy((uint8_t *)btlData.progAddr, fileBuffer, btlData.geometry.pageSize);
 
@@ -187,12 +257,18 @@ void bootloader_Storage_Read(void)
             }
 
         } while(readLen < imageSize);
+        status = true;
     }
+<#else>
+<#if OTA_BOOTLOADER_ENABLE?? && OTA_BOOTLOADER_ENABLE == true>
+    (void)OTA_SERVICE_FH_CtrlBlkRead(controlBlock, ctrlBlkSize);
+    imageSize = controlBlock->appImageInfo[0].imageSize;
 <#else>
     (void)${DRIVER_USED}_Read(btlData.handle, fileBuffer, PAGE_SIZE, btlData.extMemoryMetaDataAddr);
     (void)bootloader_WaitForXferComplete();
 
     imageSize = *((uint32_t *)(uintptr_t)fileBuffer);
+</#if>
 
     if (imageSize != 0xFFFFFFFFU)
     {

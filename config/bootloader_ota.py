@@ -41,6 +41,13 @@ if ("PIC32M" in Variables.get("__PROCESSOR")):
                 "PIC32MZEF"   : [10240],
                 "PIC32MZW"    : [16384],
     }
+elif (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+    bootloaderCore = "bootloader_mpu.py"
+    btlSizes = {
+                "CORTEX-A5"   : [131072],
+                "CORTEX-A7"   : [131072],
+                "ARM926EJ-S"  : [131072]
+    }
 else:
     bootloaderCore = "bootloader_arm.py"
     btlSizes = {
@@ -82,7 +89,7 @@ def getLinkerParams(btlLength, triggerLength):
     rom_length  = "ROM_LENGTH=" + romLen
     ram_origin  = "RAM_ORIGIN=" + ramStart
     ram_length  = "RAM_LENGTH=" + ramLen
-    
+
     if place_btl_in_bfm == True:
         rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN + 1024\""
         return (rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length)
@@ -103,8 +110,10 @@ def setupCoreComponentSymbols():
 
     coreComponent = Database.getComponentByID("core")
 
-    # Disable core related file generation not required for bootloader
-    coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+
+        # Disable core related file generation not required for bootloader
+        coreComponent.getSymbolByID("XC32_LINKER_PREPROC_MARCOS").setEnabled(False)
 
 def setOTAMemEraseEnable(symbol, event):
     symbol.setValue(event["value"])
@@ -123,15 +132,17 @@ def instantiateComponent(bootloaderComponent):
     otaBtlEnable.setVisible(False)
     otaBtlEnable.setDefaultValue(True)
 
-    btlDriverUsed = bootloaderComponent.createStringSymbol("DRIVER_USED", None)
-    btlDriverUsed.setHelp(btl_helpkeyword)
-    btlDriverUsed.setLabel("Bootloader OTA Memory Used")
-    btlDriverUsed.setReadOnly(True)
-    btlDriverUsed.setDefaultValue("")
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        btlDriverUsed = bootloaderComponent.createStringSymbol("DRIVER_USED", None)
+        btlDriverUsed.setHelp(btl_helpkeyword)
+        btlDriverUsed.setLabel("Bootloader OTA Memory Used")
+        btlDriverUsed.setReadOnly(True)
+        btlDriverUsed.setDefaultValue("")
 
     generateCommonSymbols(bootloaderComponent)
-    btlDriverUsed.getComponent().getSymbolByID("BTL_TRIGGER_ENABLE").setValue(False)
-    btlDriverUsed.getComponent().getSymbolByID("BTL_TRIGGER_ENABLE").setVisible(False)
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        btlDriverUsed.getComponent().getSymbolByID("BTL_TRIGGER_ENABLE").setValue(False)
+        btlDriverUsed.getComponent().getSymbolByID("BTL_TRIGGER_ENABLE").setVisible(False)
 
     generateHwCRCGeneratorSymbol(bootloaderComponent)
 
@@ -176,14 +187,21 @@ def instantiateComponent(bootloaderComponent):
     btlNumOfAppImage = bootloaderComponent.createIntegerSymbol("NUM_OF_APP_IMAGE", None)
     btlNumOfAppImage.setHelp(btl_helpkeyword)
     btlNumOfAppImage.setLabel("Number of application image storage")
-    btlNumOfAppImage.setDefaultValue(2)
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        btlNumOfAppImage.setDefaultValue(1)
+        btlNumOfAppImage.setVisible(False)
+    else:
+        btlNumOfAppImage.setDefaultValue(2)
     btlNumOfAppImage.setMin(1)
     btlNumOfAppImage.setMax(15)
 
     #################### Code Generation ####################
 
     btlSourceFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SRC", None)
-    btlSourceFile.setSourcePath("../bootloader/templates/src/ota/bootloader_ota.c.ftl")
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        btlSourceFile.setSourcePath("../bootloader/templates/src/mpu/bootloader_ota.c.ftl")
+    else:
+        btlSourceFile.setSourcePath("../bootloader/templates/src/ota/bootloader_ota.c.ftl")
     btlSourceFile.setOutputName("bootloader_" + btl_type.lower() + ".c")
     btlSourceFile.setMarkup(True)
     btlSourceFile.setOverwrite(True)
@@ -209,23 +227,24 @@ def instantiateComponent(bootloaderComponent):
     btlOtaControlBlockHeaderFile.setProjectPath("config/" + configName + "/bootloader/")
     btlOtaControlBlockHeaderFile.setType("HEADER")
 
-    coreComponent = Database.getComponentByID("core")
-    coreComponent.getSymbolByID("CoreMainFile").setValue(False)
-    # generate main.c file
-    btlmainSourceFile = bootloaderComponent.createFileSymbol("MAIN_BOOTLOADER_C", None)
-    btlmainSourceFile.setSourcePath("../bootloader/templates/src/optimized/main.c.ftl")
-    btlmainSourceFile.setOutputName("main.c")
-    btlmainSourceFile.setMarkup(True)
-    btlmainSourceFile.setOverwrite(False)
-    btlmainSourceFile.setDestPath("../../")
-    btlmainSourceFile.setProjectPath("")
-    btlmainSourceFile.setType("SOURCE")
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        coreComponent = Database.getComponentByID("core")
+        coreComponent.getSymbolByID("CoreMainFile").setValue(False)
+        # generate main.c file
+        btlmainSourceFile = bootloaderComponent.createFileSymbol("MAIN_BOOTLOADER_C", None)
+        btlmainSourceFile.setSourcePath("../bootloader/templates/src/optimized/main.c.ftl")
+        btlmainSourceFile.setOutputName("main.c")
+        btlmainSourceFile.setMarkup(True)
+        btlmainSourceFile.setOverwrite(False)
+        btlmainSourceFile.setDestPath("../../")
+        btlmainSourceFile.setProjectPath("")
+        btlmainSourceFile.setType("SOURCE")
 
-    btlSystemTasksFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SYS_TASK", None)
-    btlSystemTasksFile.setType("STRING")
-    btlSystemTasksFile.setOutputName("core.LIST_SYSTEM_TASKS_C_CALL_DRIVER_TASKS")
-    btlSystemTasksFile.setSourcePath("../bootloader/templates/system/tasks.c.ftl")
-    btlSystemTasksFile.setMarkup(True)
+        btlSystemTasksFile = bootloaderComponent.createFileSymbol("BOOTLOADER_SYS_TASK", None)
+        btlSystemTasksFile.setType("STRING")
+        btlSystemTasksFile.setOutputName("core.LIST_SYSTEM_TASKS_C_CALL_DRIVER_TASKS")
+        btlSystemTasksFile.setSourcePath("../bootloader/templates/system/tasks.c.ftl")
+        btlSystemTasksFile.setMarkup(True)
 
     btlSystemDefFile = bootloaderComponent.createFileSymbol("BTL_SYS_DEF_HEADER", None)
     btlSystemDefFile.setType("STRING")
@@ -236,25 +255,27 @@ def instantiateComponent(bootloaderComponent):
     if ("PIC32M" in Variables.get("__PROCESSOR")):
         generateLinkerFileSymbol(bootloaderComponent)
     else:
-        # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
-        xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
-        xc32LdPreprocessroMacroSym.setHelp("btl_helpkeyword")
-        xc32LdPreprocessroMacroSym.setCategory("C32-LD")
-        xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
-        xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
-        xc32LdPreprocessroMacroSym.setAppend(True, ";=")
-        xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
+        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+            # XC32-LD option to set values of ROM_LENGTH, RAM_ORIGIN, RAM_LENGTH from default linker files for SAM devices
+            xc32LdPreprocessroMacroSym = bootloaderComponent.createSettingSymbol("BOOTLOADER_XC32_LINKER_PREPROC_MARCOS", None)
+            xc32LdPreprocessroMacroSym.setHelp("btl_helpkeyword")
+            xc32LdPreprocessroMacroSym.setCategory("C32-LD")
+            xc32LdPreprocessroMacroSym.setKey("preprocessor-macros")
+            xc32LdPreprocessroMacroSym.setValue(getLinkerParams(0, 0))
+            xc32LdPreprocessroMacroSym.setAppend(True, ";=")
+            xc32LdPreprocessroMacroSym.setDependencies(setLinkerParams, ["BTL_SIZE", "BTL_TRIGGER_LEN"])
 
     generateCommonFiles(bootloaderComponent)
 
     setOptimizationLevel(bootloaderComponent, "-O2")
 
     nvmMemoryName = ""
-    for module in range (0, len(peripherals)):
-        periphName = str(peripherals[module].getAttribute("name"))
-        if ((any(x == periphName for x in NvmMemoryNames) == True)):
-            nvmMemoryName = periphName
-            break
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == False):
+        for module in range (0, len(peripherals)):
+            periphName = str(peripherals[module].getAttribute("name"))
+            if ((any(x == periphName for x in NvmMemoryNames) == True)):
+                nvmMemoryName = periphName
+                break
 
     otaBtlNVMMemUsed = bootloaderComponent.createStringSymbol("NVM_MEM_USED", None)
     otaBtlNVMMemUsed.setReadOnly(True)
@@ -280,10 +301,17 @@ def onAttachmentConnected(source, target):
     targetID = target["id"]
 
     if (srcID == "btl_MEMORY_dependency"):
-        flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
-        localComponent.getSymbolByID("MEM_USED").setValue(remoteID.upper())
+        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+            localComponent.setDependencyEnabled("btl_SYS_FS_dependency", False)
+            localComponent.getSymbolByID("DRIVER_USED").clearValue()
+            localComponent.getSymbolByID("DRIVER_USED").setValue(remoteID.upper())
+            localComponent.getSymbolByID("DRIVER_USED").setVisible(True)
+            localComponent.getSymbolByID("BOOTLOADER_STORAGE_SOURCE").setSourcePath("../bootloader/templates/src/mpu/bootloader_storage_ext_mem.c.ftl")
+        else:
+            flash_erase_size = int(Database.getSymbolValue(remoteID, "FLASH_ERASE_SIZE"))
+            localComponent.getSymbolByID("MEM_USED").setValue(remoteID.upper())
 
-        Database.setSymbolValue(remoteID, "INTERRUPT_ENABLE", False)
+            Database.setSymbolValue(remoteID, "INTERRUPT_ENABLE", False)
 
     elif (srcID == "btl_MEMORY_dependency_OTA"):
         localComponent.getSymbolByID("DRIVER_USED").clearValue()
@@ -313,6 +341,15 @@ def onAttachmentConnected(source, target):
         if(Database.getSymbolValue(remoteID, remoteID.upper() + "_NUM_BUFFER_DESC") != None):
             remoteComponent.getSymbolByID(remoteID.upper() + "_NUM_BUFFER_DESC").setValue((flash_erase_size/ 256))
 
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        if (srcID == "btl_SYS_FS_dependency"):
+            localComponent.setDependencyEnabled("btl_MEMORY_dependency", False)
+            localComponent.getSymbolByID("DRIVER_USED").clearValue()
+            localComponent.getSymbolByID("DRIVER_USED").setVisible(False)
+            # Deconfigure SYS_FS Component
+            remoteComponent.getSymbolByID("SYS_FS_AUTO_MOUNT").setValue(True)
+            localComponent.getSymbolByID("BOOTLOADER_STORAGE_SOURCE").setSourcePath("../bootloader/templates/src/mpu/bootloader_storage_fs.c.ftl")
+
 def onAttachmentDisconnected(source, target):
     global flash_erase_size
     global btlDualBankEnable
@@ -324,8 +361,14 @@ def onAttachmentDisconnected(source, target):
     targetID = target["id"]
 
     if (srcID == "btl_MEMORY_dependency"):
-        flash_erase_size = 0
-        localComponent.getSymbolByID("MEM_USED").clearValue()
+        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+            localComponent.setDependencyEnabled("btl_SYS_FS_dependency", True)
+            localComponent.getSymbolByID("DRIVER_USED").clearValue()
+            localComponent.getSymbolByID("DRIVER_USED").setVisible(False)
+            localComponent.getSymbolByID("BOOTLOADER_STORAGE_SOURCE").setSourcePath("../bootloader/templates/src/mpu/bootloader_storage_fs.c.ftl")
+        else:
+            flash_erase_size = 0
+            localComponent.getSymbolByID("MEM_USED").clearValue()
 
     elif (srcID == "btl_MEMORY_dependency_OTA"):
         coreComponent = Database.getComponentByID("core")
@@ -348,30 +391,41 @@ def onAttachmentDisconnected(source, target):
         localComponent.getSymbolByID("OTA_MEM_ERASE_ENABLE").clearValue()
         Database.clearSymbolValue(remoteID, remoteID.upper() + "_NUM_BUFFER_DESC")
 
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        if (srcID == "btl_SYS_FS_dependency"):
+            localComponent.setDependencyEnabled("btl_MEMORY_dependency", True)
+            localComponent.getSymbolByID("DRIVER_USED").clearValue()
+            localComponent.getSymbolByID("DRIVER_USED").setVisible(False)
+            # Deconfigure SYS_FS Component
+            remoteComponent.getSymbolByID("SYS_FS_AUTO_MOUNT").setValue(False)
+
 def finalizeComponent(bootloaderComponent):
-    global btlDualBankEnable
-
-    nvmMemoryName = ""
-
-    for module in range (0, len(peripherals)):
-        periphName = str(peripherals[module].getAttribute("name"))
-
-        if ((any(x == periphName for x in NvmMemoryNames) == True)):
-            nvmMemoryName = periphName.lower()
-            break
-
-    nvmMemoryCapabilityId = nvmMemoryName.upper() + "_MEMORY"
-
-    if (btlDualBankEnable == True) and (bootloaderComponent.getSymbolByID("BTL_DUAL_BANK").getValue() == True):
-        nvmMemoryDependencyId = "btl_MEMORY_dependency_OTA"
+    if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True):
+        activateAndConnectDependencies("ota_bootloader")
     else:
-        nvmMemoryDependencyId = "btl_MEMORY_dependency"
+        global btlDualBankEnable
 
-    btlActivateTable = [nvmMemoryName]
-    btlConnectTable  = [
-        ["ota_bootloader", nvmMemoryDependencyId, nvmMemoryName, nvmMemoryCapabilityId]
-    ]
+        nvmMemoryName = ""
 
-    res = Database.activateComponents(btlActivateTable)
-    res = Database.connectDependencies(btlConnectTable)
+        for module in range (0, len(peripherals)):
+            periphName = str(peripherals[module].getAttribute("name"))
+
+            if ((any(x == periphName for x in NvmMemoryNames) == True)):
+                nvmMemoryName = periphName.lower()
+                break
+
+        nvmMemoryCapabilityId = nvmMemoryName.upper() + "_MEMORY"
+
+        if (btlDualBankEnable == True) and (bootloaderComponent.getSymbolByID("BTL_DUAL_BANK").getValue() == True):
+            nvmMemoryDependencyId = "btl_MEMORY_dependency_OTA"
+        else:
+            nvmMemoryDependencyId = "btl_MEMORY_dependency"
+
+        btlActivateTable = [nvmMemoryName]
+        btlConnectTable  = [
+            ["ota_bootloader", nvmMemoryDependencyId, nvmMemoryName, nvmMemoryCapabilityId]
+        ]
+
+        res = Database.activateComponents(btlActivateTable)
+        res = Database.connectDependencies(btlConnectTable)
 

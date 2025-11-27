@@ -42,7 +42,8 @@ def hasPeripheral(peripheralList):
 #Define MPU Bootloader component names
 mpuBootloaderComponents = [
         {"name":"uart", "label": "UART", "dependency":["MEMORY", "SYS_FS", "UART"], "condition":"True"},
-        {"name":"can", "label": "CAN", "dependency":["MEMORY", "SYS_FS", "CAN"], "condition":"True"}
+        {"name":"can", "label": "CAN", "dependency":["MEMORY", "SYS_FS", "CAN"], "condition":"True"},
+        {"name":"ota", "label": "OTA", "dependency":["MEMORY", "SYS_FS"], "condition":"True"}
     ]
 
 #Define MCU Bootloader component names
@@ -115,7 +116,8 @@ def loadModule():
                         Component.addDependency(depIdPrefix + dep + "_dependency_SERIAL", dep, "MEMORY (SERIAL)", False, True)
 
                     if ((Name == "ota") and (dep == "MEMORY")):
-                        # Requires two Dependencies of same type (MEMORY)
-                        Component.addDependency(depIdPrefix + dep + "_dependency_OTA", dep, "MEMORY (OTA)", False, True)
+                        if (any(coreArchitecture == ATDF.getNode("/avr-tools-device-file/devices/device").getAttribute("architecture") for coreArchitecture in ["CORTEX-A5", "CORTEX-A7", "ARM926EJ-S"]) == True) == False:
+                            # Requires two Dependencies of same type (MEMORY)
+                            Component.addDependency(depIdPrefix + dep + "_dependency_OTA", dep, "MEMORY (OTA)", False, True)
 
         Component.setDisplayType("Bootloader")
