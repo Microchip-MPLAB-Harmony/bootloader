@@ -138,7 +138,7 @@ __STATIC_INLINE void  __attribute__((optimize("-O1"))) __attribute__((always_inl
 }
 </#if>
 
-void __attribute__((noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
+void __attribute__((optimize("-O1"), noinline, section(".romfunc.Reset_Handler"))) Reset_Handler(void)
 {
     register uint32_t count;
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
