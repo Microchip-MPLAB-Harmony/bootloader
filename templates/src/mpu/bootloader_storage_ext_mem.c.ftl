@@ -363,7 +363,7 @@ static bool bootloader_Storage_Write(uint32_t addr, void *buffer, size_t size)
 <#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true && DRIVER_USED == "DRV_SST26">
 static bool bootloader_Storage_Write(uint32_t memoryAddr, void *buffer, size_t size)
 <#else>
-static bool bootloader_Storage_Write(bool imageStartFlag, void *buffer, size_t size)
+bool bootloader_Storage_Write(bool imageStartFlag, void *buffer, size_t size)
 </#if>
 </#if>
 {
