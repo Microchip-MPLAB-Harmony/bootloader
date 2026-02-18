@@ -304,7 +304,7 @@ bool bootloader_Storage_Write(bool imageStartFlag, void *buffer, size_t size)
 
         if(btlData.fileHandle != SYS_FS_HANDLE_INVALID)
         {
-<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true && (DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26")>
+<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true>
             if(HEX_REC_NORMAL == bootloader_SdProgramHexRecord(buffer, size, (FILE*)btlData.fileHandle))
 <#else>
             if (SYS_FS_FileWrite(btlData.fileHandle, buffer, size) != 0xFFFFFFFFU)

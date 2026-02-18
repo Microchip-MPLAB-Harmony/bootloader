@@ -333,7 +333,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 <#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true && (DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26")>
             /* Following MISRA-C rules are deviated in the below code block */
             /* MISRA C-2012 Rule 11.6 */
-           bootloader_Storage_Erase();
+            bootloader_Storage_Erase();
             /* MISRAC 2012 deviation block end */
 </#if>
 <#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
