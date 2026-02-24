@@ -132,14 +132,14 @@ static bool     uartBLActive        = false;
 </#if>
 </#if>
 /* Following MISRA-C rules are deviated in the below code block */
-/* MISRA C-2012 Rule 8.2 */
-/* MISRA C-2012 Rule 11.1 */
-/* MISRA C-2012 Rule 17.7 */
+/* MISRA C-2023 Rule 8.2 */
+/* MISRA C-2023 Rule 11.1 */
+/* MISRA C-2023 Rule 17.7 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 #ifdef __COVERITY__
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 8.2"  "H3_MISRAC_2012_R_8_2_DR_1"
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1"
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 17.7" "H3_MISRAC_2012_R_17_7_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 8.2"  "H3_MISRAC_2023_R_8_2_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 11.1" "H3_MISRAC_2023_R_11_1_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 17.7" "H3_MISRAC_2023_R_17_7_DR_1"
 #endif
 </#if>
 
@@ -644,12 +644,12 @@ void bootloader_${BTL_TYPE}_Tasks(void)
 }
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 #ifdef __COVERITY__
-#pragma coverity compliance end_block "MISRA C-2012 Rule 17.7"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 8.2"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 17.7"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.1"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 8.2"
 #endif
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */

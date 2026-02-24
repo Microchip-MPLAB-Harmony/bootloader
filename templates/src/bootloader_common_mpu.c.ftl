@@ -75,16 +75,16 @@
 // *****************************************************************************
 // *****************************************************************************
 
-/* MISRA C-2012 Rule 8.6 and 5.8 deviated below. Deviation record ID -
-   H3_MISRAC_2012_R_8_6_DR_1, H3_MISRAC_2012_R_5_8_DR_1 */
+/* MISRA C-2023 Rule 8.6 and 5.8 deviated below. Deviation record ID -
+   H3_MISRAC_2023_R_8_6_DR_1, H3_MISRAC_2023_R_5_8_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
-(deviate "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1" )\
-(deviate "MISRA C-2012 Rule 5.8" "H3_MISRAC_2012_R_5_8_DR_1" )
+(deviate "MISRA C-2023 Rule 8.6" "H3_MISRAC_2023_R_8_6_DR_1" )\
+(deviate "MISRA C-2023 Rule 5.8" "H3_MISRAC_2023_R_5_8_DR_1" )
 </#if>
 bool __WEAK bootloader_Trigger(void)
 {
@@ -105,25 +105,25 @@ uint16_t __WEAK bootloader_GetVersion( void )
     return btlVersion;
 }
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 5.8"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 8.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 5.8"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 8.6"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
 
-/* MISRA C-2012 Rule 10.1, 10.4, 11.1, 11.6 deviated below. Deviation record ID -
-   H3_MISRAC_2012_R_10_1_DR_1, H3_MISRAC_2012_R_10_4_DR_1, H3_MISRAC_2012_R_11_1_DR_1 & H3_MISRAC_2012_R_11_6_DR_1 */
+/* MISRA C-2023 Rule 10.1, 10.4, 11.1, 11.6 deviated below. Deviation record ID -
+   H3_MISRAC_2023_R_10_1_DR_1, H3_MISRAC_2023_R_10_4_DR_1, H3_MISRAC_2023_R_11_1_DR_1 & H3_MISRAC_2023_R_11_6_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
-(deviate:2 "MISRA C-2012 Rule 10.1" "H3_MISRAC_2012_R_10_1_DR_1" )\
-(deviate:2 "MISRA C-2012 Rule 10.4" "H3_MISRAC_2012_R_10_4_DR_1" )\
-(deviate:2 "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1" )\
-(deviate:2 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1" )
+(deviate:2 "MISRA C-2023 Rule 10.1" "H3_MISRAC_2023_R_10_1_DR_1" )\
+(deviate:2 "MISRA C-2023 Rule 10.4" "H3_MISRAC_2023_R_10_4_DR_1" )\
+(deviate:2 "MISRA C-2023 Rule 11.1" "H3_MISRAC_2023_R_11_1_DR_1" )\
+(deviate:2 "MISRA C-2023 Rule 11.6" "H3_MISRAC_2023_R_11_6_DR_1" )
 </#if>
 
 /* Function to Generate CRC by reading the firmware programmed from external media memory */
@@ -196,12 +196,12 @@ void run_Application(uint32_t address)
 }
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 10.1"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 10.4"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 10.1"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 10.4"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.1"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.6"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */

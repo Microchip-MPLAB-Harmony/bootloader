@@ -201,16 +201,16 @@ static uint32_t bootloader_CalculateCrc(uint8_t *data, uint32_t len)
     return ((uint32_t)crc & 0xFFFFU);
 }
 
-/* MISRA C-2012 Rule 16.1, 16.3 deviated below. Deviation record ID -
-   H3_MISRAC_2012_R_16_1_DR_1 & H3_MISRAC_2012_R_16_3_DR_1*/
+/* MISRA C-2023 Rule 16.1, 16.3 deviated below. Deviation record ID -
+   H3_MISRAC_2023_R_16_1_DR_1 & H3_MISRAC_2023_R_16_3_DR_1*/
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
-(deviate:1 "MISRA C-2012 Rule 16.1" "H3_MISRAC_2012_R_16_1_DR_1" )\
-(deviate:1 "MISRA C-2012 Rule 16.3" "H3_MISRAC_2012_R_16_3_DR_1" )
+(deviate:1 "MISRA C-2023 Rule 16.1" "H3_MISRAC_2023_R_16_1_DR_1" )\
+(deviate:1 "MISRA C-2023 Rule 16.3" "H3_MISRAC_2023_R_16_3_DR_1" )
 </#if>
 
 static void bootloader_BufferEventHandler
@@ -284,13 +284,13 @@ static void bootloader_BufferEventHandler
     (void) DATASTREAM_Data_Read(btlData.streamHandle, dataBuff.buffers.inputBuff, btlData.buffSize);
 }
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 16.1"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 16.3"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 16.1"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 16.3"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */
 
 static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 {
@@ -332,29 +332,29 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
         {
 <#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true && (DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26")>
             /* Following MISRA-C rules are deviated in the below code block */
-            /* MISRA C-2012 Rule 11.6 */
+            /* MISRA C-2023 Rule 11.6 */
             bootloader_Storage_Erase();
-            /* MISRAC 2012 deviation block end */
+            /* MISRAC 2023 deviation block end */
 </#if>
 <#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
 <#if core.CoreSeries?contains("PIC32CZCA") == false>
             /* Following MISRA-C rules are deviated in the below code block */
-            /* MISRA C-2012 Rule 11.6 */
+            /* MISRA C-2023 Rule 11.6 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 11.6"  "H3_MISRAC_2012_R_11_6_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 11.6"  "H3_MISRAC_2023_R_11_6_DR_1"
 </#if>
             bootloader_NvmAppErase(APP_START_ADDRESS, FLASH_END_ADDRESS);
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.6"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-            /* MISRAC 2012 deviation block end */
+            /* MISRAC 2023 deviation block end */
 </#if>
 <#else>
             imageStartFlag = true;

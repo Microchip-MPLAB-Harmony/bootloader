@@ -37,15 +37,15 @@
 </#if>
 </#if>
 
-/* MISRAC 2012 deviation block start */
-/* MISRA C-2012 Rule 21.2 deviated 1 times. Deviation record ID -  H3_MISRAC_2012_R_21_2_DR_1 */
-/* MISRA C-2012 Rule 8.6 deviated 8 times.  Deviation record ID -  H3_MISRAC_2012_R_8_6_DR_1 */
+/* MISRAC 2023 deviation block start */
+/* MISRA C-2023 Rule 21.2 deviated 1 times. Deviation record ID -  H3_MISRAC_2023_R_21_2_DR_1 */
+/* MISRA C-2023 Rule 8.6 deviated 8 times.  Deviation record ID -  H3_MISRAC_2023_R_8_6_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma coverity compliance block \
-(deviate:1 "MISRA C-2012 Rule 21.2" "H3_MISRAC_2012_R_21_2_DR_1")\
-(deviate:8 "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1")
+(deviate:1 "MISRA C-2023 Rule 21.2" "H3_MISRAC_2023_R_21_2_DR_1")\
+(deviate:8 "MISRA C-2023 Rule 8.6" "H3_MISRAC_2023_R_8_6_DR_1")
 </#if>
 /* Initialize segments */
 extern uint32_t _sfixed;
@@ -84,11 +84,11 @@ extern uint32_t _sbss, _ebss;
     <#lt>extern uint32_t _vectors_loadaddr;
 </#if>
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 8.6"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 21.2"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 8.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 21.2"
 #pragma GCC diagnostic pop
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */
 
 <#if core.RAM_INIT?? && ((core.DeviceFamily == "PIC32CM_JH00_JH01") || (core.DeviceFamily == "PIC32CM_GC_SG"))>
 __STATIC_INLINE void  __attribute__((optimize("-O1"))) __attribute__((always_inline)) RAM_Initialize(void)
@@ -142,13 +142,13 @@ void __attribute__((optimize("-O1"), noinline, section(".romfunc.Reset_Handler")
 {
     register uint32_t count;
 <#if core.RAM_INIT?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
-/* MISRAC 2012 deviation block start */
-/* MISRA C-2012 Rule 18.1 deviated 1 times. Deviation record ID -  H3_MISRAC_2012_R_18_1_DR_1 */
+/* MISRAC 2023 deviation block start */
+/* MISRA C-2023 Rule 18.1 deviated 1 times. Deviation record ID -  H3_MISRAC_2023_R_18_1_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma coverity compliance block \
-(deviate:1 "MISRA C-2012 Rule 18.1" "H3_MISRAC_2012_R_18_1_DR_1")
+(deviate:1 "MISRA C-2023 Rule 18.1" "H3_MISRAC_2023_R_18_1_DR_1")
 </#if>
     register uint64_t *pFlexRam = (uint64_t*)(uintptr_t)&_sdata;
 
@@ -162,10 +162,10 @@ void __attribute__((optimize("-O1"), noinline, section(".romfunc.Reset_Handler")
     __DSB();
     __ISB();
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 18.1"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 18.1"
 #pragma GCC diagnostic pop
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */
 </#if>
 
     uint32_t *pSrc, *pDst;

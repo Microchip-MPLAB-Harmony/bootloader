@@ -77,16 +77,16 @@
 // *****************************************************************************
 // *****************************************************************************
 
-/* MISRA C-2012 Rule 8.6 and 5.8 deviated below. Deviation record ID -
-   H3_MISRAC_2012_R_8_6_DR_1, H3_MISRAC_2012_R_5_8_DR_1 */
+/* MISRA C-2023 Rule 8.6 and 5.8 deviated below. Deviation record ID -
+   H3_MISRAC_2023_R_8_6_DR_1, H3_MISRAC_2023_R_5_8_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
-(deviate "MISRA C-2012 Rule 8.6" "H3_MISRAC_2012_R_8_6_DR_1" )\
-(deviate "MISRA C-2012 Rule 5.8" "H3_MISRAC_2012_R_5_8_DR_1" )
+(deviate "MISRA C-2023 Rule 8.6" "H3_MISRAC_2023_R_8_6_DR_1" )\
+(deviate "MISRA C-2023 Rule 5.8" "H3_MISRAC_2023_R_5_8_DR_1" )
 </#if>
 <#if (BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == false) ||
      (!BTL_LIVE_UPDATE??) >
@@ -110,8 +110,8 @@ uint16_t __WEAK bootloader_GetVersion( void )
     return btlVersion;
 }
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 5.8"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 8.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 5.8"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 8.6"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
@@ -161,18 +161,18 @@ uint16_t __WEAK bootloader_GetVersion( void )
     </#if>
 </#if>
 
-/* MISRA C-2012 Rule 10.1, 10.4, 11.1, 11.6 deviated below. Deviation record ID -
-   H3_MISRAC_2012_R_10_1_DR_1, H3_MISRAC_2012_R_10_4_DR_1, H3_MISRAC_2012_R_11_1_DR_1 & H3_MISRAC_2012_R_11_6_DR_1 */
+/* MISRA C-2023 Rule 10.1, 10.4, 11.1, 11.6 deviated below. Deviation record ID -
+   H3_MISRAC_2023_R_10_1_DR_1, H3_MISRAC_2023_R_10_4_DR_1, H3_MISRAC_2023_R_11_1_DR_1 & H3_MISRAC_2023_R_11_6_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
-(deviate:2 "MISRA C-2012 Rule 10.1" "H3_MISRAC_2012_R_10_1_DR_1" )\
-(deviate:2 "MISRA C-2012 Rule 10.4" "H3_MISRAC_2012_R_10_4_DR_1" )\
-(deviate:2 "MISRA C-2012 Rule 11.1" "H3_MISRAC_2012_R_11_1_DR_1" )\
-(deviate:2 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1" )
+(deviate:2 "MISRA C-2023 Rule 10.1" "H3_MISRAC_2023_R_10_1_DR_1" )\
+(deviate:2 "MISRA C-2023 Rule 10.4" "H3_MISRAC_2023_R_10_4_DR_1" )\
+(deviate:2 "MISRA C-2023 Rule 11.1" "H3_MISRAC_2023_R_11_1_DR_1" )\
+(deviate:2 "MISRA C-2023 Rule 11.6" "H3_MISRAC_2023_R_11_6_DR_1" )
 </#if>
 
 
@@ -337,7 +337,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     </#if>
 </#if>
 
-<#if (core.CoreArchitecture == "MIPS") || (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
+<#if (core.CoreArchitecture == "MIPS") || (core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
       (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
     <#lt>static T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
@@ -350,7 +350,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     <#lt>    return (lower_flash_serial->serial);
     <#lt>}
 
-<#if core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
+<#if core.DeviceFamily?? && core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
     <#lt>/* Function to update the serial number based on address */
     <#lt>void bootloader_UpdateFlashSerial(uint32_t serial, uint32_t addr)
     <#lt>{
@@ -437,7 +437,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
         <#lt>/* Function to swap the banks.
         <#lt> * This function has to be removed once NVM PLIB has the support
         <#lt> */
-<#if core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
+<#if core.DeviceFamily?? && core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
         <#lt>static void bootloader_ProgramFlashSwapBank( T_FLASH_BANK flash_bank )
         <#lt>{
         <#lt>    /* NVMOP can be written only when WREN is zero. So, clear WREN */
@@ -540,7 +540,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
 <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
     <#lt>void bootloader_SwapAndReset( void )
     <#lt>{
-        <#if core.CoreArchitecture == "MIPS" || core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+        <#if core.CoreArchitecture == "MIPS" || (core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91")>
             <#lt>    /* Update Serial number of Inactive bank */
             <#lt>    bootloader_UpdateUpperFlashSerial();
 
@@ -561,12 +561,12 @@ uint16_t __WEAK bootloader_GetVersion( void )
 </#if>
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 10.1"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 10.4"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.1"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 10.1"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 10.4"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.1"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.6"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */

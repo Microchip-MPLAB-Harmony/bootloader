@@ -167,9 +167,9 @@ static uint32_t ctrlBlkSize = OTA_CONTROL_BLOCK_BUFFER_SIZE;
     </#if>
 </#if>
 /* Following MISRA-C rules are deviated in the below code block */
-/* MISRA C-2012 Rule 7.2 */
+/* MISRA C-2023 Rule 7.2 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 7.2"  "H3_MISRAC_2012_R_7_2_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 7.2"  "H3_MISRAC_2023_R_7_2_DR_1"
 </#if>
 static BTL_DATA btlData =
 {
@@ -182,9 +182,9 @@ static BTL_DATA btlData =
     .controlBlock       = (OTA_CONTROL_BLOCK *)controlBlockBuffer,
 };
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 7.2"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 7.2"
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */
 
 // *****************************************************************************
 // *****************************************************************************
@@ -410,9 +410,9 @@ static void bootloader_${BTL_TYPE}_ProgramFlashSwapBank(T_FLASH_BANK flash_bank)
     }
 }
 /* Following MISRA-C rules are deviated in the below code block */
-/* MISRA C-2012 Rule 11.6 */
+/* MISRA C-2023 Rule 11.6 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance block deviate "MISRA C-2012 Rule 11.6"  "H3_MISRAC_2012_R_11_6_DR_1"
+#pragma coverity compliance block deviate "MISRA C-2023 Rule 11.6"  "H3_MISRAC_2023_R_11_6_DR_1"
 </#if>
 static uint32_t bootloader_${BTL_TYPE}_FlashSerialGet(T_FLASH_BANK flash_bank)
 {
@@ -437,9 +437,9 @@ static uint32_t bootloader_${BTL_TYPE}_FlashSerialGet(T_FLASH_BANK flash_bank)
     return serialNum;
 }
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.6"
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */
 </#if>
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
     <#if core.COMPILER_CHOICE == "XC32">

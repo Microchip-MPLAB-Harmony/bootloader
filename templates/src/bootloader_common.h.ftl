@@ -113,7 +113,7 @@
 </#if>
 
 <#if (core.CoreArchitecture == "MIPS") ||
-     (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
+     (core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
      (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
 
@@ -129,7 +129,7 @@
     <#lt>#define FLASH_SERIAL_EPILOGUE                   0xBEEFDEADU
     <#lt>#define FLASH_SERIAL_CLEAR                      0xFFFFFFFFU
 
-<#if core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
+<#if core.DeviceFamily?? && core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
     <#lt>#define LOWER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(LOWER_FLASH_SERIAL_START))
     <#lt>#define UPPER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(UPPER_FLASH_SERIAL_START))
 
@@ -170,15 +170,15 @@
 </#if>
 
 // *****************************************************************************
-/* MISRA C-2012 Rule 5.8 deviated below. Deviation record ID -
-   H3_MISRAC_2012_R_5_8_DR_1 */
+/* MISRA C-2023 Rule 5.8 deviated below. Deviation record ID -
+   H3_MISRAC_2023_R_5_8_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
-(deviate "MISRA C-2012 Rule 5.8" "H3_MISRAC_2012_R_5_8_DR_1" )
+(deviate "MISRA C-2023 Rule 5.8" "H3_MISRAC_2023_R_5_8_DR_1" )
 </#if>
 
 void SYS_DeInitialize( void *data );
@@ -335,7 +335,7 @@ uint16_t bootloader_GetVersion( void );
     <#lt>void run_Application( uint32_t address );
 </#if>
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 5.8"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 5.8"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>

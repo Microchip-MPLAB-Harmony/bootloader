@@ -84,10 +84,10 @@ typedef struct {
 </#if>
 </#if>
 <#if __PROCESSOR?matches("PIC32M.*") == true>
-/* MISRA C-2012 Rule 7.2 deviated:2, Rule 11.6 deviated:8  Deviation record ID -  H3_MISRAC_2012_R_7_2_DR_1 & H3_MISRAC_2012_R_11_6_DR_1 */
+/* MISRA C-2023 Rule 7.2 deviated:2, Rule 11.6 deviated:8  Deviation record ID -  H3_MISRAC_2023_R_7_2_DR_1 & H3_MISRAC_2023_R_11_6_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance block deviate:8 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1"
-#pragma coverity compliance block deviate:2 "MISRA C-2012 Rule 7.2" "H3_MISRAC_2012_R_7_2_DR_1"
+#pragma coverity compliance block deviate:8 "MISRA C-2023 Rule 11.6" "H3_MISRAC_2023_R_11_6_DR_1"
+#pragma coverity compliance block deviate:2 "MISRA C-2023 Rule 7.2" "H3_MISRAC_2023_R_7_2_DR_1"
 </#if>
 </#if>
 static T_NVM_DATA CACHE_ALIGN nvm_data =
@@ -97,7 +97,7 @@ static T_NVM_DATA CACHE_ALIGN nvm_data =
 };
 <#if __PROCESSOR?matches("PIC32M.*") == true>
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 7.2"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 7.2"
 </#if>
 </#if>
 
@@ -374,9 +374,9 @@ HEX_RECORD_STATUS bootloader_NvmProgramHexRecord(uint8_t* HexRecord, uint32_t to
 }
 <#if __PROCESSOR?matches("PIC32M.*") == true>
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.6"
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */
 </#if>
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">

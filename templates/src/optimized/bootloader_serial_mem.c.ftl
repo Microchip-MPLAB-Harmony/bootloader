@@ -209,13 +209,13 @@ typedef struct
 static APP_META_DATA CACHE_ALIGN appMetaData;
 
 <#if __PROCESSOR?matches("PIC32M.*") == true>
-/* MISRA C-2012 Rule 7.2 deviated:4 Deviation record ID -  H3_MISRAC_2012_R_7_2_DR_1 */
+/* MISRA C-2023 Rule 7.2 deviated:4 Deviation record ID -  H3_MISRAC_2023_R_7_2_DR_1 */
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
-#pragma coverity compliance block deviate:3 "MISRA C-2012 Rule 7.2" "H3_MISRAC_2012_R_7_2_DR_1"    
+#pragma coverity compliance block deviate:3 "MISRA C-2023 Rule 7.2" "H3_MISRAC_2023_R_7_2_DR_1"    
 </#if>
 </#if>
 static BOOTLOADER_DATA CACHE_ALIGN btlData =
@@ -231,12 +231,12 @@ static BOOTLOADER_DATA CACHE_ALIGN btlData =
 };
 <#if __PROCESSOR?matches("PIC32M.*") == true>
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 7.2"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 7.2"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>    
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */
 </#if>
 
 <#if .vars["${DRIVER_USED?lower_case}"].EEPROM_PAGE_SIZE??>
@@ -273,16 +273,16 @@ static bool BOOTLOADER_WaitForXferComplete( void )
     return status;
 }
 
-/* MISRA C-2012 Rule 11.3, 11.6 deviated below. Deviation record ID -  
-   H3_MISRAC_2012_R_11_3_DR_1 & H3_MISRAC_2012_R_11_6_DR_1*/
+/* MISRA C-2023 Rule 11.3, 11.6 deviated below. Deviation record ID -  
+   H3_MISRAC_2023_R_11_3_DR_1 & H3_MISRAC_2023_R_11_6_DR_1*/
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 </#if>
 #pragma coverity compliance block \
-(deviate:4 "MISRA C-2012 Rule 11.3" "H3_MISRAC_2012_R_11_3_DR_1" )\
-(deviate:6 "MISRA C-2012 Rule 11.6" "H3_MISRAC_2012_R_11_6_DR_1" )   
+(deviate:4 "MISRA C-2023 Rule 11.3" "H3_MISRAC_2023_R_11_3_DR_1" )\
+(deviate:6 "MISRA C-2023 Rule 11.6" "H3_MISRAC_2023_R_11_6_DR_1" )   
 </#if>
 
 static bool BOOTLOADER_GetMetaData( void )
@@ -597,10 +597,10 @@ void bootloader_${BTL_TYPE}_Tasks ( void )
 }
 
 <#if core.COVERITY_SUPPRESS_DEVIATION?? && core.COVERITY_SUPPRESS_DEVIATION>
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.3"
-#pragma coverity compliance end_block "MISRA C-2012 Rule 11.6"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.3"
+#pragma coverity compliance end_block "MISRA C-2023 Rule 11.6"
 <#if core.COMPILER_CHOICE == "XC32">
 #pragma GCC diagnostic pop
 </#if>    
 </#if>
-/* MISRAC 2012 deviation block end */
+/* MISRAC 2023 deviation block end */
