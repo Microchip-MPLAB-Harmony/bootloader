@@ -112,8 +112,8 @@
     </#if>
 </#if>
 
-<#if (core.CoreArchitecture == "MIPS") ||
-     (core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
+<#if ((core.CoreArchitecture == "MIPS") ||
+     (core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91")) &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
      (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
 
@@ -415,8 +415,8 @@ Example:
 */
 void bootloader_TriggerReset(void);
 
-<#if (core.CoreArchitecture == "MIPS") ||
-	 (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
+<#if ((core.CoreArchitecture == "MIPS") ||
+	 (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91")) &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
       (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
     <#lt>/* Function to read the Serial number from Flash bank mapped to lower region */
@@ -438,7 +438,7 @@ void bootloader_TriggerReset(void);
 /* Function to refresh watchdog timer */
 void kickdog(void);
 </#if>
-<#if (core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
+<#if ( core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
       (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
     <#lt>void bootloader_ProgramFlashBankSelect( void );

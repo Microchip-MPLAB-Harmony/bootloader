@@ -337,7 +337,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
     </#if>
 </#if>
 
-<#if (core.CoreArchitecture == "MIPS") || (core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91") &&
+<#if ((core.CoreArchitecture == "MIPS") || (core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91")) &&
      ((BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true) ||
       (BTL_DUAL_BANK?? && BTL_DUAL_BANK == true)) >
     <#lt>static T_FLASH_SERIAL CACHE_ALIGN  update_flash_serial;
