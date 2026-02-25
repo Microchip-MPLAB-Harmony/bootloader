@@ -159,7 +159,7 @@ void SYS_Initialize ( void* data )
         <#lt>   SEFC0_Initialize();
         <#lt>   SEFC1_Initialize();
     <#else>
-        <#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
+        <#if (BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true) == false>
         <#lt>    ${MEM_USED}_Initialize();
         </#if>
     </#if>

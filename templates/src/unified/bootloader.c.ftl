@@ -47,7 +47,7 @@
 #include "device.h"
 #include "bootloader/bootloader_${BTL_TYPE?lower_case}.h"
 #include "bootloader/datastream/datastream.h"
-<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
+<#if (BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true) == false>
 #include "bootloader/bootloader_nvm_interface.h"
 <#else>
 #include "bootloader_storage.h"
@@ -70,7 +70,7 @@ typedef enum
 
 typedef enum
 {
-<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
+<#if (BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true) == false>
     /* If we need to program, then open the datastream. */
     BOOTLOADER_OPEN_DATASTREAM = 0,
 
@@ -161,7 +161,7 @@ static BOOTLOADER_BUFFER CACHE_ALIGN dataBuff;
 
 static BOOTLOADER_DATA btlData =
 {
-<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
+<#if (BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true) == false>
     .currentState = BOOTLOADER_OPEN_DATASTREAM,
 <#else>
 <#if DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26">
@@ -336,7 +336,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
             bootloader_Storage_Erase();
             /* MISRAC 2023 deviation block end */
 </#if>
-<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
+<#if (BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true) == false>
 <#if core.CoreSeries?contains("PIC32CZCA") == false>
             /* Following MISRA-C rules are deviated in the below code block */
             /* MISRA C-2023 Rule 11.6 */
@@ -366,7 +366,7 @@ static void bootloader_ProcessBuffer( BOOTLOADER_DATA *handle )
 
         case (uint8_t)PROGRAM_FLASH:
         {
-<#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == false>
+<#if (BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true) == false>
             if(bootloader_NvmProgramHexRecord(&dataBuff.buffers.procBuff[1], handle->cmdBuffLen-3U) != HEX_REC_NORMAL)
 <#else>
 <#if DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26">
