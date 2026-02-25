@@ -129,7 +129,10 @@
     <#lt>#define FLASH_SERIAL_EPILOGUE                   0xBEEFDEADU
     <#lt>#define FLASH_SERIAL_CLEAR                      0xFFFFFFFFU
 
-<#if core.DeviceFamily?? && core.DeviceFamily != "PIC32CZ_CA80_CA90_CA91">
+<#if core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91">
+    <#lt>#define LOWER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)LOWER_FLASH_SERIAL_START)
+    <#lt>#define UPPER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)UPPER_FLASH_SERIAL_START)
+<#else>
     <#lt>#define LOWER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(LOWER_FLASH_SERIAL_START))
     <#lt>#define UPPER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)KVA0_TO_KVA1(UPPER_FLASH_SERIAL_START))
 
@@ -138,9 +141,6 @@
     <#lt>    PROGRAM_FLASH_BANK_1,
     <#lt>    PROGRAM_FLASH_BANK_2,
     <#lt>} T_FLASH_BANK;
-<#else>
-    <#lt>#define LOWER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)LOWER_FLASH_SERIAL_START)
-    <#lt>#define UPPER_FLASH_SERIAL_READ                 ((T_FLASH_SERIAL *)UPPER_FLASH_SERIAL_START)
 </#if>
 	
     <#lt>/* Structure to validate the Flash serial and its checksum
