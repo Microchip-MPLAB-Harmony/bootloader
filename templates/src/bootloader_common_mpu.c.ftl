@@ -161,7 +161,7 @@ uint32_t bootloader_CRCGenerate(uint8_t *start_addr, uint32_t size, uint32_t crc
 }
 
 /* Trigger a reset */
-void __NO_RETURN bootloader_TriggerReset(void)
+void bootloader_TriggerReset(void)
 {
     /* Issue reset command */
     RSTC_REGS->RSTC_CR = RSTC_CR_KEY_PASSWD | RSTC_CR_PROCRST_Msk;
