@@ -72,12 +72,15 @@ def getLinkerParams(btlLength, triggerLength):
     rom_length  = "ROM_LENGTH=" + romLen
     ram_origin  = "RAM_ORIGIN=" + ramStart
     ram_length  = "RAM_LENGTH=" + ramLen
+    
+    cortex_m7 = Database.getSymbolValue("core", "CoreArchitecture") == "CORTEX-M7"
+    live_update = Database.getSymbolValue("udp_bootloader", "BTL_LIVE_UPDATE")
 
-    if place_btl_in_bfm == True:
-        rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN + 1024\""
-        return (rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length)
+    if place_btl_in_bfm and not (cortex_m7 and live_update):
+        rom_origin = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN + 1024\""
+        return rom_origin + ";" + rom_length + ";" + ram_origin + ";" + ram_length
     else:
-        return (rom_length + ";" + ram_origin + ";" + ram_length)
+        return rom_length + ";" + ram_origin + ";" + ram_length
 
 def setLinkerParams(symbol, event):
     component = symbol.getComponent()

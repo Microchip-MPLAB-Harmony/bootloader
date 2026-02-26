@@ -84,8 +84,11 @@ def getLinkerParams(btlLength, triggerLength):
         rom_length  = "ROM_LENGTH=" + romLen
         ram_origin  = "RAM_ORIGIN=" + ramStart
         ram_length  = "RAM_LENGTH=" + ramLen
-
-        if place_btl_in_bfm:
+        
+        cortex_m7 = Database.getSymbolValue("core", "CoreArchitecture") == "CORTEX-M7"
+        live_update = Database.getSymbolValue("udp_bootloader", "BTL_LIVE_UPDATE")
+        
+        if place_btl_in_bfm and not (cortex_m7 and live_update):
             if (Database.getSymbolValue("core", "CoreArchitecture") == "CORTEX-M23"):
                 rom_origin  = "ROM_ORIGIN=\"BOOT_ROM_ORIGIN\""
                 return (rom_length + ";" + ram_origin + ";" + ram_length)

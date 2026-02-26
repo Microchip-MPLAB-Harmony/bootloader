@@ -538,7 +538,7 @@ uint16_t __WEAK bootloader_GetVersion( void )
 </#if>
 
 <#if BTL_LIVE_UPDATE?? && BTL_LIVE_UPDATE == true >
-    <#lt>void bootloader_SwapAndReset( void )
+    <#lt>void __NO_RETURN bootloader_SwapAndReset( void )
     <#lt>{
         <#if core.CoreArchitecture == "MIPS" || (core.DeviceFamily?? && core.DeviceFamily == "PIC32CZ_CA80_CA90_CA91")>
             <#lt>    /* Update Serial number of Inactive bank */

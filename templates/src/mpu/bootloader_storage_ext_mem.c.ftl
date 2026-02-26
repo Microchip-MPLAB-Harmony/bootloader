@@ -199,7 +199,7 @@ void bootloader_ImageSizeSet(uint32_t size)
 }
 
 <#if OTA_BOOTLOADER_ENABLE?? && OTA_BOOTLOADER_ENABLE == true>
-bool OTA_SERVICE_FH_CtrlBlkRead(OTA_CONTROL_BLOCK *controlBlock, uint32_t length)
+static bool OTA_SERVICE_FH_CtrlBlkRead(OTA_CONTROL_BLOCK *controlBlock1, uint32_t length)
 {
     uint32_t count;
 <#if DRIVER_USED == "DRV_NAND_FLASH">
@@ -208,7 +208,7 @@ bool OTA_SERVICE_FH_CtrlBlkRead(OTA_CONTROL_BLOCK *controlBlock, uint32_t length
 </#if>
     uint32_t appMetaDataAddress;
     bool     status = false;
-    uint8_t  *ptrBuffer = (uint8_t *)controlBlock;
+    uint8_t  *ptrBuffer = (uint8_t *)controlBlock1;
 
     if ((ptrBuffer != NULL) && (length == ctrlBlkSize))
     {
