@@ -144,9 +144,9 @@ static bool     uartBLActive        = false;
 </#if>
 
 <#if .vars["${MEM_USED?lower_case}"].USES_DRV_API?? && .vars["${MEM_USED?lower_case}"].USES_DRV_API == true>
-typedef bool (*FLASH_ERASE_FPTR)(const DRV_HANDLE, uint32_t);
+typedef bool (*FLASH_ERASE_FPTR)(const DRV_HANDLE handle, uint32_t address);
 
-typedef bool (*FLASH_WRITE_FPTR)(const DRV_HANDLE, uint32_t*, uint32_t);
+typedef bool (*FLASH_WRITE_FPTR)(const DRV_HANDLE handle, uint32_t* data, uint32_t address);
 
 /* Memory Driver Handle */
 static DRV_HANDLE memoryHandle = DRV_HANDLE_INVALID;
