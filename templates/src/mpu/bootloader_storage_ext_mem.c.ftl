@@ -66,7 +66,7 @@ static OTA_CONTROL_BLOCK *controlBlock = (OTA_CONTROL_BLOCK *)controlBlockBuffer
 </#if>
 
 <#if BTL_MPU_USB_DEVICE_PRESENT?? && BTL_MPU_USB_DEVICE_PRESENT == true && (DRIVER_USED == "DRV_NAND_FLASH" || DRIVER_USED == "DRV_SST26")>
-#define APP_PARTITION_SIZE                      (0x100000) /* (1024 * 1024) */
+#define APP_PARTITION_SIZE                      (0x100000U) /* (1024 * 1024) */
 
 // Magic value used to validate the metadata content "BOOT"
 #define METADATA_MAGIC_VALUE    0x424F4F54u
@@ -547,7 +547,7 @@ bool bootloader_Storage_Erase(void)
 
     for (uint32_t blk = first_block; blk <= last_block; ++blk) {
 
-        ok = DRV_NAND_FLASH_SkipBlock_BlockErase(btlData.handle, blk, false);
+        ok = DRV_NAND_FLASH_SkipBlock_BlockErase(btlData.handle, (uint16_t)blk, false);
         if (!ok) {
             return false;
         }
@@ -557,7 +557,7 @@ bool bootloader_Storage_Erase(void)
     start = (uint32_t)btlData.extMemoryMetaDataAddr;
     first_block = (uint32_t)(start / bs);
     
-    ok = DRV_NAND_FLASH_SkipBlock_BlockErase(btlData.handle, first_block, false);
+    ok = DRV_NAND_FLASH_SkipBlock_BlockErase(btlData.handle, (uint16_t)first_block, false);
     if (!ok) {
         return false;
     }
@@ -586,7 +586,7 @@ static void flush_page_if_dirty(uint32_t image_base_abs,
                                 uint8_t  *page_valid,
                                 uint8_t  *page_dirty)
 {
-    if (*page_valid && *page_dirty)
+    if ((*page_valid != 0U) && (*page_dirty != 0U))
     {
         const uint32_t addr = image_base_abs + *cur_page_base_off;
 
@@ -624,7 +624,7 @@ HEX_RECORD_STATUS bootloader_Storage_ProgramHexRecord(uint8_t *HexBuf, size_t to
 
     const uint32_t image_base_abs = btlData.extMemoryImageAddr;
 
-    if (!s_inited) {
+    if (s_inited == 0U) {
         
         s_inited            = 1u;
         extLinAddr          = 0;
@@ -683,12 +683,12 @@ HEX_RECORD_STATUS bootloader_Storage_ProgramHexRecord(uint8_t *HexBuf, size_t to
                 uint32_t can                 = (uint32_t)remaining;
 
                 /* Compute NAND offset inside slot; this is what we should gate on */
-                uint32_t off = (seg_start_abs - image_base_abs) & 0xffff;   /* unsigned wrap-safe */
+                uint32_t off = (uint32_t)(seg_start_abs - image_base_abs) & 0xFFFFU;   /* unsigned wrap-safe */
 
                 /* If below slot, skip forward until we reach slot start */
                 if (seg_start_abs < image_base_abs) {
                     uint32_t skip = image_base_abs - seg_start_abs;
-                    if (skip > can) skip = can;
+                    if (skip > can) { skip = can; }
                     abs       += skip;
                     idx       += skip;
                     remaining -= skip;
@@ -704,14 +704,14 @@ HEX_RECORD_STATUS bootloader_Storage_ProgramHexRecord(uint8_t *HexBuf, size_t to
                 /* Limit so we don?t cross slot end */
                 uint32_t room = APP_PARTITION_SIZE - off;
                 if (can > room)
-                    can = room;
+                    {can = room;}
 
                 /* Paging in OFFSET space */
-                const uint32_t page_base_off = off & ~(uint32_t)(PAGE_SIZE - 1u);
-                const uint32_t in_page_off   = off &  (uint32_t)(PAGE_SIZE - 1u);
+                const uint32_t page_base_off = off & ~((uint32_t)PAGE_SIZE - 1U);
+                const uint32_t in_page_off = off & ((uint32_t)PAGE_SIZE - 1U);
 
                 /* New page? ? flush previous first */
-                if (!page_valid || (page_base_off != cur_page_base_off)) {
+                if ((page_valid == 0U) || (page_base_off != cur_page_base_off)) {
                     
                     flush_page_if_dirty(image_base_abs, &cur_page_base_off, &page_valid, &page_dirty);
                     memset(fileBuffer, 0xFF, PAGE_SIZE);
@@ -802,7 +802,7 @@ HEX_RECORD_STATUS bootloader_Storage_ProgramHexRecord(uint8_t *HexBuf, size_t to
          */
         case END_OF_FILE_RECORD:
         {
-            if (!eof_processed) {
+            if (eof_processed == 0U) {
                 /* Flush trailing partial page */
                 flush_page_if_dirty(image_base_abs, &cur_page_base_off, 
                         &page_valid, &page_dirty);
@@ -814,7 +814,7 @@ HEX_RECORD_STATUS bootloader_Storage_ProgramHexRecord(uint8_t *HexBuf, size_t to
 
                 }
 
-                if (!entry_seen) {
+                if (entry_seen == 0U) {
                     entry_point = min_written_abs;
                 }
 
@@ -824,7 +824,7 @@ HEX_RECORD_STATUS bootloader_Storage_ProgramHexRecord(uint8_t *HexBuf, size_t to
                 meta.img_entry = entry_point;
 
                 memset(fileBuffer, 0xFF, PAGE_SIZE);
-                memcpy(fileBuffer, &meta, sizeof meta);
+                (void)memcpy(fileBuffer, &meta, sizeof(meta));
 
                 bootloader_Storage_Write(btlData.extMemoryMetaDataAddr, fileBuffer, PAGE_SIZE);
 
