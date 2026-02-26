@@ -8,6 +8,32 @@ nav_order: 99
 
 # Microchip MPLAB® Harmony 3 Release Notes
 
+## Bootloader Release v3.9.0
+
+### New Features
+
+- This release includes support for
+    - **CAN, USB and OTA bootloaders** for SAM9X75 devices
+    - **CAN, USB and OTA bootloaders** for SAMA7D65 devices
+    - **UART, USB and Ethernet UDP live-update bootloaders** for PIC32CZ-CA80 devices
+
+### Bootloaders Supported on different product families
+- The following table provides supported bootloaders for different product families
+    <p align="center">
+        <img src = "./docs/supported_bootloaders_3_9.jpg"/>
+    </p>
+
+### Known Issues
+- No changes from v3.8.0
+
+### Development Tools
+
+* [MPLAB® X IDE v6.30](https://www.microchip.com/mplab/mplab-x-ide)
+* [MPLAB® XC32 C/C++ Compiler v5.00](https://www.microchip.com/mplab/compilers)
+* MPLAB® X IDE plug-ins:
+    * MPLAB® Code Configurator (MCC) v5.6.4
+
+
 ## Bootloader Release v3.8.0
 
 ### New Features

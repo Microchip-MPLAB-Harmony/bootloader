@@ -19,7 +19,7 @@ and microprocessor devices. Refer to the following links for release notes, trai
 and interface reference information.
 
 - [Release Notes](release_notes.md)
-- [Microchip SLA](Microchip_SLA001.md)
+- [License](License.md)
 
 # Contents Summary
 
@@ -40,7 +40,7 @@ To view the documentation offline, follow these steps:
 
 ____
 
-[![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/blob/master/Microchip_SLA001.md)
+[![License](https://img.shields.io/badge/license-Harmony%20license-orange.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/blob/master/License.md)
 [![Latest release](https://img.shields.io/github/release/Microchip-MPLAB-Harmony/bootloader.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/releases/latest)
 [![Latest release date](https://img.shields.io/github/release-date/Microchip-MPLAB-Harmony/bootloader.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/releases/latest)
 [![Commit activity](https://img.shields.io/github/commit-activity/y/Microchip-MPLAB-Harmony/bootloader.svg)](https://github.com/Microchip-MPLAB-Harmony/bootloader/graphs/commit-activity)
